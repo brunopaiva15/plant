@@ -85,6 +85,13 @@ REGISTRE_DE_TROP = {
 # subsiste mérite d'être tournée autrement, le lecteur hésite comme la machine.
 SIE_EN_TETE = re.compile(r'(?:^|(?<=[.:;!?]\s))Sie\b')
 
+# En italien, l'impératif de politesse se reconnaît à sa terminaison — -ate,
+# -ete, -ite en tête de phrase (« Fotografate le foglie », « Inserite il
+# codice ») —, mais un participe passé féminin pluriel la partage
+# (« Ordinate per verosimiglianza », « Archiviate di recente »). Comme pour le
+# « Sie » allemand, la machine désigne, l'œil tranche.
+VOI_EN_TETE = re.compile(r'(?:^|(?<=[.:;!?]\s))[A-Z][a-z]*(?:ate|ete|ite)\b')
+
 LONGUEUR = 140          # une aide en ligne tient en deçà
 CHAPEAU = 220           # un chapeau d'écran a droit à davantage
 PHRASES = 2             # au-delà, l'aide devient un paragraphe
@@ -135,6 +142,8 @@ def defauts(locale: str, cle: str, texte: str) -> list[str]:
     if locale in REGISTRE_DE_TROP and REGISTRE_DE_TROP[locale].search(nu):
         trouves.append('registre-de-trop')
     elif locale == 'de' and SIE_EN_TETE.search(nu):
+        trouves.append('registre-a-verifier')
+    elif locale == 'it' and VOI_EN_TETE.search(nu):
         trouves.append('registre-a-verifier')
 
     if locale == 'fr' and not COURT.search(cle):

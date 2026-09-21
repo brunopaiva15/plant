@@ -2432,7 +2432,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get diagnosisHint =>
-      'Fotografieren Sie Blätter, Stängel und Erde, aus der Nähe und ganz. Die Ergebnisse sind Hinweise.';
+      'Fotografiere Blätter, Stängel und Erde, aus der Nähe und dann ganz. Die Ergebnisse sind Hinweise.';
 
   @override
   String get diagnosisMoreBelow => 'Weiter unten: Symptome und Beobachtungen';
@@ -2452,7 +2452,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get diagnosisChecksHint =>
-      'Optional: Was das Foto nicht zeigt, schärft die Analyse.';
+      'Optional: Ergänze, was das Foto nicht zeigt, um die Analyse zu schärfen.';
 
   @override
   String get diagnosisSoil => 'Erde';
@@ -2539,15 +2539,15 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get diagnosisBusy =>
-      'Der Analysedienst antwortet nicht. In einem Moment erneut versuchen.';
+      'Der Analysedienst antwortet nicht. Versuch es gleich noch einmal.';
 
   @override
   String get diagnosisUnreadable =>
-      'Die Analyse ist fehlgeschlagen. Erneut versuchen.';
+      'Die Analyse ist fehlgeschlagen. Versuch es erneut.';
 
   @override
   String get diagnosisUncertain =>
-      'Die Fotos reichen für keinen Schluss. Die Spuren unten müssen geprüft werden.';
+      'Die Fotos reichen nicht für einen Schluss. Prüf die Hinweise unten.';
 
   @override
   String get diagnosisAnotherPhotoHint =>
@@ -2617,7 +2617,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get diagnosisSettingsHint =>
-      'Die Fotos werden von einem in der Schweiz gehosteten Modell analysiert (Infomaniak AI Services). Sie werden nur gesendet, wenn du eine Analyse startest, und nicht gespeichert.';
+      'Deine Fotos werden von einem Modell in der Schweiz analysiert (Infomaniak AI Services). Gesendet werden sie nur, wenn du eine Analyse startest, und gespeichert werden sie nicht.';
 
   @override
   String get diagnosisEnabled => 'Diagnose aktiviert';
@@ -2656,8 +2656,8 @@ class AppLocalizationsDe extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count weitere Spuren',
-      one: '1 weitere Spur',
+      other: '$count weitere Hinweise',
+      one: '1 weiterer Hinweis',
     );
     return '$_temp0';
   }
@@ -5874,7 +5874,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get encyclopediaHint =>
-      'Die Probleme der Datenbank, die Arten des Katalogs und die Begriffe der Pflegeblätter.';
+      'Die erfassten Probleme, die Arten des Katalogs und die Begriffe der Pflegeblätter.';
 
   @override
   String get encyclopediaProblems => 'Probleme';
@@ -6003,7 +6003,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get naturalCauseNote =>
-      'Was die Pflanze normalerweise tut und für ein Problem gehalten wird: nichts zu behandeln.';
+      'Was die Pflanze normalerweise tut und für ein Problem gehalten wird: Hier gibt es nichts zu behandeln.';
 
   @override
   String get careLightShadeNote =>

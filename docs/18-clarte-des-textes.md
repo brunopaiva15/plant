@@ -1,6 +1,6 @@
 # La clarté des textes (`lib/l10n/*.arb`)
 
-> Statut : **lots 1 à 4 livrés**, lots 5 à 11 à faire. La charte du § 3 est reportée
+> Statut : **lots 1 à 5 livrés**, lots 6 à 11 à faire. La charte du § 3 est reportée
 > dans `docs/06-design-system.md`, le relevé mécanique (`tool/audit_textes.py`)
 > et le test de parité ICU sont en place. Le registre allemand est tranché :
 > *du*.
@@ -395,9 +395,22 @@ Les deux dernières apostrophes courbes du corpus (`irisTwoPhotosTitle`,
 
 ### Lot 5 — Le diagnostic et l'encyclopédie (138 clés, 23 explicatives)
 
+> **Livré.** 35 chaînes réécrites sur les quatre langues, le relevé du lot
+> tombe de 3 clés signalées à 2, toutes deux à raison : le passif français
+> nomme son agent (« analysées **par un modèle hébergé en Suisse** »), c'est
+> justement le fait de confidentialité ; et l'italien `Ordinate per
+> verosimiglianza` est un participe, pas un impératif de politesse.
+
 Préfixes `diagnosis…`, `cause…`, `problem…`, `natural…`, `leaf…`,
 `encyclopedia…`. Les définitions de l'encyclopédie (`problemKind…Note`) sont
 des entrées de glossaire : la phrase nominale y est justifiée et reste.
+
+Deux corrections de traduction que le relevé ne pouvait pas voir :
+
+- **`diagnosisMoreCauses` disait « 1 weitere Spur » en allemand.** Une *Spur*
+  est une trace au sol ; la piste d'un diagnostic est un *Hinweis*.
+- **`diagnosisHint` vouvoyait en allemand et en italien** (« Fotografieren
+  Sie », « Fotografate »), les deux derniers de ce lot.
 
 | Clé | Avant | Après |
 |---|---|---|
@@ -409,7 +422,7 @@ des entrées de glossaire : la phrase nominale y est justifiée et reste.
 | `diagnosisRefused` | L'analyse n'a pas pu être effectuée pour cette photo. | Cette photo n'a pas pu être analysée. |
 | `naturalCauseNote` | Ce que la plante fait normalement et qu'on prend pour un problème : rien à soigner. | Ce que la plante fait normalement et qu'on prend pour un problème : il n'y a rien à soigner. |
 | `encyclopediaHint` | Les problèmes de la base, les espèces du catalogue et le vocabulaire des fiches d'entretien. | Les problèmes recensés, les espèces du catalogue et le vocabulaire des fiches d'entretien. |
-| `careLeafSignsNote` | Ce qu'une feuille montre, et ce qui l'explique le plus souvent. | Ce qu'une feuille montre, et ce qui l'explique le plus souvent. *(inchangé)* |
+| `careLeafSignsNote` | Ce qu'une feuille montre, et ce qui l'explique le plus souvent. | Ce qu'une feuille montre, et ce qui l'explique le plus souvent. |
 
 ### Lot 6 — Les fiches d'entretien (303 clés, 117 explicatives)
 
@@ -591,7 +604,7 @@ concerné est vert, sinon la suite casse dès le premier commit :
 | 2 ✓ | Guides de multiplication | 133 | 62 | **livré** — le plus atteint, et le plus lu quand on s'en sert |
 | 3 ✓ | Écran du matin, météo | 132 | 35 | **livré** — vu tous les jours |
 | 4 ✓ | Identification, Iris | 84 | 21 | **livré** — porte trois consentements |
-| 5 | Diagnostic, encyclopédie | 138 | 23 | |
+| 5 ✓ | Diagnostic, encyclopédie | 138 | 23 | **livré** |
 | 6 | Fiches d'entretien | 303 | 117 | volumineux mais déjà propre |
 | 7 | Découverte, soutien | 111 | 36 | première impression |
 | 8 | Compte, partage | 132 | 35 | |

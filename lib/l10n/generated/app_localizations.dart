@@ -4317,7 +4317,7 @@ abstract class AppLocalizations {
   /// No description provided for @diagnosisHint.
   ///
   /// In fr, this message translates to:
-  /// **'Photographiez les feuilles, la tige et la terre, de près et en entier. Les résultats sont indicatifs.'**
+  /// **'Photographiez les feuilles, la tige et la terre, de près puis en entier. Les résultats sont indicatifs.'**
   String get diagnosisHint;
 
   /// No description provided for @diagnosisMoreBelow.
@@ -4353,7 +4353,7 @@ abstract class AppLocalizations {
   /// No description provided for @diagnosisChecksHint.
   ///
   /// In fr, this message translates to:
-  /// **'Facultatif : ce que la photo ne montre pas affine l\'analyse.'**
+  /// **'Facultatif : précisez ce que la photo ne montre pas pour affiner l\'analyse.'**
   String get diagnosisChecksHint;
 
   /// No description provided for @diagnosisSoil.
@@ -4509,7 +4509,7 @@ abstract class AppLocalizations {
   /// No description provided for @diagnosisRefused.
   ///
   /// In fr, this message translates to:
-  /// **'L\'analyse n\'a pas pu être effectuée pour cette photo.'**
+  /// **'Cette photo n\'a pas pu être analysée.'**
   String get diagnosisRefused;
 
   /// No description provided for @diagnosisUnauthorized.
@@ -4533,13 +4533,13 @@ abstract class AppLocalizations {
   /// No description provided for @diagnosisUncertain.
   ///
   /// In fr, this message translates to:
-  /// **'Les photos ne suffisent pas pour conclure. Les pistes ci-dessous restent à vérifier.'**
+  /// **'Les photos ne suffisent pas pour conclure. Vérifiez les pistes ci-dessous.'**
   String get diagnosisUncertain;
 
   /// No description provided for @diagnosisAnotherPhotoHint.
   ///
   /// In fr, this message translates to:
-  /// **'Une photo de plus préciserait l\'analyse.'**
+  /// **'Une photo de plus affinerait l\'analyse.'**
   String get diagnosisAnotherPhotoHint;
 
   /// No description provided for @diagnosisQuestionsHint.
@@ -4665,7 +4665,7 @@ abstract class AppLocalizations {
   /// No description provided for @diagnosisSettingsHint.
   ///
   /// In fr, this message translates to:
-  /// **'Les photos sont analysées par un modèle hébergé en Suisse (AI Services d\'Infomaniak). Elles ne partent que lorsque vous lancez une analyse, et ne sont pas conservées.'**
+  /// **'Vos photos sont analysées par un modèle hébergé en Suisse (AI Services d\'Infomaniak). Elles ne partent qu\'au moment où vous lancez une analyse, et ne sont pas conservées.'**
   String get diagnosisSettingsHint;
 
   /// No description provided for @diagnosisEnabled.
@@ -10053,7 +10053,7 @@ abstract class AppLocalizations {
   /// No description provided for @encyclopediaHint.
   ///
   /// In fr, this message translates to:
-  /// **'Les problèmes de la base, les espèces du catalogue et le vocabulaire des fiches d\'entretien.'**
+  /// **'Les problèmes recensés, les espèces du catalogue et le vocabulaire des fiches d\'entretien.'**
   String get encyclopediaHint;
 
   /// No description provided for @encyclopediaProblems.
@@ -10233,7 +10233,7 @@ abstract class AppLocalizations {
   /// No description provided for @naturalCauseNote.
   ///
   /// In fr, this message translates to:
-  /// **'Ce que la plante fait normalement et qu\'on prend pour un problème : rien à soigner.'**
+  /// **'Ce que la plante fait normalement et qu\'on prend pour un problème : il n\'y a rien à soigner.'**
   String get naturalCauseNote;
 
   /// No description provided for @careLightShadeNote.

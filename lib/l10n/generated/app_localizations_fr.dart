@@ -2430,7 +2430,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get diagnosisHint =>
-      'Photographiez les feuilles, la tige et la terre, de près et en entier. Les résultats sont indicatifs.';
+      'Photographiez les feuilles, la tige et la terre, de près puis en entier. Les résultats sont indicatifs.';
 
   @override
   String get diagnosisMoreBelow => 'Plus bas : symptômes et observations';
@@ -2450,7 +2450,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get diagnosisChecksHint =>
-      'Facultatif : ce que la photo ne montre pas affine l\'analyse.';
+      'Facultatif : précisez ce que la photo ne montre pas pour affiner l\'analyse.';
 
   @override
   String get diagnosisSoil => 'Terre';
@@ -2529,8 +2529,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Analyse impossible. Vérifiez votre connexion et réessayez.';
 
   @override
-  String get diagnosisRefused =>
-      'L\'analyse n\'a pas pu être effectuée pour cette photo.';
+  String get diagnosisRefused => 'Cette photo n\'a pas pu être analysée.';
 
   @override
   String get diagnosisUnauthorized =>
@@ -2545,11 +2544,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get diagnosisUncertain =>
-      'Les photos ne suffisent pas pour conclure. Les pistes ci-dessous restent à vérifier.';
+      'Les photos ne suffisent pas pour conclure. Vérifiez les pistes ci-dessous.';
 
   @override
   String get diagnosisAnotherPhotoHint =>
-      'Une photo de plus préciserait l\'analyse.';
+      'Une photo de plus affinerait l\'analyse.';
 
   @override
   String get diagnosisQuestionsHint => 'Ce qui manque pour trancher.';
@@ -2615,7 +2614,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get diagnosisSettingsHint =>
-      'Les photos sont analysées par un modèle hébergé en Suisse (AI Services d\'Infomaniak). Elles ne partent que lorsque vous lancez une analyse, et ne sont pas conservées.';
+      'Vos photos sont analysées par un modèle hébergé en Suisse (AI Services d\'Infomaniak). Elles ne partent qu\'au moment où vous lancez une analyse, et ne sont pas conservées.';
 
   @override
   String get diagnosisEnabled => 'Diagnostic activé';
@@ -5890,7 +5889,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get encyclopediaHint =>
-      'Les problèmes de la base, les espèces du catalogue et le vocabulaire des fiches d\'entretien.';
+      'Les problèmes recensés, les espèces du catalogue et le vocabulaire des fiches d\'entretien.';
 
   @override
   String get encyclopediaProblems => 'Problèmes';
@@ -6019,7 +6018,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get naturalCauseNote =>
-      'Ce que la plante fait normalement et qu\'on prend pour un problème : rien à soigner.';
+      'Ce que la plante fait normalement et qu\'on prend pour un problème : il n\'y a rien à soigner.';
 
   @override
   String get careLightShadeNote =>

@@ -2427,7 +2427,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get diagnosisHint =>
-      'Photograph the leaves, the stem and the soil, close up and whole. Results are indicative only.';
+      'Photograph the leaves, the stem and the soil, close up then whole. The results are indicative only.';
 
   @override
   String get diagnosisMoreBelow => 'Below: symptoms and observations';
@@ -2446,7 +2446,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get diagnosisChecksHint =>
-      'Optional: what the photo cannot show sharpens the analysis.';
+      'Optional: add what the photo cannot show to sharpen the analysis.';
 
   @override
   String get diagnosisSoil => 'Soil';
@@ -2525,7 +2525,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Couldn\'t analyze. Check your connection and try again.';
 
   @override
-  String get diagnosisRefused => 'This photo couldn\'t be analyzed.';
+  String get diagnosisRefused => 'This photo could not be analysed.';
 
   @override
   String get diagnosisUnauthorized =>
@@ -2541,7 +2541,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get diagnosisUncertain =>
-      'The photos are not enough to conclude. The leads below still need checking.';
+      'The photos are not enough to conclude. Check the leads below.';
 
   @override
   String get diagnosisAnotherPhotoHint =>
@@ -2611,7 +2611,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get diagnosisSettingsHint =>
-      'Photos are analysed by a model hosted in Switzerland (Infomaniak AI Services). They are only sent when you start an analysis, and are not kept.';
+      'Your photos are analysed by a model hosted in Switzerland (Infomaniak AI Services). They leave only when you start an analysis, and are not kept.';
 
   @override
   String get diagnosisEnabled => 'Diagnosis enabled';
@@ -5854,7 +5854,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get encyclopediaHint =>
-      'The problems in the database, the species in the catalogue and the vocabulary of the care sheets.';
+      'The problems recorded, the species in the catalogue and the vocabulary of the care sheets.';
 
   @override
   String get encyclopediaProblems => 'Problems';
@@ -5983,7 +5983,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get naturalCauseNote =>
-      'What the plant does normally and gets taken for a problem: nothing to treat.';
+      'What the plant does normally and gets taken for a problem: there is nothing to treat.';
 
   @override
   String get careLightShadeNote =>

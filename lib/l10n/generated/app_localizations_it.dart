@@ -2432,7 +2432,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get diagnosisHint =>
-      'Fotografate le foglie, il fusto e la terra, da vicino e per intero. I risultati sono indicativi.';
+      'Fotografa le foglie, il fusto e la terra, da vicino e poi per intero. I risultati sono indicativi.';
 
   @override
   String get diagnosisMoreBelow => 'Più sotto: sintomi e osservazioni';
@@ -2452,7 +2452,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get diagnosisChecksHint =>
-      'Facoltativo: ciò che la foto non mostra affina l\'analisi.';
+      'Facoltativo: aggiungi ciò che la foto non mostra per affinare l\'analisi.';
 
   @override
   String get diagnosisSoil => 'Terra';
@@ -2546,11 +2546,11 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get diagnosisUncertain =>
-      'Le foto non bastano per concludere. Le ipotesi qui sotto restano da verificare.';
+      'Le foto non bastano per concludere. Verifica le ipotesi qui sotto.';
 
   @override
   String get diagnosisAnotherPhotoHint =>
-      'Un\'altra foto renderebbe l\'analisi più precisa.';
+      'Un\'altra foto affinerebbe l\'analisi.';
 
   @override
   String get diagnosisQuestionsHint => 'Ciò che manca per decidere.';
@@ -2616,7 +2616,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get diagnosisSettingsHint =>
-      'Le foto sono analizzate da un modello ospitato in Svizzera (AI Services di Infomaniak). Vengono inviate solo quando avvii un\'analisi e non vengono conservate.';
+      'Le tue foto sono analizzate da un modello ospitato in Svizzera (AI Services di Infomaniak). Partono solo quando avvii un\'analisi e non vengono conservate.';
 
   @override
   String get diagnosisEnabled => 'Diagnosi attiva';
@@ -5884,7 +5884,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get encyclopediaHint =>
-      'I problemi della base, le specie del catalogo e il vocabolario delle schede di cura.';
+      'I problemi censiti, le specie del catalogo e il vocabolario delle schede di cura.';
 
   @override
   String get encyclopediaProblems => 'Problemi';
@@ -6012,7 +6012,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get naturalCauseNote =>
-      'Ciò che la pianta fa normalmente e che si scambia per un problema: niente da curare.';
+      'Ciò che la pianta fa normalmente e che si scambia per un problema: non c\'è niente da curare.';
 
   @override
   String get careLightShadeNote =>
