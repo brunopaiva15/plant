@@ -1,3 +1,4 @@
+import 'package:flora/app/native_chrome_observer.dart';
 import 'package:flora/core/native_shell.dart';
 import 'package:flora/design_system/design_system.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,10 +18,16 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   const canal = MethodChannel('ch.vergasta.plant/native_shell');
 
+  /// Ce que la coquille a demandé au natif pour ses barres, dans l'ordre.
+  final chromes = <Map<Object?, Object?>>[];
+
   setUp(() {
+    chromes.clear();
     NativeShell.debugForceSupported = true;
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(canal, (call) async => true);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(canal, (call) async {
+      if (call.method == 'setChrome') chromes.add(call.arguments as Map<Object?, Object?>);
+      return true;
+    });
   });
 
   tearDown(() {
@@ -92,6 +99,57 @@ void main() {
         // savoir d'elle : il commence là où elle finit, pas dessous.
         final poignee = tester.getRect(find.byType(SheetHandle));
         expect(tester.getTopLeft(find.text('le contenu')).dy, greaterThanOrEqualTo(poignee.bottom));
+      }));
+
+  /// Ouvrir une pièce du relevé : une feuille de Flutter, posée sur une page
+  /// dont la barre est celle d'UIKit.
+  ///
+  /// La barre du système passe **par-dessus** tout ce que Flutter dessine :
+  /// la feuille s'ouvrait coiffée du titre et du retour de la page d'en
+  /// dessous, sa poignée cachée et son propre titre lu au travers. Une
+  /// surcouche doit donc voiler la chrome — sans l'effacer, puisque la place
+  /// qu'elle occupe ne doit pas bouger.
+  testWidgets('une feuille ouverte sur une page voile la barre du système', (tester) => surIOS(() async {
+        await NativeShell.publish(tabs: const [NativeTab(title: 'Profil', symbol: 'person')], selected: 0);
+        await tester.pumpWidget(MaterialApp(
+          theme: buildFloraTheme(Brightness.light),
+          navigatorObservers: [NativeChromeObserver()],
+          home: Builder(
+            builder: (accueil) => Scaffold(
+              body: Center(
+                child: FloraButton(
+                  label: 'Ouvrir la page',
+                  onPressed: () => Navigator.of(accueil).push(MaterialPageRoute<void>(
+                    builder: (_) => Builder(
+                      builder: (page) => FloraPage(
+                        title: 'Relevé de la maison',
+                        child: FloraButton(
+                          label: 'Ouvrir la pièce',
+                          onPressed: () => showFloraSheet<void>(page, builder: (_) => const Text('Salle Gaming')),
+                        ),
+                      ),
+                    ),
+                  )),
+                ),
+              ),
+            ),
+          ),
+        ));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('Ouvrir la page'));
+        await tester.pumpAndSettle();
+        expect(chromes.last['bar'], isTrue, reason: 'la page poussée a repris la barre du système');
+
+        await tester.tap(find.text('Ouvrir la pièce'));
+        await tester.pumpAndSettle();
+        expect(find.text('Salle Gaming'), findsOneWidget);
+        expect(chromes.last['veil'], isTrue, reason: 'sans voile, la barre du système reste posée sur la feuille');
+        expect(chromes.last['bar'], isTrue, reason: 'voiler n\'est pas effacer : la place de la barre ne bouge pas');
+
+        Navigator.of(tester.element(find.text('Salle Gaming'))).pop();
+        await tester.pumpAndSettle();
+        expect(chromes.last['veil'], isFalse, reason: 'la feuille refermée rend la barre');
       }));
 
   testWidgets('hors d\'une feuille, la page cède toujours sa barre au système', (tester) => surIOS(() async {

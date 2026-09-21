@@ -297,13 +297,18 @@ canal de méthode livre dans l'ordre où on lui confie ; il suffit de lui
 confier les deux à la suite. `test/core/native_shell_test.dart` tient l'ordre,
 et échoue sur la version qui attendait.
 
-**La barre d'onglets se masque par son contrôleur.** `tabBar.isHidden` et
-`tabBar.alpha` portent sur la vue que le contrôleur possède ; il la remet
-comme il l'entend à chaque mise en page, et sur l'iPhone Duo c'est lui, non
-elle, qui décide de ce que le système range dans la bande verticale. La barre
-reparaissait donc par-dessus une feuille, trois tentatives de suite.
-`setTabBarHidden(_:animated:)` est l'API faite pour ça, depuis iOS 18 ; en
-deçà on retombe sur la vue, faute de mieux.
+**Les deux barres se masquent par leur contrôleur.** `isHidden` et `alpha`
+portent sur des vues que `UITabBarController` et `UINavigationController`
+possèdent ; ils les remettent comme ils l'entendent à chaque mise en page, et
+sur l'iPhone Duo ce sont eux, non leurs barres, qui décident de ce que le
+système range dans la bande verticale. La barre d'onglets reparaissait
+par-dessus une feuille, trois tentatives de suite ;
+`setTabBarHidden(_:animated:)` est l'API faite pour ça, depuis iOS 18 (en deçà
+on retombe sur la vue, faute de mieux). La barre du haut, elle, était encore
+voilée par son opacité, et l'a appris à son tour : ouvrir une pièce du relevé
+donnait une feuille coiffée du titre et du retour de la page d'en dessous,
+poignée cachée et titre lu au travers. C'est `setNavigationBarHidden` qui la
+retire.
 
 **La chrome n'existe pas avant la coquille.** Au premier lancement, l'accueil
 s'ouvre sans elle : sans verrou, le contrôleur d'onglets montrait son onglet
@@ -311,12 +316,21 @@ de départ — un rond sans nom — par-dessus, et une barre vide avec. Les deux
 barres restent donc effacées tant que la coquille n'a pas déclaré ses onglets.
 
 **Une page et une surcouche ne se valent pas.** Un menu d'action, une alerte,
-ne prennent pas la place de la page : elles se posent dessus le temps d'un
-choix. Les effacer pour de bon rendrait leur place au contenu, la marge sûre
-changerait, et la page glisserait sous le menu qui vient de s'ouvrir — ce
-qu'elle faisait. Ces routes-là ne font donc que **voiler** la chrome :
-`alpha` à zéro, intouchable, et toujours là où elle était. L'observateur les
-compte à part (`PageRoute` ou non).
+une feuille à hauteur de contenu ne prennent pas la place de la page : elles
+se posent dessus le temps d'un choix. Les effacer pour de bon rendrait leur
+place au contenu, la marge sûre changerait, et la page glisserait sous le menu
+qui vient de s'ouvrir — ce qu'elle faisait. Ces routes-là ne font donc que
+**voiler** la chrome. L'observateur les compte à part (`PageRoute` ou non).
+
+Voiler, c'est retirer la barre **et lui garder sa place** : elle part par son
+contrôleur, seule façon qu'elle s'en aille pour de bon, et
+`additionalSafeAreaInsets` tient la marge qu'elle occupait le temps de la
+surcouche. Cette place se mesure pendant que la chrome est encore là — une
+fois partie, elle ne dit plus ce qu'elle prenait —, comme la différence entre
+ce que la vue de Flutter reçoit et ce que la fenêtre réserve d'elle-même, et
+dans les quatre sens : une barre rangée dans la bande verticale ne prend pas
+la sienne en haut. Une chrome déjà effacée mesure zéro, et une surcouche posée
+sur une page plein écran n'a donc rien à compenser.
 
 **Et la chrome s'efface quand une page la couvre.** UIKit ne sait rien de la
 navigation de Flutter : une fiche de plante, un scanner de QR code, une
