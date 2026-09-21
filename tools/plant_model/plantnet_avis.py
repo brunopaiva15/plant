@@ -38,13 +38,18 @@ avec assurance (§ 3.2).
 communes et n'apporte rien sur le reste. Si c'est vrai, c'est 47 Mo pour
 123 espèces, dont 43 seulement peuvent apparaître dans un salon.
 
-**Mesuré le 21 septembre 2026, et la prédiction était fausse par sa
-première moitié.** Sur la tranche `outdoor`, 173 images des 123 espèces
-communes : Iris 9 rend 0,8671 de top-1 en sorties masquées contre **0,7688**,
-et 0,9672 de justesse au seuil 0,70 contre **0,8504**. Il est battu de dix
-points sur son propre terrain. Et sur `ood_plante`, il ne nomme que **4,85 %**
-de ce qu'Iris ignore. Décision : on ne l'embarque pas (§ 5 de `docs/14`).
-Ce script reste, parce que la question se reposera au prochain modèle tiers.
+**Mesuré le 21 septembre 2026, et la prédiction était fausse par ses deux
+moitiés.** Sur notre banc (`outdoor`, 173 images des 123 espèces communes),
+Iris rend 0,8671 de top-1 contre 0,7688 — il gagne de dix points. Sur le jeu
+de test de PlantNet (`--terrain plantnet`, 400 images), c'est l'inverse :
+0,8100 contre **0,8875**. **Chacun gagne chez lui, du même ordre de
+grandeur.**
+
+Ce que la mesure symétrique ne change pas : PlantNet ne nomme que **4,85 %**
+de ce qu'Iris ignore, et ce chiffre-là ne dépend d'aucun jeu de test.
+Décision : on ne l'embarque pas (§ 5 de `docs/14`). Ce script reste, parce
+que la question se reposera au prochain modèle tiers — et parce qu'il porte
+désormais les deux terrains.
 
 ## Les deux chaînes de prétraitement ne sont pas la même
 
@@ -283,8 +288,8 @@ def membre(cle: str, ligne: dict) -> str:
 
 
 def lignes_plantnet(metadonnees: dict[str, dict], vers_id: dict[str, str],
-                    split: str = 'test',
-                    licences: set[str] = LICENCES) -> list[tuple[str, str]]:
+                    split: str = 'test', licences: set[str] = LICENCES,
+                    organe: str | None = None) -> list[tuple[str, str]]:
     """(membre, vérité) pour les images de ce split sur les espèces communes.
 
     **Le split de PlantNet, pas le nôtre.** Mesurer sur son entraînement
@@ -303,6 +308,8 @@ def lignes_plantnet(metadonnees: dict[str, dict], vers_id: dict[str, str],
             continue
         interne = vers_id.get(ligne.get('species_id'))
         if interne is None or ligne.get('license') not in licences:
+            continue
+        if organe is not None and ligne.get('organ') != organe:
             continue
         sortie.append((membre(cle, ligne), interne))
     return sortie
@@ -424,6 +431,9 @@ def main() -> int:  # pragma: no cover - demande TensorFlow et le jeu d'images
     ap.add_argument('--archive', default=ARCHIVE,
                     help="le zip Zenodo, local s'il existe, distant sinon")
     ap.add_argument('--graine', type=int, default=20260919)
+    ap.add_argument('--organe', choices=['habit', 'flower', 'leaf', 'fruit', 'bark'],
+                    help="ne garder qu'un cadrage ; `habit` est la plante entière, "
+                         "le seul que photographient nos utilisateurs")
     args = ap.parse_args()
 
     banc = Path(args.banc).expanduser()
@@ -459,12 +469,13 @@ def main() -> int:  # pragma: no cover - demande TensorFlow et le jeu d'images
                   for r in csv.DictReader(open(Path(args.plants).expanduser(),
                                                newline='', encoding='utf-8'))}
         vers_iris = especes_communes(noms, iris['labels'], plants)
-        lignes = lignes_plantnet(meta, vers_iris)
+        lignes = lignes_plantnet(meta, vers_iris, organe=args.organe)
         random.Random(args.graine).shuffle(lignes)
         if args.combien:
             lignes = lignes[:args.combien]
-        print(f'— terrain de PlantNet — {len(lignes)} images de test, '
-              f'{len(set(v for _, v in lignes))} espèces —')
+        print(f'— terrain de PlantNet — {len(lignes)} images de test'
+              + (f' ({args.organe})' if args.organe else '')
+              + f", {len(set(v for _, v in lignes))} espèces —")
         lire, etat = lecteur(args.archive)
         predictions = {iris['name']: [], plantnet['name']: []}
         sautees = 0

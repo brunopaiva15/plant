@@ -207,7 +207,7 @@ vérifiés**.
 | PlantNet-300K MobileNetV3-Small | 1 081 espèces, flore sauvage d'Europe | **non** — 7,4 % de recouvrement, 93 % de gros plans (§ 12.8 de `docs/09`) |
 | `domai-tb/OpenPlants-…-ViT-Base-Patch16-224` | ~97 M paramètres, ~14 000 espèces, GBIF/iNat, Apache 2.0 | **pas embarquable**, et 14 000 sorties rejouent les 10,2 points du § 6.7 bis |
 | `imageomics/bioclip-2.5-vith14` | le teacher, ~630 M paramètres | **pas embarquable** ; 79,9 img/s sur une RTX 2070 Super |
-| `litert-community/PlantNet-300K-ResNet18-LiteRT` | ResNet18, 1 081 espèces, 224 px, 47 Mo fp16, Apache-2.0 | **non** — mesuré, battu de 10 points dehors |
+| `litert-community/PlantNet-300K-ResNet18-LiteRT` | ResNet18, 1 081 espèces, 224 px, 47 Mo fp16, Apache-2.0 | **non** — 4,85 % de couverture, et aucun des deux terrains n'est le nôtre |
 | **`crazedcodernate/bioclip-2.5-mobile-fastvit`** | FastViT `sa12`, **11,6 M**, sortie 1 024 d, MIT, 23,8 Mo ONNX fp16 | **à mesurer** — c'est l'étape 5 déjà faite |
 
 **Le quatrième est le seul directement embarquable.** LiteRT *est* TFLite :
@@ -253,25 +253,47 @@ Et la couverture, sur les 2 000 images de `ood_plante` — toutes hors du
 catalogue d'Iris : PlantNet en nomme **97**, soit **4,85 %**. Mille neuf cent
 trois restent perdues pour les deux.
 
-**Le doute est levé dans l'autre sens.** La prédiction écrite avant la mesure
-disait qu'il battrait Iris sur les espèces communes et n'apporterait rien
-ailleurs ; la seconde moitié est vraie, la première est fausse. Iris 9 le bat
-de **dix points** sur son propre terrain — des plantes sauvages d'Europe,
-dehors, là où PlantNet dispose de 1 040 images par espèce contre nos ~190 —
-et de **douze points de justesse** au seuil de l'application.
+#### Et la mesure symétrique renverse la moitié du résultat
 
-La profondeur d'échantillonnage ne suffit donc pas à compenser ce que la v8
-avait établi : une représentation entraînée sur 991 000 images vaut mieux
-qu'un réseau entraîné sur 306 000, même sur les espèces de ce dernier.
+La réserve ci-dessus n'en était pas une : c'était un défaut de la mesure. Le
+banc est bâti sur notre corpus GBIF/iNaturalist, donc ses photos ressemblent
+à celles qui ont entraîné Iris, quand PlantNet a appris sur des photos
+d'utilisateurs Pl@ntNet. **Il fallait donc le faire jouer chez lui.**
 
-> **Une réserve, et elle joue en faveur d'Iris.** Le banc est bâti sur notre
-> corpus GBIF/iNaturalist, donc ses images ressemblent à celles qui ont
-> entraîné Iris, quand PlantNet a appris sur des photos d'utilisateurs
-> Pl@ntNet. Le terrain n'est pas parfaitement neutre. Mais dix points d'écart
-> et 4,85 % de couverture ne se renversent pas avec ça.
+`plantnet_avis.py --terrain plantnet`, 400 images de son propre jeu de test,
+90 espèces communes :
 
-**Décision : on ne l'embarque pas.** Quarante-sept mégaoctets pour un modèle
-battu sur sa spécialité et qui rattrape une image sur vingt.
+| | Iris 9 | PlantNet-300K |
+|---|---|---|
+| top-1, sorties masquées | 0,8100 | **0,8875** |
+| top-3 | 0,9300 | **0,9700** |
+| top-1, sorties entières | 0,6450 | **0,8425** |
+| au seuil 0,70 | 58,5 % acceptées, 0,9274 | **87,5 %**, 0,9143 |
+
+**Chacun gagne chez lui, du même ordre de grandeur** — Iris +9,8 sur notre
+banc, PlantNet +7,75 sur le sien. Aucun des deux n'est meilleur dans
+l'absolu : ils sont entraînés sur des cadrages différents et mesurés sur
+leurs propres habitudes. La prédiction écrite avant la mesure était donc
+fausse **par ses deux moitiés**, la seconde d'une façon qu'un seul jeu de
+test ne pouvait pas montrer.
+
+> **Un modèle ne se compare pas sur un seul terrain.** Le § 6.7 dit déjà que
+> deux `model.json` ne se comparent pas. Ceci va plus loin : même « les mêmes
+> images, les mêmes classes » ne suffit pas, si les images viennent d'un seul
+> des deux mondes.
+
+**Décision : on ne l'embarque pas** — et la raison n'est plus qu'il est
+mauvais, puisqu'il ne l'est pas.
+
+1. **La couverture ne dépend d'aucun terrain.** 4,85 % de ce qu'Iris ignore,
+   sur 2 000 images, en arithmétique d'étiquettes pure. Ce chiffre-là ne
+   bouge pas, et c'est lui qui décide ;
+2. **aucun des deux terrains n'est le nôtre.** PlantNet gagne sur des gros
+   plans de fleur et de feuille — 93 % de son jeu de test —, Iris sur des
+   photos d'observation. Nos utilisateurs photographient des plantes en pot
+   au téléphone, ce qui n'est ni l'un ni l'autre ;
+3. **47 Mo** dans une application qui en porte 9,0, pour 123 espèces
+   communes dont 43 seulement peuvent apparaître dans un salon.
 
 **Pourquoi les trois premiers ne règlent rien.** Ce qu'Iris rate, c'est neuf
 fois sur dix une espèce qu'il n'expose pas — un second classifieur n'aide que
