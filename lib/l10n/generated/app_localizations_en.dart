@@ -2037,14 +2037,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get identifyAnotherPhotoHint =>
-      'A leaf, a flower or the whole plant helps narrow it down.';
+      'Add a leaf, a flower or the whole plant to narrow it down.';
 
   @override
   String get identificationUncertainTitle => 'Uncertain identification';
 
   @override
   String get identificationUncertainBody =>
-      'Even with the available photos, no species stands out clearly enough. You can search online or choose manually if you recognise the plant.';
+      'No species stands out clearly enough. Search online, or pick the species yourself if you recognise the plant.';
 
   @override
   String get identificationSuggestionsToCheck => 'Suggestions to check';
@@ -2090,7 +2090,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String identificationHint(String name) {
-    return 'Species recognised on the device by $name, without a network. When in doubt, the photo can be sent to Pl@ntNet.';
+    return '$name recognises species directly on your device, without a network. When in doubt, the photo can be sent to Pl@ntNet.';
   }
 
   @override
@@ -2104,7 +2104,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String identificationFallbackHint(String name) {
-    return 'When $name is in doubt, the photo is sent to Pl@ntNet. Off, everything stays on the device.';
+    return 'When $name hesitates, the app sends the photo to Pl@ntNet. Off, everything stays on your device.';
   }
 
   @override
@@ -2112,7 +2112,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String irisFeedbackHint(String name) {
-    return 'The photos taken to identify and the chosen name are sent as soon as a plant is named, and train the next versions of the $name model. They are readable only by the account that sends them, and deleting it erases them. Off, they do not leave the device.';
+    return 'By naming a plant, you send its photos and the chosen name to train the next versions of $name. Only you can read them, and deleting your account erases them. Off, nothing leaves your device.';
   }
 
   @override
@@ -2123,7 +2123,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String irisFeedbackAskBody(String name) {
-    return 'The photos taken to identify and the chosen name can be sent to train the next versions of the $name model. They are readable only by the account that sends them, and deleting it erases them. The choice can be changed in the identification settings.';
+    return 'Your identification photos and the chosen name can train the next versions of $name. Only you will be able to read them, and deleting your account will erase them. You can change this choice in the settings.';
   }
 
   @override
@@ -2139,7 +2139,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String identificationStats(int local, int accepted, int remote) {
-    return '$local analysed on device, $accepted decided here; $remote sent online';
+    return '$local analysed on your device, $accepted without sending; $remote sent online';
   }
 
   @override
@@ -2152,7 +2152,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get irisTagline =>
-      'Species recognition on the phone, without a network or an account.';
+      'Recognises species on your phone, without a network or an account.';
 
   @override
   String get irisSpeciesLabel => 'species';
@@ -2168,7 +2168,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String irisTwoPhotosBody(String name) {
-    return 'The whole plant, then a leaf close up. With two photos, $name finds the right species two times out of three, instead of one out of two.';
+    return 'Photograph the whole plant, then a leaf close up: with two photos, $name finds the right species 2 times out of 3, instead of 1 out of 2.';
   }
 
   @override

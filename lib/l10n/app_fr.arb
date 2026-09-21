@@ -943,9 +943,9 @@
   "identifyHint": "Suggestions d'espèce, à confirmer",
   "searchOnline": "Chercher en ligne",
   "identifyAnotherPhoto": "Ajouter une photo",
-  "identifyAnotherPhotoHint": "Une feuille, une fleur ou la plante entière permet d'affiner.",
+  "identifyAnotherPhotoHint": "Ajoutez une feuille, une fleur ou la plante entière pour affiner.",
   "identificationUncertainTitle": "Identification incertaine",
-  "identificationUncertainBody": "Même avec les photos disponibles, aucune espèce ne ressort assez nettement. Vous pouvez chercher en ligne ou choisir manuellement si vous reconnaissez la plante.",
+  "identificationUncertainBody": "Aucune espèce ne ressort assez nettement. Cherchez en ligne, ou choisissez l'espèce vous-même si vous reconnaissez la plante.",
   "identificationSuggestionsToCheck": "Suggestions à vérifier",
   "identifyConfirmWithPhoto": "Confirmer avec une photo",
   "searchingOnline": "Recherche en ligne…",
@@ -965,7 +965,7 @@
   "identifyError": "Identification impossible. Vérifiez votre connexion et réessayez.",
   "useThis": "Utiliser",
   "identificationSettings": "Identification",
-  "identificationHint": "Reconnaissance des espèces sur l'appareil par {name}, sans réseau. En cas de doute, la photo peut être envoyée à Pl@ntNet.",
+  "identificationHint": "{name} reconnaît les espèces directement sur votre appareil, sans réseau. En cas de doute, la photo peut être envoyée à Pl@ntNet.",
   "@identificationHint": {
     "placeholders": {
       "name": {
@@ -976,7 +976,7 @@
   "identificationEnabled": "Identification activée",
   "identificationDisabled": "Non configurée",
   "identificationFallback": "Repli en ligne",
-  "identificationFallbackHint": "En cas de doute de {name}, la photo est envoyée à Pl@ntNet. Désactivé, tout reste sur l'appareil.",
+  "identificationFallbackHint": "Quand {name} hésite, l'application envoie la photo à Pl@ntNet. Désactivé, tout reste sur votre appareil.",
   "@identificationFallbackHint": {
     "placeholders": {
       "name": {
@@ -985,7 +985,7 @@
     }
   },
   "irisFeedback": "Envoi des photos identifiées",
-  "irisFeedbackHint": "Les photos prises pour identifier et le nom retenu sont envoyés dès qu'une plante est nommée, et entraînent les prochaines versions du modèle {name}. Elles ne sont lisibles que par le compte qui les envoie, et sa suppression les efface. Désactivé, elles ne quittent pas l'appareil.",
+  "irisFeedbackHint": "En nommant une plante, vous envoyez ses photos et le nom retenu pour entraîner les prochaines versions de {name}. Vous seul pouvez les lire, et supprimer votre compte les efface. Désactivé, rien ne quitte votre appareil.",
   "@irisFeedbackHint": {
     "placeholders": {
       "name": {
@@ -995,7 +995,7 @@
   },
   "irisFeedbackNeedsAccount": "Il faut un compte pour envoyer des photos.",
   "irisFeedbackAskTitle": "Envoi des photos identifiées",
-  "irisFeedbackAskBody": "Les photos prises pour identifier et le nom retenu peuvent être envoyés pour entraîner les prochaines versions du modèle {name}. Elles ne sont lisibles que par le compte qui les envoie, et sa suppression les efface. Le choix se change dans les réglages d'identification.",
+  "irisFeedbackAskBody": "Vos photos d'identification et le nom retenu peuvent entraîner les prochaines versions de {name}. Vous seul pourrez les lire, et supprimer votre compte les effacera. Vous pourrez revenir sur ce choix dans les réglages.",
   "@irisFeedbackAskBody": {
     "placeholders": {
       "name": {
@@ -1013,7 +1013,7 @@
     }
   },
   "modelLoading": "Chargement du modèle…",
-  "identificationStats": "{local} analysées sur l’appareil, dont {accepted} tranchées ici ; {remote} envoyées en ligne",
+  "identificationStats": "{local} analysées sur votre appareil, dont {accepted} sans envoi ; {remote} envoyées en ligne",
   "@identificationStats": {
     "placeholders": {
       "local": {
@@ -1039,12 +1039,12 @@
     }
   },
   "irisSection": "Le modèle embarqué",
-  "irisTagline": "Reconnaissance des espèces sur le téléphone, sans réseau ni compte.",
+  "irisTagline": "Reconnaît les espèces sur votre téléphone, sans réseau ni compte.",
   "irisSpeciesLabel": "espèces",
   "irisOfflineValue": "hors ligne",
   "irisOfflineLabel": "même en avion",
-  "irisTwoPhotosTitle": "Deux photos valent mieux qu’une",
-  "irisTwoPhotosBody": "La plante entière, puis une feuille de près. Avec deux photos, {name} trouve la bonne espèce deux fois sur trois, contre une fois sur deux.",
+  "irisTwoPhotosTitle": "Deux photos valent mieux qu'une",
+  "irisTwoPhotosBody": "Photographiez la plante entière, puis une feuille de près : avec deux photos, {name} trouve la bonne espèce 2 fois sur 3, contre 1 sur 2.",
   "@irisTwoPhotosBody": {
     "placeholders": {
       "name": {
@@ -1331,7 +1331,7 @@
     }
   },
   "speciesNoResults": "Aucune espèce trouvée",
-  "speciesOffline": "La liste complète nécessite une connexion. Les espèces courantes restent disponibles.",
+  "speciesOffline": "La liste complète demande une connexion. Les espèces courantes restent disponibles.",
   "speciesBrowse": "Liste complète",
   "speciesCatAll": "Toutes",
   "speciesCatIndoor": "Intérieur",

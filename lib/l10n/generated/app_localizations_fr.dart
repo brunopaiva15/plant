@@ -2040,14 +2040,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get identifyAnotherPhotoHint =>
-      'Une feuille, une fleur ou la plante entière permet d\'affiner.';
+      'Ajoutez une feuille, une fleur ou la plante entière pour affiner.';
 
   @override
   String get identificationUncertainTitle => 'Identification incertaine';
 
   @override
   String get identificationUncertainBody =>
-      'Même avec les photos disponibles, aucune espèce ne ressort assez nettement. Vous pouvez chercher en ligne ou choisir manuellement si vous reconnaissez la plante.';
+      'Aucune espèce ne ressort assez nettement. Cherchez en ligne, ou choisissez l\'espèce vous-même si vous reconnaissez la plante.';
 
   @override
   String get identificationSuggestionsToCheck => 'Suggestions à vérifier';
@@ -2093,7 +2093,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String identificationHint(String name) {
-    return 'Reconnaissance des espèces sur l\'appareil par $name, sans réseau. En cas de doute, la photo peut être envoyée à Pl@ntNet.';
+    return '$name reconnaît les espèces directement sur votre appareil, sans réseau. En cas de doute, la photo peut être envoyée à Pl@ntNet.';
   }
 
   @override
@@ -2107,7 +2107,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String identificationFallbackHint(String name) {
-    return 'En cas de doute de $name, la photo est envoyée à Pl@ntNet. Désactivé, tout reste sur l\'appareil.';
+    return 'Quand $name hésite, l\'application envoie la photo à Pl@ntNet. Désactivé, tout reste sur votre appareil.';
   }
 
   @override
@@ -2115,7 +2115,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String irisFeedbackHint(String name) {
-    return 'Les photos prises pour identifier et le nom retenu sont envoyés dès qu\'une plante est nommée, et entraînent les prochaines versions du modèle $name. Elles ne sont lisibles que par le compte qui les envoie, et sa suppression les efface. Désactivé, elles ne quittent pas l\'appareil.';
+    return 'En nommant une plante, vous envoyez ses photos et le nom retenu pour entraîner les prochaines versions de $name. Vous seul pouvez les lire, et supprimer votre compte les efface. Désactivé, rien ne quitte votre appareil.';
   }
 
   @override
@@ -2127,7 +2127,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String irisFeedbackAskBody(String name) {
-    return 'Les photos prises pour identifier et le nom retenu peuvent être envoyés pour entraîner les prochaines versions du modèle $name. Elles ne sont lisibles que par le compte qui les envoie, et sa suppression les efface. Le choix se change dans les réglages d\'identification.';
+    return 'Vos photos d\'identification et le nom retenu peuvent entraîner les prochaines versions de $name. Vous seul pourrez les lire, et supprimer votre compte les effacera. Vous pourrez revenir sur ce choix dans les réglages.';
   }
 
   @override
@@ -2143,7 +2143,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String identificationStats(int local, int accepted, int remote) {
-    return '$local analysées sur l’appareil, dont $accepted tranchées ici ; $remote envoyées en ligne';
+    return '$local analysées sur votre appareil, dont $accepted sans envoi ; $remote envoyées en ligne';
   }
 
   @override
@@ -2156,7 +2156,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get irisTagline =>
-      'Reconnaissance des espèces sur le téléphone, sans réseau ni compte.';
+      'Reconnaît les espèces sur votre téléphone, sans réseau ni compte.';
 
   @override
   String get irisSpeciesLabel => 'espèces';
@@ -2168,11 +2168,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get irisOfflineLabel => 'même en avion';
 
   @override
-  String get irisTwoPhotosTitle => 'Deux photos valent mieux qu’une';
+  String get irisTwoPhotosTitle => 'Deux photos valent mieux qu\'une';
 
   @override
   String irisTwoPhotosBody(String name) {
-    return 'La plante entière, puis une feuille de près. Avec deux photos, $name trouve la bonne espèce deux fois sur trois, contre une fois sur deux.';
+    return 'Photographiez la plante entière, puis une feuille de près : avec deux photos, $name trouve la bonne espèce 2 fois sur 3, contre 1 sur 2.';
   }
 
   @override
@@ -2741,7 +2741,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get speciesOffline =>
-      'La liste complète nécessite une connexion. Les espèces courantes restent disponibles.';
+      'La liste complète demande une connexion. Les espèces courantes restent disponibles.';
 
   @override
   String get speciesBrowse => 'Liste complète';

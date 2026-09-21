@@ -663,28 +663,28 @@
   "identifyHint": "Suggerimenti di specie, da confermare",
   "searchOnline": "Cerca online",
   "identifyAnotherPhoto": "Aggiungi una foto",
-  "identifyAnotherPhotoHint": "Una foglia, un fiore o la pianta intera aiuta a precisare.",
+  "identifyAnotherPhotoHint": "Aggiungi una foglia, un fiore o la pianta intera per precisare.",
   "identificationUncertainTitle": "Identificazione incerta",
-  "identificationUncertainBody": "Anche con le foto disponibili, nessuna specie emerge con sufficiente chiarezza. Puoi cercare online o scegliere manualmente se riconosci la pianta.",
+  "identificationUncertainBody": "Nessuna specie emerge con sufficiente chiarezza. Cerca online, o scegli tu stesso la specie se riconosci la pianta.",
   "identificationSuggestionsToCheck": "Suggerimenti da verificare",
   "identifyConfirmWithPhoto": "Conferma con una foto",
   "searchingOnline": "Ricerca online…",
   "suggestionsLocal": "Risultati Iris sul dispositivo · foto non inviata",
   "suggestionsRemote": "Proposto online da Pl@ntNet",
-  "identifyOnDevice": "Riconosciuta da {name} sul dispositivo. Scegliete la specie",
-  "identifyViaPlantNet": "Riconosciuta online da Pl@ntNet. Scegliete la specie",
+  "identifyOnDevice": "Riconosciuta da {name} sul dispositivo. Scegli la specie",
+  "identifyViaPlantNet": "Riconosciuta online da Pl@ntNet. Scegli la specie",
   "identifyPhotoSource": "Foto da Pl@ntNet e GBIF. Toccane una per aprire la scheda della specie.",
   "identifyNone": "Nessuna corrispondenza affidabile.",
   "identifyError": "Identificazione impossibile. Controlla la connessione e riprova.",
   "useThis": "Usa",
   "identificationSettings": "Identificazione",
-  "identificationHint": "Riconoscimento delle specie sul dispositivo da parte di {name}, senza rete. In caso di dubbio, la foto può essere inviata a Pl@ntNet.",
+  "identificationHint": "{name} riconosce le specie direttamente sul tuo dispositivo, senza rete. In caso di dubbio, la foto può essere inviata a Pl@ntNet.",
   "identificationEnabled": "Identificazione attiva",
   "identificationDisabled": "Non configurata",
   "identificationFallback": "Fallback online",
-  "identificationFallbackHint": "In caso di dubbio di {name}, la foto viene inviata a Pl@ntNet. Disattivato, tutto resta sul dispositivo.",
+  "identificationFallbackHint": "Quando {name} esita, l'app invia la foto a Pl@ntNet. Disattivato, tutto resta sul tuo dispositivo.",
   "irisFeedback": "Invio delle foto identificate",
-  "irisFeedbackHint": "Le foto scattate per identificare e il nome scelto vengono inviati appena una pianta viene nominata, e addestrano le prossime versioni del modello {name}. Sono leggibili solo dall'account che le invia, e la sua eliminazione le cancella. Disattivato, non lasciano il dispositivo.",
+  "irisFeedbackHint": "Dando un nome a una pianta, invii le sue foto e il nome per addestrare le prossime versioni di {name}. Solo tu puoi leggerle, ed eliminare il tuo account le cancella. Disattivato, niente lascia il tuo dispositivo.",
   "@irisFeedbackHint": {
     "placeholders": {
       "name": {
@@ -694,7 +694,7 @@
   },
   "irisFeedbackNeedsAccount": "Serve un account per inviare le foto.",
   "irisFeedbackAskTitle": "Invio delle foto identificate",
-  "irisFeedbackAskBody": "Le foto scattate per identificare e il nome scelto possono essere inviati per addestrare le prossime versioni del modello {name}. Sono leggibili solo dall'account che le invia, e la sua eliminazione le cancella. La scelta si cambia nelle impostazioni di identificazione.",
+  "irisFeedbackAskBody": "Le tue foto di identificazione e il nome scelto possono addestrare le prossime versioni di {name}. Solo tu potrai leggerle, ed eliminare il tuo account le cancellerà. Potrai tornare su questa scelta nelle impostazioni.",
   "@irisFeedbackAskBody": {
     "placeholders": {
       "name": {
@@ -705,7 +705,7 @@
   "genusUncertainSpecies": "Specie incerta",
   "modelMissing": "{name} non disponibile su questo dispositivo",
   "modelLoading": "Caricamento del modello…",
-  "identificationStats": "{local} analizzate sul dispositivo, {accepted} decise qui; {remote} inviate online",
+  "identificationStats": "{local} analizzate sul tuo dispositivo, {accepted} senza invio; {remote} inviate online",
   "onlineSearchesMonth": "{used} ricerche online su {limit} questo mese.",
   "@onlineSearchesMonth": {
     "placeholders": {
@@ -718,12 +718,12 @@
     }
   },
   "irisSection": "Il modello a bordo",
-  "irisTagline": "Riconoscimento delle specie sul telefono, senza rete né account.",
+  "irisTagline": "Riconosce le specie sul tuo telefono, senza rete né account.",
   "irisSpeciesLabel": "specie",
   "irisOfflineValue": "offline",
   "irisOfflineLabel": "anche in aereo",
   "irisTwoPhotosTitle": "Due foto valgono più di una",
-  "irisTwoPhotosBody": "La pianta intera, poi una foglia da vicino. Con due foto, {name} trova la specie giusta due volte su tre, invece di una su due.",
+  "irisTwoPhotosBody": "Fotografa la pianta intera, poi una foglia da vicino: con due foto, {name} trova la specie giusta 2 volte su 3, invece di 1 su 2.",
   "confidence": "{percent}%",
   "speciesSet": "Specie aggiornata",
   "compare": "Confronta",

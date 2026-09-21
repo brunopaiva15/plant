@@ -663,9 +663,9 @@
   "identifyHint": "Species suggestions, to confirm",
   "searchOnline": "Search online",
   "identifyAnotherPhoto": "Add a photo",
-  "identifyAnotherPhotoHint": "A leaf, a flower or the whole plant helps narrow it down.",
+  "identifyAnotherPhotoHint": "Add a leaf, a flower or the whole plant to narrow it down.",
   "identificationUncertainTitle": "Uncertain identification",
-  "identificationUncertainBody": "Even with the available photos, no species stands out clearly enough. You can search online or choose manually if you recognise the plant.",
+  "identificationUncertainBody": "No species stands out clearly enough. Search online, or pick the species yourself if you recognise the plant.",
   "identificationSuggestionsToCheck": "Suggestions to check",
   "identifyConfirmWithPhoto": "Confirm with a photo",
   "searchingOnline": "Searching online…",
@@ -678,13 +678,13 @@
   "identifyError": "Couldn't identify. Check your connection and try again.",
   "useThis": "Use",
   "identificationSettings": "Identification",
-  "identificationHint": "Species recognised on the device by {name}, without a network. When in doubt, the photo can be sent to Pl@ntNet.",
+  "identificationHint": "{name} recognises species directly on your device, without a network. When in doubt, the photo can be sent to Pl@ntNet.",
   "identificationEnabled": "Identification enabled",
   "identificationDisabled": "Not configured",
   "identificationFallback": "Online fallback",
-  "identificationFallbackHint": "When {name} is in doubt, the photo is sent to Pl@ntNet. Off, everything stays on the device.",
+  "identificationFallbackHint": "When {name} hesitates, the app sends the photo to Pl@ntNet. Off, everything stays on your device.",
   "irisFeedback": "Sending identified photos",
-  "irisFeedbackHint": "The photos taken to identify and the chosen name are sent as soon as a plant is named, and train the next versions of the {name} model. They are readable only by the account that sends them, and deleting it erases them. Off, they do not leave the device.",
+  "irisFeedbackHint": "By naming a plant, you send its photos and the chosen name to train the next versions of {name}. Only you can read them, and deleting your account erases them. Off, nothing leaves your device.",
   "@irisFeedbackHint": {
     "placeholders": {
       "name": {
@@ -694,7 +694,7 @@
   },
   "irisFeedbackNeedsAccount": "An account is needed to send photos.",
   "irisFeedbackAskTitle": "Sending identified photos",
-  "irisFeedbackAskBody": "The photos taken to identify and the chosen name can be sent to train the next versions of the {name} model. They are readable only by the account that sends them, and deleting it erases them. The choice can be changed in the identification settings.",
+  "irisFeedbackAskBody": "Your identification photos and the chosen name can train the next versions of {name}. Only you will be able to read them, and deleting your account will erase them. You can change this choice in the settings.",
   "@irisFeedbackAskBody": {
     "placeholders": {
       "name": {
@@ -705,7 +705,7 @@
   "genusUncertainSpecies": "Species uncertain",
   "modelMissing": "{name} unavailable on this device",
   "modelLoading": "Loading the model…",
-  "identificationStats": "{local} analysed on device, {accepted} decided here; {remote} sent online",
+  "identificationStats": "{local} analysed on your device, {accepted} without sending; {remote} sent online",
   "onlineSearchesMonth": "{used} of {limit} online searches this month.",
   "@onlineSearchesMonth": {
     "placeholders": {
@@ -718,12 +718,12 @@
     }
   },
   "irisSection": "The on-device model",
-  "irisTagline": "Species recognition on the phone, without a network or an account.",
+  "irisTagline": "Recognises species on your phone, without a network or an account.",
   "irisSpeciesLabel": "species",
   "irisOfflineValue": "offline",
   "irisOfflineLabel": "even on a plane",
   "irisTwoPhotosTitle": "Two photos beat one",
-  "irisTwoPhotosBody": "The whole plant, then a leaf close up. With two photos, {name} finds the right species two times out of three, instead of one out of two.",
+  "irisTwoPhotosBody": "Photograph the whole plant, then a leaf close up: with two photos, {name} finds the right species 2 times out of 3, instead of 1 out of 2.",
   "confidence": "{percent}%",
   "speciesSet": "Species updated",
   "compare": "Compare",

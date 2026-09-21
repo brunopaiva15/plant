@@ -2040,14 +2040,14 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get identifyAnotherPhotoHint =>
-      'Una foglia, un fiore o la pianta intera aiuta a precisare.';
+      'Aggiungi una foglia, un fiore o la pianta intera per precisare.';
 
   @override
   String get identificationUncertainTitle => 'Identificazione incerta';
 
   @override
   String get identificationUncertainBody =>
-      'Anche con le foto disponibili, nessuna specie emerge con sufficiente chiarezza. Puoi cercare online o scegliere manualmente se riconosci la pianta.';
+      'Nessuna specie emerge con sufficiente chiarezza. Cerca online, o scegli tu stesso la specie se riconosci la pianta.';
 
   @override
   String get identificationSuggestionsToCheck => 'Suggerimenti da verificare';
@@ -2067,12 +2067,12 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String identifyOnDevice(String name) {
-    return 'Riconosciuta da $name sul dispositivo. Scegliete la specie';
+    return 'Riconosciuta da $name sul dispositivo. Scegli la specie';
   }
 
   @override
   String get identifyViaPlantNet =>
-      'Riconosciuta online da Pl@ntNet. Scegliete la specie';
+      'Riconosciuta online da Pl@ntNet. Scegli la specie';
 
   @override
   String get identifyPhotoSource =>
@@ -2093,7 +2093,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String identificationHint(String name) {
-    return 'Riconoscimento delle specie sul dispositivo da parte di $name, senza rete. In caso di dubbio, la foto può essere inviata a Pl@ntNet.';
+    return '$name riconosce le specie direttamente sul tuo dispositivo, senza rete. In caso di dubbio, la foto può essere inviata a Pl@ntNet.';
   }
 
   @override
@@ -2107,7 +2107,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String identificationFallbackHint(String name) {
-    return 'In caso di dubbio di $name, la foto viene inviata a Pl@ntNet. Disattivato, tutto resta sul dispositivo.';
+    return 'Quando $name esita, l\'app invia la foto a Pl@ntNet. Disattivato, tutto resta sul tuo dispositivo.';
   }
 
   @override
@@ -2115,7 +2115,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String irisFeedbackHint(String name) {
-    return 'Le foto scattate per identificare e il nome scelto vengono inviati appena una pianta viene nominata, e addestrano le prossime versioni del modello $name. Sono leggibili solo dall\'account che le invia, e la sua eliminazione le cancella. Disattivato, non lasciano il dispositivo.';
+    return 'Dando un nome a una pianta, invii le sue foto e il nome per addestrare le prossime versioni di $name. Solo tu puoi leggerle, ed eliminare il tuo account le cancella. Disattivato, niente lascia il tuo dispositivo.';
   }
 
   @override
@@ -2127,7 +2127,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String irisFeedbackAskBody(String name) {
-    return 'Le foto scattate per identificare e il nome scelto possono essere inviati per addestrare le prossime versioni del modello $name. Sono leggibili solo dall\'account che le invia, e la sua eliminazione le cancella. La scelta si cambia nelle impostazioni di identificazione.';
+    return 'Le tue foto di identificazione e il nome scelto possono addestrare le prossime versioni di $name. Solo tu potrai leggerle, ed eliminare il tuo account le cancellerà. Potrai tornare su questa scelta nelle impostazioni.';
   }
 
   @override
@@ -2143,7 +2143,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String identificationStats(int local, int accepted, int remote) {
-    return '$local analizzate sul dispositivo, $accepted decise qui; $remote inviate online';
+    return '$local analizzate sul tuo dispositivo, $accepted senza invio; $remote inviate online';
   }
 
   @override
@@ -2156,7 +2156,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get irisTagline =>
-      'Riconoscimento delle specie sul telefono, senza rete né account.';
+      'Riconosce le specie sul tuo telefono, senza rete né account.';
 
   @override
   String get irisSpeciesLabel => 'specie';
@@ -2172,7 +2172,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String irisTwoPhotosBody(String name) {
-    return 'La pianta intera, poi una foglia da vicino. Con due foto, $name trova la specie giusta due volte su tre, invece di una su due.';
+    return 'Fotografa la pianta intera, poi una foglia da vicino: con due foto, $name trova la specie giusta 2 volte su 3, invece di 1 su 2.';
   }
 
   @override

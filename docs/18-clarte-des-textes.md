@@ -1,6 +1,6 @@
 # La clarté des textes (`lib/l10n/*.arb`)
 
-> Statut : **lots 1 à 3 livrés**, lots 4 à 11 à faire. La charte du § 3 est reportée
+> Statut : **lots 1 à 4 livrés**, lots 5 à 11 à faire. La charte du § 3 est reportée
 > dans `docs/06-design-system.md`, le relevé mécanique (`tool/audit_textes.py`)
 > et le test de parité ICU sont en place. Le registre allemand est tranché :
 > *du*.
@@ -355,20 +355,41 @@ matin, la phrase décrivait ce qui se voit. C'est la règle 4 appliquée.
 
 ### Lot 4 — L'identification et Iris (84 clés, 21 explicatives)
 
+> **Livré.** 45 chaînes réécrites sur les quatre langues, le relevé du lot
+> tombe de 14 clés signalées à 0. `flutter gen-l10n` passé, tests et
+> `flutter analyze` verts.
+
 Préfixes `identif…`, `iris…`, `suggestions…`, `species…`. Lot sensible : trois
 chaînes y portent un consentement, et la règle 3 leur accorde trois phrases.
+
+Les deux textes de consentement passent de 280 à 220 signes sans rien perdre :
+chacune des trois phrases garde sa garantie — ce qui part, qui peut le lire,
+ce qu'il advient si l'on refuse. Le sujet change de camp au passage : « les
+photos sont envoyées » devient « vous envoyez vos photos », ce qui est à la
+fois plus juste et plus court.
+
+`tool/audit_textes.py` connaît désormais cette exception (`CONSENTEMENT`) :
+sans elle, il signalait comme défauts les trois phrases que la charte accorde.
+
+Le registre y laissait des restes que le plan n'avait pas vus :
+`identifyOnDevice` et `identifyViaPlantNet` disaient « Wählen Sie » et
+« Scegliete », `identificationUncertainBody` « Sie können », et
+`speciesInGarden` « In Ihrem Garten ». Tout passe au *du* et au *tu*.
+
+Les deux dernières apostrophes courbes du corpus (`irisTwoPhotosTitle`,
+`identificationStats`) disparaissent ici : il n'en reste aucune.
 
 | Clé | Avant | Après |
 |---|---|---|
 | `identificationHint` | Reconnaissance des espèces sur l'appareil par {name}, sans réseau. En cas de doute, la photo peut être envoyée à Pl@ntNet. | {name} reconnaît les espèces directement sur votre appareil, sans réseau. En cas de doute, la photo peut être envoyée à Pl@ntNet. |
-| `identificationFallbackHint` | En cas de doute de {name}, la photo est envoyée à Pl@ntNet. Désactivé, tout reste sur l'appareil. | Quand {name} hésite, la photo est envoyée à Pl@ntNet. Désactivé, tout reste sur votre appareil. |
+| `identificationFallbackHint` | En cas de doute de {name}, la photo est envoyée à Pl@ntNet. Désactivé, tout reste sur l'appareil. | Quand {name} hésite, l'application envoie la photo à Pl@ntNet. Désactivé, tout reste sur votre appareil. |
 | `identificationUncertainBody` | Même avec les photos disponibles, aucune espèce ne ressort assez nettement. Vous pouvez chercher en ligne ou choisir manuellement si vous reconnaissez la plante. | Aucune espèce ne ressort assez nettement. Cherchez en ligne, ou choisissez l'espèce vous-même si vous reconnaissez la plante. |
-| `irisFeedbackHint` | Les photos prises pour identifier et le nom retenu sont envoyés dès qu'une plante est nommée, et entraînent les prochaines versions du modèle {name}. Elles ne sont lisibles que par le compte qui les envoie, et sa suppression les efface. Désactivé, elles ne quittent pas l'appareil. | Quand vous nommez une plante, ses photos et le nom retenu sont envoyés pour entraîner les prochaines versions de {name}. Vous seul pouvez les lire, et supprimer votre compte les efface. Désactivé, elles ne quittent pas votre appareil. |
-| `irisFeedbackAskBody` | Les photos prises pour identifier et le nom retenu peuvent être envoyés pour entraîner les prochaines versions du modèle {name}. Elles ne sont lisibles que par le compte qui les envoie, et sa suppression les efface. Le choix se change dans les réglages d'identification. | Vos photos d'identification et le nom retenu peuvent être envoyés pour entraîner les prochaines versions de {name}. Vous seul pouvez les lire, et supprimer votre compte les efface. Vous pourrez revenir sur ce choix dans les réglages d'identification. |
+| `irisFeedbackHint` | Les photos prises pour identifier et le nom retenu sont envoyés dès qu'une plante est nommée, et entraînent les prochaines versions du modèle {name}. Elles ne sont lisibles que par le compte qui les envoie, et sa suppression les efface. Désactivé, elles ne quittent pas l'appareil. | En nommant une plante, vous envoyez ses photos et le nom retenu pour entraîner les prochaines versions de {name}. Vous seul pouvez les lire, et supprimer votre compte les efface. Désactivé, rien ne quitte votre appareil. |
+| `irisFeedbackAskBody` | Les photos prises pour identifier et le nom retenu peuvent être envoyés pour entraîner les prochaines versions du modèle {name}. Elles ne sont lisibles que par le compte qui les envoie, et sa suppression les efface. Le choix se change dans les réglages d'identification. | Vos photos d'identification et le nom retenu peuvent entraîner les prochaines versions de {name}. Vous seul pourrez les lire, et supprimer votre compte les effacera. Vous pourrez revenir sur ce choix dans les réglages. |
 | `irisTagline` | Reconnaissance des espèces sur le téléphone, sans réseau ni compte. | Reconnaît les espèces sur votre téléphone, sans réseau ni compte. |
-| `irisTwoPhotosBody` | La plante entière, puis une feuille de près. Avec deux photos, {name} trouve la bonne espèce deux fois sur trois, contre une fois sur deux. | Photographiez la plante entière, puis une feuille de près : avec deux photos, {name} trouve la bonne espèce 2 fois sur 3, contre 1 fois sur 2. |
+| `irisTwoPhotosBody` | La plante entière, puis une feuille de près. Avec deux photos, {name} trouve la bonne espèce deux fois sur trois, contre une fois sur deux. | Photographiez la plante entière, puis une feuille de près : avec deux photos, {name} trouve la bonne espèce 2 fois sur 3, contre 1 sur 2. |
 | `identifyAnotherPhotoHint` | Une feuille, une fleur ou la plante entière permet d'affiner. | Ajoutez une feuille, une fleur ou la plante entière pour affiner. |
-| `identifyPhotoSource` | Photos Pl@ntNet et GBIF. Touchez-en une pour ouvrir la fiche de l'espèce. | Photos Pl@ntNet et GBIF. Touchez-en une pour ouvrir la fiche de l'espèce. *(inchangé)* |
+| `identifyPhotoSource` | Photos Pl@ntNet et GBIF. Touchez-en une pour ouvrir la fiche de l'espèce. | Photos Pl@ntNet et GBIF. Touchez-en une pour ouvrir la fiche de l'espèce. |
 | `identificationStats` | {local} analysées sur l'appareil, dont {accepted} tranchées ici ; {remote} envoyées en ligne | {local} analysées sur votre appareil, dont {accepted} sans envoi ; {remote} envoyées en ligne |
 | `speciesOffline` | La liste complète nécessite une connexion. Les espèces courantes restent disponibles. | La liste complète demande une connexion. Les espèces courantes restent disponibles. |
 
@@ -569,7 +590,7 @@ concerné est vert, sinon la suite casse dès le premier commit :
 | 1 ✓ | Relevé de la maison | 95 | 27 | **livré** — l'écran qui a ouvert le chantier ; sert de patron aux autres |
 | 2 ✓ | Guides de multiplication | 133 | 62 | **livré** — le plus atteint, et le plus lu quand on s'en sert |
 | 3 ✓ | Écran du matin, météo | 132 | 35 | **livré** — vu tous les jours |
-| 4 | Identification, Iris | 84 | 21 | porte trois consentements |
+| 4 ✓ | Identification, Iris | 84 | 21 | **livré** — porte trois consentements |
 | 5 | Diagnostic, encyclopédie | 138 | 23 | |
 | 6 | Fiches d'entretien | 303 | 117 | volumineux mais déjà propre |
 | 7 | Découverte, soutien | 111 | 36 | première impression |

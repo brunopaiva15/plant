@@ -3663,7 +3663,7 @@ abstract class AppLocalizations {
   /// No description provided for @identifyAnotherPhotoHint.
   ///
   /// In fr, this message translates to:
-  /// **'Une feuille, une fleur ou la plante entière permet d\'affiner.'**
+  /// **'Ajoutez une feuille, une fleur ou la plante entière pour affiner.'**
   String get identifyAnotherPhotoHint;
 
   /// No description provided for @identificationUncertainTitle.
@@ -3675,7 +3675,7 @@ abstract class AppLocalizations {
   /// No description provided for @identificationUncertainBody.
   ///
   /// In fr, this message translates to:
-  /// **'Même avec les photos disponibles, aucune espèce ne ressort assez nettement. Vous pouvez chercher en ligne ou choisir manuellement si vous reconnaissez la plante.'**
+  /// **'Aucune espèce ne ressort assez nettement. Cherchez en ligne, ou choisissez l\'espèce vous-même si vous reconnaissez la plante.'**
   String get identificationUncertainBody;
 
   /// No description provided for @identificationSuggestionsToCheck.
@@ -3753,7 +3753,7 @@ abstract class AppLocalizations {
   /// No description provided for @identificationHint.
   ///
   /// In fr, this message translates to:
-  /// **'Reconnaissance des espèces sur l\'appareil par {name}, sans réseau. En cas de doute, la photo peut être envoyée à Pl@ntNet.'**
+  /// **'{name} reconnaît les espèces directement sur votre appareil, sans réseau. En cas de doute, la photo peut être envoyée à Pl@ntNet.'**
   String identificationHint(String name);
 
   /// No description provided for @identificationEnabled.
@@ -3777,7 +3777,7 @@ abstract class AppLocalizations {
   /// No description provided for @identificationFallbackHint.
   ///
   /// In fr, this message translates to:
-  /// **'En cas de doute de {name}, la photo est envoyée à Pl@ntNet. Désactivé, tout reste sur l\'appareil.'**
+  /// **'Quand {name} hésite, l\'application envoie la photo à Pl@ntNet. Désactivé, tout reste sur votre appareil.'**
   String identificationFallbackHint(String name);
 
   /// No description provided for @irisFeedback.
@@ -3789,7 +3789,7 @@ abstract class AppLocalizations {
   /// No description provided for @irisFeedbackHint.
   ///
   /// In fr, this message translates to:
-  /// **'Les photos prises pour identifier et le nom retenu sont envoyés dès qu\'une plante est nommée, et entraînent les prochaines versions du modèle {name}. Elles ne sont lisibles que par le compte qui les envoie, et sa suppression les efface. Désactivé, elles ne quittent pas l\'appareil.'**
+  /// **'En nommant une plante, vous envoyez ses photos et le nom retenu pour entraîner les prochaines versions de {name}. Vous seul pouvez les lire, et supprimer votre compte les efface. Désactivé, rien ne quitte votre appareil.'**
   String irisFeedbackHint(String name);
 
   /// No description provided for @irisFeedbackNeedsAccount.
@@ -3807,7 +3807,7 @@ abstract class AppLocalizations {
   /// No description provided for @irisFeedbackAskBody.
   ///
   /// In fr, this message translates to:
-  /// **'Les photos prises pour identifier et le nom retenu peuvent être envoyés pour entraîner les prochaines versions du modèle {name}. Elles ne sont lisibles que par le compte qui les envoie, et sa suppression les efface. Le choix se change dans les réglages d\'identification.'**
+  /// **'Vos photos d\'identification et le nom retenu peuvent entraîner les prochaines versions de {name}. Vous seul pourrez les lire, et supprimer votre compte les effacera. Vous pourrez revenir sur ce choix dans les réglages.'**
   String irisFeedbackAskBody(String name);
 
   /// No description provided for @genusUncertainSpecies.
@@ -3831,7 +3831,7 @@ abstract class AppLocalizations {
   /// No description provided for @identificationStats.
   ///
   /// In fr, this message translates to:
-  /// **'{local} analysées sur l’appareil, dont {accepted} tranchées ici ; {remote} envoyées en ligne'**
+  /// **'{local} analysées sur votre appareil, dont {accepted} sans envoi ; {remote} envoyées en ligne'**
   String identificationStats(int local, int accepted, int remote);
 
   /// No description provided for @onlineSearchesMonth.
@@ -3849,7 +3849,7 @@ abstract class AppLocalizations {
   /// No description provided for @irisTagline.
   ///
   /// In fr, this message translates to:
-  /// **'Reconnaissance des espèces sur le téléphone, sans réseau ni compte.'**
+  /// **'Reconnaît les espèces sur votre téléphone, sans réseau ni compte.'**
   String get irisTagline;
 
   /// No description provided for @irisSpeciesLabel.
@@ -3873,13 +3873,13 @@ abstract class AppLocalizations {
   /// No description provided for @irisTwoPhotosTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Deux photos valent mieux qu’une'**
+  /// **'Deux photos valent mieux qu\'une'**
   String get irisTwoPhotosTitle;
 
   /// No description provided for @irisTwoPhotosBody.
   ///
   /// In fr, this message translates to:
-  /// **'La plante entière, puis une feuille de près. Avec deux photos, {name} trouve la bonne espèce deux fois sur trois, contre une fois sur deux.'**
+  /// **'Photographiez la plante entière, puis une feuille de près : avec deux photos, {name} trouve la bonne espèce 2 fois sur 3, contre 1 sur 2.'**
   String irisTwoPhotosBody(String name);
 
   /// No description provided for @confidence.
@@ -4869,7 +4869,7 @@ abstract class AppLocalizations {
   /// No description provided for @speciesOffline.
   ///
   /// In fr, this message translates to:
-  /// **'La liste complète nécessite une connexion. Les espèces courantes restent disponibles.'**
+  /// **'La liste complète demande une connexion. Les espèces courantes restent disponibles.'**
   String get speciesOffline;
 
   /// No description provided for @speciesBrowse.

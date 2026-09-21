@@ -89,6 +89,18 @@ LONGUEUR = 140          # une aide en ligne tient en deçà
 CHAPEAU = 220           # un chapeau d'écran a droit à davantage
 PHRASES = 2             # au-delà, l'aide devient un paragraphe
 
+# Le consentement et la confidentialité ont droit à trois phrases et au budget
+# d'un chapeau (docs/06, « Les textes », règle 3) : chaque phrase y porte une
+# garantie distincte — ce qui part, qui peut le lire, ce qu'il advient si l'on
+# refuse. Une clé ne s'ajoute ici que si elle demande un consentement.
+CONSENTEMENT = frozenset({
+    'irisFeedbackHint',
+    'irisFeedbackAskBody',
+    'diagnosisSettingsHint',
+    'careAssistHint',
+    'careAssistedNote',
+})
+
 
 def chaines(locale: str) -> dict[str, str]:
     brut = json.loads((ARB / f'app_{locale}.arb').read_text(encoding='utf-8'))
@@ -112,11 +124,12 @@ def defauts(locale: str, cle: str, texte: str) -> list[str]:
         trouves.append('apostrophe-courbe')
     if NOMBRES[locale].search(nu):
         trouves.append('nombre-en-lettres')
+    consentement = cle in CONSENTEMENT
     if len(nu) > CHAPEAU:
         trouves.append('phrase-tres-longue')
-    elif len(nu) > LONGUEUR:
+    elif len(nu) > LONGUEUR and not consentement:
         trouves.append('phrase-longue')
-    if len(re.findall(r'[.!?](?:\s|$)', nu)) > PHRASES:
+    if len(re.findall(r'[.!?](?:\s|$)', nu)) > PHRASES and not consentement:
         trouves.append('trop-de-phrases')
 
     if locale in REGISTRE_DE_TROP and REGISTRE_DE_TROP[locale].search(nu):
