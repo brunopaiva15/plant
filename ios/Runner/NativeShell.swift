@@ -52,6 +52,10 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
   /// Vrai pendant qu'on applique une sélection venue de Dart : le contrôleur
   /// préviendrait sinon Dart d'un changement que Dart vient de demander.
   private var enEcho = false
+  /// Vrai tant qu'une surcouche voile la chrome, et ce que la chrome occupait
+  /// au moment où le voile est tombé. Voir `appliquerLaChrome`.
+  private var voilee = false
+  private var margesVoilees: UIEdgeInsets = .zero
 
   static func register(with messenger: FlutterBinaryMessenger) {
     let channel = FlutterMethodChannel(name: name, binaryMessenger: messenger)
@@ -106,38 +110,10 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
       // boutons de la page d'en dessous. Les deux barres se décident
       // séparément — une fiche garde la sienne, la barre d'onglets non.
       let args = call.arguments as? [String: Any] ?? [:]
-      let barre = (args["bar"] as? Bool) ?? true
-      let ongletsVisibles = (args["tabs"] as? Bool) ?? true
-      // Voiler n'est pas effacer. Une barre retirée rend sa place au contenu,
-      // et la page glisse — ce qui se voit au premier menu d'action ouvert.
-      // Une surcouche ne prend pas la place de la page : la chrome reste là
-      // où elle était, invisible et intouchable, le temps du choix.
-      let voile = (args["veil"] as? Bool) ?? false
-      let montrerLaBarre = barre && !voile
-      for navigation in navigations {
-        navigation.setNavigationBarHidden(!barre, animated: false)
-        navigation.navigationBar.alpha = montrerLaBarre ? 1 : 0
-        navigation.navigationBar.isUserInteractionEnabled = montrerLaBarre
-      }
-      // La barre d'onglets se masque par son **contrôleur**, et non en
-      // touchant à la vue.
-      //
-      // C'est la leçon de trois tentatives ratées. `tabBar.isHidden` et
-      // `tabBar.alpha` portent sur la vue que le contrôleur possède ; il la
-      // remet comme il l'entend à chaque mise en page, et sur l'iPhone Duo
-      // c'est lui, non elle, qui décide de ce que le système range dans la
-      // bande verticale. La barre reparaissait donc par-dessus une feuille.
-      //
-      // `setTabBarHidden(_:animated:)` est l'API faite pour ça, depuis
-      // iOS 18. En deçà, on retombe sur la vue, faute de mieux.
-      let montrerLesOnglets = ongletsVisibles && !voile
-      if #available(iOS 18.0, *) {
-        onglets?.setTabBarHidden(!montrerLesOnglets, animated: false)
-      } else if let barreDOnglets = onglets?.tabBar {
-        barreDOnglets.isHidden = !montrerLesOnglets
-        barreDOnglets.alpha = montrerLesOnglets ? 1 : 0
-        barreDOnglets.isUserInteractionEnabled = montrerLesOnglets
-      }
+      appliquerLaChrome(
+        barre: (args["bar"] as? Bool) ?? true,
+        onglets: (args["tabs"] as? Bool) ?? true,
+        voile: (args["veil"] as? Bool) ?? false)
       result(true)
     case "setActions":
       guard let args = call.arguments as? [String: Any] else {
@@ -149,6 +125,72 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
     default:
       result(FlutterMethodNotImplemented)
     }
+  }
+
+  /// Montre, voile ou efface les deux barres.
+  ///
+  /// **Les deux se masquent par leur contrôleur**, jamais par leur vue.
+  /// `isHidden` et `alpha` portent sur des vues que `UINavigationController`
+  /// et `UITabBarController` possèdent : ils les remettent comme ils
+  /// l'entendent à chaque mise en page, et sur l'iPhone Duo ce sont eux, non
+  /// leurs barres, qui décident de ce que le système range dans la bande
+  /// verticale. La barre d'onglets l'a appris en trois tentatives ; la barre
+  /// du haut, voilée par son opacité, reparaissait de la même façon — une
+  /// feuille du relevé s'ouvrait coiffée du titre et du retour de la page
+  /// d'en dessous, et son propre titre se lisait au travers.
+  ///
+  /// **Voiler n'est pourtant pas effacer.** Une barre retirée rend sa place
+  /// au contenu, et la page glisserait sous le menu qui vient de s'ouvrir.
+  /// Ce que la vue ne peut pas tenir, la marge sûre le tient : la chrome part
+  /// pour de bon, et `additionalSafeAreaInsets` garde sa place au chaud le
+  /// temps de la surcouche. La place se mesure pendant que la chrome est
+  /// encore là — partie, elle ne dit plus ce qu'elle prenait — et dans les
+  /// quatre sens, parce qu'une barre rangée dans la bande verticale ne prend
+  /// pas la sienne en haut.
+  private func appliquerLaChrome(barre: Bool, onglets ongletsVisibles: Bool, voile: Bool) {
+    if voile != voilee {
+      voilee = voile
+      margesVoilees = voile ? margesDeLaChrome() : .zero
+    }
+    let montrerLaBarre = barre && !voile
+    for navigation in navigations {
+      navigation.setNavigationBarHidden(!montrerLaBarre, animated: false)
+      // L'opacité ne voile plus rien, mais une version qui la mettait à zéro
+      // a pu laisser une barre invisible derrière elle.
+      navigation.navigationBar.alpha = 1
+      navigation.navigationBar.isUserInteractionEnabled = true
+    }
+    let montrerLesOnglets = ongletsVisibles && !voile
+    // `setTabBarHidden(_:animated:)` est l'API faite pour ça, depuis iOS 18.
+    // En deçà, on retombe sur la vue, faute de mieux.
+    if #available(iOS 18.0, *) {
+      onglets?.setTabBarHidden(!montrerLesOnglets, animated: false)
+    } else if let barreDOnglets = onglets?.tabBar {
+      barreDOnglets.isHidden = !montrerLesOnglets
+      barreDOnglets.alpha = 1
+      barreDOnglets.isUserInteractionEnabled = montrerLesOnglets
+    }
+    flutter?.additionalSafeAreaInsets = margesVoilees
+  }
+
+  /// Ce que la chrome ajoute aujourd'hui à la marge sûre de Flutter.
+  ///
+  /// La différence entre ce que la vue reçoit et ce que la fenêtre réserve
+  /// d'elle-même — l'heure, l'indicateur d'accueil, la bande de la caméra.
+  /// Le reste est aux barres, où qu'elles soient posées, et c'est cela seul
+  /// qu'un voile doit rendre. Une chrome déjà effacée n'occupe rien, et la
+  /// mesure vaut alors zéro : une surcouche posée sur une page plein écran
+  /// n'a rien à compenser.
+  private func margesDeLaChrome() -> UIEdgeInsets {
+    guard let vue = flutter?.view, let fenetre = vue.window else { return .zero }
+    let recues = vue.safeAreaInsets
+    let systeme = fenetre.safeAreaInsets
+    let deja = flutter?.additionalSafeAreaInsets ?? .zero
+    return UIEdgeInsets(
+      top: max(0, recues.top - systeme.top - deja.top),
+      left: max(0, recues.left - systeme.left - deja.left),
+      bottom: max(0, recues.bottom - systeme.bottom - deja.bottom),
+      right: max(0, recues.right - systeme.right - deja.right))
   }
 
   /// Refait les hôtes, un par onglet, et redonne sa vue à Flutter.
