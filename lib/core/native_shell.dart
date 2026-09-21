@@ -27,6 +27,53 @@ class NativeTab {
   Map<String, Object?> toMap() => {'title': title, 'symbol': symbol};
 }
 
+/// Une entrée du menu qu'un bouton déplie.
+///
+/// iOS ne présente pas un menu comme une feuille : il le fait sortir du
+/// bouton touché, à sa place dans la barre, et floute ce qu'il recouvre.
+/// C'est un `UIMenu`, et seul UIKit sait le dessiner — d'où ce passage par
+/// le canal plutôt qu'une imitation en argile.
+@immutable
+class NativeMenuItem {
+  const NativeMenuItem({
+    required this.id,
+    required this.title,
+    this.symbol,
+    this.enabled = true,
+    this.destructive = false,
+    this.separated = false,
+  });
+
+  /// Ce que le natif renvoie quand on la choisit.
+  final String id;
+
+  final String title;
+
+  /// Un nom de SF Symbol, ou `null` pour une entrée sans image. Une entrée
+  /// n'entraîne pas le bouton entier dans sa chute : là où un bouton sans
+  /// symbole rend toute la barre à Flutter, une entrée sans symbole n'est
+  /// qu'une ligne de texte, ce qu'iOS accepte très bien.
+  final String? symbol;
+
+  final bool enabled;
+
+  /// Rouge, et rangée à part par qui lit les couleurs.
+  final bool destructive;
+
+  /// Ouvre un groupe : iOS trace un trait au-dessus. Les entrées qui suivent
+  /// restent dans ce groupe jusqu'à la prochaine qui le demande.
+  final bool separated;
+
+  Map<String, Object?> toMap() => {
+    'id': id,
+    'title': title,
+    'symbol': symbol,
+    'enabled': enabled,
+    'destructive': destructive,
+    'separated': separated,
+  };
+}
+
 /// Un bouton de page, tel que le natif le dessine.
 @immutable
 class NativeAction {
@@ -36,6 +83,7 @@ class NativeAction {
     required this.title,
     this.enabled = true,
     this.prominent = false,
+    this.menu = const [],
   });
 
   /// Ce que le natif renvoie quand on le touche.
@@ -53,12 +101,16 @@ class NativeAction {
   /// visible quand la bande déborde, au lieu de la replier dans le menu.
   final bool prominent;
 
+  /// Ce que le bouton déplie au lieu d'agir. Vide, il agit comme avant.
+  final List<NativeMenuItem> menu;
+
   Map<String, Object?> toMap() => {
     'id': id,
     'symbol': symbol,
     'title': title,
     'enabled': enabled,
     'prominent': prominent,
+    'menu': [for (final m in menu) m.toMap()],
   };
 }
 

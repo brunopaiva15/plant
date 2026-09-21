@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../core/native_shell.dart';
 import '../../core/sf_symbols.dart';
+import 'adaptive.dart';
 import 'buttons.dart';
 
 /// Les boutons d'une page, dessinés par UIKit plutôt que par Flutter.
@@ -15,6 +16,12 @@ import 'buttons.dart';
 /// Tout ou rien : si une seule icône manque à la table, la page garde ses
 /// boutons en argile. Une rangée moitié système moitié argile serait pire que
 /// l'une ou l'autre, et le nom manquant s'écrit dans la console en debug.
+///
+/// Un bouton qui porte un `menu` (`FloraIconButton.menu`) devient un
+/// `UIBarButtonItem` à `UIMenu` : iOS le fait sortir du bouton touché, à sa
+/// place dans la barre, en floutant ce qu'il recouvre — pas une feuille qui
+/// monte du bas. Les entrées voyagent avec le bouton ; le natif renvoie
+/// `R1.3` pour la quatrième d'entre elles.
 class NativeActions extends StatefulWidget {
   const NativeActions({
     super.key,
@@ -67,9 +74,11 @@ class NativeActions extends StatefulWidget {
         }());
         return null;
       }
+      final id = '$prefixe$i';
+      final entrees = bouton.menu ?? const <SheetAction>[];
       decrits.add((
         action: NativeAction(
-          id: '$prefixe$i',
+          id: id,
           symbol: symbole,
           title: bouton.semanticLabel,
           enabled: bouton.onPressed != null,
@@ -77,8 +86,22 @@ class NativeActions extends StatefulWidget {
           // offerte : c'est elle qu'iOS doit garder visible quand la bande
           // déborde, plutôt que de la replier dans le menu.
           prominent: bouton.icon.codePoint == CupertinoIcons.plus.codePoint,
+          menu: [
+            for (final (j, e) in entrees.indexed)
+              NativeMenuItem(
+                id: '$id.$j',
+                title: e.label,
+                // Une entrée sans symbole reste une ligne de texte, qu'iOS
+                // dessine sans broncher. Tout ou rien vaut pour la barre,
+                // pas pour ce qu'un bouton déplie.
+                symbol: e.icon == null ? null : SfSymbols.of(e.icon!),
+                destructive: e.destructive,
+                separated: e.separated,
+              ),
+          ],
         ),
         onPressed: bouton.onPressed,
+        menu: [for (final e in entrees) e.onPressed],
       ));
     }
     return decrits;
@@ -88,7 +111,7 @@ class NativeActions extends StatefulWidget {
   State<NativeActions> createState() => _NativeActionsState();
 }
 
-typedef NativeActionEntry = ({NativeAction action, VoidCallback? onPressed});
+typedef NativeActionEntry = ({NativeAction action, VoidCallback? onPressed, List<VoidCallback> menu});
 
 class _NativeActionsState extends State<NativeActions> {
   /// Les pages qui prétendent à la barre, la dernière étant celle qu'on voit.
@@ -201,9 +224,11 @@ class _NativeActionsState extends State<NativeActions> {
     actuelle?._toucher(id);
   }
 
+  /// `L0` désigne un bouton, `R1.3` la quatrième entrée de son menu.
   void _toucher(String id) {
     final liste = id.startsWith('L') ? widget.leading : widget.actions;
-    final i = int.tryParse(id.substring(1));
+    final parties = id.substring(1).split('.');
+    final i = int.tryParse(parties.first);
     if (i == null || i < 0 || i >= liste.length) {
       assert(() {
         debugPrint('[auxine:natif] touche $id sans destinataire — ${liste.length} bouton(s) de ce côté');
@@ -211,6 +236,19 @@ class _NativeActionsState extends State<NativeActions> {
       }());
       return;
     }
-    liste[i].onPressed?.call();
+    final entree = liste[i];
+    if (parties.length == 1) {
+      entree.onPressed?.call();
+      return;
+    }
+    final j = int.tryParse(parties[1]);
+    if (j == null || j < 0 || j >= entree.menu.length) {
+      assert(() {
+        debugPrint('[auxine:natif] touche $id sans destinataire — ${entree.menu.length} entrée(s) à ce menu');
+        return true;
+      }());
+      return;
+    }
+    entree.menu[j]();
   }
 }

@@ -7,6 +7,8 @@ import 'package:image/image.dart' as img;
 import 'package:tflite_flutter/tflite_flutter.dart';
 
 import '../../core/utils/scientific_name.dart';
+import '../../domain/identification/context_mask.dart';
+import '../../domain/identification/identification_context.dart';
 import '../../domain/identification/local_plant_model.dart';
 import '../../domain/identification/plant_identifier.dart';
 
@@ -47,6 +49,11 @@ class TflitePlantModel implements LocalPlantModel {
   int _inputSize = 224;
   int _loadSize = 256;
   int _sourceSize = 448;
+
+  /// Les masques de lieu que `model.json` déclare, traduits en indices de
+  /// sortie. Vide pour un modèle qui n'en porte pas — Iris Indoor n'en porte
+  /// pas, et le contexte lui est alors sans effet.
+  Map<IdentificationContext, Set<int>> _masks = const {};
   Future<bool>? _loading;
   bool _failed = false;
   String? _loadError;
@@ -70,6 +77,9 @@ class TflitePlantModel implements LocalPlantModel {
   String? get loadError => _loadError;
 
   @override
+  Set<IdentificationContext> get contexts => _masks.keys.toSet();
+
+  @override
   Future<bool> warmUp() => _loading ??= _load();
 
   Future<bool> _load() async {
@@ -87,6 +97,7 @@ class TflitePlantModel implements LocalPlantModel {
         _loadSize = load != null ? int.parse(load) : _inputSize;
         final source = RegExp(r'"source_size"\s*:\s*(\d+)').firstMatch(meta)?.group(1);
         _sourceSize = source != null ? int.parse(source) : _loadSize;
+        _masks = contextMasks(meta, _labels);
       } on Object {
         // Les métadonnées sont un confort : sans elles, les valeurs par défaut
         // du graphe suffisent.
@@ -120,7 +131,8 @@ class TflitePlantModel implements LocalPlantModel {
   }
 
   @override
-  Future<List<IdentificationCandidate>> classify(File image) async {
+  Future<List<IdentificationCandidate>> classify(File image,
+      {IdentificationContext context = IdentificationContext.unknown}) async {
     if (!await warmUp()) return const [];
     if (_interpreter == null) return const [];
 
@@ -129,20 +141,11 @@ class TflitePlantModel implements LocalPlantModel {
 
     final output = [List<double>.filled(_labels.length, 0)];
     await _run(input, output);
-    final scores = output.first;
-
-    final candidates = <IdentificationCandidate>[];
-    for (var i = 0; i < _labels.length && i < scores.length; i++) {
-      if (scores[i] < 0.01) continue;
-      candidates.add(IdentificationCandidate(
-        scientificName: scientificNameOf(_labels[i]),
-        score: scores[i],
-        source: IdentificationSource.local,
-        internalId: _labels[i],
-      ));
-    }
-    candidates.sort((a, b) => b.score.compareTo(a.score));
-    return candidates.take(5).toList();
+    // Le masque, la renormalisation et le tri vivent dans le domaine
+    // (`context_mask.dart`) : ce ne sont que des divisions, et elles doivent
+    // pouvoir être mesurées sans interpréteur natif.
+    return maskedCandidates(output.first, _labels,
+        nameOf: scientificNameOf, mask: _masks[context]);
   }
 
   /// Le délai au-delà duquel on cesse d'attendre l'isolat de calcul.

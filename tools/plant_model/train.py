@@ -444,19 +444,40 @@ def class_weights(counts: Counter, n_classes: int) -> dict[int, float]:
 
 def evaluate(model, ds, classes: list[str], captive_mask=None) -> dict:
     """Top-1, top-3, macro-F1, et la courbe seuil / taux de repli qui sert à
-    régler FallbackPolicy côté application."""
-    probs, truth = [], []
+    régler FallbackPolicy côté application.
+
+    **Rien de tout cela ne demande la matrice entière des probabilités.** Elle
+    la gardait, puis `np.argsort` la triait sur toute sa largeur : 99 825
+    images × 5 376 classes font 2,1 Go de flottants, le tri en fabriquait une
+    copie en entiers 64 bits deux fois plus grosse, et le tout dépassait neuf
+    gigaoctets de pointe — pour ne lire ensuite que trois colonnes. Le 21
+    septembre 2026, le tueur de mémoire du noyau a emporté l'évaluation de
+    l'Iris 9 après huit heures d'entraînement, à la dernière étape.
+
+    On ne retient donc, lot par lot, que **les trois meilleurs indices et les
+    deux meilleures probabilités** : quelques mégaoctets au lieu de neuf
+    gigaoctets, et les mêmes chiffres à la virgule près.
+    """
+    tops, bests, truth = [], [], []
     for images, labels in ds:
-        probs.append(model.predict(images, verbose=0))
+        p = model.predict(images, verbose=0)
+        # `argpartition` amène les trois meilleurs en tête sans trier le
+        # reste — c'est tout ce qui coûtait cher. On ne trie ensuite que ces
+        # trois-là, pour les mettre dans l'ordre décroissant attendu.
+        trois = np.argpartition(-p, min(3, p.shape[1] - 1), axis=1)[:, :3]
+        rang = np.argsort(-np.take_along_axis(p, trois, axis=1), axis=1)
+        ordre = np.take_along_axis(trois, rang, axis=1)
+        tops.append(ordre.astype(np.int32))
+        bests.append(np.take_along_axis(p, ordre[:, :2], axis=1).astype(np.float32))
         truth.append(labels.numpy())
-    if not probs:
+    if not tops:
         return {}
-    probs = np.concatenate(probs)
+    order = np.concatenate(tops)
+    best = np.concatenate(bests)
     truth = np.concatenate(truth)
-    order = np.argsort(-probs, axis=1)
     top1 = order[:, 0]
     correct = top1 == truth
-    top3 = np.mean([t in o[:3] for t, o in zip(truth, order)])
+    top3 = np.mean([t in o for t, o in zip(truth, order)])
 
     f1s = []
     for c in range(len(classes)):
@@ -469,7 +490,6 @@ def evaluate(model, ds, classes: list[str], captive_mask=None) -> dict:
         recall = tp / (tp + fn)
         f1s.append(2 * precision * recall / (precision + recall) if precision + recall else 0.0)
 
-    best = np.take_along_axis(probs, order[:, :2], axis=1)
     margin = best[:, 0] - best[:, 1]
 
     # Le chiffre qui compte pour l'application : sur les seules photos de
@@ -479,7 +499,7 @@ def evaluate(model, ds, classes: list[str], captive_mask=None) -> dict:
     if captive_mask is not None:
         mask = np.asarray(list(captive_mask), dtype=bool)[:len(truth)]
         if int(mask.sum()) > 0:
-            c_top3 = np.mean([t in o[:3] for t, o in zip(truth[mask], order[mask])])
+            c_top3 = np.mean([t in o for t, o in zip(truth[mask], order[mask])])
             c_rows = []
             for threshold in (0.5, 0.7, 0.9):
                 acc = (best[mask][:, 0] >= threshold)
@@ -507,7 +527,8 @@ def evaluate(model, ds, classes: list[str], captive_mask=None) -> dict:
     }
 
 
-def export_tflite(model, out: Path, classes: list[str], names: dict, metrics: dict, quantize_ds=None) -> dict:
+def export_tflite(model, out: Path, classes: list[str], names: dict, metrics: dict, quantize_ds=None,
+                  masks: dict[str, list[str]] | None = None) -> dict:
     out.mkdir(parents=True, exist_ok=True)
     converter = tf.lite.TFLiteConverter.from_keras_model(model)
     converter.optimizations = [tf.lite.Optimize.DEFAULT]
@@ -538,6 +559,16 @@ def export_tflite(model, out: Path, classes: list[str], names: dict, metrics: di
         'threshold_curve': metrics.get('threshold_curve', []),
         'species': {c: names.get(c, c) for c in classes},
     }
+    if masks:
+        # Les masques de lieu. Un modèle d'union porte toutes ses classes dans
+        # `labels.txt` et dit ici lesquelles appartiennent à quel lieu ;
+        # l'application renormalise sur celles du lieu — `exp(zᵢ) / Σ_gardées`
+        # — ce qui rend exactement ce que rendrait ce modèle retaillé sur ce
+        # masque (§ 14.2 de `docs/09`). Un modèle à un seul domaine n'écrit
+        # rien : sans cet objet, l'application ne masque pas.
+        garde = set(classes)
+        propres = {nom: [c for c in classes if c in set(ids) & garde] for nom, ids in masks.items()}
+        meta['masks'] = {nom: ids for nom, ids in propres.items() if ids and len(ids) < len(classes)}
     (out / 'model.json').write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding='utf-8')
     return meta
 
@@ -627,6 +658,13 @@ def main() -> int:
     fine_done = state.get('fine_epochs_done', 0)
     if ckpt:
         ckpt.mkdir(parents=True, exist_ok=True)
+        # La liste des classes, écrite **avant** les heures de calcul.
+        # `labels.txt` n'existe qu'à l'export : une évaluation qui tombe
+        # emporte donc la correspondance entre les colonnes de la tête et les
+        # espèces, et des poids sans cette liste ne servent plus à rien. Le
+        # 21 septembre 2026, il a fallu la reconstruire à la main après huit
+        # heures d'entraînement. Quelques kilo-octets d'assurance.
+        (ckpt / 'classes.txt').write_text('\n'.join(classes) + '\n', encoding='utf-8')
 
     def _save_state(**kw):
         state.update(kw)

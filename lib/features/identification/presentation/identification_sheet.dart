@@ -15,6 +15,7 @@ import '../../../design_system/design_system.dart';
 import '../../../data/services/photo_storage_service.dart';
 import '../../../data/services/jev_identification_policy.dart';
 import '../../../domain/identification/cascade_identifier.dart';
+import '../../../domain/identification/identification_context.dart';
 import '../../../domain/identification/iris_feedback.dart';
 import '../../../domain/identification/identification_confidence.dart';
 import '../../../domain/identification/identification_policy.dart';
@@ -39,23 +40,26 @@ Future<IdentificationCandidate?> showIdentificationSheet(
   BuildContext context, {
   required String absoluteImagePath,
   List<String> others = const [],
-  bool outdoor = false,
+  IdentificationContext place = IdentificationContext.unknown,
 }) =>
     showFloraSheet<IdentificationCandidate>(
       context,
       scrollable: true,
-      builder: (_) => _IdentificationBody(path: absoluteImagePath, others: others, outdoor: outdoor),
+      builder: (_) => _IdentificationBody(path: absoluteImagePath, others: others, place: place),
     );
 
 class _IdentificationBody extends ConsumerStatefulWidget {
-  const _IdentificationBody({required this.path, this.others = const [], this.outdoor = false});
+  const _IdentificationBody(
+      {required this.path, this.others = const [], this.place = IdentificationContext.unknown});
 
   final String path;
   final List<String> others;
 
-  /// La plante vit dehors. Le modèle embarqué n'expose que de l'intérieur :
-  /// il propose alors au lieu d'affirmer (`FallbackPolicy.outdoors`).
-  final bool outdoor;
+  /// Le lieu de la plante, quand on le connaît. Il sert deux fois : le modèle
+  /// renormalise ses sorties sur les classes du lieu quand il porte un masque
+  /// (§ 14.2 de `docs/09`), et, tant qu'il n'en porte pas, il propose au lieu
+  /// d'affirmer dehors (`FallbackPolicy.outdoors`).
+  final IdentificationContext place;
 
   @override
   ConsumerState<_IdentificationBody> createState() => _IdentificationBodyState();
@@ -108,6 +112,9 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
   /// en ligne est le meilleur recours.
   static const int maxPhotos = 2;
 
+  /// Le nombre de candidates montrées sous la photo.
+  static const int maxCandidates = 5;
+
   /// Le magasin de photos, gardé dès l'ouverture : `dispose` efface les
   /// photos prises ici, et `ref` n'est plus lisible à ce moment-là — le
   /// widget est déjà démonté, et Riverpod le refuse.
@@ -140,8 +147,8 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
 
   List<File> get _files => [for (final s in _shots) File(s.path)];
 
-  Future<List<IdentificationCandidate>> _identify() =>
-      _remember(ref.read(plantIdentifierProvider).identify(_files, language: _language));
+  Future<List<IdentificationCandidate>> _identify() => _remember(
+      ref.read(plantIdentifierProvider).identify(_files, language: _language, context: widget.place));
 
   /// Retient la réponse pour que la relance suivante ait quelque chose à
   /// montrer pendant qu'elle calcule.
@@ -179,7 +186,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
     ref.read(jevIdentificationPolicyProvider).noteOnlineSearch(after);
     final identifier = ref.read(plantIdentifierProvider);
     if (identifier is! CascadeIdentifier) return;
-    setState(() => _future = _remember(identifier.identifyRemotely(_files, language: _language)));
+    setState(() => _future = _remember(identifier.identifyRemotely(_files, language: _language, context: widget.place)));
   }
 
   /// Décision produit complète autour d'un résultat Iris local ambigu.
@@ -222,7 +229,31 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
   FallbackPolicy get _policy {
     final identifier = ref.read(plantIdentifierProvider);
     final base = identifier is CascadeIdentifier ? identifier.policy : const FallbackPolicy();
-    return widget.outdoor ? base.outdoors() : base;
+    if (widget.place != IdentificationContext.outdoor) return base;
+    // La réserve du dehors ne vise pas l'extérieur en soi : elle vise un
+    // modèle qui n'expose que de l'intérieur et nomme quand même une plante
+    // de jardin (§ 12.7). Un modèle qui porte un masque extérieur n'est plus
+    // dans ce cas — il a été mesuré sur ce terrain-là — et la réserve tombe
+    // d'elle-même, sans qu'une constante soit à changer le jour de la
+    // livraison.
+    final covers = identifier is CascadeIdentifier &&
+        identifier.local.contexts.contains(IdentificationContext.outdoor);
+    return covers ? base : base.outdoors();
+  }
+
+  /// Les candidates à montrer, parmi tout ce que le moteur a rendu.
+  ///
+  /// Tronquer la liste brute suffisait tant qu'elle n'en portait qu'une.
+  /// Masquée par le lieu, elle en porte deux — les classes du lieu, puis
+  /// celles d'ailleurs — et prendre les cinq premières les prendrait toutes
+  /// du lieu : le candidat d'ailleurs serait pris en compte par la politique,
+  /// puis jamais montré. Il passe donc en dernier, après la réponse du lieu :
+  /// c'est une alternative, pas une correction.
+  List<IdentificationCandidate> _shown(List<IdentificationCandidate> all) {
+    final inside = inContext(all);
+    final other = _policy.challenger(all);
+    if (other == null) return inside.take(maxCandidates).toList();
+    return [...inside.take(maxCandidates - 1), other];
   }
 
   /// Le genre, quand aucune espèce ne passe le seuil. Même politique que le
@@ -470,7 +501,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                 );
               }
               if (snap.hasError && data == null) return EmptyState(emoji: '📡', title: l10n.identifyError, compact: true);
-              final results = (data ?? const <IdentificationCandidate>[]).take(5).toList();
+              final results = _shown(data ?? const <IdentificationCandidate>[]);
               if (results.isEmpty) return EmptyState(emoji: '🤔', title: l10n.identifyNone, compact: true);
               final evaluationFuture =
                   !busy && results.first.source == IdentificationSource.local

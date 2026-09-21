@@ -8,10 +8,12 @@
 > l'appareil** et n'appelle Pl@ntNet que sur hésitation ; deux photos de la
 > même plante valent quatorze points de top-1, trois en valent vingt-deux.
 
-Le modèle embarqué s'appelle **Iris**, et la version livrée est la première
-spécialiste d'intérieur : c'est **Iris Indoor** que l'application nomme à l'écran.
-Quand ce document parle de « la v8 », il parle de la version précédente,
-restée la référence contre laquelle Iris Indoor s'est mesurée.
+Le modèle embarqué s'appelle **Iris**, et la version livrée est la première à
+porter ses deux domaines dans un seul fichier :
+c'est **Iris 9** que l'application nomme à l'écran.
+Quand ce document parle de « la v8 » ou
+d'« Iris Indoor », il parle des versions précédentes, restées les références
+contre lesquelles l'Iris 9 s'est mesurée.
 
 Les numéros plus anciens qu'on croise ici — la v6, l'Iris 7 — **datent une
 mesure** : ils disent sur quel modèle un chiffre a été obtenu, et une section
@@ -44,25 +46,32 @@ relit le fichier et fait échouer la suite si cette table s'en écarte.
 
 | clé de `model.json` | valeur | |
 |---|---|---|
-| `version` | Indoor | le numéro affiché, collé à « Iris » |
+| `version` | 9 | le numéro affiché, collé à « Iris » |
 | `architecture` | MobileNetV3Large | la dorsale |
-| `classes` | 336 | espèces exposées, une ligne de `labels.txt` chacune |
+| `classes` | 1 569 | espèces exposées, une ligne de `labels.txt` chacune |
 | `input_size` | 320 | pixels de côté à l'inférence |
 | `load_size` | 366 | décodage avant recadrage |
 | `source_size` | 448 | côté des images du jeu |
 | `preprocessing` | `included_in_graph_uint8_0_255` | la normalisation est dans le graphe |
-| `bytes` | 6 635 756 | soit 6,64 Mo de `.tflite` |
-| `sha256` | 6a33f3dfd94c… | empreinte du fichier de poids |
-| `metrics.images` | 6 856 | images de test |
-| `metrics.top1` | 0,7461 | la bonne espèce en tête |
-| `metrics.top3` | 0,8677 | dans les trois premières |
-| `metrics.macro_f1` | 0,7101 | moyenne par classe, sans pondérer par le volume |
-| `metrics.mean_confidence` | 0,7464 | score moyen du premier candidat |
-| `metrics.captive.images` | 2 871 | sous-ensemble des plantes cultivées |
-| `metrics.captive.top1` | 0,7262 | ce que voit qui photographie son pot |
-| `metrics.captive.top3` | 0,8589 | |
+| `bytes` | 9 005 584 | soit 9,01 Mo de `.tflite` |
+| `sha256` | a919ae6a24f7… | empreinte du fichier de poids |
+| `metrics.images` | 30 954 | images de test |
+| `metrics.top1` | 0,6876 | la bonne espèce en tête |
+| `metrics.top3` | 0,8227 | dans les trois premières |
+| `metrics.macro_f1` | 0,6702 | moyenne par classe, sans pondérer par le volume |
+| `metrics.mean_confidence` | 0,7299 | score moyen du premier candidat |
+| `metrics.captive.images` | 4 649 | sous-ensemble des plantes cultivées |
+| `metrics.captive.top1` | 0,6728 | ce que voit qui photographie son pot |
+| `metrics.captive.top3` | 0,8101 | |
 
 <!-- /fiche -->
+
+**Ces chiffres sont ceux des 1 569 sorties, sans masque.** Le fichier porte
+aussi, pour la première fois, un objet `masks` : **336 classes** pour
+l'intérieur, **1 424** pour l'extérieur. L'application renormalise sur celles
+du lieu, et ce qu'elle rend alors n'est pas dans cette table — c'est mesuré au
+§ 14.6. Un ordre de grandeur : sur les photos de plantes cultivées, le masque
+intérieur fait passer le top-1 de 0,7230 à **0,7650**.
 
 Le fichier porte en plus `threshold_curve` — pour chaque couple (seuil,
 marge), l'autonomie et la justesse qui vont avec. C'est de là que sort le
@@ -4008,6 +4017,76 @@ paires de *Citrus* portent la même clé **et** deux fiches curatées, et
 ils ne sont pour rien dans les trois points d'écart. C'est un gain gratuit
 — six classes de moins, un retaillage de cinq minutes — pas une explication.
 
+#### La passe complète, enfin — 21 septembre 2026
+
+Trente époques de réglage fin, sans une interruption, à la recette du § 13.6 :
+`--input-size 320`, `--dropout 0.5`, `--unfreeze 100`. Huit heures sur une
+RTX 2070 Super, 12 421 lots de 64 par époque, 953 secondes chacune.
+
+**Le lot est à 64, et c'est une décision.** À 320 px, un seul tenseur
+intermédiaire fait 98 Mo et les 8 Go de la carte ne suivent pas à 128 :
+l'encodage du cache de traits est tombé sur un manque de mémoire avant même
+la première époque. Le point 4 ci-dessus demandait de trancher la question du
+lot « une fois pour toutes » ; elle est tranchée par la carte, elle est
+écrite, et c'est tout ce qu'on demandait — contrairement au 32 de la v8, qui
+était passé sans que personne le décide.
+
+**Et la validation montait encore à la trentième époque.** L'arrêt anticipé
+surveille `val_accuracy` avec une patience de quatre ; il n'a jamais parlé.
+La question laissée ouverte plus haut — douze époques suffisaient-elles ? —
+reçoit donc une réponse, et elle va plus loin que prévu :
+
+| | val_accuracy | val_loss |
+|---|---|---|
+| tête du 19 septembre, époque 12 (320 px, lot 32) | 0,4950 | 2,5084 |
+| passe du Mac, époque 20 (224 px, lot 128) | 0,4305 | 3,1630 |
+| **passe complète, époque 27** (320 px, lot 64) | **0,5473** | **2,2515** |
+
+Douze étaient très loin du compte, et trente ne sont **toujours pas** le
+plafond. La recette n'était pas en cause : elle n'avait jamais eu le temps
+de s'exprimer.
+
+La ligne du milieu mérite un mot, parce qu'elle a coûté deux jours. Une
+première passe a tourné sur le Mac aux valeurs **par défaut** — 224 px,
+dropout 0,3, soixante couches dégelées — faute d'avoir passé les trois
+options. Elle plafonnait douze points sous la vraie recette. Une passe qui
+n'applique pas la recette ne mesure pas la recette ; la ligne de commande
+fait partie de l'expérience, et elle doit être relue avant de lancer huit
+heures de calcul.
+
+#### Ce que rend l'Iris 9, mesuré contre le modèle livré
+
+`compare_models.py`, 6 000 images du jeu de test, Iris Indoor en référence.
+**336 classes communes, 1 233 connues du seul Iris 9, aucune perdue** — rien
+de ce que l'application sait nommer aujourd'hui ne disparaît.
+
+Sur les photos de plantes cultivées, c'est-à-dire ce que l'application voit
+vraiment :
+
+| | top-1 | autonomie à 0,70 | justesse |
+|---|---|---|---|
+| Iris Indoor (livré) | 0,7310 | 62,7 % | 0,9234 |
+| **Iris 9, masque intérieur** | **0,7650** | **65,7 %** | **0,9284** |
+| Iris 9, sans masque | 0,7230 | 67,5 % | 0,9030 |
+
+**Trois points et demi avec le masque, huit dixièmes de perte sans lui.** Les
+deux lignes du bas sont les deux comportements possibles de l'application,
+et l'écart entre elles — 4,2 points — est le prix exact de la largeur. C'est
+ce que le § 14 achète.
+
+Sur l'ensemble des classes communes, l'écart est plus marqué : 0,7842 avec
+masque contre 0,7253 sans, soit 5,9 points pour 1 233 espèces exposées de
+plus. La courbe des tailles de sortie (§ 6.7 bis) prévoyait 0,22 à 0,35 point
+par centaine ; **sur les plantes cultivées le compte tombe à 0,34, pile dans
+la fourchette**, et à 0,48 sur le jeu entier. La courbe tient là où elle
+compte, et sous-estime ailleurs — une plante en pot est le plus souvent une
+espèce d'intérieur, les classes ajoutées lui volent donc moins de réponses.
+
+Enfin la couverture gagnée : **949 espèces qu'Iris Indoor ne sait pas nommer,
+reconnues à 0,6785 en top-1** et 0,8305 en top-3, sur 2 000 images. Ce ne
+sont pas des espèces mieux reconnues, ce sont des espèces qui passaient
+jusqu'ici de l'écran à Pl@ntNet ou à rien.
+
 ### 13.7 Les trois portes, et ce qu'on ne fera pas
 
 **Aucun de ces chantiers ne commence avant sa porte.** C'est ce qui a
@@ -4048,3 +4127,252 @@ vingt-deux heures de collecte et une nuit de mesures :
 > **La largeur se paie dans les sorties, pas dans l'entraînement.**
 > Collecter tout ce qu'on trouve, n'exposer que ce qu'on sert.
 
+
+## 14. Livrer Indoor et Outdoor ensemble
+
+Iris Indoor est livré, Iris Outdoor est cadré, et la question qui vient n'est
+plus « comment les entraîner » mais **comment les embarquer tous les deux**.
+Cette section fixe ce qui est décidé avant la mesure, et ce que la mesure
+doit trancher. Elle prolonge le § 8 de `docs/14`, qui pose Indoor et Outdoor
+comme deux vues du même cerveau ; ici, le cerveau est encore un softmax.
+
+### 14.1 Deux masques d'une même tête, ou deux entraînements
+
+C'est le point qui commande tout le reste, et il tient en une ligne :
+
+> **Deux masques coupés dans la même tête ont des scores comparables. Deux
+> entraînements différents n'en ont pas.**
+
+Retailler, c'est supprimer des colonnes de la dernière couche, puis
+renormaliser : `exp(zᵢ) / Σ_gardées exp(zⱼ)`. Les logits `zᵢ` ne bougent pas.
+Deux masques taillés dans la même tête rendent donc des probabilités qui
+vivent sur la même échelle, et un 0,74 de l'un se compare honnêtement à un
+0,71 de l'autre. C'est ce qui rend un arbitrage possible.
+
+Deux entraînements distincts ne donnent pas cette garantie. Leurs
+calibrations diffèrent, et le § 13.6 en a payé la démonstration : la tête du
+19 septembre et l'Iris 8 n'étaient même pas comparables classe pour classe
+sans repasser par un jeu d'images commun.
+
+**Conséquence.** L'Indoor livré vient de la tête du 19 septembre — dont les
+poids sont perdus (§ 13.6) — et l'Outdoor viendra de la passe complète de
+l'Iris 9. Les deux ne peuvent pas travailler ensemble : ils ne sont pas
+calibrés l'un pour l'autre. Il n'y a donc pas de version intermédiaire à
+bricoler. **Indoor et Outdoor sortent tous les deux de la tête de l'Iris 9,
+ou ils ne cohabitent pas.**
+
+### 14.2 Un fichier, pas deux
+
+Embarquer deux modèles, c'est payer deux fois le même réseau pour deux
+dernières couches. Le dorsal MobileNetV3Large pèse environ 5,99 Mo et ne
+dépend pas du nombre de sorties ; la tête coûte `960 × classes × 2 octets`.
+
+| | classes demandées | poids livré |
+|---|---|---|
+| Indoor seul | 363 | ~6,65 Mo |
+| Outdoor seul | 1 444 | ~8,63 Mo |
+| **les deux fichiers** | | **~15,28 Mo** |
+| **un modèle d'union** | **1 612** | **~8,94 Mo** |
+
+L'union des deux masques fait 1 612 entrées : 195 espèces communes, 168
+propres à Indoor, le reste à Outdoor. Avec le masque Indoor élargi
+(`masque_indoor_large.txt`, 421 entrées), l'union monte à 1 635 et le poids à
+~8,98 Mo — vingt-trois espèces de plus pour quarante kilo-octets.
+
+Un seul fichier coûte donc **2,3 Mo de plus qu'Indoor seul, et 6,3 Mo de
+moins que deux fichiers**. Il évite aussi ce qui ne se lit pas dans un
+tableau : un second interpréteur, un second isolat, une seconde seconde
+d'inférence par photo — et la cascade en enchaîne jusqu'à trois (§ 12.3).
+
+#### Le masque dans l'app rend exactement ce que `retailler.py` rend
+
+Le graphe applique son softmax sur les 1 612 sorties, donc l'app lit
+`exp(zᵢ) / Σ_toutes exp(zⱼ)`. Garder les classes du contexte et diviser par
+leur somme donne `exp(zᵢ) / Σ_gardées exp(zⱼ)` : **la même formule que le
+retaillage, au même résultat près de l'arrondi**. Le masque appliqué dans
+`tflite_plant_model.dart` n'est pas une approximation du modèle retaillé,
+c'en est l'égal.
+
+C'est ce qui rend la décision facile : les ~3 points que rapporte le masque
+étroit (§ 13.6) s'obtiennent **sans second fichier**. Ils ne tiennent pas au
+poids livré, ils tiennent à la renormalisation.
+
+Et un masque qui vit dans l'app se change sans rien retélécharger. Une plante
+déplacée du salon au balcon change de contexte à la lecture suivante ; deux
+fichiers auraient demandé de recharger l'autre modèle.
+
+### 14.3 Le contexte donne un a priori, jamais une interdiction
+
+La règle vient du § 8 de `docs/14`, et elle contredit le masque dur si on
+l'applique sans précaution : couper une classe, c'est rendre la bonne réponse
+**impossible**, pas seulement improbable. Un monstera sur un balcon en été
+n'est pas un cas rare.
+
+La sortie s'écrit donc en deux temps, sur une seule inférence :
+
+1. `p_contexte` — les probabilités renormalisées sur le masque du lieu. C'est
+   ce qui est proposé, et c'est là que les trois points sont gagnés ;
+2. `p_global` — les probabilités sur les 1 612, gardées sans coût, puisque le
+   réseau les a calculées de toute façon.
+
+Et la règle d'arbitrage à mesurer :
+
+- si `p_contexte` accepte au sens du § 3.1 — seuil 0,70, marge 0,25 —
+  l'application affirme, et n'ouvre pas `p_global` ;
+- sinon, si le premier de `p_global` dépasse nettement le premier de
+  `p_contexte`, ce candidat hors contexte est proposé comme **plausible**,
+  avec son lieu d'origine pour ce qu'il vaut ;
+- contexte inconnu — une photo identifiée hors d'une plante enregistrée —
+  `p_global` seul, aucun masque.
+
+Cette règle remplace le palliatif posé le 19 septembre, où Iris propose au
+lieu d'affirmer dès que le lieu est extérieur
+(`identification_policy.dart`, `localMayAffirm`). Le palliatif était juste
+tant que le modèle embarqué était un spécialiste intérieur seul face à
+l'extérieur ; il n'a plus de raison d'être une fois l'Outdoor livré, et
+`outdoor_policy_test.dart` devra être réécrit en conséquence, pas supprimé —
+il porte le cas mesuré, une *Veronica elliptica* rendue *Nephrolepis
+cordifolia* à 0,8978.
+
+Le lieu est déjà résolu côté app : `plant_detail_screen.dart` lit
+`locationsProvider` et sait si la plante est dehors. C'est le même signal qui
+choisira le masque ; rien de nouveau n'est à collecter auprès de
+l'utilisateur.
+
+### 14.4 Ce qu'il faut mesurer avant de livrer
+
+Aucune de ces lignes ne demande une collecte ; toutes demandent la tête
+complète de l'Iris 9.
+
+| mesure | comment | ce qu'elle décide |
+|---|---|---|
+| Indoor 363 vs Indoor élargi 421 | deux retaillages, `compare_models.py` sur le même jeu | quel masque intérieur on livre — **pas encore fait**, l'Iris 9 livre le masque de 363 |
+| Outdoor 1 424 sur son terrain | retaillage sur le seul masque extérieur | ✅ **fait** le 21 septembre : 0,6898 top-1, 60,9 % acceptées à 0,9073 (§ 14.6). La comparaison directe avec l'Iris 8 demande encore son fichier sur la même machine |
+| union 1 612 + masque appliqué | `compare_models.py` sur le jeu Indoor | ✅ **fait** le 21 septembre : 1 569 classes gardées, et le masque rend bien ce qu'annonçait le § 14.2 |
+| hors-sujet sur l'union masquée | `hors_sujet.py` | le masque restreint 1 612 sorties à ~363 : le taux d'affirmation à tort des plantes hors catalogue remonte-t-il au-dessus des 27,5 % du § 12.7 |
+| fiches manquantes sur 1 612 | le compteur du § 12.1 | combien de classes exposées ne mènent à rien — le défaut du § 12.14, à l'échelle de l'union |
+| masquer ou non quand le lieu n'est pas renseigné | `interieur.py`, une fois avec le masque intérieur, une fois sans | ce que l'application fait pour qui n'a jamais rangé ses plantes — aujourd'hui elle ne masque pas |
+| la marge du candidat d'ailleurs | `hors_sujet.py` sur des plantes d'un lieu et de l'autre | `FallbackPolicy.contextMargin`, posée à 0,15 sans mesure |
+
+Deux d'entre elles sont des portes, au sens du § 13.7 :
+
+- **l'Outdoor n'est pas prêt tant qu'il n'a pas son propre jeu de test.** Le
+  § 8 de `docs/14` le dit, et le seul chiffre disponible aujourd'hui — 0,6365
+  contre 0,6672 — a été lu sur une tête tronquée, donc ne juge rien ;
+- **une classe exposée sans fiche est une impasse.** Elle se nomme à l'écran
+  et ne mène à aucun conseil. À 336 sorties, six cas (§ 13.3). À 1 612, le
+  compte est à faire avant, pas après.
+
+### 14.5 Ce qui est déjà dans le code
+
+Tout ce qui ne dépendait pas du modèle a été écrit d'abord, et s'est tu
+jusqu'à ce qu'un masque soit livré — trois jours, jusqu'à l'Iris 9. Un modèle
+sans objet `masks` laisse ce code sans effet, et l'application se comporte
+alors exactement comme avant cette section. Ce qu'il rend une fois les
+masques livrés est au § 14.6.
+
+| où | quoi |
+|---|---|
+| `lib/domain/identification/identification_context.dart` | le lieu — `indoor`, `outdoor`, `unknown` |
+| `lib/domain/identification/context_mask.dart` | la lecture des masques et la renormalisation, en fonctions pures : ce ne sont que des divisions, elles se mesurent sans interpréteur natif |
+| `tflite_plant_model.dart` | une seule inférence, le masque appliqué à sa sortie |
+| `cascade_identifier.dart` | le lieu porté jusqu'au modèle, présent dans les clés de cache, et la fusion multi-photo faite **par échelle** |
+| `identification_policy.dart` | le verdict rendu sur les classes du lieu, et `challenger` — le candidat d'ailleurs qui reprend la parole |
+| `identification_sheet.dart` | le candidat d'ailleurs affiché en dernier, après la réponse du lieu |
+| `retailler.py --masque nom=fichier` | l'export d'un modèle d'union, `--garder` devenant l'union des masques |
+
+Deux choix méritent d'être dits, parce qu'ils se lisent mal dans un diff :
+
+- **la réserve du dehors se lève toute seule.** Aujourd'hui Iris propose au
+  lieu d'affirmer à un emplacement extérieur (§ 13.3). Ce n'est pas une règle
+  sur l'extérieur, c'est une règle sur un modèle qui n'expose que de
+  l'intérieur : la feuille d'identification demande au modèle quels lieux il
+  couvre, et la réserve tombe le jour où un masque extérieur est livré. Aucune
+  constante à changer, rien à se rappeler ;
+- **un lieu non renseigné ne masque rien.** Deviner « intérieur » ferait
+  gagner le masque à tout le monde et le ferait perdre à qui a mis sa plante
+  dehors sans le dire. C'est la ligne à mesurer du § 14.4 : le masque n'est un
+  gain que lorsqu'il est juste.
+
+Ce qui reste, et qui demandait le modèle : les valeurs. `contextMargin` est
+posée à 0,15 sans mesure, et la masse minimale sous laquelle renormaliser
+ment n'est bornée que numériquement. Le modèle est là depuis le 21 septembre ;
+ces deux-là attendent toujours (§ 14.6).
+
+### 14.6 Ce que le masque rend, mesuré — 21 septembre 2026
+
+L'Iris 9 est le premier modèle à porter l'objet `masks` : 336 classes pour
+l'intérieur, 1 424 pour l'extérieur, 1 569 exposées en tout. Les deux
+lectures de `compare_models.py` sont **exactement** les deux comportements
+possibles de l'application, puisque les classes communes à l'Iris Indoor et
+à l'Iris 9 sont précisément celles du masque intérieur.
+
+Sur les photos de plantes cultivées :
+
+| | top-1 | autonomie à 0,70 | justesse |
+|---|---|---|---|
+| Iris Indoor (livré jusqu'ici) | 0,7310 | 62,7 % | 0,9234 |
+| **Iris 9, masque du lieu appliqué** | **0,7650** | **65,7 %** | **0,9284** |
+| Iris 9, sans masque | 0,7230 | 67,5 % | 0,9030 |
+
+**Le masque transforme une perte de 0,8 point en un gain de 3,4.** C'est la
+mesure de ce que vaut le § 14 : le même fichier, la même inférence, et
+quatre points d'écart selon qu'on renormalise ou non sur le lieu. Sans lui,
+livrer un modèle plus large aurait coûté à l'utilisateur ce qu'il rapporte
+en couverture.
+
+**Et la réserve du dehors s'est levée toute seule**, comme le § 14.5 l'avait
+prévu : le modèle déclare un masque extérieur, `TflitePlantModel.contexts`
+n'est plus vide, et la feuille d'identification cesse de retenir Iris à un
+emplacement extérieur. Aucune constante n'a été touchée.
+
+#### L'Outdoor a enfin son propre terrain
+
+Le § 8 de `docs/14` l'exigeait avant de le considérer prêt : *Outdoor doit
+recevoir son propre jeu de test.* La même tête retaillée sur le seul masque
+extérieur, évaluée sur le jeu de test, le lui donne.
+
+| | classes | top-1 | top-3 | autonomie à 0,70 | justesse |
+|---|---|---|---|---|---|
+| **masque extérieur** | 1 424 | **0,6898** | 0,8246 | 60,9 % | 0,9073 |
+| union, sans masque | 1 569 | 0,6876 | 0,8227 | 60,8 % | 0,9051 |
+| Iris 8, même masque (§ 13.6) | 1 444 | 0,6672 | 0,8063 | 55,0 % | 0,9176 |
+
+Deux points au-dessus de l'Iris 8, qui était le généraliste extérieur que
+l'application livrait avant Indoor — sur un tirage d'images différent, donc
+un indice fort plutôt qu'une mesure. La version décisive demanderait un
+`compare_models.py` entre les deux, et donc le fichier de l'Iris 8 sur la
+même machine.
+
+**Et les deux masques ne valent pas la même chose.** Le masque extérieur
+garde 1 424 sorties sur 1 569 — il n'en retire que 145 — et ne rapporte que
+deux dixièmes de point, courbes de seuil quasi superposées. Le masque
+intérieur garde 336 sorties sur 1 569 et rapporte 4,2 points.
+
+> **La valeur d'un masque est dans ce qu'il enlève, pas dans ce qu'il garde.**
+
+C'est « la largeur se paie dans les sorties » vue par l'autre bout. Dehors,
+l'Iris 9 est le généraliste qu'il est, et le masque n'y change presque rien ;
+dedans, le masque en fait un spécialiste. Cela ne rend pas le masque
+extérieur inutile — il empêche un géranium de salon d'être proposé devant un
+massif —, mais il ne faut pas lui attribuer un gain qu'il ne produit pas.
+
+Deux choses restent à mesurer :
+
+- **`FallbackPolicy.contextMargin`**, posée à 0,15 sans mesure — c'est elle
+  qui décide quand un candidat hors du lieu reprend la parole ;
+- **ce qu'on fait quand le lieu n'est pas renseigné.** Aujourd'hui on ne
+  masque rien, et cette ligne du § 14.4 attend toujours son `interieur.py`.
+
+### 14.7 Ce qu'on ne fera pas
+
+- **pas deux fichiers `.tflite`.** Six mégaoctets et une seconde d'inférence
+  pour une renormalisation qui se calcule en quelques lignes ;
+- **pas de téléchargement séparé du modèle Outdoor.** Le § 8 prévoit une
+  mise à jour de modèle, pas deux catalogues à tenir à jour séparément ;
+- **pas de masque dur sans issue.** Une classe hors contexte est déclassée,
+  jamais supprimée : le § 3.2 décrit exactement cette panne — un modèle qui
+  ne peut pas dire la bonne réponse répond faux avec assurance ;
+- **pas d'arbitrage entre deux entraînements.** Tant que les deux masques ne
+  viennent pas de la même tête, comparer leurs scores n'a pas de sens
+  (§ 14.1).

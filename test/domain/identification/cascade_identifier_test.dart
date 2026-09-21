@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flora/domain/identification/cascade_identifier.dart';
+import 'package:flora/domain/identification/identification_context.dart';
 import 'package:flora/domain/identification/identification_metrics.dart';
 import 'package:flora/domain/identification/identification_policy.dart';
 import 'package:flora/domain/identification/local_plant_model.dart';
@@ -30,6 +31,9 @@ class FakeLocal implements LocalPlantModel {
   String? get loadError => null;
 
   @override
+  Set<IdentificationContext> contexts = const {};
+
+  @override
   void dispose() {}
 
   int warmUps = 0;
@@ -41,9 +45,14 @@ class FakeLocal implements LocalPlantModel {
     return available && !loadFails;
   }
 
+  /// Le dernier lieu demandé, pour vérifier qu'il descend bien jusqu'ici.
+  IdentificationContext lastContext = IdentificationContext.unknown;
+
   @override
-  Future<List<IdentificationCandidate>> classify(File image) async {
+  Future<List<IdentificationCandidate>> classify(File image,
+      {IdentificationContext context = IdentificationContext.unknown}) async {
     calls++;
+    lastContext = context;
     if (delay > Duration.zero) await Future<void>.delayed(delay);
     if (error != null) throw error!;
     return result;
@@ -67,12 +76,15 @@ class FakePerImage implements LocalPlantModel {
   @override
   String? get loadError => null;
   @override
+  Set<IdentificationContext> get contexts => const {};
+  @override
   void dispose() {}
   @override
   Future<bool> warmUp() async => true;
 
   @override
-  Future<List<IdentificationCandidate>> classify(File image) async {
+  Future<List<IdentificationCandidate>> classify(File image,
+          {IdentificationContext context = IdentificationContext.unknown}) async {
     calls++;
     return byName[image.uri.pathSegments.last] ?? const [];
   }
@@ -91,7 +103,8 @@ class FakeRemote implements PlantIdentifier {
   bool get isConfigured => configured;
 
   @override
-  Future<List<IdentificationCandidate>> identify(List<File> images, {String? language}) async {
+  Future<List<IdentificationCandidate>> identify(List<File> images,
+          {String? language, IdentificationContext context = IdentificationContext.unknown}) async {
     calls++;
     lastLanguage = language;
     if (error != null) throw error!;

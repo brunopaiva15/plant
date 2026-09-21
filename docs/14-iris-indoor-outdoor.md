@@ -535,9 +535,13 @@ une architecture.
 
 ## 20. Ordre de mise en œuvre
 
-1. **Finir et mesurer Iris Indoor** comme baseline Indoor.
-2. **Finir Iris 9** comme baseline classifier large/étroit.
-3. Construire le jeu de benchmark Iris 10 : Indoor, Outdoor, multi-photo, OOD.
+1. ✅ **Finir et mesurer Iris Indoor** comme baseline Indoor — livré le 19
+   septembre, 336 classes, mesuré au § 13.3 de `docs/09`.
+2. **Finir Iris 9** comme baseline classifier large/étroit — passe complète
+   en cours, `--batch 128` ; c'est sa tête qui portera Indoor *et* Outdoor
+   (§ 14.1 de `docs/09`).
+3. ✅ Construire le jeu de benchmark Iris 10 : Indoor, Outdoor, multi-photo,
+   OOD — `tools/plant_model/benchmark.py`, § 20 bis.
 4. Cacher les embeddings **BioCLIP 2.5** sur le corpus et générer les références
    textuelles/taxonomiques.
 5. Implémenter une première distillation **BioCLIP-only** vers FastViT et
@@ -556,6 +560,96 @@ une architecture.
 14. Quantifier/exporter seulement après stabilisation de la géométrie.
 15. Brancher Indoor / Outdoor dans l'app.
 16. Reprendre `iris_feedback` pour un premier fine-tune de domaine réel.
+
+## 20 bis. Le banc figé, et ce qu'il faut avant la première distillation
+
+L'étape 3 est faite : `tools/plant_model/benchmark.py` assemble le jeu de
+mesure. Les étapes 4 à 6 ne demandent toujours aucune architecture nouvelle,
+seulement du calcul et une discipline. Cette section dit laquelle.
+
+### Le banc
+
+Le script ne produit pas d'images, il produit un **manifeste** — un CSV de
+colonnes `tranche,chemin,verite,groupe,captive` — à partir du `splits.csv` du
+jeu de données. Cinq tranches : `indoor`, `outdoor`, `multi`, `ood_plante`,
+`ood_autre`. Tirage semé à 20260919, deux mille images par tranche au plus.
+
+L'échantillonnage se fait **par groupe**, pas par image : une observation à
+plusieurs photos part entière dans une tranche ou n'y va pas. Sans cela, la
+tranche `multi` mesurerait la fusion sur des images que les autres tranches
+ont déjà servies, et le chiffre serait flatté.
+
+Deux règles vont avec, et elles valent plus que le script :
+
+1. **le manifeste ne se régénère pas pour arranger un modèle.** Il est
+   reproductible à la graine près tant que le jeu d'images ne bouge pas ;
+   quand le jeu grandit, on le régénère une fois, et les chiffres d'avant
+   sont marqués comme appartenant au manifeste précédent. C'est exactement ce
+   qui a manqué jusqu'ici — le § 5 de `docs/10` rappelle que les chiffres de
+   deux `model.json` ne se comparent pas, parce que chaque entraînement a
+   produit son propre test ;
+2. **`ood_autre` reste vide tant que les dossiers hors sujet le sont.** La
+   tranche existe dans le format pour qu'on n'ait pas à le changer ; un banc
+   qui prétendrait mesurer le refus sans une seule photo de chat mentirait
+   plus qu'il n'aiderait. C'est la moitié manquante de la porte « autre »
+   (§ 12.7 de `docs/09`).
+
+### Étape 4 — cacher les embeddings BioCLIP
+
+Le cache est ce qui rend les étapes suivantes abordables : le teacher tourne
+**une fois** sur le corpus, et aucune boucle de distillation ne le rappelle
+ensuite.
+
+Le coût disque se calcule et il est petit. BioCLIP 2.5 (`vith14`) rend 1 024
+dimensions ; en `float16`, c'est 2 Ko par image :
+
+| corpus | embeddings | disque |
+|---|---|---|
+| images d'entraînement | 794 000 | ~1,6 Go |
+| toutes les images gardées | 991 926 | ~2,0 Go |
+
+Le coût en calcul, lui, ne se devine pas : un ViT-H/14 n'a pas le débit d'un
+MobileNet. **On le mesure sur cent images avant de lancer le corpus**, et on
+multiplie ; une passe qui dépasserait la nuit se découpe par dossier, le
+cache étant incrémental par construction.
+
+Deux précautions, parce qu'un cache faux est pire qu'un cache absent :
+
+- **la clé porte le prétraitement**, pas seulement le chemin de l'image. Un
+  redimensionnement changé, une normalisation changée, et le cache devient
+  silencieusement incohérent avec ce qu'il prétend décrire ;
+- **les références textuelles et taxonomiques se calculent dans la même
+  passe** (§ 7), avec la même version du teacher. Des références d'une
+  version et des images d'une autre ne vivent pas dans le même espace.
+
+### Étape 5 — la première distillation, et une seule variable
+
+Le student apprend à reproduire l'embedding du teacher : un projecteur de sa
+dimension de sortie vers 1 024, une perte cosinus sur le cache. Rien d'autre
+à ce stade — pas de supervision taxonomique, pas de contrastive, pas de
+hard negatives. Ce sont les étapes 7 et au-delà ; les mêler ici rendrait la
+porte A illisible.
+
+FastViT contre MobileNetV4 Hybrid se compare **à recette identique** : même
+cache, même calendrier de taux, mêmes augmentations, même nombre d'époques.
+La leçon du § 13.6 de `docs/09` s'applique mot pour mot — un run, deux
+variables, et on ne sait plus ce qu'on a mesuré. Là-bas, le lot était passé
+de 128 à 32 sans décision, et trois points d'écart sont restés inexplicables
+une nuit entière.
+
+### Étape 6 — choisir le student, et sur quoi
+
+Iris Core ne rend pas un softmax : « top-1 » y signifie **la référence la
+plus proche dans l'espace d'embedding**, donc la mesure au banc suppose les
+références d'espèces de l'étape 4. Tant qu'elles ne sont pas prêtes, le
+substitut honnête est un k-plus-proches-voisins sur les embeddings du
+teacher : il dit si le student a gardé la géométrie, sans rien prétendre sur
+le produit.
+
+L'ordre est donc : cache, distillation, k-NN pour éliminer un student, puis
+banc complet pour trancher entre les survivants. La porte E — le coût mobile
+— se lit au même moment, sur un téléphone réel et pas sur un ordinateur de
+bureau (§ 18).
 
 ## 21. Ce qui est décidé et ce qui reste ouvert
 

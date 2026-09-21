@@ -15,7 +15,7 @@ une machine recyclée dès qu'elle s'endormait. Sur une carte grand public, la
 même passe coûte de l'ordre d'une heure. C'est ce qui a rendu la v7 puis la v8
 possibles : quatre recettes dans un après-midi au lieu d'une par nuit.
 
-La version que l'application livre aujourd'hui est l'**Iris Indoor** ; son numéro
+La version que l'application livre aujourd'hui est l'**Iris 9** ; son numéro
 et ses chiffres ne s'écrivent pas ici, ils sont dans
 `assets/model/model.json` et repris une seule fois, au § 0 de
 [`09-plant-recognition.md`](09-plant-recognition.md). La procédure ci-dessous
@@ -25,7 +25,7 @@ ne dépend d'aucun des deux : elle vaut pour la version suivante.
 
 | | |
 |---|---|
-| Disque | **40 Go libres**, sur un **SSD**. Le jeu fait 15 Go et ses 290 000 fichiers sont relus dans un ordre différent à chaque époque : sur un disque à plateaux, c'est lui qui devient le goulot, et de loin. |
+| Disque | **110 Go libres**, sur un **SSD**. Le jeu de l'Iris 9 fait 51 Go pour près d'un million de fichiers, relus dans un ordre différent à chaque époque : sur un disque à plateaux, c'est lui qui devient le goulot, et de loin. Et sous WSL, **le disque d'Ubuntu est lui-même un fichier sur `C:`** — l'y copier ne le sort pas de `C:`, ça l'y met une seconde fois. |
 | Carte | NVIDIA avec pilote Windows à jour. Rien à installer côté Linux : WSL2 voit le pilote Windows. |
 | Réseau | La collecte télécharge ~15 Go depuis GBIF et iNaturalist. |
 
@@ -77,6 +77,83 @@ Si la liste est vide : le pilote Windows n'est pas à jour, ou `tensorflow-cpu`
 traîne dans l'environnement (`pip uninstall tensorflow-cpu`). Ne pas
 continuer avant que cette ligne réponde — `train.py` le redira au démarrage,
 mais autant le savoir tout de suite.
+
+## 2 bis. Ce que la machine rend, mesuré
+
+Avant de déplacer des dizaines de gigaoctets vers une machine, il faut savoir
+ce qu'elle vaut. `../plant_dataset/echantillon.py` prélève 120 classes —
+quelques centaines de mégaoctets — et deux époques courtes suffisent :
+
+```bash
+python3 -u train.py --dataset ~/plant-data/dataset-echantillon --out /tmp/bench \
+  --backbone large --batch 128 --mixed-precision \
+  --head-epochs 0 --fine-epochs 2 --steps-per-epoch 60 --ram-budget 0
+```
+
+On lit le `s/step` de la **seconde** époque : la première paie la compilation
+du graphe. Mesuré le 21 septembre 2026, à réglages identiques :
+
+| | par lot de 128 | images/s | |
+|---|---|---|---|
+| Apple M5 Pro (Metal) | 0,240 s | 533 | |
+| **RTX 2070 Super** | **0,076 s** | **1 684** | **3,2×** |
+
+Et la passe réelle qui a suivi, à 320 px et lot 64 : **77 ms par lot, 831
+images/s, 953 secondes par époque** de 794 944 images — huit heures pour
+trente époques. La prévision tirée du banc annonçait 840 images/s et seize
+minutes par époque ; l'écart est de un pour cent.
+
+**Le tuyau n'est pas le plafond ici, mais il n'en est pas loin.** Un i7-9700K
+à huit cœurs décode environ 1 260 images/s. À 224 px la carte en demande
+1 684 et attend donc un peu le processeur ; à 320 px elle n'en demande plus
+que 840, parce qu'elle calcule deux fois plus par image alors que le décodage
+coûte la même chose — il dépend de la taille **stockée**, pas de l'entrée du
+réseau. Monter à 320 rééquilibre la machine au lieu de l'étrangler.
+
+### Déplacer le jeu : une archive, jamais un million de fichiers
+
+Copier le jeu dossier par dossier depuis `/mnt/c` vers le disque Linux rend
+**4,4 Mo/s** — 86 fichiers par seconde, soit onze millisecondes chacun. C'est
+le coût par fichier de la passerelle, et il donne trois heures et quart pour
+51 Go. La bonne façon tient en deux commandes et une demi-heure :
+
+```powershell
+# côté Windows : lecture native de C:, une seule grosse écriture
+tar -cf E:\dataset.tar -C C:\Temp\plant-data dataset-v8-indoor
+```
+
+```bash
+# côté Ubuntu : une seule grosse lecture
+tar xf /mnt/e/dataset.tar -C ~/plant-data
+```
+
+Un disque branché après le démarrage de WSL n'est pas monté tout seul :
+`sudo mkdir -p /mnt/e && sudo mount -t drvfs E: /mnt/e`.
+
+**Et le jeu doit vivre dans `~`, jamais dans `/mnt/c`.** Laissé côté Windows,
+il serait relu à travers la même passerelle à chaque époque, et la carte
+attendrait le disque toute la journée.
+
+### Ce qui peut emporter huit heures de calcul
+
+- **L'évaluation finale tenait neuf gigaoctets.** `np.argsort` sur 99 825
+  images × 5 376 classes fabriquait une copie en entiers 64 bits de 4,3 Go
+  pour ne lire que trois colonnes ; WSL prenant la moitié de la mémoire de
+  Windows, le tueur du noyau a emporté la passe à la dernière étape, sans
+  écrire le modèle. Corrigé le 21 septembre — `argpartition` lot par lot, et
+  six tests qui comparent au tri complet. La liste des classes est désormais
+  écrite dans le dossier de sauvegarde **avant** l'entraînement : `labels.txt`
+  n'existait qu'à l'export, et des poids sans leur liste ne servent à rien.
+- **Ne jamais `kill -STOP` une passe.** Sur un Mac, geler un processus qui
+  tient un contexte Metal l'a laissé vivant, muet et irrécupérable — onze
+  minutes après la reprise, puis une seconde fois sans aucune manipulation.
+  Deux blocages en une journée, six mégaoctets de mémoire résidente au lieu
+  de deux gigaoctets, aucune trace d'erreur. Si la machine doit souffler,
+  mieux vaut arrêter franchement et relancer.
+- **Relire la ligne de commande avant de lancer.** Une passe entière a tourné
+  aux valeurs par défaut — 224 px, dropout 0,3, soixante couches — faute
+  d'avoir passé les trois options de la recette. Elle plafonnait douze points
+  sous la vraie (§ 13.6 de `docs/09`).
 
 ## 3. Reconstruire le jeu d'images (~2 h)
 

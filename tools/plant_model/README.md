@@ -95,6 +95,17 @@ ce rapport s'inverse et c'est le processeur qui fait attendre. Un i7-9700K
 être sur un SSD** : 290 000 fichiers lus dans un ordre différent à chaque
 époque sont le pire cas pour un disque à plateaux.
 
+**Mesurer la machine avant d'y déplacer le jeu.** Copier des dizaines de
+gigaoctets pour découvrir qu'une carte n'apporte rien, c'est une journée
+perdue. `../plant_dataset/echantillon.py` prélève quelques centaines de
+mégaoctets — mêmes images, même tuyau, même recette, seul le nombre de
+classes change — et cela suffit à comparer deux machines : à 320 px le
+dorsal coûte environ 0,45 GFLOP par image contre 0,01 pour la tête, si bien
+qu'un débit lu sur 120 classes décrit la machine à quelques pour cent près.
+Lancer ensuite `train.py --steps-per-epoch 60 --fine-epochs 2 --ram-budget 0`
+sur l'échantillon et lire le `s/step` de la **seconde** époque : la première
+paie la compilation du graphe.
+
 **Le jeu d'images n'est pas dans Git** (15 Go). Il se reconstruit avec
 [`../plant_dataset`](../plant_dataset/README.md), en parts parallèles :
 comptez trois heures sur quatre cœurs, moins sur huit. Recopier d'abord
@@ -120,6 +131,34 @@ résolution de noms déjà faites.
 | `--mixed-precision` | non | calcul en float16 ; double le débit sur une carte à cœurs tensor, inutile sur processeur |
 | `--steps-per-epoch N` | | lots par époque : des époques courtes, donc des points de sauvegarde fréquents |
 | `--ram-budget` | 5 | Go de préchargement au plus ; au-delà, les images sont relues des fichiers |
+
+## Livrer un modèle : retailler, et les masques de lieu
+
+`retailler.py` réexporte un modèle entraîné en ne gardant qu'une partie de ses
+classes. Ce n'est pas un réentraînement : les colonnes non gardées de la
+dernière couche sont supprimées, et le fichier livré rétrécit d'autant — la
+tête fait `960 × classes × 2 octets`.
+
+```bash
+python3 retailler.py --poids ~/plant-data/ckpt/fine.weights.h5     --etiquettes ~/plant-data/modele/labels.txt     --garder ../plant_dataset/masque_indoor.txt     --dataset ../plant_dataset/dataset --out ~/plant-data/indoor --version Indoor
+```
+
+**Un modèle d'union** garde les classes de plusieurs lieux et dit lesquelles
+appartiennent à qui. `--garder` devient inutile : l'union des masques fait la
+liste.
+
+```bash
+python3 retailler.py --poids … --etiquettes … --dataset … --out … --version 9     --masque indoor=../plant_dataset/masque_indoor.txt     --masque outdoor=../plant_dataset/masque_outdoor.txt
+```
+
+`model.json` porte alors un objet `masks`, et l'application renormalise ses
+sorties sur les classes du lieu au moment de l'inférence : `exp(zᵢ) /
+Σ_gardées exp(zⱼ)`, c'est-à-dire **exactement ce que rendrait ce modèle
+retaillé sur ce masque**. Deux fichiers coûteraient deux fois le même dorsal
+pour deux dernières couches — voir le § 14 de `docs/09-plant-recognition.md`.
+
+Un modèle sans objet `masks` se comporte comme avant : aucun masque, le
+contexte reste sans effet.
 
 ## Ce que fait la recette
 

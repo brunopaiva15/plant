@@ -56,7 +56,13 @@ Ce que RoomPlan ne donne pas, et qu'il faut obtenir autrement :
   L'autorisation de position est déjà décrite dans `Info.plist` ; le cap
   vrai en a besoin, le cap magnétique non.
 - **Les radiateurs.** RoomPlan ne les voit pas. Le plan permet de poser un
-  repère « radiateur » sur le plan de la pièce, du doigt. Facultatif, et
+  repère « radiateur » sur le plan de la pièce, du doigt — au toucher ou en
+  le promenant. Le glissement est à prendre à la feuille, qui arme le sien
+  pour se refermer et le déclare plus tôt : le plan s'adjuge donc le doigt au
+  premier déplacement (`_GlissementDuPlan`), et la feuille garde tout ce qui
+  ne commence pas sur lui. Le plan, lui, ne dépasse jamais la feuille : il
+  prenait la largeur qu'on lui donnait et la hauteur qui va avec, ce qui sur
+  un iPad mettait « Poser » hors de l'écran. Facultatif, et
   seulement au second palier.
 - **La lumière réelle.** ARKit donne une estimation d'éclairement
   (`ARFrame.lightEstimate.ambientIntensity`) qui dépend de l'heure et du

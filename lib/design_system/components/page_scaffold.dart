@@ -92,13 +92,45 @@ class SliverCentered extends StatelessWidget {
 /// « Zurück », « Indietro » —, comme pour le retour natif de [FloraPage] : le
 /// design system ne lit pas les ARB, ses textes lui sont passés.
 Widget? _impliedBackButton(BuildContext context) {
-  if (!(ModalRoute.of(context)?.canPop ?? false)) return null;
+  if (ModalRoute.of(context)?.canPop ?? false) {
+    return FloraIconButton(
+      icon: isCupertino(context) ? CupertinoIcons.chevron_left : Icons.arrow_back_rounded,
+      semanticLabel: MaterialLocalizations.of(context).backButtonTooltip,
+      onPressed: () => Navigator.of(context).maybePop(),
+    );
+  }
+  return _fermetureDeFeuille(context);
+}
+
+/// La croix qui referme la feuille, pour la page posée à sa racine.
+///
+/// Cette page-là n'a rien à dépiler — mais la feuille, si. Sans ce bouton,
+/// « Où la poser » ne se refermait qu'au glissement : pas de retour, puisqu'il
+/// n'y a rien derrière, et pas de croix, puisque personne ne l'avait posée.
+/// `null` partout ailleurs, pour que le retour d'iOS reste celui d'iOS.
+Widget? _fermetureDeFeuille(BuildContext context) {
+  if (ModalRoute.of(context)?.canPop ?? false) return null;
+  if (!_dansUneFeuille(context)) return null;
   return FloraIconButton(
-    icon: isCupertino(context) ? CupertinoIcons.chevron_left : Icons.arrow_back_rounded,
-    semanticLabel: MaterialLocalizations.of(context).backButtonTooltip,
-    onPressed: () => Navigator.of(context).maybePop(),
+    icon: CupertinoIcons.xmark,
+    semanticLabel: MaterialLocalizations.of(context).closeButtonTooltip,
+    onPressed: () => CupertinoSheetRoute.popSheet(context),
   );
 }
+
+/// La page est-elle posée dans une feuille d'iOS ?
+///
+/// **Ce qui en dépend : à qui va la barre.** Les boutons d'une page partent à
+/// UIKit, qui les dessine dans la barre de son contrôleur de navigation. Mais
+/// cette barre est celle de la coquille, et une feuille de Flutter passe
+/// par-dessus la coquille — l'observateur l'efface au moment de la poussée,
+/// et la page qui s'ouvre dedans ne peut pas la reprendre : elle vit dans le
+/// navigateur de la feuille, pas dans celui de la racine.
+///
+/// La page cédait quand même, et se retrouvait sans rien : ni titre, ni
+/// retour, ni croix — « Où la poser » s'ouvrait sur son contenu nu. Dans une
+/// feuille, elle garde donc sa barre, comme là où le natif n'est pas.
+bool _dansUneFeuille(BuildContext context) => CupertinoSheetRoute.hasParentSheet(context);
 
 /// Page à grand titre (onglets) : CupertinoSliverNavigationBar natif sur iOS,
 /// SliverAppBar.large sur Android. Le contenu est une liste de slivers.
@@ -197,7 +229,7 @@ class LargeTitlePage extends StatelessWidget {
     // `FloraIconButton` à chevron : il se décrit comme les autres, et le
     // geste de balayage reste celui de Flutter.
     final teteCedable = <Widget>[?_impliedBackButton(context), ?leading];
-    final natif = NativeShell.isSupported && !debout
+    final natif = NativeShell.isSupported && !debout && !_dansUneFeuille(context)
         ? NativeActions.describe(teteCedable, aCeder)
         : null;
 
@@ -478,7 +510,7 @@ class FloraPage extends StatelessWidget {
       //
       // `describe` rend `null` dès qu'un bouton lui échappe — une action en
       // toutes lettres, par exemple —, et la page garde alors sa barre.
-      final natif = NativeShell.isSupported
+      final natif = NativeShell.isSupported && !_dansUneFeuille(context)
           ? NativeActions.describe(<Widget>[?_impliedBackButton(context)], <Widget>[?trailing])
           : null;
       // Sans barre à nous, le décalage du haut vient de la marge sûre, que le
@@ -501,6 +533,9 @@ class FloraPage extends StatelessWidget {
       return CupertinoPageScaffold(
         backgroundColor: c.canvas,
         navigationBar: CupertinoNavigationBar(
+          // `null` hors d'une feuille : le retour automatique d'iOS reprend
+          // alors sa place, avec le titre de la page d'avant.
+          leading: _fermetureDeFeuille(context),
           middle: Text(title),
           trailing: trailing,
           backgroundColor: c.canvas.withValues(alpha: 0.82),

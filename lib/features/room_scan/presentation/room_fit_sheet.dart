@@ -53,7 +53,16 @@ class _RoomFitBodyState extends ConsumerState<_RoomFitBody> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final scans = ref.watch(roomScansProvider).value ?? const <RoomScan>[];
-    if (scans.isEmpty) return const SizedBox.shrink();
+    // Une feuille ouverte se doit de dire quelque chose. Sans relevé — le
+    // dernier vient d'être supprimé, ou la liste n'est pas encore lue —, elle
+    // rendait une boîte vide : la feuille s'ouvrait sur rien, et on ne savait
+    // pas si elle chargeait ou si elle avait échoué.
+    if (scans.isEmpty) {
+      return FloraPage(
+        title: l10n.placementTitle,
+        child: EmptyState(emoji: '📐', title: l10n.roomScanEmptyTitle, subtitle: l10n.roomScanEmptySubtitle, compact: true),
+      );
+    }
     // Les pièces, classées par ce qu'elles valent pour la fiche : la
     // meilleure s'ouvre d'elle-même.
     final ranked = widget.generic ? <(RoomScan, RoomFit?)>[for (final s in scans) (s, null)] : _ranked(scans);

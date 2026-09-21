@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
@@ -9,6 +10,24 @@ import 'room_plan_painter.dart';
 
 /// Ce qu'on pose sur le plan.
 enum RoomMarkerPlacement { heater, plant }
+
+/// Le glissement du plan, qui ne cède pas la main à la feuille.
+///
+/// La feuille arme son propre glissement vertical — c'est sa fermeture —, et
+/// il se déclare au bout de dix-huit points ; un glissement en tous sens en
+/// demande trente-six. L'arène donnait donc le doigt à la feuille, qui
+/// descendait, et le repère ne bougeait pas d'un pouce : « il se déplace tant
+/// qu'on n'a pas validé » était vrai partout sauf sur le plan, c'est-à-dire
+/// nulle part.
+///
+/// Celui-ci s'adjuge le doigt au premier déplacement. Le toucher reste
+/// intact — un doigt qui ne bouge pas ne déclenche aucun glissement —, et la
+/// feuille garde tout ce qui ne commence pas sur le plan : la poignée,
+/// l'en-tête, les boutons.
+class _GlissementDuPlan extends PanGestureRecognizer {
+  @override
+  bool hasSufficientGlobalDistanceToAccept(PointerDeviceKind kind, double? deviceTouchSlop) => true;
+}
 
 /// La feuille qui pose un repère : le plan en grand, la consigne au-dessus,
 /// le repère sous le doigt — il se déplace tant qu'on n'a pas validé —, puis
@@ -66,32 +85,58 @@ class _PlacerBodyState extends State<_PlacerBody> {
           SheetHeader(title: title),
           Text(hint, style: context.text.callout),
           const SizedBox(height: Space.md),
-          FloraCard(
-            padding: EdgeInsets.zero,
-            clip: true,
-            child: AspectRatio(
-              aspectRatio: 1.1,
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final size = Size(constraints.maxWidth, constraints.maxHeight);
-                  final geometry = RoomPlanGeometry(room: widget.room, size: size);
-                  return GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTapUp: (d) => _tap(geometry.toRoom(d.localPosition)),
-                    onPanUpdate: (d) => _tap(geometry.toRoom(d.localPosition)),
-                    child: CustomPaint(
-                      size: size,
-                      painter: RoomPlanPainter(
-                        room: widget.room,
-                        heaters: [...heaterPoints(widget.markers), if (heater && _pending != null) _pending!],
-                        plants: plantPoints(widget.markers).values.toList(),
-                        current: !heater ? _pending : null,
-                        colors: c,
-                        numberStyle: context.text.caption,
-                      ),
-                    ),
-                  );
-                },
+          // Le plan tient dans la feuille, et garde ses proportions.
+          //
+          // Il prenait la largeur du texte et se donnait la hauteur qui va
+          // avec : sur une fenêtre large — un iPad, un iPhone Duo ouvert —,
+          // cela faisait sept cents points de plan dans une feuille qui n'en
+          // a que la hauteur de l'écran, et la colonne débordait par le bas.
+          // Le bouton « Poser » se retrouvait hors de l'écran, sans rien pour
+          // défiler jusqu'à lui.
+          Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.42),
+              child: FloraCard(
+                padding: EdgeInsets.zero,
+                clip: true,
+                child: AspectRatio(
+                  aspectRatio: 1.1,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final size = Size(constraints.maxWidth, constraints.maxHeight);
+                      final geometry = RoomPlanGeometry(room: widget.room, size: size);
+                      return RawGestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        gestures: {
+                          TapGestureRecognizer: GestureRecognizerFactoryWithHandlers<TapGestureRecognizer>(
+                            TapGestureRecognizer.new,
+                            (r) {
+                              r.onTapUp = (d) => _tap(geometry.toRoom(d.localPosition));
+                            },
+                          ),
+                          _GlissementDuPlan: GestureRecognizerFactoryWithHandlers<_GlissementDuPlan>(
+                            _GlissementDuPlan.new,
+                            (r) {
+                              r.onStart = (d) => _tap(geometry.toRoom(d.localPosition));
+                              r.onUpdate = (d) => _tap(geometry.toRoom(d.localPosition));
+                            },
+                          ),
+                        },
+                        child: CustomPaint(
+                          size: size,
+                          painter: RoomPlanPainter(
+                            room: widget.room,
+                            heaters: [...heaterPoints(widget.markers), if (heater && _pending != null) _pending!],
+                            plants: plantPoints(widget.markers).values.toList(),
+                            current: !heater ? _pending : null,
+                            colors: c,
+                            numberStyle: context.text.caption,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
             ),
           ),

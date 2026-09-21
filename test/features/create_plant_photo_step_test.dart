@@ -8,6 +8,7 @@ import 'package:flora/data/db/database.dart';
 import 'package:flora/data/services/photo_storage_service.dart';
 import 'package:flora/data/services/preferences_service.dart';
 import 'package:flora/design_system/design_system.dart';
+import 'package:flora/domain/identification/identification_context.dart';
 import 'package:flora/domain/identification/plant_identifier.dart';
 import 'package:flora/features/plants/presentation/create_plant_flow.dart';
 import 'package:flora/l10n/generated/app_localizations.dart';
@@ -96,7 +97,8 @@ class _Iris implements PlantIdentifier {
   bool get isConfigured => true;
 
   @override
-  Future<List<IdentificationCandidate>> identify(List<File> images, {String? language}) async => const [];
+  Future<List<IdentificationCandidate>> identify(List<File> images,
+          {String? language, IdentificationContext context = IdentificationContext.unknown}) async => const [];
 }
 
 class _SlowIris implements PlantIdentifier {
@@ -106,7 +108,8 @@ class _SlowIris implements PlantIdentifier {
   bool get isConfigured => true;
 
   @override
-  Future<List<IdentificationCandidate>> identify(List<File> images, {String? language}) => completer.future;
+  Future<List<IdentificationCandidate>> identify(List<File> images,
+          {String? language, IdentificationContext context = IdentificationContext.unknown}) => completer.future;
 }
 
 class _InstantIris implements PlantIdentifier {
@@ -116,7 +119,8 @@ class _InstantIris implements PlantIdentifier {
   bool get isConfigured => true;
 
   @override
-  Future<List<IdentificationCandidate>> identify(List<File> images, {String? language}) async => const [
+  Future<List<IdentificationCandidate>> identify(List<File> images,
+          {String? language, IdentificationContext context = IdentificationContext.unknown}) async => const [
         IdentificationCandidate(
           scientificName: 'Goeppertia zebrina',
           commonName: 'Calathéa zébré',

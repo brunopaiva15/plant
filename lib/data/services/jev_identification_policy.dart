@@ -158,7 +158,10 @@ class JevIdentificationPolicy {
       ));
     }
 
-    final top5 = candidates
+    // Les candidates du lieu seulement : Jev compare des scores entre eux, et
+    // ceux d'ailleurs ne sont pas sur la même échelle (§ 14.1 de `docs/09`).
+    // Sans masque, `inContext` rend la liste entière et rien ne change.
+    final top5 = inContext(candidates)
         .where((c) => c.source == IdentificationSource.local)
         .take(5)
         .toList(growable: false);

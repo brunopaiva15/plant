@@ -7,6 +7,7 @@ import 'package:flora/data/db/database.dart';
 import 'package:flora/data/services/photo_storage_service.dart';
 import 'package:flora/data/services/preferences_service.dart';
 import 'package:flora/design_system/design_system.dart';
+import 'package:flora/domain/identification/identification_context.dart';
 import 'package:flora/domain/identification/plant_identifier.dart';
 import 'package:flora/features/identification/presentation/identification_sheet.dart';
 import 'package:flora/l10n/generated/app_localizations.dart';
@@ -42,7 +43,8 @@ class _Iris implements PlantIdentifier {
   bool get isConfigured => true;
 
   @override
-  Future<List<IdentificationCandidate>> identify(List<File> images, {String? language}) async =>
+  Future<List<IdentificationCandidate>> identify(List<File> images,
+          {String? language, IdentificationContext context = IdentificationContext.unknown}) async =>
       const [IdentificationCandidate(scientificName: 'Ficus lyrata', score: 0.8, source: IdentificationSource.local)];
 }
 

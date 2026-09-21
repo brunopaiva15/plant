@@ -266,11 +266,21 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
       guard let id = description["id"] as? String,
         let symbole = description["symbol"] as? String
       else { continue }
-      let bouton = UIBarButtonItem(
-        image: UIImage(systemName: symbole),
-        style: .plain,
-        target: self,
-        action: #selector(touche(_:)))
+      let image = UIImage(systemName: symbole)
+      // Un bouton qui porte un menu ne « touche » pas : c'est UIKit qui le
+      // déplie, depuis le bouton lui-même, et chaque entrée sait déjà ce
+      // qu'elle a à dire. Les autres passent par la cible et le tag, comme
+      // avant.
+      let bouton: UIBarButtonItem
+      if let menu = menuDeplie(description["menu"], de: id) {
+        bouton = UIBarButtonItem(image: image, menu: menu)
+      } else {
+        bouton = UIBarButtonItem(
+          image: image,
+          style: .plain,
+          target: self,
+          action: #selector(touche(_:)))
+      }
       bouton.tag = identifiants.count
       bouton.accessibilityLabel = description["title"] as? String
       bouton.isEnabled = (description["enabled"] as? Bool) ?? true
@@ -278,6 +288,55 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
       faits.append(bouton)
     }
     return faits
+  }
+
+  /// Le `UIMenu` d'un bouton, ou `nil` s'il n'en déplie pas.
+  ///
+  /// C'est là toute la différence avec une feuille d'actions : iOS fait
+  /// sortir un menu **du bouton touché**, à sa place dans la barre, et floute
+  /// ce qu'il recouvre le temps du choix. Une feuille, elle, monte du bas et
+  /// recouvre la page. Seul UIKit sait dessiner le premier ; c'est pour cela
+  /// que les entrées traversent le canal plutôt que d'être imitées en argile.
+  ///
+  /// `separated` ouvre un groupe : iOS sépare ses groupes d'un trait, comme
+  /// dans ses propres applications. Un seul groupe ne s'enveloppe pas —
+  /// autant donner les entrées telles quelles.
+  private func menuDeplie(_ brut: Any?, de id: String) -> UIMenu? {
+    let descriptions = brut as? [[String: Any]] ?? []
+    guard !descriptions.isEmpty else { return nil }
+
+    var groupes: [[UIAction]] = [[]]
+    for (i, description) in descriptions.enumerated() {
+      guard let titre = description["title"] as? String else { continue }
+      if (description["separated"] as? Bool) == true, !(groupes[groupes.count - 1].isEmpty) {
+        groupes.append([])
+      }
+      var attributs: UIMenuElement.Attributes = []
+      if (description["destructive"] as? Bool) == true { attributs.insert(.destructive) }
+      if (description["enabled"] as? Bool) == false { attributs.insert(.disabled) }
+      // L'identité de l'entrée, et non l'index d'un tableau qu'une autre
+      // page aurait remplacé entre-temps : `R1.3`, que Dart sait relire.
+      let identite = "\(id).\(i)"
+      let symbole = description["symbol"] as? String
+      let action = UIAction(
+        title: titre,
+        image: symbole.flatMap { UIImage(systemName: $0) },
+        attributes: attributs
+      ) { [weak self] _ in
+        self?.channel?.invokeMethod("onAction", arguments: identite)
+      }
+      groupes[groupes.count - 1].append(action)
+    }
+
+    let pleins = groupes.filter { !$0.isEmpty }
+    guard !pleins.isEmpty else { return nil }
+    let enfants: [UIMenuElement]
+    if pleins.count == 1 {
+      enfants = pleins[0]
+    } else {
+      enfants = pleins.map { UIMenu(title: "", options: .displayInline, children: $0) }
+    }
+    return UIMenu(title: "", children: enfants)
   }
 
   @objc private func touche(_ envoyeur: UIBarButtonItem) {
