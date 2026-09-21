@@ -215,6 +215,17 @@ def lire_banc(chemin: Path, tranche: str) -> list[tuple[str, str]]:
     return lignes
 
 
+_modele_iris = {}
+
+
+def _iris(dossier: str):  # pragma: no cover - demande TensorFlow
+    """Iris 9 chargé une fois, partagé entre les tranches."""
+    if 'm' not in _modele_iris:
+        from compare_models import load_model
+        _modele_iris['m'] = load_model(Path(dossier).expanduser())
+    return _modele_iris['m']
+
+
 def main() -> int:  # pragma: no cover - demande le cache et le banc
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -227,6 +238,10 @@ def main() -> int:  # pragma: no cover - demande le cache et le banc
     ap.add_argument('--temperature', type=float, default=100.0)
     ap.add_argument('--seuil', type=float, default=0.70,
                     help='autonomie lue à ce seuil — non calibré, à lire comme une courbe')
+    ap.add_argument('--avec-iris', action='store_true',
+                    help="faire aussi tourner Iris 9 sur les mêmes images (demande "
+                         'TensorFlow). Sans lui, ce script ne dit pas si l\'espace fait '
+                         'mieux — il dit seulement ce que l\'espace rend')
     args = ap.parse_args()
 
     cache = Path(args.cache).expanduser()
@@ -259,6 +274,18 @@ def main() -> int:  # pragma: no cover - demande le cache et le banc
         manquantes = len(lignes) - len(gardes)
         print(f'\n— {tranche} — {len(gardes)} images'
               + (f' ({manquantes} absentes du cache)' if manquantes else ''))
+
+        if args.avec_iris:
+            # La moitié manquante : sans elle, on lit un chiffre, pas une
+            # comparaison. Mêmes images, même vérité, même dénominateur.
+            from compare_models import load_model, predict, tally
+            modele = _iris(args.iris)
+            chemins = [lignes[i][0] for i in gardes]
+            predictions = [(v, predict(modele, c)) for v, c in zip(verites, chemins)]
+            r = tally(predictions, modele, None, seuil=args.seuil)
+            atteignable = sum(1 for x in verites if x in modele['index'])
+            print(f'  {"Iris 9":<10} {"ses 1 569 classes":<18} top-1 {r["top1"]}  '
+                  f'top-3 {r["top3"]}  ({atteignable}/{len(verites)} nommables)')
 
         for nom, (cles, vecteurs) in jeux.items():
             for titre, garder in (('à armes égales', expose), ('répertoire entier', None)):
