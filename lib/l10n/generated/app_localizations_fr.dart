@@ -591,7 +591,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get pgPickBody =>
-      'Cette plante se multiplie de plusieurs façons. Le geste choisi décide des étapes.';
+      'Cette plante se multiplie de plusieurs façons. Choisissez-en une : les étapes en dépendent.';
 
   @override
   String get pgRecommended => 'Conseillée';
@@ -603,7 +603,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String pgIntroBody(int count) {
-    return '$count étapes. Chacune est montrée en geste, puis dite en une phrase, adaptée à l’espèce quand elle est connue.';
+    return '$count étapes, chacune montrée en image et expliquée en une phrase, adaptée à l\'espèce quand elle est connue.';
   }
 
   @override
@@ -625,7 +625,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get pgNoteMedium => 'Enracinement';
 
   @override
-  String get pgMediumWater => 'Dans l’eau';
+  String get pgMediumWater => 'Dans l\'eau';
 
   @override
   String get pgMediumSubstrate => 'En substrat léger';
@@ -637,14 +637,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get pgVineName => 'Bouture de tige';
 
   @override
-  String get pgVineHint => 'Un nœud, une coupe nette, l’eau';
+  String get pgVineHint => 'Un nœud, une coupe nette, l\'eau';
 
   @override
   String get pgVineNodeTitle => 'Le nœud';
 
   @override
   String get pgVineNodeBody =>
-      'Le renflement d’où part une feuille, souvent doublé d’une racine aérienne. La bouture en garde au moins un.';
+      'Repérez le renflement d\'où part une feuille, souvent accompagné d\'une racine aérienne. Gardez-en au moins un sur la bouture.';
 
   @override
   String get pgVineNodeNote => 'Nœud et racine aérienne';
@@ -654,7 +654,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get pgVineCutBody =>
-      'Lame propre, coupe nette à un centimètre sous le nœud. Le nœud reste du côté de la bouture.';
+      'Avec une lame propre, coupez net 1 cm sous le nœud : le nœud reste du côté de la bouture.';
 
   @override
   String get pgVineCutNote => 'Couper au-dessus du nœud';
@@ -664,31 +664,31 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get pgVineClearBody =>
-      'Les feuilles qui tremperaient sont retirées. Deux ou trois feuilles en haut nourrissent la bouture.';
+      'Retirez les feuilles qui tremperaient. Gardez-en 2 ou 3 en haut : elles nourrissent la bouture.';
 
   @override
-  String get pgVineWaterTitle => 'L’eau';
+  String get pgVineWaterTitle => 'L\'eau';
 
   @override
   String get pgVineWaterBody =>
-      'Le nœud sous la surface, les feuilles au-dessus. Lumière vive, sans soleil direct.';
+      'Plongez le nœud sous l\'eau, les feuilles au-dessus. Placez le verre en lumière vive, sans soleil direct.';
 
   @override
   String get pgVineRootsTitle => 'Les racines';
 
   @override
   String get pgVineRootsBody =>
-      'Elles sortent du nœud, pas du bas de la tige. L’eau se change chaque semaine.';
+      'Les racines sortent du nœud, pas du bas de la tige. Changez l\'eau chaque semaine.';
 
   @override
-  String get pgVineRootsNote => 'Premières racines en deux à six semaines';
+  String get pgVineRootsNote => 'Premières racines en 2 à 6 semaines';
 
   @override
   String get pgVinePotTitle => 'Le pot';
 
   @override
   String get pgVinePotBody =>
-      'À quelques centimètres de racines, la bouture passe en terreau léger. Le nœud reste à fleur de terre.';
+      'Quand les racines font quelques centimètres, rempotez la bouture en terreau léger, le nœud à fleur de terre.';
 
   @override
   String get pgSoftName => 'Bouture de tige tendre';
@@ -701,48 +701,48 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get pgSoftStemBody =>
-      'Un jeune brin ferme, sans fleur, de dix centimètres environ. Le vieux bois s’enracine mal.';
+      'Choisissez un jeune brin ferme, sans fleur, d\'environ 10 cm : le vieux bois s\'enracine mal.';
 
   @override
   String get pgSoftCutTitle => 'La coupe';
 
   @override
   String get pgSoftCutBody =>
-      'Lame propre, coupe juste sous une paire de feuilles. Les racines partiront de là.';
+      'Avec une lame propre, coupez juste sous une paire de feuilles : les racines partiront de là.';
 
   @override
   String get pgSoftStripTitle => 'Les feuilles du bas';
 
   @override
   String get pgSoftStripBody =>
-      'La paire du bas est retirée : la tige reste nue sur trois ou quatre centimètres.';
+      'Retirez la paire du bas pour dénuder la tige sur 3 à 4 cm.';
 
   @override
-  String get pgSoftStripNote => 'Laisser une feuille sous l’eau';
+  String get pgSoftStripNote => 'Laisser une feuille sous l\'eau';
 
   @override
-  String get pgSoftRootTitle => 'L’enracinement';
+  String get pgSoftRootTitle => 'L\'enracinement';
 
   @override
   String get pgSoftRootBody =>
-      'La tige nue trempe, les feuilles restent au sec. Lumière vive, sans soleil direct.';
+      'Faites tremper la tige nue en gardant les feuilles au sec, en lumière vive et sans soleil direct.';
 
   @override
   String get pgSoftRootsTitle => 'Les racines';
 
   @override
   String get pgSoftRootsBody =>
-      'Fines et nombreuses, elles partent de toute la partie immergée.';
+      'Les racines sont fines et nombreuses, et partent de toute la partie immergée.';
 
   @override
-  String get pgSoftRootsNote => 'Premières racines en une à trois semaines';
+  String get pgSoftRootsNote => 'Premières racines en 1 à 3 semaines';
 
   @override
   String get pgSoftPotTitle => 'Le repiquage';
 
   @override
   String get pgSoftPotBody =>
-      'Repiquée tôt, à deux ou trois centimètres de racines : une tige tendre supporte mal l\'attente.';
+      'Repiquez tôt, dès 2 à 3 cm de racines : une tige tendre supporte mal l\'attente.';
 
   @override
   String get pgLeafName => 'Bouture de feuille';
@@ -755,21 +755,21 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get pgLeafChooseBody =>
-      'Une feuille mature, ferme, sans marque. Les jeunes feuilles manquent de réserves.';
+      'Choisissez une feuille mature, ferme et sans marque : les jeunes feuilles manquent de réserves.';
 
   @override
   String get pgLeafCutTitle => 'La coupe';
 
   @override
   String get pgLeafCutBody =>
-      'Lame propre, coupe à la base de la feuille, au ras du substrat.';
+      'Avec une lame propre, coupez la feuille à sa base, au ras du substrat.';
 
   @override
   String get pgLeafSplitTitle => 'Les segments';
 
   @override
   String get pgLeafSplitBody =>
-      'La feuille se partage en morceaux de cinq à huit centimètres. Un V taillé en bas de chacun dit quel bout va en terre.';
+      'Coupez la feuille en morceaux de 5 à 8 cm. Taillez un V en bas de chacun pour repérer le côté qui va en terre.';
 
   @override
   String get pgLeafSplitNote => 'Le V marque le bas';
@@ -779,57 +779,57 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get pgLeafCallusBody =>
-      'Les coupes sèchent à l’air, à l’ombre, avant d’aller en terre.';
+      'Laissez les coupes sécher à l\'air et à l\'ombre avant de les planter.';
 
   @override
-  String get pgLeafCallusNote => 'Un à deux jours de séchage';
+  String get pgLeafCallusNote => '1 à 2 jours de séchage';
 
   @override
   String get pgLeafPlantTitle => 'Le substrat';
 
   @override
   String get pgLeafPlantBody =>
-      'Le V s’enfonce de deux centimètres dans un substrat drainant.';
+      'Enfoncez le V de 2 cm dans un substrat drainant.';
 
   @override
-  String get pgLeafPlantNote => 'Planter un segment à l’envers';
+  String get pgLeafPlantNote => 'Planter un segment à l\'envers';
 
   @override
   String get pgLeafGrowthTitle => 'La reprise';
 
   @override
   String get pgLeafGrowthBody =>
-      'Les racines viennent d’abord, la jeune pousse sort du substrat à côté du segment.';
+      'Les racines viennent d\'abord ; la jeune pousse sort du substrat à côté du segment.';
 
   @override
-  String get pgLeafGrowthNote => 'Nouvelle pousse en deux à quatre mois';
+  String get pgLeafGrowthNote => 'Nouvelle pousse en 2 à 4 mois';
 
   @override
   String get pgDivisionName => 'Division';
 
   @override
-  String get pgDivisionHint => 'Rapide et sûre, la touffe se partage';
+  String get pgDivisionHint => 'Rapide et sûre, pour les plantes en touffe';
 
   @override
   String get pgDivPlantTitle => 'La touffe';
 
   @override
   String get pgDivPlantBody =>
-      'La plante se sort du pot en entier. Un substrat arrosé la veille tient mieux.';
+      'Sortez la plante du pot en entier. Un substrat arrosé la veille se tient mieux.';
 
   @override
   String get pgDivUnpotTitle => 'Le dépotage';
 
   @override
   String get pgDivUnpotBody =>
-      'Le pot glisse le long de la motte, la plante est libre.';
+      'Faites glisser le pot le long de la motte pour libérer la plante.';
 
   @override
   String get pgDivRootsTitle => 'La motte';
 
   @override
   String get pgDivRootsBody =>
-      'La terre s’émiette jusqu’à voir les racines et le pied des pousses.';
+      'Émiettez la terre jusqu\'à voir les racines et le pied des pousses.';
 
   @override
   String get pgDivClustersTitle => 'Les deux groupes';
@@ -846,7 +846,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get pgDivSplitBody =>
-      'Les groupes se défont à la main. La lame ne sert que si les couronnes tiennent.';
+      'Séparez les groupes à la main. N\'utilisez la lame que si les couronnes résistent.';
 
   @override
   String get pgDivSplitNote => 'Couper une tige au-dessus de la terre';
@@ -856,7 +856,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get pgDivRepotBody =>
-      'Chaque division part dans son pot, à la même profondeur qu’avant, et reçoit un premier arrosage.';
+      'Rempotez chaque division dans son pot, à la même profondeur qu\'avant, puis arrosez une première fois.';
 
   @override
   String get pgOffsetName => 'Séparer un rejet';
@@ -869,7 +869,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get pgOffSpotBody =>
-      'Un rejet du tiers de la mère, avec ses propres feuilles, est prêt à partir.';
+      'Un rejet qui fait le tiers de la plante mère, avec ses propres feuilles, est prêt à partir.';
 
   @override
   String get pgOffSpotNote => 'Rejet déjà formé';
@@ -879,14 +879,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get pgOffClearBody =>
-      'Le substrat s’écarte autour du pied : le lien avec la plante mère paraît.';
+      'Écartez le substrat autour du pied jusqu\'à voir le lien avec la plante mère.';
 
   @override
   String get pgOffDetachTitle => 'La séparation';
 
   @override
   String get pgOffDetachBody =>
-      'Le rejet se détache du lien, avec ses racines. La lame ne sert que si le lien est ligneux.';
+      'Détachez le rejet avec ses racines. N\'utilisez la lame que si le lien est ligneux.';
 
   @override
   String get pgOffDetachNote => 'Arracher le rejet sans racines';
@@ -903,30 +903,30 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get pgOffPotBody =>
-      'Un petit pot, le substrat de l’espèce, et un arrosage léger.';
+      'Rempotez dans un petit pot, avec le substrat de l\'espèce, puis arrosez légèrement.';
 
   @override
   String get pgOffSettleTitle => 'La reprise';
 
   @override
   String get pgOffSettleBody =>
-      'Une feuille neuve au cœur dit que le rejet a pris.';
+      'Une feuille neuve au cœur signale que le rejet a pris.';
 
   @override
-  String get pgOffSettleNote => 'Reprise en trois à six semaines';
+  String get pgOffSettleNote => 'Reprise en 3 à 6 semaines';
 
   @override
   String get pgKeikiName => 'Séparer un keiki';
 
   @override
-  String get pgKeikiHint => 'Le rejet d’orchidée part avec ses racines';
+  String get pgKeikiHint => 'Le rejet d\'orchidée part avec ses racines';
 
   @override
   String get pgKeikiSpotTitle => 'Le keiki';
 
   @override
   String get pgKeikiSpotBody =>
-      'Un jeune plant naît sur un nœud de la hampe : deux feuilles et des racines aériennes le rendent identifiable.';
+      'Un jeune plant naît sur un nœud de la hampe : 2 feuilles et des racines aériennes le rendent reconnaissable.';
 
   @override
   String get pgKeikiSpotNote => 'Rejet déjà formé';
@@ -936,17 +936,17 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get pgKeikiWaitBody =>
-      'Les racines s’allongent sur la hampe. Trois à cinq, longues de quelques centimètres, et le keiki vivra seul.';
+      'Les racines s\'allongent sur la hampe. À 3 à 5 racines de quelques centimètres, le keiki peut vivre seul.';
 
   @override
-  String get pgKeikiWaitNote => 'Racines prêtes en deux à trois mois';
+  String get pgKeikiWaitNote => 'Racines prêtes en 2 à 3 mois';
 
   @override
   String get pgKeikiDetachTitle => 'La séparation';
 
   @override
   String get pgKeikiDetachBody =>
-      'La hampe se coupe de part et d’autre du keiki, à un ou deux centimètres. Tirer meurtrissait la base.';
+      'Coupez la hampe de part et d\'autre du keiki, à 1 ou 2 cm. Ne tirez pas : vous abîmeriez la base.';
 
   @override
   String get pgKeikiDetachNote => 'Arracher le keiki';
@@ -956,24 +956,24 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get pgKeikiRootsBody =>
-      'Le keiki garde ses racines aériennes : ce sont elles qui reprennent dans le pot.';
+      'Gardez les racines aériennes du keiki : ce sont elles qui reprennent dans le pot.';
 
   @override
   String get pgKeikiPotTitle => 'Le pot';
 
   @override
   String get pgKeikiPotBody =>
-      'Un petit pot d’écorces, la base du keiki affleurant le substrat, sans l’enterrer.';
+      'Rempotez dans un petit pot d\'écorces, la base du keiki affleurant le substrat, sans l\'enterrer.';
 
   @override
   String get pgKeikiSettleTitle => 'La reprise';
 
   @override
   String get pgKeikiSettleBody =>
-      'Une feuille neuve au cœur dit que le keiki a pris.';
+      'Une feuille neuve au cœur signale que le keiki a pris.';
 
   @override
-  String get pgKeikiSettleNote => 'Reprise en un à deux mois';
+  String get pgKeikiSettleNote => 'Reprise en 1 à 2 mois';
 
   @override
   String get pgSegmentName => 'Bouture de segment';
@@ -986,41 +986,41 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get pgSegChooseBody =>
-      'Un segment terminal ferme et sans ride, de deux ou trois articles.';
+      'Choisissez un segment terminal ferme et sans ride, de 2 ou 3 articles.';
 
   @override
   String get pgSegDetachTitle => 'Le détachement';
 
   @override
   String get pgSegDetachBody =>
-      'Le segment se détache à l’articulation, en le tournant. Une lame propre si l’article résiste.';
+      'Détachez le segment à l\'articulation, en le tournant. Prenez une lame propre s\'il résiste.';
 
   @override
-  String get pgSegDetachNote => 'Tirer et déchirer l’article';
+  String get pgSegDetachNote => 'Tirer et déchirer l\'article';
 
   @override
   String get pgSegWoundTitle => 'La plaie';
 
   @override
   String get pgSegWoundBody =>
-      'La coupe est claire et humide. Mise en terre tout de suite, elle pourrit.';
+      'La coupe est claire et humide : plantée tout de suite, elle pourrirait.';
 
   @override
   String get pgSegCallusTitle => 'La cicatrisation';
 
   @override
   String get pgSegCallusBody =>
-      'La plaie sèche à l’air, à l’ombre, jusqu’à former un cal mat.';
+      'Laissez la plaie sécher à l\'air et à l\'ombre, jusqu\'à former un cal mat.';
 
   @override
-  String get pgSegCallusNote => 'Trois à sept jours de séchage';
+  String get pgSegCallusNote => '3 à 7 jours de séchage';
 
   @override
   String get pgSegPlantTitle => 'Le substrat';
 
   @override
   String get pgSegPlantBody =>
-      'Le cal se pose à peine dans un substrat très drainant, sur un centimètre.';
+      'Posez le cal sur 1 cm à peine, dans un substrat très drainant.';
 
   @override
   String get pgSegPlantNote => 'Enterrer le segment';
@@ -1030,7 +1030,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get pgSegRootsBody =>
-      'Les racines viennent d’abord, un nouvel article ensuite. L’arrosage attend que les racines tiennent.';
+      'Les racines viennent d\'abord, un nouvel article ensuite. Attendez que les racines tiennent pour arroser.';
 
   @override
   String get parentPlant => 'Plante mère';

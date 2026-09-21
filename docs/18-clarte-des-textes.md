@@ -1,6 +1,6 @@
 # La clarté des textes (`lib/l10n/*.arb`)
 
-> Statut : **lot 1 livré**, lots 2 à 11 à faire. La charte du § 3 est reportée
+> Statut : **lots 1 et 2 livrés**, lots 3 à 11 à faire. La charte du § 3 est reportée
 > dans `docs/06-design-system.md`, le relevé mécanique (`tool/audit_textes.py`)
 > et le test de parité ICU sont en place. Le registre allemand est tranché :
 > *du*.
@@ -252,10 +252,20 @@ Les quatre langues, sur la chaîne d'ouverture :
 
 ### Lot 2 — Les guides de multiplication (133 clés, 62 explicatives, 45 signalées)
 
+> **Livré.** 201 chaînes réécrites sur les quatre langues, le relevé du lot
+> tombe de 45 clés signalées à 0. `flutter gen-l10n` passé, `flutter test` et
+> `flutter analyze` verts.
+
 Préfixe `pg…`. Le lot le plus atteint du dépôt : un mode d'emploi en sept
 gestes écrit entièrement au constatif. Chaque `…Body` est une étape que la
 personne exécute, donc chaque `…Body` passe à l'impératif, et les mesures aux
-chiffres.
+chiffres. Les `…Body` qui ne sont pas des gestes mais des observations — « Les
+racines sortent du nœud, pas du bas de la tige » — restent à l'indicatif, avec
+leur sujet nommé : la charte demande un acteur, pas un impératif partout.
+
+Les 14 apostrophes courbes du lot sont redressées au passage, plutôt que
+d'être laissées au lot 11 : elles étaient dans les chaînes déjà en train d'être
+réécrites.
 
 | Clé | Avant | Après |
 |---|---|---|
@@ -537,7 +547,7 @@ concerné est vert, sinon la suite casse dès le premier commit :
 | Ordre | Lot | Clés | Explicatives | Pourquoi là |
 |---:|---|---:|---:|---|
 | 1 ✓ | Relevé de la maison | 95 | 27 | **livré** — l'écran qui a ouvert le chantier ; sert de patron aux autres |
-| 2 | Guides de multiplication | 133 | 62 | le plus atteint, et le plus lu quand on s'en sert |
+| 2 ✓ | Guides de multiplication | 133 | 62 | **livré** — le plus atteint, et le plus lu quand on s'en sert |
 | 3 | Écran du matin, météo | 132 | 35 | vu tous les jours |
 | 4 | Identification, Iris | 84 | 21 | porte trois consentements |
 | 5 | Diagnostic, encyclopédie | 138 | 23 | |

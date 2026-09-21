@@ -590,7 +590,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pgPickBody =>
-      'Diese Pflanze lässt sich auf mehrere Arten vermehren. Der gewählte Handgriff bestimmt die Schritte.';
+      'Diese Pflanze lässt sich auf mehrere Arten vermehren. Wähle eine aus – davon hängen die Schritte ab.';
 
   @override
   String get pgRecommended => 'Empfohlen';
@@ -602,7 +602,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String pgIntroBody(int count) {
-    return '$count Schritte. Jeder wird als Handgriff gezeigt und in einem Satz gesagt, auf die Art abgestimmt, wenn sie bekannt ist.';
+    return '$count Schritte, jeder als Bild gezeigt und in einem Satz erklärt, auf die Art abgestimmt, wenn sie bekannt ist.';
   }
 
   @override
@@ -643,7 +643,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pgVineNodeBody =>
-      'Die Verdickung, aus der ein Blatt kommt, oft mit einer Luftwurzel daneben. Der Steckling behält mindestens eine.';
+      'Such die Verdickung, aus der ein Blatt kommt, oft mit einer Luftwurzel daneben. Behalte mindestens eines am Steckling.';
 
   @override
   String get pgVineNodeNote => 'Nodium und Luftwurzel';
@@ -653,7 +653,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pgVineCutBody =>
-      'Saubere Klinge, glatter Schnitt einen Zentimeter unter dem Nodium. Das Nodium bleibt am Steckling.';
+      'Schneide mit einer sauberen Klinge glatt 1 cm unter dem Nodium: Das Nodium bleibt am Steckling.';
 
   @override
   String get pgVineCutNote => 'Über dem Nodium schneiden';
@@ -663,31 +663,31 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pgVineClearBody =>
-      'Die Blätter, die im Wasser stünden, kommen ab. Zwei oder drei Blätter oben versorgen den Steckling.';
+      'Entferne die Blätter, die im Wasser stünden. Lass 2 oder 3 oben stehen, die den Steckling versorgen.';
 
   @override
   String get pgVineWaterTitle => 'Das Wasser';
 
   @override
   String get pgVineWaterBody =>
-      'Das Nodium unter der Oberfläche, die Blätter darüber. Helles Licht, keine direkte Sonne.';
+      'Setz das Nodium unter Wasser, die Blätter darüber. Stell das Glas ins helle Licht, ohne direkte Sonne.';
 
   @override
   String get pgVineRootsTitle => 'Die Wurzeln';
 
   @override
   String get pgVineRootsBody =>
-      'Sie kommen aus dem Nodium, nicht aus dem Stielende. Das Wasser wird wöchentlich gewechselt.';
+      'Die Wurzeln kommen aus dem Nodium, nicht aus dem Stielende. Wechsle das Wasser jede Woche.';
 
   @override
-  String get pgVineRootsNote => 'Erste Wurzeln in zwei bis sechs Wochen';
+  String get pgVineRootsNote => 'Erste Wurzeln in 2 bis 6 Wochen';
 
   @override
   String get pgVinePotTitle => 'Der Topf';
 
   @override
   String get pgVinePotBody =>
-      'Bei einigen Zentimetern Wurzel kommt der Steckling in lockere Erde. Das Nodium bleibt dicht unter der Oberfläche.';
+      'Wenn die Wurzeln einige Zentimeter lang sind, setz den Steckling in lockere Erde, das Nodium dicht unter der Oberfläche.';
 
   @override
   String get pgSoftName => 'Kopfsteckling';
@@ -700,21 +700,21 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pgSoftStemBody =>
-      'Ein junger, fester Trieb ohne Blüte, etwa zehn Zentimeter. Altes Holz bewurzelt schlecht.';
+      'Wähle einen jungen, festen Trieb ohne Blüte, etwa 10 cm: Altes Holz bewurzelt schlecht.';
 
   @override
   String get pgSoftCutTitle => 'Der Schnitt';
 
   @override
   String get pgSoftCutBody =>
-      'Saubere Klinge, Schnitt dicht unter einem Blattpaar. Von dort kommen die Wurzeln.';
+      'Schneide mit einer sauberen Klinge dicht unter einem Blattpaar: Von dort kommen die Wurzeln.';
 
   @override
   String get pgSoftStripTitle => 'Die unteren Blätter';
 
   @override
   String get pgSoftStripBody =>
-      'Das unterste Paar kommt ab: drei bis vier Zentimeter Stiel bleiben kahl.';
+      'Entferne das unterste Paar, damit 3 bis 4 cm Stiel kahl bleiben.';
 
   @override
   String get pgSoftStripNote => 'Ein Blatt im Wasser lassen';
@@ -724,24 +724,24 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pgSoftRootBody =>
-      'Der kahle Stiel steht im Wasser, die Blätter bleiben trocken. Helles Licht, keine direkte Sonne.';
+      'Stell den kahlen Stiel ins Wasser und halte die Blätter trocken, im hellen Licht ohne direkte Sonne.';
 
   @override
   String get pgSoftRootsTitle => 'Die Wurzeln';
 
   @override
   String get pgSoftRootsBody =>
-      'Fein und zahlreich kommen sie aus dem ganzen eingetauchten Teil.';
+      'Die Wurzeln sind fein und zahlreich und kommen aus dem ganzen eingetauchten Teil.';
 
   @override
-  String get pgSoftRootsNote => 'Erste Wurzeln in einer bis drei Wochen';
+  String get pgSoftRootsNote => 'Erste Wurzeln in 1 bis 3 Wochen';
 
   @override
   String get pgSoftPotTitle => 'Das Umsetzen';
 
   @override
   String get pgSoftPotBody =>
-      'Früh umgesetzt, bei zwei bis drei Zentimetern Wurzel: ein weicher Trieb hält nicht lange.';
+      'Setz ihn früh um, bei 2 bis 3 cm Wurzel: Ein weicher Trieb hält nicht lange.';
 
   @override
   String get pgLeafName => 'Blattsteckling';
@@ -754,21 +754,21 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pgLeafChooseBody =>
-      'Ein ausgereiftes, festes Blatt ohne Flecken. Junge Blätter haben keine Reserven.';
+      'Wähle ein ausgereiftes, festes Blatt ohne Flecken: Junge Blätter haben keine Reserven.';
 
   @override
   String get pgLeafCutTitle => 'Der Schnitt';
 
   @override
   String get pgLeafCutBody =>
-      'Saubere Klinge, Schnitt am Blattgrund, dicht über dem Substrat.';
+      'Schneide das Blatt mit einer sauberen Klinge am Grund ab, dicht über dem Substrat.';
 
   @override
   String get pgLeafSplitTitle => 'Die Stücke';
 
   @override
   String get pgLeafSplitBody =>
-      'Das Blatt wird in Stücke von fünf bis acht Zentimetern geteilt. Ein V am unteren Ende zeigt, welche Seite nach unten gehört.';
+      'Schneide das Blatt in Stücke von 5 bis 8 cm. Schneide unten in jedes ein V, damit du die untere Seite erkennst.';
 
   @override
   String get pgLeafSplitNote => 'Das V markiert unten';
@@ -778,17 +778,17 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pgLeafCallusBody =>
-      'Die Schnittflächen trocknen an der Luft im Schatten, bevor sie ins Substrat kommen.';
+      'Lass die Schnittflächen an der Luft im Schatten trocknen, bevor du sie setzt.';
 
   @override
-  String get pgLeafCallusNote => 'Ein bis zwei Tage trocknen';
+  String get pgLeafCallusNote => '1 bis 2 Tage trocknen';
 
   @override
   String get pgLeafPlantTitle => 'Das Substrat';
 
   @override
   String get pgLeafPlantBody =>
-      'Das V steckt zwei Zentimeter tief in durchlässigem Substrat.';
+      'Steck das V 2 cm tief in durchlässiges Substrat.';
 
   @override
   String get pgLeafPlantNote => 'Ein Stück verkehrt herum setzen';
@@ -798,37 +798,37 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pgLeafGrowthBody =>
-      'Zuerst kommen die Wurzeln, dann ein junger Trieb neben dem Blattstück.';
+      'Zuerst kommen die Wurzeln; der junge Trieb erscheint neben dem Blattstück.';
 
   @override
-  String get pgLeafGrowthNote => 'Neuer Trieb in zwei bis vier Monaten';
+  String get pgLeafGrowthNote => 'Neuer Trieb in 2 bis 4 Monaten';
 
   @override
   String get pgDivisionName => 'Teilung';
 
   @override
-  String get pgDivisionHint => 'Schnell und sicher, der Horst wird geteilt';
+  String get pgDivisionHint => 'Schnell und sicher, für horstbildende Pflanzen';
 
   @override
   String get pgDivPlantTitle => 'Der Horst';
 
   @override
   String get pgDivPlantBody =>
-      'Die Pflanze kommt am Stück aus dem Topf. Ein tags zuvor gegossenes Substrat hält besser zusammen.';
+      'Nimm die Pflanze am Stück aus dem Topf. Ein tags zuvor gegossenes Substrat hält besser zusammen.';
 
   @override
   String get pgDivUnpotTitle => 'Aus dem Topf';
 
   @override
   String get pgDivUnpotBody =>
-      'Der Topf gleitet vom Ballen, die Pflanze ist frei.';
+      'Zieh den Topf vom Ballen ab, um die Pflanze zu lösen.';
 
   @override
   String get pgDivRootsTitle => 'Der Ballen';
 
   @override
   String get pgDivRootsBody =>
-      'Die Erde bröckelt ab, bis Wurzeln und Triebbasis zu sehen sind.';
+      'Bröckle die Erde ab, bis du Wurzeln und Triebbasis siehst.';
 
   @override
   String get pgDivClustersTitle => 'Die zwei Gruppen';
@@ -845,7 +845,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pgDivSplitBody =>
-      'Die Gruppen lassen sich von Hand lösen. Die Klinge kommt nur bei festen Herzen zum Einsatz.';
+      'Löse die Gruppen mit der Hand. Nimm die Klinge nur, wenn die Herzen festhalten.';
 
   @override
   String get pgDivSplitNote => 'Einen Trieb über der Erde abschneiden';
@@ -855,7 +855,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pgDivRepotBody =>
-      'Jede Teilung kommt in einen eigenen Topf, so tief wie zuvor, und wird angegossen.';
+      'Setz jede Teilung in einen eigenen Topf, so tief wie zuvor, und gieß sie einmal an.';
 
   @override
   String get pgOffsetName => 'Kindel abtrennen';
@@ -878,14 +878,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pgOffClearBody =>
-      'Das Substrat wird am Fuß beiseite geräumt, die Verbindung zur Mutterpflanze wird sichtbar.';
+      'Räum das Substrat am Fuß beiseite, bis die Verbindung zur Mutterpflanze sichtbar wird.';
 
   @override
   String get pgOffDetachTitle => 'Das Trennen';
 
   @override
   String get pgOffDetachBody =>
-      'Das Kindel löst sich von der Verbindung, mit seinen Wurzeln. Die Klinge kommt nur bei verholzter Verbindung zum Einsatz.';
+      'Löse das Kindel mit seinen Wurzeln ab. Nimm die Klinge nur bei verholzter Verbindung.';
 
   @override
   String get pgOffDetachNote => 'Das Kindel ohne Wurzeln abreißen';
@@ -902,7 +902,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pgOffPotBody =>
-      'Ein kleiner Topf, das Substrat der Art, und ein leichter Guss.';
+      'Setz es in einen kleinen Topf mit dem Substrat der Art und gieß leicht an.';
 
   @override
   String get pgOffSettleTitle => 'Das Anwachsen';
@@ -912,7 +912,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Ein neues Blatt in der Mitte zeigt, dass das Kindel angewachsen ist.';
 
   @override
-  String get pgOffSettleNote => 'Anwachsen in drei bis sechs Wochen';
+  String get pgOffSettleNote => 'Anwachsen in 3 bis 6 Wochen';
 
   @override
   String get pgKeikiName => 'Ein Keiki abtrennen';
@@ -925,7 +925,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pgKeikiSpotBody =>
-      'An einem Knoten des Blütentriebs wächst eine Jungpflanze: zwei Blätter und Luftwurzeln machen sie erkennbar.';
+      'An einem Knoten des Blütentriebs wächst eine Jungpflanze: 2 Blätter und Luftwurzeln machen sie erkennbar.';
 
   @override
   String get pgKeikiSpotNote => 'Bereits gebildetes Kindel';
@@ -935,17 +935,17 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pgKeikiWaitBody =>
-      'Die Wurzeln wachsen am Trieb entlang. Drei bis fünf von einigen Zentimetern Länge, und das Keiki lebt allein.';
+      'Die Wurzeln wachsen am Trieb entlang. Bei 3 bis 5 Wurzeln von einigen Zentimetern kann das Keiki allein leben.';
 
   @override
-  String get pgKeikiWaitNote => 'Wurzeln bereit in zwei bis drei Monaten';
+  String get pgKeikiWaitNote => 'Wurzeln bereit in 2 bis 3 Monaten';
 
   @override
   String get pgKeikiDetachTitle => 'Das Trennen';
 
   @override
   String get pgKeikiDetachBody =>
-      'Der Trieb wird beidseits des Keikis ein bis zwei Zentimeter entfernt durchtrennt. Ziehen würde die Basis verletzen.';
+      'Schneide den Trieb beidseits des Keikis 1 bis 2 cm entfernt durch. Zieh nicht daran: Das würde die Basis verletzen.';
 
   @override
   String get pgKeikiDetachNote => 'Das Keiki abreißen';
@@ -955,14 +955,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pgKeikiRootsBody =>
-      'Das Keiki behält seine Luftwurzeln: sie wachsen im Topf an.';
+      'Lass dem Keiki seine Luftwurzeln – damit wächst es im Topf an.';
 
   @override
   String get pgKeikiPotTitle => 'Der Topf';
 
   @override
   String get pgKeikiPotBody =>
-      'Ein kleiner Topf mit Rinde, die Basis des Keikis auf Substrathöhe, nicht eingegraben.';
+      'Setz es in einen kleinen Topf mit Rinde, die Basis auf Substrathöhe, nicht eingegraben.';
 
   @override
   String get pgKeikiSettleTitle => 'Das Anwachsen';
@@ -972,7 +972,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Ein neues Blatt in der Mitte zeigt, dass das Keiki angewachsen ist.';
 
   @override
-  String get pgKeikiSettleNote => 'Anwachsen in ein bis zwei Monaten';
+  String get pgKeikiSettleNote => 'Anwachsen in 1 bis 2 Monaten';
 
   @override
   String get pgSegmentName => 'Gliedsteckling';
@@ -985,14 +985,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pgSegChooseBody =>
-      'Ein festes Endglied ohne Falten, zwei oder drei Glieder lang.';
+      'Wähle ein festes Endglied ohne Falten, 2 oder 3 Glieder lang.';
 
   @override
   String get pgSegDetachTitle => 'Das Lösen';
 
   @override
   String get pgSegDetachBody =>
-      'Das Glied löst sich am Gelenk, mit einer Drehung. Eine saubere Klinge, wenn es hält.';
+      'Dreh das Glied am Gelenk ab. Nimm eine saubere Klinge, wenn es festhält.';
 
   @override
   String get pgSegDetachNote => 'Am Glied reißen';
@@ -1002,24 +1002,24 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pgSegWoundBody =>
-      'Die Schnittfläche ist hell und feucht. Sofort gesetzt, fault sie.';
+      'Die Schnittfläche ist hell und feucht: sofort gesetzt, würde sie faulen.';
 
   @override
   String get pgSegCallusTitle => 'Die Wundheilung';
 
   @override
   String get pgSegCallusBody =>
-      'Die Wunde trocknet an der Luft im Schatten, bis sich ein matter Kallus bildet.';
+      'Lass die Wunde an der Luft im Schatten trocknen, bis sich ein matter Kallus bildet.';
 
   @override
-  String get pgSegCallusNote => 'Drei bis sieben Tage trocknen';
+  String get pgSegCallusNote => '3 bis 7 Tage trocknen';
 
   @override
   String get pgSegPlantTitle => 'Das Substrat';
 
   @override
   String get pgSegPlantBody =>
-      'Das verheilte Ende steckt kaum einen Zentimeter tief in sehr durchlässigem Substrat.';
+      'Steck das verheilte Ende kaum 1 cm tief in sehr durchlässiges Substrat.';
 
   @override
   String get pgSegPlantNote => 'Das Glied vergraben';
@@ -1029,7 +1029,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get pgSegRootsBody =>
-      'Zuerst kommen die Wurzeln, dann ein neues Glied. Gegossen wird erst, wenn die Wurzeln halten.';
+      'Zuerst kommen die Wurzeln, dann ein neues Glied. Gieß erst, wenn die Wurzeln halten.';
 
   @override
   String get parentPlant => 'Mutterpflanze';

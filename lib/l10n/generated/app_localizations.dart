@@ -1083,7 +1083,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgPickBody.
   ///
   /// In fr, this message translates to:
-  /// **'Cette plante se multiplie de plusieurs façons. Le geste choisi décide des étapes.'**
+  /// **'Cette plante se multiplie de plusieurs façons. Choisissez-en une : les étapes en dépendent.'**
   String get pgPickBody;
 
   /// No description provided for @pgRecommended.
@@ -1101,7 +1101,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgIntroBody.
   ///
   /// In fr, this message translates to:
-  /// **'{count} étapes. Chacune est montrée en geste, puis dite en une phrase, adaptée à l’espèce quand elle est connue.'**
+  /// **'{count} étapes, chacune montrée en image et expliquée en une phrase, adaptée à l\'espèce quand elle est connue.'**
   String pgIntroBody(int count);
 
   /// No description provided for @pgStartCutting.
@@ -1143,7 +1143,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgMediumWater.
   ///
   /// In fr, this message translates to:
-  /// **'Dans l’eau'**
+  /// **'Dans l\'eau'**
   String get pgMediumWater;
 
   /// No description provided for @pgMediumSubstrate.
@@ -1167,7 +1167,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgVineHint.
   ///
   /// In fr, this message translates to:
-  /// **'Un nœud, une coupe nette, l’eau'**
+  /// **'Un nœud, une coupe nette, l\'eau'**
   String get pgVineHint;
 
   /// No description provided for @pgVineNodeTitle.
@@ -1179,7 +1179,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgVineNodeBody.
   ///
   /// In fr, this message translates to:
-  /// **'Le renflement d’où part une feuille, souvent doublé d’une racine aérienne. La bouture en garde au moins un.'**
+  /// **'Repérez le renflement d\'où part une feuille, souvent accompagné d\'une racine aérienne. Gardez-en au moins un sur la bouture.'**
   String get pgVineNodeBody;
 
   /// No description provided for @pgVineNodeNote.
@@ -1197,7 +1197,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgVineCutBody.
   ///
   /// In fr, this message translates to:
-  /// **'Lame propre, coupe nette à un centimètre sous le nœud. Le nœud reste du côté de la bouture.'**
+  /// **'Avec une lame propre, coupez net 1 cm sous le nœud : le nœud reste du côté de la bouture.'**
   String get pgVineCutBody;
 
   /// No description provided for @pgVineCutNote.
@@ -1215,19 +1215,19 @@ abstract class AppLocalizations {
   /// No description provided for @pgVineClearBody.
   ///
   /// In fr, this message translates to:
-  /// **'Les feuilles qui tremperaient sont retirées. Deux ou trois feuilles en haut nourrissent la bouture.'**
+  /// **'Retirez les feuilles qui tremperaient. Gardez-en 2 ou 3 en haut : elles nourrissent la bouture.'**
   String get pgVineClearBody;
 
   /// No description provided for @pgVineWaterTitle.
   ///
   /// In fr, this message translates to:
-  /// **'L’eau'**
+  /// **'L\'eau'**
   String get pgVineWaterTitle;
 
   /// No description provided for @pgVineWaterBody.
   ///
   /// In fr, this message translates to:
-  /// **'Le nœud sous la surface, les feuilles au-dessus. Lumière vive, sans soleil direct.'**
+  /// **'Plongez le nœud sous l\'eau, les feuilles au-dessus. Placez le verre en lumière vive, sans soleil direct.'**
   String get pgVineWaterBody;
 
   /// No description provided for @pgVineRootsTitle.
@@ -1239,13 +1239,13 @@ abstract class AppLocalizations {
   /// No description provided for @pgVineRootsBody.
   ///
   /// In fr, this message translates to:
-  /// **'Elles sortent du nœud, pas du bas de la tige. L’eau se change chaque semaine.'**
+  /// **'Les racines sortent du nœud, pas du bas de la tige. Changez l\'eau chaque semaine.'**
   String get pgVineRootsBody;
 
   /// No description provided for @pgVineRootsNote.
   ///
   /// In fr, this message translates to:
-  /// **'Premières racines en deux à six semaines'**
+  /// **'Premières racines en 2 à 6 semaines'**
   String get pgVineRootsNote;
 
   /// No description provided for @pgVinePotTitle.
@@ -1257,7 +1257,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgVinePotBody.
   ///
   /// In fr, this message translates to:
-  /// **'À quelques centimètres de racines, la bouture passe en terreau léger. Le nœud reste à fleur de terre.'**
+  /// **'Quand les racines font quelques centimètres, rempotez la bouture en terreau léger, le nœud à fleur de terre.'**
   String get pgVinePotBody;
 
   /// No description provided for @pgSoftName.
@@ -1281,7 +1281,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgSoftStemBody.
   ///
   /// In fr, this message translates to:
-  /// **'Un jeune brin ferme, sans fleur, de dix centimètres environ. Le vieux bois s’enracine mal.'**
+  /// **'Choisissez un jeune brin ferme, sans fleur, d\'environ 10 cm : le vieux bois s\'enracine mal.'**
   String get pgSoftStemBody;
 
   /// No description provided for @pgSoftCutTitle.
@@ -1293,7 +1293,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgSoftCutBody.
   ///
   /// In fr, this message translates to:
-  /// **'Lame propre, coupe juste sous une paire de feuilles. Les racines partiront de là.'**
+  /// **'Avec une lame propre, coupez juste sous une paire de feuilles : les racines partiront de là.'**
   String get pgSoftCutBody;
 
   /// No description provided for @pgSoftStripTitle.
@@ -1305,25 +1305,25 @@ abstract class AppLocalizations {
   /// No description provided for @pgSoftStripBody.
   ///
   /// In fr, this message translates to:
-  /// **'La paire du bas est retirée : la tige reste nue sur trois ou quatre centimètres.'**
+  /// **'Retirez la paire du bas pour dénuder la tige sur 3 à 4 cm.'**
   String get pgSoftStripBody;
 
   /// No description provided for @pgSoftStripNote.
   ///
   /// In fr, this message translates to:
-  /// **'Laisser une feuille sous l’eau'**
+  /// **'Laisser une feuille sous l\'eau'**
   String get pgSoftStripNote;
 
   /// No description provided for @pgSoftRootTitle.
   ///
   /// In fr, this message translates to:
-  /// **'L’enracinement'**
+  /// **'L\'enracinement'**
   String get pgSoftRootTitle;
 
   /// No description provided for @pgSoftRootBody.
   ///
   /// In fr, this message translates to:
-  /// **'La tige nue trempe, les feuilles restent au sec. Lumière vive, sans soleil direct.'**
+  /// **'Faites tremper la tige nue en gardant les feuilles au sec, en lumière vive et sans soleil direct.'**
   String get pgSoftRootBody;
 
   /// No description provided for @pgSoftRootsTitle.
@@ -1335,13 +1335,13 @@ abstract class AppLocalizations {
   /// No description provided for @pgSoftRootsBody.
   ///
   /// In fr, this message translates to:
-  /// **'Fines et nombreuses, elles partent de toute la partie immergée.'**
+  /// **'Les racines sont fines et nombreuses, et partent de toute la partie immergée.'**
   String get pgSoftRootsBody;
 
   /// No description provided for @pgSoftRootsNote.
   ///
   /// In fr, this message translates to:
-  /// **'Premières racines en une à trois semaines'**
+  /// **'Premières racines en 1 à 3 semaines'**
   String get pgSoftRootsNote;
 
   /// No description provided for @pgSoftPotTitle.
@@ -1353,7 +1353,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgSoftPotBody.
   ///
   /// In fr, this message translates to:
-  /// **'Repiquée tôt, à deux ou trois centimètres de racines : une tige tendre supporte mal l\'attente.'**
+  /// **'Repiquez tôt, dès 2 à 3 cm de racines : une tige tendre supporte mal l\'attente.'**
   String get pgSoftPotBody;
 
   /// No description provided for @pgLeafName.
@@ -1377,7 +1377,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgLeafChooseBody.
   ///
   /// In fr, this message translates to:
-  /// **'Une feuille mature, ferme, sans marque. Les jeunes feuilles manquent de réserves.'**
+  /// **'Choisissez une feuille mature, ferme et sans marque : les jeunes feuilles manquent de réserves.'**
   String get pgLeafChooseBody;
 
   /// No description provided for @pgLeafCutTitle.
@@ -1389,7 +1389,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgLeafCutBody.
   ///
   /// In fr, this message translates to:
-  /// **'Lame propre, coupe à la base de la feuille, au ras du substrat.'**
+  /// **'Avec une lame propre, coupez la feuille à sa base, au ras du substrat.'**
   String get pgLeafCutBody;
 
   /// No description provided for @pgLeafSplitTitle.
@@ -1401,7 +1401,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgLeafSplitBody.
   ///
   /// In fr, this message translates to:
-  /// **'La feuille se partage en morceaux de cinq à huit centimètres. Un V taillé en bas de chacun dit quel bout va en terre.'**
+  /// **'Coupez la feuille en morceaux de 5 à 8 cm. Taillez un V en bas de chacun pour repérer le côté qui va en terre.'**
   String get pgLeafSplitBody;
 
   /// No description provided for @pgLeafSplitNote.
@@ -1419,13 +1419,13 @@ abstract class AppLocalizations {
   /// No description provided for @pgLeafCallusBody.
   ///
   /// In fr, this message translates to:
-  /// **'Les coupes sèchent à l’air, à l’ombre, avant d’aller en terre.'**
+  /// **'Laissez les coupes sécher à l\'air et à l\'ombre avant de les planter.'**
   String get pgLeafCallusBody;
 
   /// No description provided for @pgLeafCallusNote.
   ///
   /// In fr, this message translates to:
-  /// **'Un à deux jours de séchage'**
+  /// **'1 à 2 jours de séchage'**
   String get pgLeafCallusNote;
 
   /// No description provided for @pgLeafPlantTitle.
@@ -1437,13 +1437,13 @@ abstract class AppLocalizations {
   /// No description provided for @pgLeafPlantBody.
   ///
   /// In fr, this message translates to:
-  /// **'Le V s’enfonce de deux centimètres dans un substrat drainant.'**
+  /// **'Enfoncez le V de 2 cm dans un substrat drainant.'**
   String get pgLeafPlantBody;
 
   /// No description provided for @pgLeafPlantNote.
   ///
   /// In fr, this message translates to:
-  /// **'Planter un segment à l’envers'**
+  /// **'Planter un segment à l\'envers'**
   String get pgLeafPlantNote;
 
   /// No description provided for @pgLeafGrowthTitle.
@@ -1455,13 +1455,13 @@ abstract class AppLocalizations {
   /// No description provided for @pgLeafGrowthBody.
   ///
   /// In fr, this message translates to:
-  /// **'Les racines viennent d’abord, la jeune pousse sort du substrat à côté du segment.'**
+  /// **'Les racines viennent d\'abord ; la jeune pousse sort du substrat à côté du segment.'**
   String get pgLeafGrowthBody;
 
   /// No description provided for @pgLeafGrowthNote.
   ///
   /// In fr, this message translates to:
-  /// **'Nouvelle pousse en deux à quatre mois'**
+  /// **'Nouvelle pousse en 2 à 4 mois'**
   String get pgLeafGrowthNote;
 
   /// No description provided for @pgDivisionName.
@@ -1473,7 +1473,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgDivisionHint.
   ///
   /// In fr, this message translates to:
-  /// **'Rapide et sûre, la touffe se partage'**
+  /// **'Rapide et sûre, pour les plantes en touffe'**
   String get pgDivisionHint;
 
   /// No description provided for @pgDivPlantTitle.
@@ -1485,7 +1485,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgDivPlantBody.
   ///
   /// In fr, this message translates to:
-  /// **'La plante se sort du pot en entier. Un substrat arrosé la veille tient mieux.'**
+  /// **'Sortez la plante du pot en entier. Un substrat arrosé la veille se tient mieux.'**
   String get pgDivPlantBody;
 
   /// No description provided for @pgDivUnpotTitle.
@@ -1497,7 +1497,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgDivUnpotBody.
   ///
   /// In fr, this message translates to:
-  /// **'Le pot glisse le long de la motte, la plante est libre.'**
+  /// **'Faites glisser le pot le long de la motte pour libérer la plante.'**
   String get pgDivUnpotBody;
 
   /// No description provided for @pgDivRootsTitle.
@@ -1509,7 +1509,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgDivRootsBody.
   ///
   /// In fr, this message translates to:
-  /// **'La terre s’émiette jusqu’à voir les racines et le pied des pousses.'**
+  /// **'Émiettez la terre jusqu\'à voir les racines et le pied des pousses.'**
   String get pgDivRootsBody;
 
   /// No description provided for @pgDivClustersTitle.
@@ -1539,7 +1539,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgDivSplitBody.
   ///
   /// In fr, this message translates to:
-  /// **'Les groupes se défont à la main. La lame ne sert que si les couronnes tiennent.'**
+  /// **'Séparez les groupes à la main. N\'utilisez la lame que si les couronnes résistent.'**
   String get pgDivSplitBody;
 
   /// No description provided for @pgDivSplitNote.
@@ -1557,7 +1557,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgDivRepotBody.
   ///
   /// In fr, this message translates to:
-  /// **'Chaque division part dans son pot, à la même profondeur qu’avant, et reçoit un premier arrosage.'**
+  /// **'Rempotez chaque division dans son pot, à la même profondeur qu\'avant, puis arrosez une première fois.'**
   String get pgDivRepotBody;
 
   /// No description provided for @pgOffsetName.
@@ -1581,7 +1581,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgOffSpotBody.
   ///
   /// In fr, this message translates to:
-  /// **'Un rejet du tiers de la mère, avec ses propres feuilles, est prêt à partir.'**
+  /// **'Un rejet qui fait le tiers de la plante mère, avec ses propres feuilles, est prêt à partir.'**
   String get pgOffSpotBody;
 
   /// No description provided for @pgOffSpotNote.
@@ -1599,7 +1599,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgOffClearBody.
   ///
   /// In fr, this message translates to:
-  /// **'Le substrat s’écarte autour du pied : le lien avec la plante mère paraît.'**
+  /// **'Écartez le substrat autour du pied jusqu\'à voir le lien avec la plante mère.'**
   String get pgOffClearBody;
 
   /// No description provided for @pgOffDetachTitle.
@@ -1611,7 +1611,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgOffDetachBody.
   ///
   /// In fr, this message translates to:
-  /// **'Le rejet se détache du lien, avec ses racines. La lame ne sert que si le lien est ligneux.'**
+  /// **'Détachez le rejet avec ses racines. N\'utilisez la lame que si le lien est ligneux.'**
   String get pgOffDetachBody;
 
   /// No description provided for @pgOffDetachNote.
@@ -1641,7 +1641,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgOffPotBody.
   ///
   /// In fr, this message translates to:
-  /// **'Un petit pot, le substrat de l’espèce, et un arrosage léger.'**
+  /// **'Rempotez dans un petit pot, avec le substrat de l\'espèce, puis arrosez légèrement.'**
   String get pgOffPotBody;
 
   /// No description provided for @pgOffSettleTitle.
@@ -1653,13 +1653,13 @@ abstract class AppLocalizations {
   /// No description provided for @pgOffSettleBody.
   ///
   /// In fr, this message translates to:
-  /// **'Une feuille neuve au cœur dit que le rejet a pris.'**
+  /// **'Une feuille neuve au cœur signale que le rejet a pris.'**
   String get pgOffSettleBody;
 
   /// No description provided for @pgOffSettleNote.
   ///
   /// In fr, this message translates to:
-  /// **'Reprise en trois à six semaines'**
+  /// **'Reprise en 3 à 6 semaines'**
   String get pgOffSettleNote;
 
   /// No description provided for @pgKeikiName.
@@ -1671,7 +1671,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgKeikiHint.
   ///
   /// In fr, this message translates to:
-  /// **'Le rejet d’orchidée part avec ses racines'**
+  /// **'Le rejet d\'orchidée part avec ses racines'**
   String get pgKeikiHint;
 
   /// No description provided for @pgKeikiSpotTitle.
@@ -1683,7 +1683,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgKeikiSpotBody.
   ///
   /// In fr, this message translates to:
-  /// **'Un jeune plant naît sur un nœud de la hampe : deux feuilles et des racines aériennes le rendent identifiable.'**
+  /// **'Un jeune plant naît sur un nœud de la hampe : 2 feuilles et des racines aériennes le rendent reconnaissable.'**
   String get pgKeikiSpotBody;
 
   /// No description provided for @pgKeikiSpotNote.
@@ -1701,13 +1701,13 @@ abstract class AppLocalizations {
   /// No description provided for @pgKeikiWaitBody.
   ///
   /// In fr, this message translates to:
-  /// **'Les racines s’allongent sur la hampe. Trois à cinq, longues de quelques centimètres, et le keiki vivra seul.'**
+  /// **'Les racines s\'allongent sur la hampe. À 3 à 5 racines de quelques centimètres, le keiki peut vivre seul.'**
   String get pgKeikiWaitBody;
 
   /// No description provided for @pgKeikiWaitNote.
   ///
   /// In fr, this message translates to:
-  /// **'Racines prêtes en deux à trois mois'**
+  /// **'Racines prêtes en 2 à 3 mois'**
   String get pgKeikiWaitNote;
 
   /// No description provided for @pgKeikiDetachTitle.
@@ -1719,7 +1719,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgKeikiDetachBody.
   ///
   /// In fr, this message translates to:
-  /// **'La hampe se coupe de part et d’autre du keiki, à un ou deux centimètres. Tirer meurtrissait la base.'**
+  /// **'Coupez la hampe de part et d\'autre du keiki, à 1 ou 2 cm. Ne tirez pas : vous abîmeriez la base.'**
   String get pgKeikiDetachBody;
 
   /// No description provided for @pgKeikiDetachNote.
@@ -1737,7 +1737,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgKeikiRootsBody.
   ///
   /// In fr, this message translates to:
-  /// **'Le keiki garde ses racines aériennes : ce sont elles qui reprennent dans le pot.'**
+  /// **'Gardez les racines aériennes du keiki : ce sont elles qui reprennent dans le pot.'**
   String get pgKeikiRootsBody;
 
   /// No description provided for @pgKeikiPotTitle.
@@ -1749,7 +1749,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgKeikiPotBody.
   ///
   /// In fr, this message translates to:
-  /// **'Un petit pot d’écorces, la base du keiki affleurant le substrat, sans l’enterrer.'**
+  /// **'Rempotez dans un petit pot d\'écorces, la base du keiki affleurant le substrat, sans l\'enterrer.'**
   String get pgKeikiPotBody;
 
   /// No description provided for @pgKeikiSettleTitle.
@@ -1761,13 +1761,13 @@ abstract class AppLocalizations {
   /// No description provided for @pgKeikiSettleBody.
   ///
   /// In fr, this message translates to:
-  /// **'Une feuille neuve au cœur dit que le keiki a pris.'**
+  /// **'Une feuille neuve au cœur signale que le keiki a pris.'**
   String get pgKeikiSettleBody;
 
   /// No description provided for @pgKeikiSettleNote.
   ///
   /// In fr, this message translates to:
-  /// **'Reprise en un à deux mois'**
+  /// **'Reprise en 1 à 2 mois'**
   String get pgKeikiSettleNote;
 
   /// No description provided for @pgSegmentName.
@@ -1791,7 +1791,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgSegChooseBody.
   ///
   /// In fr, this message translates to:
-  /// **'Un segment terminal ferme et sans ride, de deux ou trois articles.'**
+  /// **'Choisissez un segment terminal ferme et sans ride, de 2 ou 3 articles.'**
   String get pgSegChooseBody;
 
   /// No description provided for @pgSegDetachTitle.
@@ -1803,13 +1803,13 @@ abstract class AppLocalizations {
   /// No description provided for @pgSegDetachBody.
   ///
   /// In fr, this message translates to:
-  /// **'Le segment se détache à l’articulation, en le tournant. Une lame propre si l’article résiste.'**
+  /// **'Détachez le segment à l\'articulation, en le tournant. Prenez une lame propre s\'il résiste.'**
   String get pgSegDetachBody;
 
   /// No description provided for @pgSegDetachNote.
   ///
   /// In fr, this message translates to:
-  /// **'Tirer et déchirer l’article'**
+  /// **'Tirer et déchirer l\'article'**
   String get pgSegDetachNote;
 
   /// No description provided for @pgSegWoundTitle.
@@ -1821,7 +1821,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgSegWoundBody.
   ///
   /// In fr, this message translates to:
-  /// **'La coupe est claire et humide. Mise en terre tout de suite, elle pourrit.'**
+  /// **'La coupe est claire et humide : plantée tout de suite, elle pourrirait.'**
   String get pgSegWoundBody;
 
   /// No description provided for @pgSegCallusTitle.
@@ -1833,13 +1833,13 @@ abstract class AppLocalizations {
   /// No description provided for @pgSegCallusBody.
   ///
   /// In fr, this message translates to:
-  /// **'La plaie sèche à l’air, à l’ombre, jusqu’à former un cal mat.'**
+  /// **'Laissez la plaie sécher à l\'air et à l\'ombre, jusqu\'à former un cal mat.'**
   String get pgSegCallusBody;
 
   /// No description provided for @pgSegCallusNote.
   ///
   /// In fr, this message translates to:
-  /// **'Trois à sept jours de séchage'**
+  /// **'3 à 7 jours de séchage'**
   String get pgSegCallusNote;
 
   /// No description provided for @pgSegPlantTitle.
@@ -1851,7 +1851,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgSegPlantBody.
   ///
   /// In fr, this message translates to:
-  /// **'Le cal se pose à peine dans un substrat très drainant, sur un centimètre.'**
+  /// **'Posez le cal sur 1 cm à peine, dans un substrat très drainant.'**
   String get pgSegPlantBody;
 
   /// No description provided for @pgSegPlantNote.
@@ -1869,7 +1869,7 @@ abstract class AppLocalizations {
   /// No description provided for @pgSegRootsBody.
   ///
   /// In fr, this message translates to:
-  /// **'Les racines viennent d’abord, un nouvel article ensuite. L’arrosage attend que les racines tiennent.'**
+  /// **'Les racines viennent d\'abord, un nouvel article ensuite. Attendez que les racines tiennent pour arroser.'**
   String get pgSegRootsBody;
 
   /// No description provided for @parentPlant.

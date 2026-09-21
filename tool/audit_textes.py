@@ -5,7 +5,7 @@ Lit les quatre ARB et signale, chaîne par chaîne, ce qui relève des défauts
 décrits dans `docs/18-clarte-des-textes.md` : la consigne à l'infinitif, le
 pronominal impersonnel, le passif descriptif, les nombres en toutes lettres,
 l'apostrophe courbe, le registre de trop (le *Sie* allemand, le *voi*
-italien), la phrase trop longue.
+italien) et celui qui demande une relecture, la phrase trop longue.
 
     python3 tool/audit_textes.py             # compte par défaut
     python3 tool/audit_textes.py --liste     # une ligne par chaîne signalée
@@ -41,7 +41,7 @@ CONSIGNE = re.compile(
 
 PRONOMINAL = re.compile(
     r"\b(se|s')\s?(fait|change|choisit|corrige|coupe|détache|déduit|défont|dépose|"
-    r"écarte|efface|émiette|enfonce|fixe|glisse|multiplie|partage|place|pose|prend|"
+    r"écarte|efface|émiette|enfonce|fixe|glisse|partage|place|pose|prend|"
     r"règle|remplit|retire|rouvre|sépare|sort|applique|ajoute|active|allonge|forme)\b")
 
 # Le passif qui escamote celui qui agit : « les feuilles sont retirées » pour
@@ -74,10 +74,16 @@ NOMBRES = {
 # *you* en anglais, *du* en allemand, *tu* en italien. Ne reste signalé que le
 # registre de trop.
 REGISTRE_DE_TROP = {
-    'de': re.compile(r'\b(Sie|Ihnen|Ihre\w*|Ihr)\b'),
+    'de': re.compile(r'\bIhnen\b|\bIhre\w*\b|\bIhr\b|\b\w+en Sie\b'),
     'it': re.compile(r'\b(vostr\w+|potete|dovete|avete|desiderate|scegliete|toccate|'
                      r'aggiungete|verificate|inserite|attivate|premete|aprite)\b', re.I),
 }
+
+# En allemand, « Sie » en tête de phrase est ambigu : le vouvoiement, ou
+# simplement « elle » et « ils » (« Sie wächst in Erde », « Sie versorgen den
+# Steckling »). Seule la relecture tranche — et une chaîne où l'ambiguïté
+# subsiste mérite d'être tournée autrement, le lecteur hésite comme la machine.
+SIE_EN_TETE = re.compile(r'(?:^|(?<=[.:;!?]\s))Sie\b')
 
 LONGUEUR = 140          # une aide en ligne tient en deçà
 CHAPEAU = 220           # un chapeau d'écran a droit à davantage
@@ -115,6 +121,8 @@ def defauts(locale: str, cle: str, texte: str) -> list[str]:
 
     if locale in REGISTRE_DE_TROP and REGISTRE_DE_TROP[locale].search(nu):
         trouves.append('registre-de-trop')
+    elif locale == 'de' and SIE_EN_TETE.search(nu):
+        trouves.append('registre-a-verifier')
 
     if locale == 'fr' and not COURT.search(cle):
         # Un bouton s'intitule « Ajouter une plante » : l'infinitif n'y est

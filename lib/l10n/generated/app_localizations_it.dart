@@ -590,7 +590,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgPickBody =>
-      'Questa pianta si moltiplica in più modi. Il gesto scelto determina i passaggi.';
+      'Questa pianta si moltiplica in più modi. Scegline uno: i passaggi dipendono da quello.';
 
   @override
   String get pgRecommended => 'Consigliato';
@@ -602,7 +602,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String pgIntroBody(int count) {
-    return '$count passaggi. Ognuno è mostrato con un gesto, poi detto in una frase, adattata alla specie quando è nota.';
+    return '$count passaggi, ognuno mostrato con un\'immagine e spiegato in una frase, adattata alla specie quando è nota.';
   }
 
   @override
@@ -636,14 +636,14 @@ class AppLocalizationsIt extends AppLocalizations {
   String get pgVineName => 'Talea di fusto';
 
   @override
-  String get pgVineHint => 'Un nodo, un taglio netto, l’acqua';
+  String get pgVineHint => 'Un nodo, un taglio netto, l\'acqua';
 
   @override
   String get pgVineNodeTitle => 'Il nodo';
 
   @override
   String get pgVineNodeBody =>
-      'Il rigonfiamento da cui parte una foglia, spesso con una radice aerea accanto. La talea ne conserva almeno uno.';
+      'Individua il rigonfiamento da cui parte una foglia, spesso con una radice aerea accanto. Tienine almeno uno sulla talea.';
 
   @override
   String get pgVineNodeNote => 'Nodo e radice aerea';
@@ -653,7 +653,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgVineCutBody =>
-      'Lama pulita, taglio netto un centimetro sotto il nodo. Il nodo resta sulla talea.';
+      'Con una lama pulita, taglia netto 1 cm sotto il nodo: il nodo resta sulla talea.';
 
   @override
   String get pgVineCutNote => 'Tagliare sopra il nodo';
@@ -663,31 +663,31 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgVineClearBody =>
-      'Le foglie che resterebbero sott’acqua vengono tolte. Due o tre foglie in alto nutrono la talea.';
+      'Togli le foglie che resterebbero sott\'acqua. Tienine 2 o 3 in alto: nutrono la talea.';
 
   @override
-  String get pgVineWaterTitle => 'L’acqua';
+  String get pgVineWaterTitle => 'L\'acqua';
 
   @override
   String get pgVineWaterBody =>
-      'Il nodo sotto la superficie, le foglie sopra. Luce viva, senza sole diretto.';
+      'Metti il nodo sotto l\'acqua, le foglie sopra. Posiziona il bicchiere in luce viva, senza sole diretto.';
 
   @override
   String get pgVineRootsTitle => 'Le radici';
 
   @override
   String get pgVineRootsBody =>
-      'Escono dal nodo, non dalla base del fusto. L’acqua si cambia ogni settimana.';
+      'Le radici escono dal nodo, non dalla base del fusto. Cambia l\'acqua ogni settimana.';
 
   @override
-  String get pgVineRootsNote => 'Prime radici in due-sei settimane';
+  String get pgVineRootsNote => 'Prime radici in 2-6 settimane';
 
   @override
   String get pgVinePotTitle => 'Il vaso';
 
   @override
   String get pgVinePotBody =>
-      'A qualche centimetro di radice la talea passa in terriccio leggero. Il nodo resta appena sotto la superficie.';
+      'Quando le radici sono lunghe qualche centimetro, rinvasa la talea in terriccio leggero, con il nodo appena sotto la superficie.';
 
   @override
   String get pgSoftName => 'Talea di getto tenero';
@@ -700,48 +700,48 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgSoftStemBody =>
-      'Un getto giovane e sodo, senza fiori, di una decina di centimetri. Il legno vecchio radica male.';
+      'Scegli un getto giovane e sodo, senza fiori, di circa 10 cm: il legno vecchio radica male.';
 
   @override
   String get pgSoftCutTitle => 'Il taglio';
 
   @override
   String get pgSoftCutBody =>
-      'Lama pulita, taglio appena sotto una coppia di foglie. Le radici partiranno da lì.';
+      'Con una lama pulita, taglia appena sotto una coppia di foglie: le radici partiranno da lì.';
 
   @override
   String get pgSoftStripTitle => 'Le foglie basse';
 
   @override
   String get pgSoftStripBody =>
-      'La coppia più bassa viene tolta: tre o quattro centimetri di fusto restano nudi.';
+      'Togli la coppia più bassa per lasciare nudi 3-4 cm di fusto.';
 
   @override
-  String get pgSoftStripNote => 'Lasciare una foglia sott’acqua';
+  String get pgSoftStripNote => 'Lasciare una foglia sott\'acqua';
 
   @override
   String get pgSoftRootTitle => 'La radicazione';
 
   @override
   String get pgSoftRootBody =>
-      'Il fusto nudo resta in acqua, le foglie all’asciutto. Luce viva, senza sole diretto.';
+      'Metti in acqua il fusto nudo tenendo le foglie all\'asciutto, in luce viva e senza sole diretto.';
 
   @override
   String get pgSoftRootsTitle => 'Le radici';
 
   @override
   String get pgSoftRootsBody =>
-      'Fini e numerose, escono da tutta la parte immersa.';
+      'Le radici sono fini e numerose, ed escono da tutta la parte immersa.';
 
   @override
-  String get pgSoftRootsNote => 'Prime radici in una-tre settimane';
+  String get pgSoftRootsNote => 'Prime radici in 1-3 settimane';
 
   @override
   String get pgSoftPotTitle => 'Il trapianto';
 
   @override
   String get pgSoftPotBody =>
-      'Trapiantata presto, a due o tre centimetri di radice: un getto tenero non regge l\'attesa.';
+      'Trapianta presto, a 2-3 cm di radice: un getto tenero non regge l\'attesa.';
 
   @override
   String get pgLeafName => 'Talea di foglia';
@@ -754,41 +754,41 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgLeafChooseBody =>
-      'Una foglia matura, soda, senza segni. Le foglie giovani non hanno riserve.';
+      'Scegli una foglia matura, soda e senza segni: le foglie giovani non hanno riserve.';
 
   @override
   String get pgLeafCutTitle => 'Il taglio';
 
   @override
   String get pgLeafCutBody =>
-      'Lama pulita, taglio alla base della foglia, a filo del substrato.';
+      'Con una lama pulita, taglia la foglia alla base, a filo del substrato.';
 
   @override
   String get pgLeafSplitTitle => 'I segmenti';
 
   @override
   String get pgLeafSplitBody =>
-      'La foglia si divide in pezzi di cinque-otto centimetri. Una V incisa in basso dice quale estremità va in terra.';
+      'Taglia la foglia in pezzi di 5-8 cm. Incidi una V in basso su ognuno per riconoscere il lato che va in terra.';
 
   @override
   String get pgLeafSplitNote => 'La V indica il basso';
 
   @override
-  String get pgLeafCallusTitle => 'L’asciugatura';
+  String get pgLeafCallusTitle => 'L\'asciugatura';
 
   @override
   String get pgLeafCallusBody =>
-      'I tagli asciugano all’aria, all’ombra, prima di andare nel substrato.';
+      'Lascia asciugare i tagli all\'aria e all\'ombra prima di piantarli.';
 
   @override
-  String get pgLeafCallusNote => 'Uno-due giorni di asciugatura';
+  String get pgLeafCallusNote => '1-2 giorni di asciugatura';
 
   @override
   String get pgLeafPlantTitle => 'Il substrato';
 
   @override
   String get pgLeafPlantBody =>
-      'La V entra per due centimetri in un substrato drenante.';
+      'Infila la V per 2 cm in un substrato drenante.';
 
   @override
   String get pgLeafPlantNote => 'Piantare un segmento al contrario';
@@ -798,37 +798,37 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgLeafGrowthBody =>
-      'Prima arrivano le radici, poi un giovane getto esce dal substrato accanto al segmento.';
+      'Prima arrivano le radici; il getto giovane esce dal substrato accanto al segmento.';
 
   @override
-  String get pgLeafGrowthNote => 'Nuovo getto in due-quattro mesi';
+  String get pgLeafGrowthNote => 'Nuovo getto in 2-4 mesi';
 
   @override
   String get pgDivisionName => 'Divisione';
 
   @override
-  String get pgDivisionHint => 'Rapida e sicura, il cespo si divide';
+  String get pgDivisionHint => 'Rapida e sicura, per le piante a cespo';
 
   @override
   String get pgDivPlantTitle => 'Il cespo';
 
   @override
   String get pgDivPlantBody =>
-      'La pianta esce intera dal vaso. Un substrato bagnato il giorno prima tiene meglio.';
+      'Estrai la pianta intera dal vaso. Un substrato bagnato il giorno prima tiene meglio.';
 
   @override
   String get pgDivUnpotTitle => 'Fuori dal vaso';
 
   @override
   String get pgDivUnpotBody =>
-      'Il vaso scivola via dal pane di terra e la pianta è libera.';
+      'Sfila il vaso dal pane di terra per liberare la pianta.';
 
   @override
   String get pgDivRootsTitle => 'Il pane di terra';
 
   @override
   String get pgDivRootsBody =>
-      'La terra si sbriciola finché si vedono le radici e la base dei getti.';
+      'Sbriciola la terra fino a vedere le radici e la base dei getti.';
 
   @override
   String get pgDivClustersTitle => 'I due gruppi';
@@ -845,7 +845,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgDivSplitBody =>
-      'I gruppi si staccano a mano. La lama serve solo se i colletti resistono.';
+      'Separa i gruppi a mano. Usa la lama solo se i colletti resistono.';
 
   @override
   String get pgDivSplitNote => 'Tagliare un fusto sopra la terra';
@@ -855,7 +855,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgDivRepotBody =>
-      'Ogni divisione va nel suo vaso, alla profondità di prima, e riceve una prima annaffiatura.';
+      'Rinvasa ogni divisione nel suo vaso, alla profondità di prima, poi annaffia una prima volta.';
 
   @override
   String get pgOffsetName => 'Separare un pollone';
@@ -868,7 +868,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgOffSpotBody =>
-      'Un pollone grande un terzo della madre, con foglie proprie, è pronto.';
+      'Un pollone grande un terzo della pianta madre, con foglie proprie, è pronto.';
 
   @override
   String get pgOffSpotNote => 'Pollone già formato';
@@ -878,14 +878,14 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgOffClearBody =>
-      'Il substrato si allontana attorno alla base e il legame con la pianta madre appare.';
+      'Allontana il substrato attorno alla base fino a vedere il legame con la pianta madre.';
 
   @override
   String get pgOffDetachTitle => 'La separazione';
 
   @override
   String get pgOffDetachBody =>
-      'Il pollone si stacca dal legame, con le sue radici. La lama serve solo se il legame è legnoso.';
+      'Stacca il pollone con le sue radici. Usa la lama solo se il legame è legnoso.';
 
   @override
   String get pgOffDetachNote => 'Strappare il pollone senza radici';
@@ -902,30 +902,30 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgOffPotBody =>
-      'Un vaso piccolo, il substrato della specie e una leggera annaffiatura.';
+      'Rinvasa in un vaso piccolo con il substrato della specie, poi annaffia leggermente.';
 
   @override
   String get pgOffSettleTitle => 'La ripresa';
 
   @override
   String get pgOffSettleBody =>
-      'Una foglia nuova al centro dice che il pollone ha attecchito.';
+      'Una foglia nuova al centro segnala che il pollone ha attecchito.';
 
   @override
-  String get pgOffSettleNote => 'Ripresa in tre-sei settimane';
+  String get pgOffSettleNote => 'Ripresa in 3-6 settimane';
 
   @override
   String get pgKeikiName => 'Separare un keiki';
 
   @override
-  String get pgKeikiHint => 'Il pollone dell’orchidea parte con le sue radici';
+  String get pgKeikiHint => 'Il pollone dell\'orchidea parte con le sue radici';
 
   @override
   String get pgKeikiSpotTitle => 'Il keiki';
 
   @override
   String get pgKeikiSpotBody =>
-      'Una giovane pianta nasce su un nodo dello stelo: due foglie e radici aeree la rendono riconoscibile.';
+      'Una giovane pianta nasce su un nodo dello stelo: 2 foglie e radici aeree la rendono riconoscibile.';
 
   @override
   String get pgKeikiSpotNote => 'Pollone già formato';
@@ -935,17 +935,17 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgKeikiWaitBody =>
-      'Le radici si allungano lungo lo stelo. Tre o cinque, lunghe qualche centimetro, e il keiki vivrà da solo.';
+      'Le radici si allungano lungo lo stelo. Con 3-5 radici di qualche centimetro, il keiki può vivere da solo.';
 
   @override
-  String get pgKeikiWaitNote => 'Radici pronte in due o tre mesi';
+  String get pgKeikiWaitNote => 'Radici pronte in 2-3 mesi';
 
   @override
   String get pgKeikiDetachTitle => 'La separazione';
 
   @override
   String get pgKeikiDetachBody =>
-      'Lo stelo si taglia ai due lati del keiki, a uno o due centimetri. Strappare rovinerebbe la base.';
+      'Taglia lo stelo ai due lati del keiki, a 1 o 2 cm. Non tirare: rovineresti la base.';
 
   @override
   String get pgKeikiDetachNote => 'Strappare il keiki';
@@ -955,24 +955,24 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgKeikiRootsBody =>
-      'Il keiki conserva le radici aeree: saranno loro a riprendere nel vaso.';
+      'Conserva le radici aeree del keiki: saranno loro a riprendere nel vaso.';
 
   @override
   String get pgKeikiPotTitle => 'Il vaso';
 
   @override
   String get pgKeikiPotBody =>
-      'Un vaso piccolo con corteccia, la base del keiki a filo del substrato, senza interrarla.';
+      'Rinvasa in un vaso piccolo con corteccia, la base del keiki a filo del substrato, senza interrarla.';
 
   @override
   String get pgKeikiSettleTitle => 'La ripresa';
 
   @override
   String get pgKeikiSettleBody =>
-      'Una foglia nuova al centro dice che il keiki ha attecchito.';
+      'Una foglia nuova al centro segnala che il keiki ha attecchito.';
 
   @override
-  String get pgKeikiSettleNote => 'Ripresa in uno o due mesi';
+  String get pgKeikiSettleNote => 'Ripresa in 1-2 mesi';
 
   @override
   String get pgSegmentName => 'Talea di segmento';
@@ -985,41 +985,41 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgSegChooseBody =>
-      'Un segmento terminale sodo e senza grinze, di due o tre articoli.';
+      'Scegli un segmento terminale sodo e senza grinze, di 2 o 3 articoli.';
 
   @override
   String get pgSegDetachTitle => 'Il distacco';
 
   @override
   String get pgSegDetachBody =>
-      'Il segmento si stacca all’articolazione, con una torsione. Lama pulita se l’articolo resiste.';
+      'Stacca il segmento all\'articolazione, ruotandolo. Usa una lama pulita se resiste.';
 
   @override
-  String get pgSegDetachNote => 'Tirare e strappare l’articolo';
+  String get pgSegDetachNote => 'Tirare e strappare l\'articolo';
 
   @override
   String get pgSegWoundTitle => 'La ferita';
 
   @override
   String get pgSegWoundBody =>
-      'Il taglio è chiaro e umido. Piantato subito, marcisce.';
+      'Il taglio è chiaro e umido: piantato subito, marcirebbe.';
 
   @override
   String get pgSegCallusTitle => 'La cicatrizzazione';
 
   @override
   String get pgSegCallusBody =>
-      'La ferita asciuga all’aria, all’ombra, fino a formare un callo opaco.';
+      'Lascia asciugare la ferita all\'aria e all\'ombra, fino a formare un callo opaco.';
 
   @override
-  String get pgSegCallusNote => 'Tre-sette giorni di asciugatura';
+  String get pgSegCallusNote => '3-7 giorni di asciugatura';
 
   @override
   String get pgSegPlantTitle => 'Il substrato';
 
   @override
   String get pgSegPlantBody =>
-      'Il callo entra appena un centimetro in un substrato molto drenante.';
+      'Appoggia il callo per appena 1 cm in un substrato molto drenante.';
 
   @override
   String get pgSegPlantNote => 'Interrare il segmento';
@@ -1029,7 +1029,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgSegRootsBody =>
-      'Prima arrivano le radici, poi un nuovo articolo. L’annaffiatura aspetta che le radici tengano.';
+      'Prima arrivano le radici, poi un nuovo articolo. Aspetta che le radici tengano per annaffiare.';
 
   @override
   String get parentPlant => 'Pianta madre';
