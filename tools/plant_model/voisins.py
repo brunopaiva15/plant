@@ -178,6 +178,32 @@ def degrader(embeddings: np.ndarray, cible: float, graine: int = 20260919) -> np
     return cible * v + np.sqrt(max(0.0, 1.0 - cible ** 2)) * u
 
 
+def centrer(embeddings: np.ndarray) -> np.ndarray:
+    """Les mêmes vecteurs, débarrassés de leur direction commune.
+
+    **Le remède que le diagnostic appelle.** Le student a un cône plus serré
+    que son teacher — 0,4179 contre 0,2889 de cosinus entre deux images
+    quelconques —, ce qui signale une composante partagée par tous ses
+    vecteurs. Elle ne s'annule pas au classement : identique pour chaque
+    image, elle biaise chaque rang de la même façon, là où un bruit
+    aléatoire se compense.
+
+    Retirer la moyenne puis renormaliser la fait disparaître. Si le top-1
+    remonte, la composante commune était le coupable — et le correctif se
+    pose à l'inférence, sans réentraîner quoi que ce soit.
+
+    La moyenne est celle des images **mesurées**, donc elle ne se transporte
+    pas telle quelle dans l'application : il faudrait l'estimer une fois sur
+    un jeu de validation et la livrer avec le modèle. C'est une mesure de
+    diagnostic avant d'être un correctif.
+    """
+    v = np.asarray(embeddings, dtype=np.float32)
+    v = v - v.mean(axis=0, keepdims=True)
+    n = np.linalg.norm(v, axis=1, keepdims=True)
+    n[n == 0] = 1.0
+    return v / n
+
+
 def lire_embeddings(cache: Path, chemins: list[str]) -> tuple[list[int], np.ndarray]:
     """Les vecteurs déjà cachés pour ces images, et lesquelles en ont un.
 
@@ -275,6 +301,9 @@ def main() -> int:  # pragma: no cover - demande le cache et le banc
                     help="restreindre Iris 9 au masque du lieu pour cette tranche, "
                          "comme le fait l'application (§ 14 de docs/09). Sans lui, "
                          'Iris répond sur ses 1 569 classes, ce que l\'app ne fait pas')
+    ap.add_argument('--centrer', action='store_true',
+                    help='retirer la direction commune aux vecteurs avant de classer — '
+                         'le correctif que le cône refermé appelle')
     ap.add_argument('--degrader', default='',
                     help='cosinus cibles séparés par des virgules : relit le top-1 sur '
                          'des vecteurs du teacher écartés à ce cosinus. Dit quel accord '
@@ -324,6 +353,8 @@ def main() -> int:  # pragma: no cover - demande le cache et le banc
             print(f'\n— {tranche} — aucune image dans le cache, sautée')
             continue
         verites = [lignes[i][1] for i in gardes]
+        if args.centrer:
+            embeddings = centrer(embeddings)
         manquantes = len(lignes) - len(gardes)
         print(f'\n— {tranche} — {len(gardes)} images'
               + (f' ({manquantes} absentes du cache)' if manquantes else ''))

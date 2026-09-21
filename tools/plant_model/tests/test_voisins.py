@@ -197,3 +197,24 @@ def test_la_degradation_est_reproductible():
     v = np.random.default_rng(3).standard_normal((10, 8)).astype(np.float32)
     v /= np.linalg.norm(v, axis=1, keepdims=True)
     assert np.allclose(degrader(v, 0.9), degrader(v, 0.9))
+
+
+def test_centrer_retire_la_direction_commune():
+    """Des vecteurs qui partagent une forte composante se retrouvent bien
+    plus écartés une fois centrés — c'est tout l'objet du correctif."""
+    from voisins import centrer
+    from student import etalement
+    alea = np.random.default_rng(0)
+    # Le bruit se somme sur les 64 axes : à 0,1 par axe sa norme vaut 0,8,
+    # assez pour que la direction commune domine sans l'écraser.
+    v = alea.standard_normal((200, 64)).astype(np.float32) * 0.1
+    v[:, 0] += 1.0                                   # une direction commune à tous
+    v /= np.linalg.norm(v, axis=1, keepdims=True)
+    assert etalement(v) > 0.5
+    assert abs(etalement(centrer(v))) < 0.05
+
+
+def test_centrer_rend_des_vecteurs_unitaires():
+    from voisins import centrer
+    v = np.random.default_rng(1).standard_normal((30, 16)).astype(np.float32)
+    assert np.allclose(np.linalg.norm(centrer(v), axis=1), 1.0, atol=1e-5)
