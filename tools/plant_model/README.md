@@ -284,21 +284,36 @@ python3 -m venv ~/venv-torch && source ~/venv-torch/bin/activate
 pip install -r requirements-bioclip.txt
 ```
 
+**Et l'interpréteur en chemin absolu dès qu'on passe par `tmux`**, qui ouvre
+un shell neuf n'héritant d'aucun venv. Le `source` dans `.bashrc` que
+conseille `docs/11` ne marche plus à deux environnements : il déposerait
+`bioclip.py` dans le venv TensorFlow, où il meurt sur `No module named
+'torch'`. Les lignes ci-dessous sont donc écrites en chemin absolu.
+
 Puis, dans l'ordre :
 
 ```bash
 # 1. ce que la passe coûtera, avant de la lancer
-python3 bioclip.py mesure --dataset ~/plant-data/dataset-echantillon
+~/venv-torch/bin/python3 bioclip.py mesure --dataset ~/plant-data/dataset-echantillon
 
-# 2. le corpus (reprenable : relancer la même ligne continue)
-python3 bioclip.py cache --dataset ~/plant-data/dataset-v8-indoor \
-  --cache ~/plant-data/bioclip
+# 2. le corpus — 7,5 h, donc dans un tmux (reprenable : relancer la même
+#    ligne continue)
+tmux new -s bioclip
+~/venv-torch/bin/python3 -u ~/plant/tools/plant_model/bioclip.py cache \
+  --dataset ~/plant-data/dataset-v8-indoor \
+  --cache ~/plant-data/bioclip \
+  2>&1 | tee ~/plant-data/bioclip-cache.log
 
-# 3. les références d'espèces, dans le même espace
-python3 bioclip.py textes --cache ~/plant-data/bioclip
-python3 bioclip.py centroides --dataset ~/plant-data/dataset-v8-indoor \
-  --cache ~/plant-data/bioclip
+# 3. les références d'espèces, dans le même espace — quelques minutes
+~/venv-torch/bin/python3 bioclip.py textes --cache ~/plant-data/bioclip
+~/venv-torch/bin/python3 bioclip.py centroides \
+  --dataset ~/plant-data/dataset-v8-indoor --cache ~/plant-data/bioclip
 ```
+
+Sous WSL, régler la mise en veille de Windows sur « jamais » avant de partir :
+une VM suspendue en pleine passe ne rend pas toujours son contexte CUDA au
+réveil. Le cache étant incrémental, ça se rattrape — mais autant ne pas avoir
+à le rattraper.
 
 `mesure` d'abord, et ce n'est pas une politesse : un ViT-H/14 n'a pas le
 débit d'un MobileNet, le chiffre ne se devine pas depuis les 831 img/s de

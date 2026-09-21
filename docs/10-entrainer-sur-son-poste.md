@@ -94,6 +94,14 @@ python3 -c "import torch; print(torch.cuda.is_available())"
 Deux venvs, deux `source`, et on ne lance jamais `train.py` depuis
 `~/venv-torch` ni `bioclip.py` depuis `~/venv`.
 
+> **Et la parade du § *tmux* de [`docs/11`](11-entrainer-sur-une-vm.md) est
+> devenue un piège.** Elle propose `echo 'source ~/venv/bin/activate' >>
+> ~/.bashrc`, parce qu'un shell neuf n'hérite pas du venv activé à côté. Avec
+> deux venvs, cette ligne dépose dans celui de TensorFlow un `bioclip.py` qui
+> meurt aussitôt sur `No module named 'torch'`. **L'interpréteur en chemin
+> absolu est la seule parade qui tienne à deux environnements** :
+> `~/venv-torch/bin/python3 bioclip.py …`, `~/venv/bin/python3 train.py …`.
+
 ## 2 bis. Ce que la machine rend, mesuré
 
 Avant de déplacer des dizaines de gigaoctets vers une machine, il faut savoir
