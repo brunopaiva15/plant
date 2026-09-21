@@ -345,3 +345,53 @@ pour les 794 000 images d'entraînement et 2,0 Gio pour tout le corpus.
 Et les deux commandes de références relisent la signature du cache au lieu
 d'en refaire une : des vecteurs d'espèces d'une version du teacher et des
 vecteurs de photos d'une autre ne vivent pas dans le même espace.
+
+## Un second avis vaut-il ses mégaoctets ?
+
+```bash
+python3 plantnet_avis.py --banc benchmark.csv \
+  --iris ../../assets/model --plantnet ~/plant-data/plantnet.tflite
+```
+
+Embarquer `litert-community/PlantNet-300K-ResNet18-LiteRT` à côté d'Iris
+coûterait **47 Mo** dans une application qui en porte 9,0. Ce script dit ce
+que ça achèterait, avant de le demander à qui que ce soit.
+
+Il rend deux chiffres qui ne se remplacent pas :
+
+- **la couverture**, sans une seule inférence — parmi les espèces qu'Iris ne
+  nomme pas, celles que PlantNet nomme. C'est la seule chose qu'un second
+  avis puisse *ajouter* ;
+- **la justesse à armes égales** — les deux modèles sur les **mêmes images**
+  du banc, restreints aux espèces que les deux connaissent, en deux lectures
+  (sorties masquées et sorties entières) comme au § 6.7 bis de `docs/09`.
+
+Ce qu'on sait déjà sans inférer : **123 espèces communes** sur les 1 569
+d'Iris 9, **43 sur les 363** du masque intérieur, et **899 espèces** que
+PlantNet nomme et pas Iris. Sur les neuf espèces qu'Iris a ratées dans les
+retours d'utilisateurs, PlantNet en connaît **une**.
+
+**Les deux chaînes de prétraitement ne sont pas la même**, et c'est le piège
+de ce script : une image mal préparée ne fait pas planter un modèle, elle lui
+fait rendre des réponses fausses (§ 6.2).
+
+| | Iris 9 | PlantNet-300K |
+|---|---|---|
+| entrée | 320 px, NHWC | 224 px, **NCHW** |
+| valeurs | `uint8` 0-255, normalisation dans le graphe | `float32`, normalisation **ImageNet** ici |
+| sortie | probabilités | **logits** — softmax ici |
+
+Le carré central puis la réduction restent communs : `prepare()` sert aux
+deux, à des tailles différentes.
+
+Les étiquettes viennent du `plantnet300K_species_id_2_name.json` que
+`plantnet300k.py` télécharge déjà, et l'ordre des classes est celui des
+identifiants d'espèce **triés comme des chaînes** (`ImageFolder`). Trier en
+numérique décalerait tout sans rien signaler. Enfin, 1 081 sorties ne font
+que **1 022 binômes** : les probabilités des doublons sont additionnées, pas
+maximisées.
+
+La chaîne a été vérifiée de bout en bout sur l'image de la carte du modèle —
+*Calendula officinalis* à 0,95, avec *Calendula stellata* en quatrième. Un
+décalage d'étiquettes aurait rendu une espèce au hasard, pas une grappe de
+genre.
