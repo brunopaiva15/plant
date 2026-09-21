@@ -210,6 +210,9 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
                          "et la carte attend : c'est le défaut du § 2 bis de docs/10, "
                          'et il se reproduit à chaque nouvelle boucle')
     ap.add_argument('--pas', type=int, default=60, help='pas chronométrés par `mesure`')
+    ap.add_argument('--banc', default='benchmark.csv',
+                    help='le manifeste figé ; chaque point de contrôle en écrit un '
+                         'cache que voisins.py lit tel quel')
     ap.add_argument('--graine', type=int, default=20260919)
     args = ap.parse_args()
 
@@ -287,8 +290,113 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
             print(f'VRAM réservée : {torch.cuda.max_memory_allocated() / 2 ** 30:.2f} Gio sur 8')
         return 0
 
-    raise SystemExit("`entrainer` n'est pas encore écrit — lancer `mesure` d'abord, "
-                     'et décider du calendrier sur son chiffre')
+    # ----------------------------------------------------------------------
+    # entrainer
+    # ----------------------------------------------------------------------
+    from student import lire_banc, preparer, signature_student
+    from bioclip import accorder_signature
+
+    sortie = Path(args.sortie).expanduser()
+    sortie.mkdir(parents=True, exist_ok=True)
+    optimiseur = torch.optim.AdamW(modele.parameters(), lr=args.taux)
+    echelle = torch.amp.GradScaler('cuda') if args.demi else None
+    if args.demi:
+        modele = modele.to(memory_format=torch.channels_last)
+
+    # La reprise. Contrairement à `train.py` (§ 13.6 de docs/09), l'état de
+    # l'optimiseur est **rechargé** : un AdamW neuf au milieu d'une descente
+    # coûte des points, et ici rien n'empêche de le sauver.
+    etat = sortie / 'etat.json'
+    depart = 0
+    if etat.exists():
+        e = json.loads(etat.read_text())
+        point = torch.load(sortie / 'poids.pt', map_location=appareil, weights_only=True)
+        modele.load_state_dict(point['modele'])
+        optimiseur.load_state_dict(point['optimiseur'])
+        if echelle is not None and point.get('echelle'):
+            echelle.load_state_dict(point['echelle'])
+        depart = int(e['epoque'])
+        print(f'reprise à l\'époque {depart}')
+
+    banc = lire_banc(Path(args.banc).expanduser()) if Path(args.banc).expanduser().exists() else []
+    journal = open(sortie / 'journal.csv', 'a', newline='', encoding='utf-8')
+    if journal.tell() == 0:
+        csv.writer(journal).writerow(['epoque', 'pas', 'perte', 'accord', 'cone'])
+
+    for epoque in range(depart, args.epoques):
+        ordre = melanger(len(lot_complet), args.graine + epoque)
+        lots = [[lot_complet[i] for i in ordre[d:d + args.batch]]
+                for d in range(0, len(ordre), args.batch)]
+        lots = [l for l in lots if len(l) == args.batch]
+        memo: dict = {}
+        modele.train()
+        debut = time.perf_counter()
+        for pas, (lot, images) in enumerate(
+                flux_de_lots(lots, lambda t: preparer(t[0])[0], args.fils)):
+            x = torch.from_numpy(np.stack(images)).to(appareil)
+            if args.demi:
+                x = x.to(memory_format=torch.channels_last)
+            y = torch.from_numpy(cibles(cache, lot, memo)).to(appareil)
+            optimiseur.zero_grad()
+            with torch.autocast('cuda', dtype=torch.float16, enabled=args.demi):
+                s = modele(x)
+                perte = (perte_cosinus(s.float(), y)
+                         + args.contrastive * perte_contrastive(s.float(), y))
+            if echelle is not None:
+                echelle.scale(perte).backward()
+                echelle.step(optimiseur)
+                echelle.update()
+            else:
+                perte.backward()
+                optimiseur.step()
+            if pas % 200 == 0:
+                lu = etat_du_lot(s.float(), y)
+                csv.writer(journal).writerow(
+                    [epoque, pas, round(float(perte), 4),
+                     round(lu['accord'], 4), round(lu['cone'], 4)])
+                journal.flush()
+                vitesse = (pas + 1) * args.batch / (time.perf_counter() - debut)
+                print(f'  é{epoque} pas {pas}/{len(lots)}  perte {float(perte):.4f}  '
+                      f"accord {lu['accord']:.4f}  cône {lu['cone']:.4f}  "
+                      f'{vitesse:.0f} img/s', flush=True)
+
+        torch.save({'modele': modele.state_dict(),
+                    'optimiseur': optimiseur.state_dict(),
+                    'echelle': echelle.state_dict() if echelle else None},
+                   sortie / 'poids.pt')
+        etat.write_text(json.dumps({'epoque': epoque + 1, 'student': args.student,
+                                    'contrastive': args.contrastive}))
+
+        # Le point de contrôle qui décide : un cache du banc, lisible tel quel
+        # par `voisins.py --embeddings`. On arrête sur le top-1 par référence,
+        # jamais sur la perte (§ 19 bis de docs/14).
+        if banc:
+            dossier = sortie / f'banc-e{epoque + 1}'
+            sig = signature_student(f'{args.student}-e{epoque + 1}', 'carre')
+            accorder_signature(dossier, sig)
+            modele.eval()
+            vecteurs = np.empty((len(banc), DIM), dtype=np.float16)
+            paquets = [banc[d:d + args.batch] for d in range(0, len(banc), args.batch)]
+            ecrit = 0
+            with torch.no_grad():
+                for paquet, images in flux_de_lots(paquets, lambda c: preparer(c)[0],
+                                                   args.fils):
+                    x = torch.from_numpy(np.stack(images)).to(appareil)
+                    if args.demi:
+                        x = x.to(memory_format=torch.channels_last)
+                    with torch.autocast('cuda', dtype=torch.float16, enabled=args.demi):
+                        v = modele(x).float()
+                    v = v / v.norm(dim=-1, keepdim=True)
+                    vecteurs[ecrit:ecrit + len(paquet)] = v.cpu().numpy().astype(np.float16)
+                    ecrit += len(paquet)
+            np.save(dossier / 'emb-0-0000.npy', vecteurs[:ecrit])
+            with open(dossier / 'index-0.csv', 'w', newline='', encoding='utf-8') as f:
+                csv.writer(f).writerows([[c, 'emb-0-0000', i]
+                                         for i, c in enumerate(banc[:ecrit])])
+            print(f'  point de contrôle é{epoque + 1} — '
+                  f'voisins.py --embeddings {dossier}', flush=True)
+    journal.close()
+    return 0
 
 
 if __name__ == '__main__':
