@@ -126,6 +126,26 @@ que 840, parce qu'elle calcule deux fois plus par image alors que le décodage
 coûte la même chose — il dépend de la taille **stockée**, pas de l'entrée du
 réseau. Monter à 320 rééquilibre la machine au lieu de l'étrangler.
 
+### Et ce que rend le teacher d'Iris 10, sur la même carte
+
+`bioclip.py mesure`, le 21 septembre 2026, sur l'échantillon :
+
+| | images/s | |
+|---|---|---|
+| MobileNetV3Large, 320 px, lot 64 | 831 | la passe d'entraînement |
+| **BioCLIP 2.5 ViT-H/14, 224 px, lot 32** | **36,6** | **23× plus lent** |
+
+Sept heures et demie pour les 991 926 images, 1,89 Gio de vecteurs, et
+**3,74 Gio de VRAM sur les 8** au lot de 32 — la moitié de la carte reste
+libre, mais c'est le premier chiffre mesuré et non deviné, ce qui est tout
+l'objet de la commande.
+
+Vingt-trois fois plus lent, et ce n'est pas un problème : le teacher tourne
+**une fois**, là où l'entraînement repasse trente époques. Sept heures et
+demie pour BioCLIP contre huit heures pour une passe d'Iris 9 — le cache
+coûte donc un entraînement, une seule fois, et aucune distillation ne le
+rappellera ensuite.
+
 ### Déplacer le jeu : une archive, jamais un million de fichiers
 
 Copier le jeu dossier par dossier depuis `/mnt/c` vers le disque Linux rend

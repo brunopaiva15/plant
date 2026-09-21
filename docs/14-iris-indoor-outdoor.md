@@ -615,6 +615,17 @@ MobileNet. **On le mesure sur cent images avant de lancer le corpus**, et on
 multiplie ; une passe qui dépasserait la nuit se découpe par dossier, le
 cache étant incrémental par construction.
 
+**Mesuré le 21 septembre 2026** sur la RTX 2070 Super, `float16`, lot 32 :
+**36,6 images/s**, soit **7,5 h** pour les 991 926 images et 1,89 Gio de
+vecteurs. Le lot de 32 réserve 3,74 Gio de VRAM sur les 8.
+
+Vingt-trois fois plus lent que les 831 images/s de `train.py` à 320 px — et
+c'est l'argument du cache plutôt qu'une objection contre lui : le teacher
+passe **une fois**, l'entraînement repasse trente époques. Sept heures et
+demie pour BioCLIP contre huit pour une passe d'Iris 9, et plus jamais
+ensuite. Une nuit suffit, donc les parts ne servent pas ici ; elles restent
+pour le jour où le corpus grandira.
+
 Deux précautions, parce qu'un cache faux est pire qu'un cache absent :
 
 - **la clé porte le prétraitement**, pas seulement le chemin de l'image. Un
