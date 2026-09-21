@@ -1,14 +1,14 @@
 {
-  "totalSpecies": 33343,
+  "totalSpecies": 33344,
   "resolution": {
     "family": 26182,
     "genus": 7110,
-    "species": 51
+    "species": 52
   },
   "toxicityByLevel": {
     "family": 6042,
     "genus": 2909,
-    "none": 24379,
+    "none": 24380,
     "species": 13
   },
   "heavyProfiles": {

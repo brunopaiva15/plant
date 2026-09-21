@@ -107,4 +107,12 @@ void main() {
 /// monter cette part, et c'est un progrès, pas la régression que le cliquet
 /// surveille. Le niveau `generic` disparaît de l'instantané par la même
 /// occasion.
-const double _familyShareCeiling = 26185 / 33343;
+///
+/// Resserrée à la livraison de l'Iris 9, et le diff de l'instantané tient en
+/// trois lignes : l'encyclopédie gagne **une** espèce — 33 344 —, qui résout
+/// au niveau de l'espèce et non de la famille. Le numérateur ne bouge pas,
+/// 26 182 fiches à la famille. Exposer 1 233 classes de plus n'a donc pas
+/// déplacé un seul héritage : le modèle a changé, la couverture d'entretien
+/// non. Le plafond suit la mesure vers le bas, puisqu'un cliquet qui ne se
+/// resserre jamais finit par ne plus rien surveiller.
+const double _familyShareCeiling = 26182 / 33344;
