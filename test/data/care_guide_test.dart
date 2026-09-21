@@ -18,7 +18,7 @@ void main() {
     });
 
     test('genre quand l\'espèce est inconnue', () {
-      final r = guide.resolve('Ficus benghalensis');
+      final r = guide.resolve('Ficus sycomorus');
       expect(r.match, CareMatch.genus);
       expect(r.matchedOn, 'Ficus');
     });
@@ -30,10 +30,10 @@ void main() {
     });
 
     test('famille déduite du catalogue intégré sans indication', () {
-      // Aechmea est au catalogue (Bromeliaceae) mais pas dans les profils.
-      final r = guide.resolve('Aechmea fasciata');
+      // Le cymbidium est au catalogue (Orchidaceae) mais pas dans les profils.
+      final r = guide.resolve('Cymbidium hybridum');
       expect(r.match, CareMatch.family);
-      expect(r.matchedOn, 'Bromeliaceae');
+      expect(r.matchedOn, 'Orchidaceae');
     });
 
     test('profil générique en dernier recours', () {
@@ -63,11 +63,15 @@ void main() {
 
     test('les espèces proches ne partagent pas la même fiche', () {
       // Sansevieria (rare) et dracaena arbustif : même genre, besoins opposés.
+      // Les deux ont leur fiche depuis le masque Indoor ; ce qui compte est
+      // qu'elles ne disent pas la même chose de la soif.
       final snake = guide.resolve('Dracaena trifasciata');
       final marginata = guide.resolve('Dracaena marginata');
       expect(snake.match, CareMatch.species);
-      expect(marginata.match, CareMatch.genus);
+      expect(marginata.match, CareMatch.species);
       expect(snake.profile.wateringSummerDays, greaterThan(marginata.profile.wateringSummerDays));
+      // Un genre répond toujours pour une espèce qui n'a pas sa fiche.
+      expect(guide.resolve('Philodendron scandens').match, CareMatch.genus);
     });
   });
 
@@ -287,17 +291,21 @@ void main() {
       }
     });
 
-    test('une carnivore tient de sa famille, et le robinet la tue', () {
-      // Le piège à mouches n'a pas de fiche d'espèce : c'est Droseraceae qui
-      // répond. Une fiche générique aurait conseillé l'eau du robinet.
+    test('une carnivore ne boit pas le robinet, à quelque niveau qu’on la lise', () {
+      // Le piège à mouches a sa fiche depuis le masque Indoor ; ce qu'elle
+      // tient de Droseraceae — l'eau stricte, pas d'engrais — la suit. Une
+      // fiche générique aurait conseillé l'eau du robinet.
       final dionaea = guide.resolve('Dionaea muscipula', family: 'Droseraceae');
-      expect(dionaea.match, CareMatch.family);
+      expect(dionaea.match, CareMatch.species);
       expect(dionaea.profile.water, WaterTolerance.strict);
       expect(waterVerdictFor(WaterKind.tap, dionaea.profile.water), WaterVerdict.avoid);
       // Elles se nourrissent de ce qu'elles attrapent : pas d'engrais.
       expect(dionaea.profile.fertilizingDays, isNull);
       expect(guide.resolve('Sarracenia purpurea', family: 'Sarraceniaceae').profile.water, WaterTolerance.strict);
-      expect(guide.resolve('Nepenthes alata', family: 'Nepenthaceae').profile.water, WaterTolerance.strict);
+      // Le népenthès, lui, n'a encore que sa famille : elle dit la même chose.
+      final nepenthes = guide.resolve('Nepenthes alata', family: 'Nepenthaceae');
+      expect(nepenthes.match, CareMatch.family);
+      expect(nepenthes.profile.water, WaterTolerance.strict);
     });
 
     test('le sansevieria échappe à la sensibilité de son genre', () {

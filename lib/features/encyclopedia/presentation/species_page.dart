@@ -77,6 +77,7 @@ class EncyclopediaSpeciesPage extends ConsumerWidget {
       child: CareGuideBody(
         care: care,
         speciesName: scientificName,
+        family: family == null || family.isEmpty ? null : family,
         category: entry?.category,
         header: _Header(
           scientificName: scientificName,

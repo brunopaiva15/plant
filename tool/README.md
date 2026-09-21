@@ -66,9 +66,30 @@ reconnue par son genre (présent dans l'ossature GBIF) ou par sa morphologie
 dans les quatre langues n'entre pas dans le catalogue : elle n'aiderait
 personne à chercher, et la recherche GBIF la couvre déjà.
 
+## Le balisage de la source
+
+Wikidata rend les libellés tels quels, avec ce que la source y avait laissé.
+Quatre traces arrivaient jusqu'à l'encyclopédie, affichées comme des noms :
+l'italique de Wikipédia (`''Cocus wood''`), les guillemets échappés d'un CSV
+relu une fois de trop (`\Coleus canina\""`), les entités HTML
+(`Golden&nbsp;torch`) et les crochets de note. `scrub()` les retire.
+
+L'apostrophe simple est laissée tranquille : elle porte des noms véritables
+— « 'ohi'a », « ʻĀkala », « Walker's Cattleya ». Seul le guillemet droit
+disparaît partout, aucun nom courant n'en porte. Un libellé entièrement
+encadré d'apostrophes est dégagé : ce qui reste est le plus souvent un
+binôme latin, que le filtre peut enfin reconnaître et écarter.
+
+`repair_species_catalog.py` applique cette même fonction à l'actif déjà
+livré, sans remoissonner. Il est chirurgical : seules les valeurs qu'il
+modifie sont rejugées par le filtre latin — une valeur déjà propre n'est pas
+soumise à un référentiel de genres qui n'est plus celui de la moisson. Il
+est idempotent, et une régénération complète donne le même résultat.
+
 Le test `test/data/species_catalog_asset_test.dart` vérifie l'actif produit :
-volume, absence de doublons, absence de faux noms vernaculaires, et présence
-de quelques espèces témoins.
+volume, absence de doublons, absence de faux noms vernaculaires, absence de
+balisage, préservation des apostrophes véritables, et présence de quelques
+espèces témoins.
 
 # La plante qui pousse (écran de bienvenue)
 
@@ -236,13 +257,19 @@ la dessine.
 blender -b -noaudio -t 4 -P tool/build_home.py -- --output assets/onboarding/onboarding_7.png
 ```
 
-# Les quatre familles de problèmes
+# Les quatre familles de problèmes, et ce qui n'en est pas un
 
 `build_category_logos.py` rend les symboles des quatre valeurs du champ `type`
 de `assets/problems/catalog.txt` : une feuille au soleil avec sa goutte pour
 les troubles abiotiques, un charançon pour les ravageurs, une feuille à
 lésions pour les maladies, un dépôt sombre pour les affections. Aucun texte,
 donc valables dans les quatre langues.
+
+Le cinquième, `naturel`, ne nomme pas une famille de problèmes mais ce qui
+n'en est pas un (`assets/problems/natural.txt`) : une feuille saine, la goutte
+claire suspendue à sa pointe, deux perles de nectar sur la nervure. Pâle sans
+être blanche — un blanc mat sur une feuille, ici, se lirait cochenille
+farineuse.
 
 ```bash
 # ~3 min sur quatre cœurs
@@ -253,8 +280,17 @@ python3 tool/pack_category_logos.py build/category_logos/renders
 
 Le cadrage des rendus réserve de la place au mouvement, dont l'application n'a
 pas besoin : `pack_category_logos.py` recadre sur le contenu avant de réduire.
-Le recadrage est commun aux quatre, sans quoi le charançon grandirait et la
-feuille rétrécirait, et la famille perdrait son unité d'échelle.
+Le recadrage est commun aux cinq, sans quoi le charançon grandirait et la
+feuille rétrécirait, et la famille perdrait son unité d'échelle. Un symbole
+ajouté après coup ne rejoue pas les autres — leurs fichiers sont livrés, et un
+rendu ne retombe pas au pixel près d'une version de Blender à l'autre :
+
+```bash
+python3 tool/pack_category_logos.py build/category_logos/renders --seulement naturel
+```
+
+Le script prévient si le nouveau venu élargit la boîte commune ; c'est alors
+le dessin qu'il faut reprendre, sinon les échelles divergent.
 
 # Une illustration par problème
 
@@ -276,6 +312,31 @@ Pas de recadrage ici, contrairement aux symboles de familles : le cadrage
 varie à dessein d'une illustration à l'autre, une feuille seule occupant moins
 de place qu'une plante en pot, et les recadrer une par une les ramènerait
 toutes à la même taille apparente.
+
+# Une illustration par phénomène naturel
+
+Les trente-deux entrées de `assets/problems/natural.txt` ont chacune la leur,
+et celles-là sont rendues ici : `build_natural_icons.py` compose chaque scène
+avec les pièces des symboles de familles — la feuille, les boules, les tubes,
+les gouttes — plus un pot, une galette d'argile taillée dans un contour, et
+les matières qui manquaient (terreau, écorce, laine, lichen).
+
+Ce que le dessin doit dire n'est pas « voilà une fougère » mais « il n'y a
+rien à soigner » : la goutte claire plutôt que le bleu de l'eau, la laine des
+aréoles montrée avec ses épines pour qu'on ne la prenne pas pour une
+cochenille, les nodosités accrochées à leur racine.
+
+```bash
+# ~25 min sur quatre cœurs ; --seulement N19 N23 pour reprendre deux dessins
+blender -b -noaudio -t 4 -P tool/build_natural_icons.py -- --output build/natural_icons
+python3 tool/pack_natural_icons.py build/natural_icons/renders
+```
+
+Pas de recadrage commun, comme pour les illustrations des problèmes : le
+cadrage varie à dessein d'un dessin à l'autre. `pack_natural_icons.py` écrit
+la liste des identifiants illustrés dans
+`lib/features/problems/presentation/illustrated_natural.dart` ; un test compare
+la liste au dossier et au fichier de la base.
 
 `clay_scene.py` tient ce que ces scripts ont en commun : les primitives de
 géométrie, les matériaux mats, le studio d'éclairage et le grain. Rien ne s'y

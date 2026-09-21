@@ -20,6 +20,7 @@ import '../../community/presentation/community_tips_section.dart';
 import '../../home_climate/presentation/home_climate_widgets.dart';
 import '../../plants/application/plant_providers.dart';
 import '../../problems/presentation/problem_kind_icon.dart';
+import '../../room_scan/presentation/room_fit_entry.dart';
 import 'care_environment_hero.dart';
 import 'care_guide_copy.dart';
 import 'water_types_sheet.dart';
@@ -63,8 +64,10 @@ class CareGuideScreen extends ConsumerWidget {
           key: ValueKey(care.match),
           child: CareGuideBody(
             care: care,
+            plantId: plant?.id,
             plantName: plant?.name,
             speciesName: plant?.speciesName,
+            family: family,
             location: location,
             plantLight: plant?.light,
             category: plant?.speciesName == null ? null : SpeciesCatalog.findAccepted(plant!.speciesName!)?.category,
@@ -96,8 +99,10 @@ class CareGuideBody extends ConsumerWidget {
   const CareGuideBody({
     super.key,
     required this.care,
+    this.plantId,
     this.plantName,
     this.speciesName,
+    this.family,
     this.location,
     this.header,
     this.plantLight,
@@ -107,11 +112,20 @@ class CareGuideBody extends ConsumerWidget {
   });
 
   final ResolvedCare care;
+
+  /// La plante du jardin dont c'est la fiche, quand c'en est une : c'est
+  /// elle que « Où la poser » peut poser sur le plan.
+  final String? plantId;
   final String? plantName;
 
   /// Nom scientifique, quand il est connu : c'est par lui que la base des
   /// problèmes retrouve ce qui touche cette plante.
   final String? speciesName;
+
+  /// Famille botanique, quand elle est connue : c'est par elle que la scène
+  /// d'environnement retrouve une silhouette de conifère ou de palmier.
+  final String? family;
+
   final Location? location;
   final Widget? header;
 
@@ -164,7 +178,10 @@ class CareGuideBody extends ConsumerWidget {
         // détail des besoins. La scène montre l'idéal de la fiche, jamais
         // l'état réel de la pièce — c'est HomeClimateFitCard qui compare.
         if (showEnvironmentHero)
-          CareEnvironmentHero(profile: p, speciesName: speciesName, category: category),
+          CareEnvironmentHero(profile: p, speciesName: speciesName, family: family, category: category),
+        // Puis le réel, quand une pièce est relevée : où, chez soi, cette
+        // fiche serait le mieux. La scène ne change pas pour autant.
+        if (showEnvironmentHero) RoomFitEntry(care: care, plantId: plantId, plantName: plantName),
 
         SectionHeader(title: l10n.needsSection, padding: const EdgeInsets.only(bottom: Space.sm)),
 

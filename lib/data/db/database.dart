@@ -31,12 +31,14 @@ part 'database.g.dart';
   InventoryTags,
   EventCategories,
   CalendarEntries,
+  RoomScans,
+  RoomMarkers,
 ])
 class FloraDatabase extends _$FloraDatabase {
   FloraDatabase(super.executor);
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 14;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -103,6 +105,15 @@ class FloraDatabase extends _$FloraDatabase {
             await m.addColumn(inventoryItems, inventoryItems.phosphorus);
             await m.addColumn(inventoryItems, inventoryItems.potassium);
           }
+          if (from < 13) {
+            await m.createTable(roomScans);
+            await m.createTable(roomMarkers);
+          }
+          if (from < 14) {
+            // Une base ramenée à un schéma plus ancien pour un test ne perd
+            // pas toujours cette colonne : on ne l'ajoute que si elle manque.
+            if (!await _hasColumn('room_scans', 'structure_id')) await m.addColumn(roomScans, roomScans.structureId);
+          }
           await _createIndexes();
         },
         beforeOpen: (details) async {
@@ -110,6 +121,11 @@ class FloraDatabase extends _$FloraDatabase {
           await _seedActionTypes();
         },
       );
+
+  Future<bool> _hasColumn(String table, String column) async {
+    final rows = await customSelect('PRAGMA table_info($table)').get();
+    return rows.any((r) => r.read<String>('name') == column);
+  }
 
   Future<void> _createIndexes() async {
     await customStatement('CREATE INDEX IF NOT EXISTS idx_plants_status ON plants(status, deleted_at)');
@@ -128,6 +144,7 @@ class FloraDatabase extends _$FloraDatabase {
     await customStatement('CREATE UNIQUE INDEX IF NOT EXISTS idx_plants_number ON plants(garden_id, number) WHERE number > 0');
     await customStatement('CREATE INDEX IF NOT EXISTS idx_inventory_group ON inventory_items(group_id)');
     await customStatement('CREATE INDEX IF NOT EXISTS idx_inventory_tags_item ON inventory_tags(item_id)');
+    await customStatement('CREATE INDEX IF NOT EXISTS idx_room_markers_scan ON room_markers(scan_id)');
   }
 
   /// Attribue un numéro aux plantes créées avant la v8, par ordre de création.

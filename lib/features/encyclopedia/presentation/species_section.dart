@@ -6,6 +6,7 @@ import '../../../app/providers.dart';
 import '../../../app/router.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/l10n/species_count_copy.dart';
+import '../../../core/utils/search_text.dart';
 import '../../../data/species/iris_detailed_catalog.dart';
 import '../../../data/species/iris_detailed_catalog_loader.dart';
 import '../../../data/species/species_catalog.dart';
@@ -41,9 +42,56 @@ final _irisDetailedCatalogProvider = FutureProvider<IrisDetailedCatalog>((ref) a
   return IrisDetailedCatalogLoader().load(index);
 });
 
-/// Les espèces que l'application connaît : les 1 444 classes Iris avec leur
-/// fiche d'entretien, puis le catalogue étendu quand une recherche dépasse
-/// le périmètre du modèle embarqué.
+/// Une fiche prête à être cherchée et rangée.
+///
+/// La clé de tri et le texte où l'on cherche coûtent cher — huit
+/// remplacements pour la première, la concaténation des six noms pour le
+/// second. Calculés dans le comparateur, ils l'étaient des centaines de
+/// milliers de fois à chaque frappe ; ils le sont ici une fois par fiche.
+class _ListedSpecies {
+  const _ListedSpecies(this.entry, this.sortKey, this.haystack);
+
+  final IrisDetailedSpecies entry;
+  final String sortKey;
+  final String haystack;
+}
+
+/// Le rayon des espèces, rangé une bonne fois : filtrer une liste déjà triée
+/// garde son ordre, donc une recherche ne retrie rien.
+class _SpeciesShelf {
+  const _SpeciesShelf(this.rows, this.names);
+
+  final List<_ListedSpecies> rows;
+
+  /// Les noms déjà montrés, pour que le catalogue étendu ne les répète pas.
+  final Set<String> names;
+}
+
+final _speciesShelfProvider = Provider.family<_SpeciesShelf, String>((ref, lang) {
+  final detailed = ref.watch(_irisDetailedCatalogProvider).value?.entries ??
+      [for (final entry in SpeciesCatalog.entries) IrisDetailedSpecies.fromCurated(entry)];
+
+  final rows = [
+    for (final e in detailed)
+      _ListedSpecies(
+        e,
+        _alphabeticalSortKey(e.commonName(lang), lang),
+        foldSpeciesName('${e.scientificName} ${e.family} ${e.fr} ${e.en} ${e.de} ${e.it}'),
+      ),
+  ]..sort((a, b) {
+      final byAlphabet = a.sortKey.compareTo(b.sortKey);
+      if (byAlphabet != 0) return byAlphabet;
+      // Deux noms que l'ordre français ne sépare pas — « Aloé » et « Aloe » :
+      // l'accent tranche, et le calcul ne coûte que sur ces rares ex æquo.
+      return a.entry.commonName(lang).toLowerCase().compareTo(b.entry.commonName(lang).toLowerCase());
+    });
+
+  return _SpeciesShelf(rows, {for (final e in detailed) e.scientificName.toLowerCase()});
+});
+
+/// Les espèces que l'application connaît : les classes d'Iris et tout ce que
+/// le catalogue étendu porte avec un vrai profil d'entretien, puis le reste
+/// du catalogue quand une recherche dépasse ce périmètre.
 class SpeciesSlivers extends ConsumerWidget {
   const SpeciesSlivers({super.key, required this.query, required this.category, required this.onCategory});
 
@@ -59,25 +107,20 @@ class SpeciesSlivers extends ConsumerWidget {
 
     // Le catalogue curaté est disponible immédiatement. Dès que les deux
     // assets hors ligne sont prêts, la liste devient exactement celle d'Iris.
-    final detailed = ref.watch(_irisDetailedCatalogProvider).value?.entries ??
-        [for (final entry in SpeciesCatalog.entries) IrisDetailedSpecies.fromCurated(entry)];
-
+    // Elle arrive déjà rangée : une frappe ne fait plus que la filtrer.
+    final shelf = ref.watch(_speciesShelfProvider(lang));
+    final needle = foldSpeciesName(raw);
     final curated = [
-      for (final e in detailed)
-        if ((category == null || e.category == category) && e.matches(raw)) e,
-    ]..sort((a, b) {
-        final aName = a.commonName(lang);
-        final bName = b.commonName(lang);
-        final byAlphabet = _alphabeticalSortKey(aName, lang).compareTo(_alphabeticalSortKey(bName, lang));
-        return byAlphabet != 0 ? byAlphabet : aName.toLowerCase().compareTo(bName.toLowerCase());
-      });
+      for (final row in shelf.rows)
+        if ((category == null || row.entry.category == category) && (needle.isEmpty || row.haystack.contains(needle)))
+          row.entry,
+    ];
 
     // Le catalogue étendu reste réservé à la recherche au-delà d'Iris.
     final index = raw.isEmpty ? null : ref.watch(speciesIndexProvider).value;
-    final detailedNames = {for (final e in detailed) e.scientificName.toLowerCase()};
     final extended = index == null
         ? const <SpeciesRecord>[]
-        : index.search(raw, limit: 30, exclude: detailedNames);
+        : index.search(raw, limit: 30, exclude: shelf.names);
 
     final visibleCount = curated.length + extended.length;
     final countLabel = raw.isEmpty
@@ -102,8 +145,8 @@ class SpeciesSlivers extends ConsumerWidget {
             onChanged: onCategory,
           ),
         ),
-        // Sans filtre, le nombre suit model.json : aujourd'hui 1 444 classes.
-        // Avec un filtre ou une recherche, il décrit ce qui est réellement vu.
+        // Sans filtre, le nombre est celui des fiches de l'encyclopédie. Avec
+        // un filtre ou une recherche, il décrit ce qui est réellement vu.
         SliverToBoxAdapter(child: EncyclopediaCount(countLabel)),
         if (curated.isEmpty && extended.isEmpty)
           SliverToBoxAdapter(

@@ -42,6 +42,8 @@ rendu seul, comme l'humidificateur), l'humidificateur si la fiche prescrit
 la machine, l'ombre, la plante
 translatée sur son support, la vapeur et les
 lignes de flux dessinées en `CustomPainter`, puis les puces d'information.
+À l'ouverture, la pile se pose — gros plan sur la plante, puis recul —
+(voir *La pose*, plus bas).
 Le diorama est une maquette posée dans la fiche : son cadre s'arrondit au
 rayon des cartes (`Radii.large`).
 
@@ -140,7 +142,7 @@ Entre les deux, il y a le balcon. La règle est centralisée dans
 | `herb`, `flower` | jardin si rustique ; **balcon** si `outdoorFriendly` ; pièce sinon |
 | `succulent` | même règle que les aromatiques |
 | `indoor` | pièce |
-| pas de catégorie | pièce (repli) |
+| pas de catégorie | même règle que les aromatiques : jardin si rustique, **balcon** si `outdoorFriendly`, pièce sinon |
 
 Ce que le balcon corrige : un citronnier — `fruit`, non rustique — était
 planté dans une pelouse, et une aromatique gélive était envoyée dans le
@@ -149,6 +151,15 @@ déplace une soixantaine d'espèces, surtout des fruitiers et des légumes.
 
 Rien n'est inventé : sans `outdoorFriendly`, une plante gélive dont la fiche
 ne dit pas qu'elle sort reste dans la pièce.
+
+**Pas de catégorie ne veut pas dire pas d'information.** Le catalogue étendu
+n'en porte pas, et une fiche complétée par l'IA non plus ; le repli « pièce »
+passait alors avant la fiche et la contredisait. Un *Pinus parviflora* —
+absent des deux catalogues, donc sans catégorie, mais dont le profil de
+genre porte −15 °C et `outdoorFriendly` — était posé sur un guéridon de
+salon. La fiche décide maintenant dans ces cas-là, avec la même lecture de
+rusticité que pour une aromatique. La pièce reste le repli quand la fiche ne
+dit ni le gel ni la sortie.
 
 **Les succulentes ont demandé de corriger les fiches d'abord.** Appliquer la
 règle telle quelle en envoyait la moitié au jardin à tort : quinze espèces
@@ -280,9 +291,15 @@ mieux.
 | `fern` | nephrolepis, asplenium, adiantum, platycerium |
 | `rosette` | succulentes non cactées (catégorie) |
 | `cactus` | Cactaceae |
-| `conifer` | Pinaceae |
+| `conifer` | pinus, picea, abies, cedrus, larix, tsuga, pseudotsuga, juniperus, thuja, chamaecyparis, cupressus, cryptomeria, taxus, araucaria (genres) ; Pinaceae, Cupressaceae, Taxaceae, Araucariaceae (familles) |
 | `orchid` | phalaenopsis, dendrobium, cymbidium, oncidium |
 | `broadLeaf` | tout le reste |
+
+Les conifères sont rangés au genre **et** à la famille. La famille seule ne
+suffisait pas : elle vient de l'index des espèces, qui ignore beaucoup
+d'espèces cultivées — un pin blanc du Japon arrivait donc sans famille et
+repartait en feuille large. Le port est de toute façon un trait de genre
+chez tous ceux-là.
 
 Un genre ne se range dans la table que si la forme tient pour tout le
 genre : le philodendron est mixte (le grimpant retombe, le selloum pousse
@@ -334,6 +351,36 @@ une couche bakée ne le pourrait pas.
 Les effets respirent trois cycles à l'ouverture puis se reposent : rien ne
 bouge en permanence dans la fiche. En reduced motion, ils sont statiques et
 lisibles.
+
+### La pose
+
+À l'ouverture, la scène **se pose** plutôt que d'apparaître. Le cadre est
+d'abord serré sur la plante (`zoomInitial`, 1,3 ×, ancré un peu au-dessus
+du pied du pot) ; la plante descend sur son emplacement en s'éclaircissant,
+et son ombre naît avec elle ; quand le pot touche, deux ondes partent du
+point de contact, à plat sur le sol, et s'éteignent en s'élargissant ; puis
+la caméra recule jusqu'au cadre entier. Le tout tient en 1,4 s
+(`CareEnvironmentScene.poseDuration`).
+
+Ce que la pose raconte, c'est ce que la scène est faite pour dire : le
+regard part de la plante et finit sur l'endroit où elle est. Sans elle, la
+scène s'affichait d'un bloc et la plante n'était qu'un objet parmi le
+mobilier — on ne voyait pas tout de suite que c'était elle le sujet, ni que
+sa place dans la pièce voulait dire quelque chose. Le point d'ancrage du
+recul ne bouge pas à l'écran : la plante reste là où le regard l'a trouvée,
+c'est la pièce qui se découvre autour.
+
+Un seul contrôleur mène les trois temps, en intervalles qui se chevauchent :
+l'onde part à l'instant où le pot touche, et la caméra recule pendant que
+l'onde s'éteint. L'onde se dessine dans la couche de l'ombre
+(`_PlantShadowPainter`), sous la plante, pas dans une couche de plus. Le
+guéridon et l'humidificateur sont des meubles : ils sont là dès le départ,
+seule la plante se pose.
+
+La pose se rejoue quand la plante change de place, de silhouette ou de
+décor (Care Studio retouche la lumière, par exemple) : le regard la retrouve
+là où elle est allée. En reduced motion, rien de tout cela — la scène est
+posée dès la première image, au cadre entier.
 
 L'ombre, elle, **fuit la fenêtre** : dans les deux décors le jour vient de
 la gauche, et l'ombre bakée du fauteuil part vers la droite. Une ellipse
@@ -391,7 +438,8 @@ l'emplacement à `profile.light` pour décider où la plante apparaît.
   table des emplacements ;
 - `test/features/care_guide_test.dart` — le héros : présence, puces
   honnêtes, sémantique, Dynamic Type, reduced motion, `paper: false`,
-  props et effets selon la fiche ;
+  props et effets selon la fiche, la pose (gros plan puis recul, plante
+  posée dès la première image en reduced motion) ;
 - `test/assets/care_scene_assets_test.dart` — les fichiers : chaque
   lumière, silhouette et prop existe, en-tête RIFF/WEBP, chemins du
   résolveur, poids sous le budget, déclarations du pubspec.

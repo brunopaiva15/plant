@@ -37,7 +37,7 @@ const _six = [
 ];
 
 InfomaniakPropagationRefiner _refiner(http.Client client) => InfomaniakPropagationRefiner(
-    apiKey: 'tok', productId: '12345', model: 'mistralai/Mistral-Small-4-119B-2603', client: client);
+    apiKey: 'tok', productId: '12345', model: 'Qwen/Qwen3.5-397B-A17B-FP8', client: client);
 
 void main() {
   group('la requête', () {

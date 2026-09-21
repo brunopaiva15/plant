@@ -23,6 +23,7 @@ seul `AppConfig.appName` porte le nom vu par l'utilisateur.
 | [docs/11-entrainer-sur-une-vm.md](docs/11-entrainer-sur-une-vm.md) | Entraîner sur une VM Debian louée : pilote, disques, ce qui change d'une machine personnelle |
 | [docs/12-guides-de-multiplication.md](docs/12-guides-de-multiplication.md) | Guides de multiplication : archétypes de gestes, choix du guide, rendus Blender |
 | [docs/13-care-environment-scenes.md](docs/13-care-environment-scenes.md) | Scène d'environnement idéal : diorama clay, projection des besoins, pipeline Blender |
+| [docs/17-releve-de-la-maison.md](docs/17-releve-de-la-maison.md) | Relevé de la maison au LiDAR (expérimental) : où poser une plante, modèle de lumière, canal RoomPlan, paliers |
 
 ## Démarrer
 ```bash
@@ -58,6 +59,18 @@ SDK se donne à la construction. Ces API plafonnent à cent comptes tant que
 leur console développeur n'accepte pas d'inscription — c'est la limite de
 leur beta publique. Sans aucune maison lisible, l'étape et le réglage
 n'apparaissent pas. Détails : docs/05.
+
+## Le relevé de la maison (iPhone et iPad à LiDAR)
+La fiche d'un emplacement (Jardin › Salon) relève sa pièce avec RoomPlan
+et en montre le plan ; Profil › Relevé de la maison rassemble toutes les
+pièces et relève l'appartement d'une traite. Une plante dit alors sa place
+sur sa propre fiche — « Salon · à 1 m de la fenêtre sud », ou « mieux sur
+la table » — et « Où la poser », sous le diorama de la fiche d'entretien,
+dit où elle serait le mieux : la distance et l'orientation des fenêtres,
+les rideaux, les radiateurs et les portes posés sur le plan, la pièce
+d'eau. Le nord vient de la boussole et se confirme à la main. Le relevé
+reste sur l'appareil ; il part dans l'export ZIP, jamais dans la
+synchronisation. Sans LiDAR, rien n'apparaît. Détails : docs/17.
 
 ## Sur l'écran d'accueil d'iOS
 Un widget montre les soins du jour (petit et moyen sur l'écran d'accueil,
@@ -133,3 +146,13 @@ de 82 % à 350 % sans rognage, *Texte en gras* et *Augmenter le contraste*
 suivis, contrastes AA tenus par un test. Détails et invariants :
 [docs/06-design-system.md](docs/06-design-system.md). Sur iPad, l'app tourne et
 accepte le multitâche ; le contenu se recentre au-delà de 700 pt de large.
+
+Sur iPhone Duo, la fenêtre est mesurée à chaque pli et non au lancement :
+appareil ouvert, le menu passe debout sur le bord droit, et le viseur photo
+rend sa capture au capteur ; l'iPad, lui, garde sa barre en bas. Les
+orientations sont déclarées dans `Info.plist` et dans le manifeste, jamais
+demandées à l'exécution — le Duo refuse ces demandes. La construction iOS
+demande le SDK 27.1 (Xcode 27.1), faute de quoi l'app tourne en mode de
+compatibilité ; la cible de déploiement reste iOS 17. Détails :
+[docs/05-technical-architecture.md](docs/05-technical-architecture.md),
+section « La fenêtre ».

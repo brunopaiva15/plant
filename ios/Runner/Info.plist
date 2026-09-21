@@ -62,6 +62,19 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+	<!-- Le téléphone se tient en portrait, la tablette tourne. Deux remarques
+	     pour les appareils pliables (iPhone Duo) :
+
+	     · l'écran intérieur n'honore pas cette clé — elle ne vaut que pour
+	       l'écran extérieur, et une page doit savoir tourner quand l'appareil
+	       s'ouvre plutôt que de s'y opposer ;
+	     · `UIRequiresFullScreen` ne doit pas être ajouté ici. La clé dit au
+	       système que l'application veut tout l'écran à l'ancienne manière et
+	       la tient hors de l'adaptation, fermée comme ouverte.
+
+	     `app/orientation_lock.dart` tient le reste : le verrou de portrait
+	     suit la taille de la fenêtre, pli après pli. Voir
+	     docs/05-technical-architecture.md, section « La fenêtre ». -->
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -105,7 +118,7 @@
 	<key>GoogleHomeAppGroup</key>
 	<string>group.ch.vergasta.plant</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Auxine utilise l'appareil photo pour photographier vos plantes.</string>
+	<string>Auxine utilise l'appareil photo pour photographier vos plantes et, sur demande, pour relever une pièce de la maison. Le relevé reste sur l'appareil.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Auxine accède à vos photos pour illustrer vos plantes.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>

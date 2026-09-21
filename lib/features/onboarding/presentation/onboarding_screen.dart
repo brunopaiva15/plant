@@ -966,28 +966,38 @@ class _SupportPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final supported = ref.watch(preferencesProvider.select((p) => p.hasSupported));
-    return SingleChildScrollView(
-      physics: floraScrollPhysics,
-      padding: const EdgeInsets.fromLTRB(Space.page, 0, Space.page, Space.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SupportPitch(onDone: onDone, compact: true),
-          const SizedBox(height: Space.lg),
-          // Le geste qui passe outre appartient à l'étape, pas à la
-          // proposition : il prend donc le bouton discret de l'onboarding,
-          // celui de « Plus tard », et non le vert du design system. Sous
-          // « Restaurer mon soutien », qui est vert, deux fantômes de la même
-          // couleur ne disaient plus lequel était la sortie.
-          Center(
+    // La sortie ne défile pas : elle est posée sous la proposition, et c'est
+    // la proposition qui défile s'il le faut. Sur l'écran extérieur d'un
+    // pliable — 678 points de haut — la pièce et ses deux boutons ne tenaient
+    // plus, et « Non merci » passait sous le pli, dans une page qui n'avait
+    // l'air de rien cacher : les points d'étape en bas la faisaient paraître
+    // complète. Une étape dont on ne voit pas la sortie est une impasse.
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            physics: floraScrollPhysics,
+            padding: const EdgeInsets.fromLTRB(Space.page, 0, Space.page, Space.md),
+            child: SupportPitch(onDone: onDone, compact: true),
+          ),
+        ),
+        // Le geste qui passe outre appartient à l'étape, pas à la
+        // proposition : il prend donc le bouton discret de l'onboarding,
+        // celui de « Plus tard », et non le vert du design system. Sous
+        // « Restaurer mon soutien », qui est vert, deux fantômes de la même
+        // couleur ne disaient plus lequel était la sortie.
+        Padding(
+          padding: const EdgeInsets.fromLTRB(Space.page, Space.xs, Space.page, Space.md),
+          child: Center(
             child: OnboardingButton(
               label: supported ? l10n.continueLabel : l10n.supportNoThanks,
               filled: false,
               onPressed: onDone,
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

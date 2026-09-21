@@ -11,6 +11,7 @@ import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/l10n/care_labels.dart';
 import '../../../core/observability/observability.dart';
+import '../../../core/native_shell.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_engine.dart';
 import '../../../domain/identification/identification_context.dart';
@@ -37,7 +38,7 @@ import 'photo_viewer.dart';
 import 'plant_tags_sheet.dart';
 import '../../identification/presentation/identification_sheet.dart';
 import '../../qr/presentation/plant_qr_sheet.dart';
-import '../../diagnosis/presentation/diagnosis_sheet.dart';
+import '../../room_scan/presentation/plant_place_card.dart';
 import '../../species/presentation/species_sheet.dart';
 import 'timeline_row.dart';
 
@@ -71,47 +72,76 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
   /// section Croissance, l'en-tête sans photo.
   Future<void> _addPhoto() => showPhotoCaptureFlow(context, ref, plantId: id);
 
-  Future<void> _menu(Plant plant) async {
+  /// Ce que la fiche offre au-delà de ses actions rapides.
+  ///
+  /// **Une seule liste, deux façons de la montrer.** Quand le système tient
+  /// la barre, c'est lui qui la déplie — un `UIMenu` qui sort des trois
+  /// points, à leur place, en floutant la fiche derrière. Ailleurs, une
+  /// feuille monte du bas, qui reste la bonne réponse d'Android. La liste ne
+  /// sait rien de tout cela : elle est dressée ici, une fois, au rendu.
+  ///
+  /// Dressée au rendu, justement, et non à l'ouverture : un menu du système
+  /// est déclaré avant d'être touché, et il doit donc déjà dire « Retirer des
+  /// favoris » quand le cœur est plein.
+  List<SheetAction> _actions(Plant plant) {
     final l10n = context.l10n;
     // Invité en lecture seule : le menu se réduit à ce qui ne touche à rien.
-    final canEdit = ref.read(canEditProvider);
-    await showAdaptiveActionSheet(
-      context,
-      cancelLabel: l10n.cancel,
-      actions: [
-        if (canEdit) SheetAction(label: l10n.editPlant, icon: CupertinoIcons.pencil, onPressed: () => showEditPlantSheet(context, plant: plant)),
-        if (canEdit)
-          SheetAction(
-            label: plant.isFavorite ? l10n.unfavorite : l10n.favorite,
-            icon: plant.isFavorite ? CupertinoIcons.heart_slash : CupertinoIcons.heart,
-            onPressed: () => _toggleFavorite(plant),
-          ),
-        SheetAction(label: l10n.schedule, icon: CupertinoIcons.clock, onPressed: () => context.push(Routes.plantSchedule(id))),
-        if (canEdit) SheetAction(label: l10n.newTask, icon: CupertinoIcons.checkmark_square, onPressed: () => showTaskSheet(context, plantId: id)),
-        if (canEdit) SheetAction(label: l10n.shareByLink, icon: CupertinoIcons.link, onPressed: () => showShareLinkSheet(context, plantId: id, suggestedTitle: plant.name)),
-        SheetAction(label: l10n.qrCode, icon: CupertinoIcons.qrcode, onPressed: () => showPlantQrSheet(context, plant: plant)),
-        if (canEdit && ref.read(plantIdentifierProvider).isConfigured && plant.primaryPhotoId != null)
-          SheetAction(label: l10n.identify, icon: CupertinoIcons.sparkles, onPressed: () => _identify(plant)),
-        if (canEdit) SheetAction(label: l10n.tags, icon: CupertinoIcons.tag, onPressed: () => showPlantTagsSheet(context, plantId: id)),
-        if (canEdit)
-          SheetAction(
-            label: l10n.move,
-            icon: CupertinoIcons.location,
-            onPressed: () async {
-              final choice = await showLocationPicker(context, selectedId: plant.locationId);
-              if (choice != null) await ref.read(plantRepositoryProvider).moveToLocation([id], choice.id);
-            },
-          ),
-        if (canEdit)
-          SheetAction(label: l10n.propagate, icon: CupertinoIcons.leaf_arrow_circlepath, onPressed: () => startCreatePlantFlow(context, ref, parentPlantId: id, parentName: plant.name, speciesName: plant.speciesName, locationId: plant.locationId)),
-        // Une plante déjà rangée ne s'archive pas deux fois : à sa place, le
-        // geste qui a du sens depuis sa fiche, c'est de la ressortir.
-        if (canEdit && plant.isArchived)
-          SheetAction(label: l10n.restore, icon: CupertinoIcons.arrow_uturn_left, onPressed: () => _restore(plant)),
-        if (canEdit && !plant.isArchived)
-          SheetAction(label: l10n.archivePlant, icon: CupertinoIcons.archivebox, destructive: true, onPressed: () => _archive(plant)),
-      ],
-    );
+    final canEdit = ref.watch(canEditProvider);
+    final identifiable = ref.watch(plantIdentifierProvider).isConfigured;
+    return [
+      if (canEdit) SheetAction(label: l10n.editPlant, icon: CupertinoIcons.pencil, onPressed: () => showEditPlantSheet(context, plant: plant)),
+      if (canEdit)
+        SheetAction(
+          label: plant.isFavorite ? l10n.unfavorite : l10n.favorite,
+          icon: plant.isFavorite ? CupertinoIcons.heart_slash : CupertinoIcons.heart,
+          onPressed: () => _toggleFavorite(plant),
+        ),
+      SheetAction(label: l10n.schedule, icon: CupertinoIcons.clock, onPressed: () => context.push(Routes.plantSchedule(id))),
+      if (canEdit) SheetAction(label: l10n.newTask, icon: CupertinoIcons.checkmark_square, onPressed: () => showTaskSheet(context, plantId: id)),
+      // Ce qui sort la plante de la fiche — un lien, une étiquette — fait un
+      // groupe à part dans le menu du système : iOS l'y sépare d'un trait.
+      if (canEdit) SheetAction(label: l10n.shareByLink, icon: CupertinoIcons.link, separated: true, onPressed: () => showShareLinkSheet(context, plantId: id, suggestedTitle: plant.name)),
+      SheetAction(label: l10n.qrCode, icon: CupertinoIcons.qrcode, onPressed: () => showPlantQrSheet(context, plant: plant)),
+      if (canEdit && identifiable && plant.primaryPhotoId != null)
+        SheetAction(label: l10n.identify, icon: CupertinoIcons.sparkles, onPressed: () => _identify(plant)),
+      if (canEdit) SheetAction(label: l10n.tags, icon: CupertinoIcons.tag, separated: true, onPressed: () => showPlantTagsSheet(context, plantId: id)),
+      if (canEdit)
+        SheetAction(
+          label: l10n.move,
+          icon: CupertinoIcons.location,
+          onPressed: () async {
+            final choice = await showLocationPicker(context, selectedId: plant.locationId);
+            if (choice != null) await ref.read(plantRepositoryProvider).moveToLocation([id], choice.id);
+          },
+        ),
+      if (canEdit)
+        SheetAction(label: l10n.propagate, icon: CupertinoIcons.leaf_arrow_circlepath, onPressed: () => startCreatePlantFlow(context, ref, parentPlantId: id, parentName: plant.name, speciesName: plant.speciesName, locationId: plant.locationId)),
+      // Une plante déjà rangée ne s'archive pas deux fois : à sa place, le
+      // geste qui a du sens depuis sa fiche, c'est de la ressortir.
+      if (canEdit && plant.isArchived)
+        SheetAction(label: l10n.restore, icon: CupertinoIcons.arrow_uturn_left, separated: true, onPressed: () => _restore(plant)),
+      if (canEdit && !plant.isArchived)
+        SheetAction(label: l10n.archivePlant, icon: CupertinoIcons.archivebox, separated: true, destructive: true, onPressed: () => _archive(plant)),
+    ];
+  }
+
+  /// Un menu à la fois.
+  ///
+  /// Le bouton qui l'ouvre est dans la barre du système, que Flutter ne
+  /// couvre pas : rien n'empêchait d'en empiler trois. Le verrou est ici
+  /// plutôt que dans la barre, parce que c'est cette page qui sait qu'elle a
+  /// déjà posé un menu. Sans objet quand c'est le système qui déplie : il
+  /// s'en charge lui-même, et n'ouvre jamais deux fois le même menu.
+  bool _menuOuvert = false;
+
+  Future<void> _menu(List<SheetAction> actions) async {
+    if (_menuOuvert) return;
+    _menuOuvert = true;
+    try {
+      await showAdaptiveActionSheet(context, cancelLabel: context.l10n.cancel, actions: actions);
+    } finally {
+      _menuOuvert = false;
+    }
   }
 
   /// Au-delà, le gain d'une photo de plus n'est plus mesuré (docs/09 § 6.7),
@@ -225,13 +255,53 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
     final photos = ref.watch(plantPhotosProvider(id)).value ?? const <PlantPhoto>[];
     final primary = photos.where((p) => p.id == plant.primaryPhotoId).firstOrNull ?? photos.firstOrNull;
     final top = MediaQuery.paddingOf(context).top;
-    final width = MediaQuery.sizeOf(context).width;
+    // La largeur qui reste à la photo une fois la bande du système retirée :
+    // c'est elle qui donne la hauteur de l'en-tête, sinon les proportions de
+    // l'image se faussent de ce que la bande a pris.
+    final marges = systemSideInsets(context);
+    final width = MediaQuery.sizeOf(context).width - marges.left - marges.right;
 
-    return Scaffold(
+    // Le retour, le cœur et le menu partent à UIKit quand il tient la barre :
+    // ils flottent sur la photo, mais ce sont des commandes de navigation et
+    // d'action, et c'est à ce titre qu'iOS les range dans la bande verticale
+    // de l'iPhone Duo. `describe` rend `null` si l'un lui échappe, et la page
+    // les garde alors sur la photo comme avant.
+    final retour = FloraIconButton(
+      icon: isCupertino(context) ? CupertinoIcons.chevron_left : Icons.arrow_back_rounded,
+      semanticLabel: l10n.back,
+      onPressed: () => context.pop(),
+    );
+    final favori = FloraIconButton(
+      icon: plant.isFavorite ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
+      color: plant.isFavorite ? c.rose : null,
+      semanticLabel: l10n.favorite,
+      onPressed: () => _toggleFavorite(plant),
+    );
+    final actions = _actions(plant);
+    final plus = FloraIconButton(
+      icon: CupertinoIcons.ellipsis,
+      semanticLabel: l10n.more,
+      // Déplié par le système quand il tient la barre ; sinon, la feuille.
+      menu: actions,
+      onPressed: () => _menu(actions),
+    );
+    final natif = NativeShell.isSupported
+        ? NativeActions.describe(<Widget>[retour], <Widget>[favori, plus])
+        : null;
+
+    final page = Scaffold(
       backgroundColor: c.canvas,
       body: CustomScrollView(
         physics: floraScrollPhysics,
         slivers: [
+          // La bande que le système réserve vaut pour la photo comme pour
+          // le reste : les glyphes de l'heure et du wifi se posent dessus,
+          // et une image qui passe dessous les rend illisibles. C'est
+          // justement ce qu'une région réservée veut dire.
+          SliverPadding(
+            padding: marges,
+            sliver: SliverMainAxisGroup(
+              slivers: [
           SliverAppBar(
             expandedHeight: primary == null ? width * 0.62 : width * 1.05,
             pinned: true,
@@ -239,17 +309,13 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
             backgroundColor: c.canvas,
             surfaceTintColor: Colors.transparent,
             automaticallyImplyLeading: false,
-            leadingWidth: 64,
-            leading: Padding(
-              padding: const EdgeInsets.only(left: Space.sm),
-              child: Center(child: FloraIconButton(icon: isCupertino(context) ? CupertinoIcons.chevron_left : Icons.arrow_back_rounded, semanticLabel: l10n.back, onPressed: () => context.pop())),
-            ),
-            actions: [
-              FloraIconButton(icon: plant.isFavorite ? CupertinoIcons.heart_fill : CupertinoIcons.heart, color: plant.isFavorite ? c.rose : null, semanticLabel: l10n.favorite, onPressed: () => _toggleFavorite(plant)),
-              const SizedBox(width: Space.xs),
-              FloraIconButton(icon: CupertinoIcons.ellipsis, semanticLabel: l10n.more, onPressed: () => _menu(plant)),
-              const SizedBox(width: Space.sm),
-            ],
+            leadingWidth: natif == null ? 64 : 0,
+            leading: natif != null
+                ? null
+                : Padding(padding: const EdgeInsets.only(left: Space.sm), child: Center(child: retour)),
+            actions: natif != null
+                ? null
+                : [favori, const SizedBox(width: Space.xs), plus, const SizedBox(width: Space.sm)],
             flexibleSpace: Stack(
               fit: StackFit.expand,
               children: [
@@ -370,7 +436,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
                       icon: CupertinoIcons.bandage,
                       style: FloraButtonStyle.tonal,
                       expand: true,
-                      onPressed: () => showDiagnosisSheet(context, plant: plant),
+                      onPressed: () => context.push(Routes.plantDiagnosis(id)),
                     ),
                   ],
                   // Les deux gestes qu'on cherche sans les trouver dans un
@@ -402,6 +468,14 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
             ),
           ),
           _CareGuideCard(plantId: id, speciesName: plant.speciesName),
+          // Sa place dans la maison relevée, juste sous la fiche : la pièce
+          // et le repère où elle est, ou « Où la poser » depuis sa pièce.
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(Space.page, Space.sm, Space.page, 0),
+              child: PlantPlaceCard(plantId: id, plantName: plant.name),
+            ),
+          ),
           _PlantTasks(plantId: id),
           _RecentHistory(plantId: id),
           GrowthSection(plantId: id, photos: photos, primaryId: plant.primaryPhotoId, onAdd: _addPhoto),
@@ -411,9 +485,15 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
           AttachmentsSection(plantId: id),
           _Cuttings(plantId: id, plant: plant),
           const SliverPadding(padding: EdgeInsets.only(bottom: Space.huge)),
+              ],
+            ),
+          ),
         ],
       ),
     );
+
+    if (natif == null) return page;
+    return NativeActions(title: '', leading: natif.leading, actions: natif.actions, child: page);
   }
 }
 

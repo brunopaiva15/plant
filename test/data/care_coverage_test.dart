@@ -115,4 +115,9 @@ void main() {
 /// déplacé un seul héritage : le modèle a changé, la couverture d'entretien
 /// non. Le plafond suit la mesure vers le bas, puisqu'un cliquet qui ne se
 /// resserre jamais finit par ne plus rien surveiller.
-const double _familyShareCeiling = 26182 / 33344;
+///
+/// Resserrée encore à la fusion du 21 septembre, et c'est le travail sur les
+/// fiches d'entretien qui la fait tomber, pas le modèle : les résolutions au
+/// niveau de l'espèce passent de 52 à 290, et la famille en perd 118. La part
+/// famille descend de 78,5 % à 78,2 %.
+const double _familyShareCeiling = 26064 / 33326;

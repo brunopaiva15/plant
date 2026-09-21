@@ -23,5 +23,13 @@ import UIKit
     TodayWidgetChannel.register(with: engineBridge.applicationRegistrar.messenger())
     // Les raccourcis de l'icône : posés par Dart, rendus par la scène.
     QuickActionsChannel.register(with: engineBridge.pluginRegistry)
+    // Ce que le système réserve dans la fenêtre — caméra, pli, barre d'état —
+    // pour que le menu debout demande sa géométrie au lieu de la supposer.
+    WindowRegionsChannel.register(with: engineBridge.applicationRegistrar.messenger())
+    // La barre d'onglets, rendue par UIKit et pilotée depuis Dart.
+    NativeShell.register(with: engineBridge.applicationRegistrar.messenger())
+    // Le relevé d'une pièce par RoomPlan, et le nord à la boussole : de quoi
+    // dire où une plante serait le mieux (docs/17). Muet sans LiDAR.
+    RoomScanChannel.register(with: engineBridge.applicationRegistrar.messenger())
   }
 }

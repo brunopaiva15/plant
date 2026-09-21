@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'native_chrome_observer.dart';
+
 import '../core/config/app_config.dart';
 import '../design_system/components/adaptive.dart';
 import '../features/account/presentation/account_screen.dart';
@@ -13,8 +15,10 @@ import '../features/account/presentation/members_screen.dart';
 import '../features/archive/presentation/archive_screen.dart';
 import '../features/dashboard/presentation/activity_log_screen.dart';
 import '../features/dashboard/presentation/dashboard_screen.dart';
+import '../features/diagnosis/presentation/diagnosis_screen.dart';
 import '../features/diagnosis/presentation/diagnosis_settings_screen.dart';
 import '../features/encyclopedia/presentation/encyclopedia_screen.dart';
+import '../features/encyclopedia/presentation/natural_cause_page.dart';
 import '../features/encyclopedia/presentation/problem_page.dart';
 import '../features/encyclopedia/presentation/species_page.dart';
 import '../features/export/presentation/backup_screen.dart';
@@ -45,6 +49,7 @@ import '../features/species/presentation/species_picker_screen.dart';
 import '../features/support/presentation/support_screen.dart';
 import '../features/today/presentation/today_screen.dart';
 import '../features/home_climate/presentation/home_climate_settings_screen.dart';
+import '../features/room_scan/presentation/room_scan_settings_screen.dart';
 import '../features/weather/presentation/forecast_screen.dart';
 import '../features/weather/presentation/weather_settings_screen.dart';
 import 'deep_links.dart';
@@ -71,6 +76,7 @@ abstract final class Routes {
   static String plantGallery(String id) => '/plants/$id/gallery';
   static String plantSchedule(String id) => '/plants/$id/schedule';
   static String plantCare(String id) => '/plants/$id/care';
+  static String plantDiagnosis(String id) => '/plants/$id/diagnosis';
   static String location(String id) => '/locations/$id';
   static const appearance = '/settings/appearance';
   static const notifications = '/settings/notifications';
@@ -88,6 +94,7 @@ abstract final class Routes {
   static const finder = '/species/finder';
   static const weather = '/settings/weather';
   static const homeClimate = '/settings/home';
+  static const roomScan = '/settings/rooms';
   static const account = '/settings/account';
   static const gardens = '/settings/gardens';
   static const members = '/settings/members';
@@ -98,6 +105,7 @@ abstract final class Routes {
   static const activityLog = '/activity';
   static const encyclopedia = '/encyclopedia';
   static String encyclopediaProblem(String id) => '/encyclopedia/problems/$id';
+  static String encyclopediaNatural(String id) => '/encyclopedia/natural/$id';
 
   /// Le nom scientifique passe en paramètre de requête, pas de chemin : il
   /// porte une espace, parfois un « × » d'hybride, et un chemin n'en veut pas.
@@ -112,6 +120,10 @@ final routerProvider = Provider<GoRouter>((ref) {
   late final GoRouter router;
   router = GoRouter(
     navigatorKey: rootNavigatorKey,
+    // La chrome native s'efface tant qu'une page couvre la coquille : UIKit
+    // ne sait rien des routes de Flutter, et ses barres restaient posées
+    // par-dessus. Sans effet hors d'iOS.
+    observers: [NativeChromeObserver()],
     initialLocation: onboardingDone ? Routes.today : Routes.onboarding,
     redirect: (context, state) {
       // Un lien `auxine://…` — QR scanné depuis l'appareil photo du système,
@@ -185,6 +197,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (c, s) => platformPage(c, s, ProblemPage(problemId: s.pathParameters['id']!)),
       ),
       GoRoute(
+        path: '/encyclopedia/natural/:id',
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (c, s) => platformPage(c, s, NaturalCausePage(naturalId: s.pathParameters['id']!)),
+      ),
+      GoRoute(
         path: '/encyclopedia/species',
         parentNavigatorKey: rootNavigatorKey,
         pageBuilder: (c, s) => platformPage(c, s, EncyclopediaSpeciesPage(scientificName: s.uri.queryParameters['name'] ?? '')),
@@ -227,12 +244,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Routes.identification, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const IdentificationSettingsScreen())),
       GoRoute(path: Routes.weather, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const WeatherSettingsScreen())),
       GoRoute(path: Routes.homeClimate, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const HomeClimateSettingsScreen())),
+      GoRoute(path: Routes.roomScan, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const RoomScanSettingsScreen())),
       GoRoute(path: Routes.account, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const AccountScreen())),
       GoRoute(path: Routes.moderation, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const ModerationScreen())),
       GoRoute(path: Routes.careStudio, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const CareStudioScreen())),
       GoRoute(path: Routes.gardens, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const GardensScreen())),
       GoRoute(path: Routes.members, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const MembersScreen())),
       GoRoute(path: Routes.diagnosis, parentNavigatorKey: rootNavigatorKey, pageBuilder: (c, s) => platformPage(c, s, const DiagnosisSettingsScreen())),
+      GoRoute(
+        path: '/plants/:id/diagnosis',
+        parentNavigatorKey: rootNavigatorKey,
+        pageBuilder: (c, s) => platformPage(c, s, DiagnosisScreen(plantId: s.pathParameters['id']!)),
+      ),
       GoRoute(
         path: '/plants/:id/care',
         parentNavigatorKey: rootNavigatorKey,

@@ -15,6 +15,7 @@ import '../../account/application/membership_providers.dart';
 import '../../account/application/sign_in_availability.dart';
 import '../../community/application/moderation_providers.dart';
 import '../../account/presentation/gardens_screen.dart' show gardenLabel;
+import '../../room_scan/application/room_scan_providers.dart';
 
 /// Profil : prénom, apparence, notifications, données, sources.
 class ProfileScreen extends ConsumerWidget {
@@ -122,6 +123,10 @@ class ProfileScreen extends ConsumerWidget {
                   // ligne n'est pas là, plutôt qu'un réglage qui ne mène à rien.
                   if (ref.watch(homeClimateServiceProvider).isSupported)
                     FloraListRow(leading: const Text('🏠', style: TextStyle(fontSize: 18)), title: l10n.homeClimate, trailing: value(prefs.homeSensor?.label ?? l10n.none), chevron: true, onTap: () => context.push(Routes.homeClimate)),
+                  // Le relevé au LiDAR : expérimental, derrière son drapeau, et
+                  // seulement sur un appareil qui sait relever.
+                  if (ref.watch(roomScanAvailableProvider).value ?? false)
+                    FloraListRow(leading: const Text('📐', style: TextStyle(fontSize: 18)), title: l10n.roomScan, trailing: value(l10n.roomScanRoomsShort(ref.watch(roomScansProvider).value?.length ?? 0)), chevron: true, onTap: () => context.push(Routes.roomScan)),
                 ],
               ),
               const SizedBox(height: Space.lg),

@@ -8,15 +8,17 @@ import 'package:path_provider/path_provider.dart';
 import '../../core/config/app_config.dart';
 import '../../data/db/database.dart';
 import '../../data/services/photo_storage_service.dart';
+import '../../data/services/room_scan_service.dart';
 import 'backup_sections.dart';
 
 /// Export complet : `data.json` (toutes les tables) + dossier `photos/`.
 /// Format ouvert et documenté : l'utilisateur n'est jamais prisonnier.
 class ExportService {
-  ExportService(this._db, this._photos);
+  ExportService(this._db, this._photos, {RoomScanStore? rooms}) : _rooms = rooms ?? RoomScanStore();
 
   final FloraDatabase _db;
   final PhotoStorageService _photos;
+  final RoomScanStore _rooms;
 
   /// Sauvegarde complète, ou seulement les sections demandées.
   Future<File> buildZip({Set<BackupSection>? sections}) async {
@@ -38,6 +40,13 @@ class ExportService {
           final f = File(await _photos.absolutePath(rel));
           if (await f.exists()) await encoder.addFile(f, 'photos/$rel');
         }
+      }
+    }
+    // Les relevés de la maison : le JSON de chaque pièce, avec ses lignes.
+    if (chosen == null || chosen.contains(BackupSection.rooms)) {
+      for (final scan in await (_db.select(_db.roomScans)..where((r) => r.deletedAt.isNull())).get()) {
+        final f = File(await _rooms.absolutePath(scan.filePath));
+        if (await f.exists()) await encoder.addFile(f, 'rooms/${scan.filePath}');
       }
     }
     await encoder.close();
@@ -76,6 +85,8 @@ class ExportService {
       'inventory_tags': await rows('inventory_tags', () => _db.select(_db.inventoryTags).get()),
       'event_categories': await rows('event_categories', () => _db.select(_db.eventCategories).get()),
       'calendar_entries': await rows('calendar_entries', () => _db.select(_db.calendarEntries).get()),
+      'room_scans': await rows('room_scans', () => _db.select(_db.roomScans).get()),
+      'room_markers': await rows('room_markers', () => _db.select(_db.roomMarkers).get()),
     };
   }
 }

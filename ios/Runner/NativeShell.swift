@@ -1,0 +1,363 @@
+import Flutter
+import UIKit
+
+/// La chrome de navigation d'Auxine sur iOS, rendue par UIKit.
+///
+/// **Pourquoi du natif.** Sur iPhone Duo, iOS déplace les commandes d'une
+/// application dans une bande verticale au bord de l'écran. Apple est
+/// explicite sur la condition : une `UITabBar` ou une `UINavigationBar` posée
+/// seule n'est pas prise en compte pour ce placement ; il faut un
+/// `UITabBarController` ou un `UINavigationController`, qui possèdent leur
+/// barre. Une barre dessinée par Flutter, si fidèle soit-elle, reste du
+/// contenu aux yeux du système.
+///
+/// **La forme retenue.** Un seul moteur Flutter, et go_router garde la
+/// navigation entre les pages. Le contrôleur d'onglets ne sert qu'à la chrome :
+///
+/// ```
+/// UITabBarController              ← possède la barre d'onglets
+/// ├── UINavigationController      ← un par onglet, possède sa barre
+/// │   └── HostViewController      ← vide, porte le titre et les boutons
+/// │       └── (la vue de Flutter, quand cet onglet est choisi)
+/// └── …
+/// ```
+///
+/// Les deux contrôleurs sont là pour la même raison : ce sont eux, et non
+/// leurs barres prises isolément, qu'iOS considère pour le placement
+/// vertical. Les boutons des pages sont donc de vrais `UIBarButtonItem`,
+/// dessinés en SF Symbols — voir `core/sf_symbols.dart`, qui traduit les
+/// icônes d'Auxine sans que les pages aient à changer.
+///
+/// Un contrôleur d'onglets tire ses onglets de ses enfants : il en faut donc
+/// autant que d'onglets. Mais il n'y a qu'un moteur, donc qu'une vue Flutter,
+/// et elle déménage d'un hôte à l'autre au changement d'onglet. C'est la
+/// contenance UIKit ordinaire — `addChild`, `didMove` —, pas un tour de passe-
+/// passe : l'hôte sélectionné est le parent, les autres sont vides.
+///
+/// Toucher un onglet ne change rien tout seul : le natif le dit à Dart, Dart
+/// change de branche go_router, et c'est Flutter qui redessine. L'inverse
+/// vaut aussi — un lien profond change l'onglet depuis Dart.
+final class NativeShell: NSObject, UITabBarControllerDelegate {
+  static let name = "ch.vergasta.plant/native_shell"
+  static let shared = NativeShell()
+
+  private var channel: FlutterMethodChannel?
+  private weak var flutter: UIViewController?
+  private var onglets: UITabBarController?
+  private var hotes: [HostViewController] = []
+  private var navigations: [UINavigationController] = []
+  /// L'identité des boutons de la page ouverte, dans l'ordre reçu. Un
+  /// `UIBarButtonItem` ne porte qu'un entier, pas une chaîne.
+  private var identifiants: [String] = []
+  /// Vrai pendant qu'on applique une sélection venue de Dart : le contrôleur
+  /// préviendrait sinon Dart d'un changement que Dart vient de demander.
+  private var enEcho = false
+
+  static func register(with messenger: FlutterBinaryMessenger) {
+    let channel = FlutterMethodChannel(name: name, binaryMessenger: messenger)
+    shared.channel = channel
+    channel.setMethodCallHandler { call, result in shared.handle(call, result) }
+  }
+
+  /// Pose le contrôleur d'onglets autour du contrôleur de Flutter.
+  ///
+  /// Appelé une fois la scène montée : c'est elle qui possède la fenêtre, et
+  /// le storyboard y a déjà posé Flutter.
+  static func install(in scene: UIScene) {
+    guard let windowScene = scene as? UIWindowScene else { return }
+    let fenetres = windowScene.windows
+    guard let window = fenetres.first(where: { $0.isKeyWindow }) ?? fenetres.first,
+      let flutter = window.rootViewController,
+      !(flutter is UITabBarController)
+    else { return }
+
+    let onglets = UITabBarController()
+    onglets.delegate = shared
+    shared.flutter = flutter
+    shared.onglets = onglets
+    // Un seul hôte au départ : Dart dira combien il en faut, et lesquels.
+    shared.rebatir(titres: [""], symboles: ["circle"])
+    window.rootViewController = onglets
+    #if DEBUG
+      print("[auxine:natif] coquille posée autour de \(type(of: flutter))")
+    #endif
+  }
+
+  private func handle(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+    switch call.method {
+    case "setTabs":
+      guard let args = call.arguments as? [String: Any],
+        let bruts = args["tabs"] as? [[String: Any]], !bruts.isEmpty
+      else {
+        result(false)
+        return
+      }
+      rebatir(
+        titres: bruts.map { $0["title"] as? String ?? "" },
+        symboles: bruts.map { $0["symbol"] as? String ?? "circle" })
+      if let choisi = args["selected"] as? Int { choisir(choisi) }
+      result(true)
+    case "setSelected":
+      choisir((call.arguments as? Int) ?? 0)
+      result(true)
+    case "setChrome":
+      // Une page ouverte par Flutter par-dessus la coquille n'existe pas pour
+      // UIKit : sans cela, ses barres restaient posées dessus, avec les
+      // boutons de la page d'en dessous. Les deux barres se décident
+      // séparément — une fiche garde la sienne, la barre d'onglets non.
+      let args = call.arguments as? [String: Any] ?? [:]
+      let barre = (args["bar"] as? Bool) ?? true
+      let ongletsVisibles = (args["tabs"] as? Bool) ?? true
+      // Voiler n'est pas effacer. Une barre retirée rend sa place au contenu,
+      // et la page glisse — ce qui se voit au premier menu d'action ouvert.
+      // Une surcouche ne prend pas la place de la page : la chrome reste là
+      // où elle était, invisible et intouchable, le temps du choix.
+      let voile = (args["veil"] as? Bool) ?? false
+      let montrerLaBarre = barre && !voile
+      for navigation in navigations {
+        navigation.setNavigationBarHidden(!barre, animated: false)
+        navigation.navigationBar.alpha = montrerLaBarre ? 1 : 0
+        navigation.navigationBar.isUserInteractionEnabled = montrerLaBarre
+      }
+      // La barre d'onglets se masque par son **contrôleur**, et non en
+      // touchant à la vue.
+      //
+      // C'est la leçon de trois tentatives ratées. `tabBar.isHidden` et
+      // `tabBar.alpha` portent sur la vue que le contrôleur possède ; il la
+      // remet comme il l'entend à chaque mise en page, et sur l'iPhone Duo
+      // c'est lui, non elle, qui décide de ce que le système range dans la
+      // bande verticale. La barre reparaissait donc par-dessus une feuille.
+      //
+      // `setTabBarHidden(_:animated:)` est l'API faite pour ça, depuis
+      // iOS 18. En deçà, on retombe sur la vue, faute de mieux.
+      let montrerLesOnglets = ongletsVisibles && !voile
+      if #available(iOS 18.0, *) {
+        onglets?.setTabBarHidden(!montrerLesOnglets, animated: false)
+      } else if let barreDOnglets = onglets?.tabBar {
+        barreDOnglets.isHidden = !montrerLesOnglets
+        barreDOnglets.alpha = montrerLesOnglets ? 1 : 0
+        barreDOnglets.isUserInteractionEnabled = montrerLesOnglets
+      }
+      result(true)
+    case "setActions":
+      guard let args = call.arguments as? [String: Any] else {
+        result(false)
+        return
+      }
+      appliquer(args)
+      result(true)
+    default:
+      result(FlutterMethodNotImplemented)
+    }
+  }
+
+  /// Refait les hôtes, un par onglet, et redonne sa vue à Flutter.
+  private func rebatir(titres: [String], symboles: [String]) {
+    guard let onglets else { return }
+    let choisi = min(onglets.selectedIndex, max(0, titres.count - 1))
+    hotes = titres.indices.map { _ in HostViewController() }
+    navigations = titres.indices.map { i in
+      let navigation = UINavigationController(rootViewController: hotes[i])
+      navigation.navigationBar.prefersLargeTitles = false
+      navigation.tabBarItem = UITabBarItem(
+        title: titres[i],
+        image: UIImage(systemName: symboles[i]),
+        tag: i)
+      return navigation
+    }
+    onglets.setViewControllers(navigations, animated: false)
+    enEcho = true
+    onglets.selectedIndex = choisi
+    enEcho = false
+    heberger(dans: hotes[choisi])
+  }
+
+  private func choisir(_ index: Int) {
+    guard let onglets, index >= 0, index < hotes.count, index != onglets.selectedIndex else { return }
+    enEcho = true
+    onglets.selectedIndex = index
+    enEcho = false
+    heberger(dans: hotes[index])
+  }
+
+  /// Déménage la vue de Flutter dans l'hôte donné. Sans effet s'il y est déjà.
+  ///
+  /// Par contraintes et non par cadre : au moment du déménagement, l'hôte n'a
+  /// pas encore été mis en page, et `bounds` y vaut ce qu'il veut. Un cadre
+  /// recopié de là fige une erreur que le redimensionnement automatique
+  /// reporte ensuite — les marges sûres de Flutter annonçaient 34 points en
+  /// bas là où la barre d'onglets en prenait 83, et le contenu passait
+  /// dessous. Les contraintes, elles, se résolvent quand la mise en page
+  /// arrive, et disparaissent avec la vue quand elle repart.
+  private func heberger(dans hote: UIViewController) {
+    guard let flutter, flutter.parent !== hote else { return }
+    if flutter.parent != nil {
+      flutter.willMove(toParent: nil)
+      flutter.view.removeFromSuperview()
+      flutter.removeFromParent()
+    }
+    hote.addChild(flutter)
+    let vue = flutter.view!
+    vue.translatesAutoresizingMaskIntoConstraints = false
+    hote.view.insertSubview(vue, at: 0)
+    NSLayoutConstraint.activate([
+      vue.topAnchor.constraint(equalTo: hote.view.topAnchor),
+      vue.leadingAnchor.constraint(equalTo: hote.view.leadingAnchor),
+      vue.trailingAnchor.constraint(equalTo: hote.view.trailingAnchor),
+      vue.bottomAnchor.constraint(equalTo: hote.view.bottomAnchor),
+    ])
+    flutter.didMove(toParent: hote)
+    hote.view.setNeedsLayout()
+  }
+
+  /// Pose le titre et les boutons de la page ouverte sur l'onglet courant.
+  ///
+  /// Le bouton de tête va à gauche, là où iOS met la navigation ; les autres
+  /// à droite. `rightBarButtonItems` les range de droite à gauche, donc la
+  /// liste est retournée pour que le premier déclaré reste le plus près du
+  /// bord — l'ordre qu'une page écrit.
+  private func appliquer(_ args: [String: Any]) {
+    guard let onglets, onglets.selectedIndex < hotes.count else { return }
+    let item = hotes[onglets.selectedIndex].navigationItem
+    let titre = args["title"] as? String
+    item.title = (titre?.isEmpty ?? true) ? nil : titre
+
+    identifiants = []
+    let aGauche = boutons(args["leading"])
+    let (aDroite, proeminents) = boutonsDeDroite(args["actions"])
+    item.leftBarButtonItems = aGauche.isEmpty ? nil : aGauche
+    item.rightBarButtonItems = aDroite.isEmpty ? nil : aDroite.reversed()
+
+    // Le placement des actions proéminentes : iOS les garde visibles quand la
+    // bande déborde, au lieu de les replier dans le menu. Il n'existe pas
+    // avant iOS 26 ; sans lui, l'action reste un bouton ordinaire, ce qui
+    // était le cas jusqu'ici.
+    #if compiler(>=6.2)
+      if #available(iOS 26.0, *) {
+        item.pinnedTrailingGroup = proeminents.isEmpty
+          ? nil
+          : UIBarButtonItemGroup(barButtonItems: proeminents, representativeItem: nil)
+      }
+    #endif
+  }
+
+  /// Les boutons de droite, séparés de celui qu'il ne faut pas replier.
+  ///
+  /// Si le système ne sait pas épingler, le proéminent rejoint les autres :
+  /// une action qui disparaîtrait de la barre serait pire qu'une action mal
+  /// classée.
+  private func boutonsDeDroite(_ brut: Any?) -> ([UIBarButtonItem], [UIBarButtonItem]) {
+    var epinglable = false
+    #if compiler(>=6.2)
+      if #available(iOS 26.0, *) { epinglable = true }
+    #endif
+    guard epinglable else { return (boutons(brut), []) }
+
+    let descriptions = brut as? [[String: Any]] ?? []
+    let ordinaires = descriptions.filter { ($0["prominent"] as? Bool) != true }
+    let proeminents = descriptions.filter { ($0["prominent"] as? Bool) == true }
+    return (boutons(ordinaires), boutons(proeminents))
+  }
+
+  /// Bâtit les boutons d'un côté, en notant leur identité au passage.
+  private func boutons(_ brut: Any?) -> [UIBarButtonItem] {
+    var faits: [UIBarButtonItem] = []
+    for description in brut as? [[String: Any]] ?? [] {
+      guard let id = description["id"] as? String,
+        let symbole = description["symbol"] as? String
+      else { continue }
+      let image = UIImage(systemName: symbole)
+      // Un bouton qui porte un menu ne « touche » pas : c'est UIKit qui le
+      // déplie, depuis le bouton lui-même, et chaque entrée sait déjà ce
+      // qu'elle a à dire. Les autres passent par la cible et le tag, comme
+      // avant.
+      let bouton: UIBarButtonItem
+      if let menu = menuDeplie(description["menu"], de: id) {
+        bouton = UIBarButtonItem(image: image, menu: menu)
+      } else {
+        bouton = UIBarButtonItem(
+          image: image,
+          style: .plain,
+          target: self,
+          action: #selector(touche(_:)))
+      }
+      bouton.tag = identifiants.count
+      bouton.accessibilityLabel = description["title"] as? String
+      bouton.isEnabled = (description["enabled"] as? Bool) ?? true
+      identifiants.append(id)
+      faits.append(bouton)
+    }
+    return faits
+  }
+
+  /// Le `UIMenu` d'un bouton, ou `nil` s'il n'en déplie pas.
+  ///
+  /// C'est là toute la différence avec une feuille d'actions : iOS fait
+  /// sortir un menu **du bouton touché**, à sa place dans la barre, et floute
+  /// ce qu'il recouvre le temps du choix. Une feuille, elle, monte du bas et
+  /// recouvre la page. Seul UIKit sait dessiner le premier ; c'est pour cela
+  /// que les entrées traversent le canal plutôt que d'être imitées en argile.
+  ///
+  /// `separated` ouvre un groupe : iOS sépare ses groupes d'un trait, comme
+  /// dans ses propres applications. Un seul groupe ne s'enveloppe pas —
+  /// autant donner les entrées telles quelles.
+  private func menuDeplie(_ brut: Any?, de id: String) -> UIMenu? {
+    let descriptions = brut as? [[String: Any]] ?? []
+    guard !descriptions.isEmpty else { return nil }
+
+    var groupes: [[UIAction]] = [[]]
+    for (i, description) in descriptions.enumerated() {
+      guard let titre = description["title"] as? String else { continue }
+      if (description["separated"] as? Bool) == true, !(groupes[groupes.count - 1].isEmpty) {
+        groupes.append([])
+      }
+      var attributs: UIMenuElement.Attributes = []
+      if (description["destructive"] as? Bool) == true { attributs.insert(.destructive) }
+      if (description["enabled"] as? Bool) == false { attributs.insert(.disabled) }
+      // L'identité de l'entrée, et non l'index d'un tableau qu'une autre
+      // page aurait remplacé entre-temps : `R1.3`, que Dart sait relire.
+      let identite = "\(id).\(i)"
+      let symbole = description["symbol"] as? String
+      let action = UIAction(
+        title: titre,
+        image: symbole.flatMap { UIImage(systemName: $0) },
+        attributes: attributs
+      ) { [weak self] _ in
+        self?.channel?.invokeMethod("onAction", arguments: identite)
+      }
+      groupes[groupes.count - 1].append(action)
+    }
+
+    let pleins = groupes.filter { !$0.isEmpty }
+    guard !pleins.isEmpty else { return nil }
+    let enfants: [UIMenuElement]
+    if pleins.count == 1 {
+      enfants = pleins[0]
+    } else {
+      enfants = pleins.map { UIMenu(title: "", options: .displayInline, children: $0) }
+    }
+    return UIMenu(title: "", children: enfants)
+  }
+
+  @objc private func touche(_ envoyeur: UIBarButtonItem) {
+    guard envoyeur.tag >= 0, envoyeur.tag < identifiants.count else { return }
+    channel?.invokeMethod("onAction", arguments: identifiants[envoyeur.tag])
+  }
+
+  // MARK: - UITabBarControllerDelegate
+
+  func tabBarController(_ controller: UITabBarController, didSelect viewController: UIViewController) {
+    guard !enEcho, let index = navigations.firstIndex(where: { $0 === viewController }) else { return }
+    heberger(dans: hotes[index])
+    channel?.invokeMethod("onTab", arguments: index)
+  }
+}
+
+/// L'hôte d'un onglet : une vue vide, qui reçoit celle de Flutter quand c'est
+/// son tour. Elle ne dessine rien et ne capte rien — tout vient de Flutter.
+final class HostViewController: UIViewController {
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    view.backgroundColor = .clear
+  }
+}

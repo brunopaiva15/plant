@@ -91,6 +91,33 @@ d'avant la v12. Les autres catégories d'inventaire ne changent pas.
 Le calendrier mêle deux sources : les événements stockés dans `calendar_entries` et les échéances de soin
 projetées à la volée par `CalendarProjector` à partir des routines et de l'historique.
 
+## Le relevé de la maison (schéma v13)
+```
+room_scans     id, garden_id, location_id?, name, captured_at, north_offset_deg?,
+               file_path, floor_area_m2, section_label?, structure_id? (v14),
+               created_at, updated_at, deleted_at?
+room_markers   id, scan_id, kind (windowOrientation | heater | plant), x, z,
+               window_index?, orientation?, plant_id?, created_at, updated_at
+```
+Un relevé est une ligne et un fichier : le JSON du `CapturedRoom` de RoomPlan
+vit dans `Documents/rooms/<id>.json`, la base n'en garde que le chemin
+relatif. Rien ne part dans l'outbox — le plan de chez soi ne se synchronise
+pas ; il part dans l'export ZIP, section « Relevés de la maison », avec le
+JSON de chaque pièce sous `rooms/`. `north_offset_deg` est le cap du nord dans
+le repère du relevé, mesuré à la boussole ; nul quand elle n'a rien donné de
+stable. `section_label` est le type de pièce que RoomPlan reconnaît sur
+iOS 17 (`kitchen`, `bathroom`…), nul sinon.
+
+`room_markers` porte ce que la main ajoute au relevé, séparé de ce que le
+capteur a vu : refaire un relevé ne perd pas les repères.
+`windowOrientation` est l'orientation confirmée d'une fenêtre, indexée par
+son rang dans le JSON ; `heater` un radiateur posé du doigt, collé au mur
+le plus proche ; `plant` la place d'une plante du jardin (`plant_id`), une
+par plante et par relevé ; `windowSheer` et `windowDrawn` ce qui habille
+une fenêtre (`window_index`), un au plus par fenêtre. `structure_id` (v14) réunit les pièces d'un même
+relevé d'appartement, dont les fichiers vivent dans un dossier
+(`rooms/<id>/<n>.json`) et partagent le repère.
+
 ## Tables prévues (schéma réservé, UI en P4)
 ```
 notifications, devices, plant_links(nfc), plant_relationships
@@ -131,10 +158,15 @@ journal des mois plus tard au lieu d'en relire l'aperçu
 {"version": 1, "summary": "…", "urgent": true,
  "symptoms": "ce que l'utilisateur avait décrit",
  "observations": {"soil": "soggy", "roots": "soft", "light": "direct", "bugs": "none"},
+ "answers": [{"question": "Depuis quand ?", "answer": "Huit jours"}],
  "causes": [{"title": "…", "problemId": "002", "likelihood": "likely",
              "explanation": "…", "actions": ["…"]}],
  "photos": [{"file": "…jpg", "thumb": "…_thumb.jpg"}]}
 ```
+
+`answers` garde les questions que le service avait posées quand rien ne
+tranchait, et ce qu'on lui a répondu (docs/09, § 9) : elles ont pesé sur les
+pistes, le compte rendu ne se relit pas sans elles.
 
 Les `problemId` sont conservés plutôt que les seuls noms : à la réouverture,
 les pistes sont renommées par la base des problèmes, dans la langue de
@@ -228,9 +260,9 @@ noms » ne s'affichent pas, ils rendent la recherche tolérante (« Edelweiß »
 « stella alpina »). La recherche compare des chaînes normalisées sans accents
 ni casse (`core/utils/search_text.dart`).
 
-Les quatre colonnes de langue sont creuses : sur les 36 364 espèces livrées,
-5 285 ont un nom français, 32 147 un nom anglais, 7 639 un nom allemand,
-1 416 un nom italien. Une liste n'affiche donc que le nom de la langue lue,
+Les quatre colonnes de langue sont creuses : sur les 36 342 espèces livrées,
+5 283 ont un nom français, 32 123 un nom anglais, 7 639 un nom allemand,
+1 414 un nom italien. Une liste n'affiche donc que le nom de la langue lue,
 ou le nom scientifique — jamais celui d'une autre langue : « Japanische
 Faserbanane » en tête d'une liste française se lit comme une erreur, et
 masquer les 31 000 espèces sans nom français viderait l'encyclopédie.
@@ -304,7 +336,7 @@ l'intérieur, les fleurs, les arbustes, le potager et les fruitiers. Un fichier
 | `nom_fr` `nom_en` `nom_it` `nom_de` | Le nom affiché, une colonne par langue de l'app |
 | `portee` | `GENERAL` (toutes les plantes vasculaires), `LARGE` (beaucoup d'hôtes, exemples), `CIBLE` (hôtes principaux) |
 | `taxons_hotes_scientifiques` | Hôtes séparés par `;`, à tous les rangs : espèce, genre, famille, ou `Tracheophyta` |
-| `synonymes_recherche` | Facultatif. Les autres noms sous lesquels on cherche l'entrée, séparés par `;`, toutes langues mêlées. Jamais affichés. 171 entrées sur 200 en portent. |
+| `synonymes_recherche` | Facultatif. Les autres noms sous lesquels on cherche l'entrée, séparés par `;`, toutes langues mêlées. 171 entrées sur 200 en portent. |
 
 La recherche de l'encyclopédie (`PlantProblem.matches`) porte sur le numéro,
 les quatre noms, les synonymes et les hôtes. Chaque mot tapé doit ouvrir un
@@ -321,9 +353,13 @@ Les quatre langues répondent ensemble, pas seulement celle qui est lue :
 Un synonyme est un autre **nom** de l'entrée — un nom courant, un nom
 scientifique qui circule, une abréviation —, jamais un symptôme, un
 traitement ni un nom de plante : les hôtes s'en chargent. Un synonyme déjà
-trouvable par le titre n'entre pas, et un test le vérifie. Ils ne s'affichent
-nulle part : la base garde un seul nom par langue, pour que deux analyses de
-la même chose se lisent pareil.
+trouvable par le titre n'entre pas, et un test le vérifie.
+
+La fiche du problème les donne, sous « Autres noms », entre l'étendue et les
+hôtes : c'est « araignée rouge » qu'on a en tête, pas « tétranyque », et une
+fiche de référence doit le dire. Ils s'y lisent toutes langues mêlées, comme
+la base les range, et ne remplacent jamais le titre : celui-là garde un seul
+nom par langue, pour que deux analyses de la même chose se lisent pareil.
 
 Elle sert de vocabulaire commun au diagnostic. `candidatesFor` réduit la base
 aux pistes qui peuvent concerner une plante — l'universel, plus ce qui vise son
@@ -376,3 +412,71 @@ Les lignes `#` en tête du fichier portent ses réserves : les hôtes sont des
 exemples, un genre ne rend pas toutes ses espèces sensibles, et la
 vérification GBIF porte sur les noms de plantes, pas sur les relations
 hôte-problème.
+
+## Base des phénomènes naturels (hors base locale)
+`assets/problems/natural.txt` : ce que la plante fait normalement et qu'on
+prend pour un problème. Deux familles s'y mêlent — ce que la plante fait et
+qui inquiète (guttation, nectar extrafloral, vieille feuille du bas qui
+jaunit, panachure, racines aériennes, latex à la coupe, repos hivernal), et
+ce qu'on prend pour un ravageur ou une maladie (sores d'une fougère pour des
+cochenilles, laine des aréoles pour des cochenilles farineuses, liégeage d'un
+cactus pour une pourriture, nodosités des légumineuses pour des galles de
+nématodes, lichens de l'écorce pour un mal de l'arbre). La seconde est celle
+qui coûte le plus cher : l'erreur y fait traiter une plante qui n'a rien.
+Même fichier à séparateurs `|`, lu par le même chargeur, dans le même isolat,
+et porté par le même `ProblemCatalog` (`naturalCauses`, `natural(id)`,
+`naturalFor`).
+
+| Champ | Contenu |
+|---|---|
+| `id` | `N` et deux chiffres, `N01` à `N32`. Aucune confusion possible avec les trois chiffres d'un problème, ni dans la réponse du service, ni dans un compte rendu gardé. |
+| `nom_fr` `nom_en` `nom_it` `nom_de` | Le nom affiché, une colonne par langue de l'app |
+| `portee` | `GENERAL`, `LARGE`, `CIBLE`, comme la base des problèmes |
+| `taxons_hotes_scientifiques` | Les plantes qui le montrent, aux mêmes rangs : espèce, genre, famille, ou `Tracheophyta` |
+
+Les deux bases restent séparées parce que les choses le sont : un phénomène
+naturel n'est pas un problème de plus, il est ce qui n'en est pas un. Il n'a
+donc pas de famille, et la fiche de soin ne le lit pas — elle parle de ce qui
+se soigne. Le diagnostic s'en sert : `naturalFor` en tire la liste soumise
+avec les problèmes, le service rend `N01`, l'application affiche son nom et
+sait que la piste n'est pas un souci (docs/09, § 9). L'encyclopédie le montre :
+dans le rayon des problèmes, sous son propre titre après les quatre familles,
+avec sa puce, son compte et sa recherche (`NaturalCause.matches`, la même règle
+que `PlantProblem.matches`, portée par `searchMatches`), et chaque phénomène a
+sa page (`/encyclopedia/natural/N01`) — un nom, une étendue, des hôtes, les
+plantes du jardin qui le montrent, et la phrase qui fait l'entrée : rien à
+soigner. La carte d'une piste naturelle du diagnostic y mène, comme celle d'un
+problème mène à la sienne. Le vocabulaire définit « Phénomène normal » à côté
+des quatre familles qu'il n'est pas.
+
+Le symbole d'argile de ces pistes, `assets/problems/clay_naturel.webp`, est la
+cinquième pièce du studio des quatre familles (`tool/build_category_logos.py`,
+rendu par le même script, recadré à la même échelle par
+`tool/pack_category_logos.py --seulement naturel`, qui ne réécrit pas les
+quatre autres et prévient si le nouveau venu déborde de leur boîte) : une
+feuille saine, la goutte claire suspendue à sa pointe, deux perles de nectar
+sur la nervure. Ni lésion, ni dépôt, ni insecte — c'est l'absence de tout cela
+qui fait le symbole. La goutte est pâle sans être blanche : un blanc mat sur
+une feuille, ici, se lirait cochenille farineuse.
+
+Chaque phénomène a ensuite son propre dessin, dans
+`assets/problems/natural/<id>.webp`, comme chaque problème a le sien :
+trente-deux scènes rendues par `tool/build_natural_icons.py` dans le même
+studio, réduites par `tool/pack_natural_icons.py`, qui écrit la liste des
+identifiants illustrés dans `illustrated_natural.dart`. Un phénomène que la
+base ne nomme pas — le service en trouve hors liste — retombe sur le symbole
+commun, ce qui est exactement ce qu'on sait de lui.
+
+N'entre ici que ce dont il n'y a **rien à soigner**. Ce que la base des
+problèmes traite déjà n'y a pas sa place, même quand la chose passe pour
+anodine : la croûte blanche des sels est l'entrée `023`, l'œdème physiologique
+la `038`, et deux réponses contraires sur la même photo valent moins qu'une
+seule. `test/data/problem_catalog_test.dart` le vérifie — aucun nom, dans
+aucune des quatre langues, ne peut être celui d'un problème ni l'un de ses
+synonymes.
+
+La liste soumise à une analyse tient en neuf à quatorze entrées selon
+l'espèce, soit une ligne de plus dans la demande.
+
+L'actif peut manquer sans emporter l'autre : le diagnostic repart alors sans
+phénomènes naturels, comme avant qu'ils existent.

@@ -159,6 +159,459 @@ la coquille soit là, après l'onboarding s'il y en a un.
   autre appareil — s'en vont. Les fichiers de moins de douze heures sont
   épargnés : pendant une création, la photo existe avant sa ligne.
 
+## La chrome de navigation, en natif sur iOS (`core/native_shell.dart`)
+
+Sur iOS, la barre d'onglets n'est plus dessinée par Flutter : c'est un
+`UITabBarController`. La raison est dans la documentation d'Apple, et elle ne
+laisse pas le choix — une `UITabBar` ou une `UINavigationBar` posée seule
+**n'est pas prise en compte** pour le placement vertical de l'iPhone Duo ; il
+faut un contrôleur qui possède sa barre. Une barre dessinée par une
+application, si fidèle soit-elle, reste du contenu aux yeux du système.
+
+Le partage est net :
+
+| qui | quoi |
+|---|---|
+| UIKit | la barre d'onglets, son placement, son débordement, son allure |
+| Dart | la navigation — go_router garde les branches et les pages |
+
+Toucher un onglet ne fait donc rien tout seul : le natif le dit à Dart sur
+`ch.vergasta.plant/native_shell`, Dart change de branche, Flutter redessine.
+L'inverse vaut aussi, pour qu'un lien profond déplace l'onglet.
+
+La forme, côté natif (`ios/Runner/NativeShell.swift`) :
+
+```
+UITabBarController          ← possède la barre, qu'iOS place
+├── HostViewController      ← un par onglet, vide
+│   └── (la vue de Flutter, quand cet onglet est choisi)
+└── …
+```
+
+Un contrôleur d'onglets tire ses onglets de ses enfants : il en faut autant
+que d'onglets. Mais il n'y a **qu'un moteur Flutter**, donc qu'une vue, et
+elle déménage d'un hôte à l'autre au changement d'onglet — contenance UIKit
+ordinaire, `addChild` et `didMove`, pas un tour de passe-passe. Quatre moteurs
+auraient coûté quatre démarrages et auraient retiré les onglets à go_router.
+
+Les onglets sont déclarés avec des **SF Symbols** et non les icônes Cupertino
+d'Auxine : c'est UIKit qui les dessine, et il ne connaît que les siens. Les
+libellés viennent des ARB comme partout ailleurs.
+
+Ailleurs que sur iOS, rien ne change : `FloraTabBar` en bas sur un téléphone,
+`FloraTabRail` debout sur une fenêtre large (docs/06, « Le menu debout »).
+
+Chaque onglet porte en plus un `UINavigationController`, pour la même raison
+que le contrôleur d'onglets : les boutons d'une page sont de vrais
+`UIBarButtonItem`, et c'est à ce titre qu'iOS les range dans la bande.
+
+Les pages n'ont pas changé pour autant. Elles donnent toujours des
+`FloraIconButton` à `LargeTitlePage` ; `components/native_actions.dart` les
+traduit — l'icône par `core/sf_symbols.dart`, le libellé par `semanticLabel`,
+l'action par un identifiant que le natif renvoie. Une table plutôt qu'un nom
+de symbole déclaré partout : cent vingt sites d'appel n'ont pas eu à bouger.
+
+C'est **tout ou rien** : si une seule icône manque à la table, la page garde
+ses boutons en argile, et le point de code manquant s'écrit dans la console en
+debug. Une rangée moitié système moitié argile serait pire que l'une ou
+l'autre.
+
+**Un bouton peut déplier plutôt qu'agir.** Les trois points d'une fiche de
+plante ouvraient une feuille d'actions, qui montait du bas et recouvrait la
+photo. Ce n'est pas ce que fait iOS : un bouton de barre qui porte un `UIMenu`
+fait sortir son menu **de lui-même**, à sa place dans la barre, en floutant la
+page derrière — ce que font Maison, Photos ou Mail. La feuille est faite pour
+un choix qui engage ; un menu, pour la liste des gestes d'une page.
+
+La page ne déclare qu'une chose : `FloraIconButton.menu`, la même liste de
+`SheetAction` que la feuille recevait. `native_actions.dart` la traduit en
+entrées, le natif en `UIAction`, et `separated` ouvre un groupe — iOS sépare
+ses groupes d'un trait. Une entrée sans SF Symbol n'entraîne pas le bouton
+dans sa chute : c'est une ligne de texte, ce qu'iOS accepte sans broncher ; le
+tout ou rien vaut pour la barre, pas pour ce qu'elle déplie.
+
+La liste est dressée **au rendu**, et non à l'ouverture : un menu du système
+est déclaré avant d'être touché, et il doit donc déjà dire « Retirer des
+favoris » quand le cœur est plein. Le natif renvoie l'entrée choisie —
+`R1.3`, la quatrième du menu du deuxième bouton de droite —, pas le bouton
+qui la portait.
+
+Là où le natif n'est pas — Android, ou une barre qu'il a refusée —, le bouton
+reste en argile et c'est `showAdaptiveActionSheet` qui répond, comme avant :
+une feuille reste la bonne réponse de cette plateforme-là. Les deux disent la
+même chose ; ce n'est pas la même façon de la dire.
+
+**Une page posée dans une feuille garde la sienne.** C'est le pendant de la
+règle : la barre d'UIKit est celle de la coquille, et une feuille de Flutter
+passe *par-dessus* la coquille — l'observateur l'efface au moment de la
+poussée, et la page qui s'ouvre dedans ne peut pas la reprendre, puisqu'elle
+vit dans le navigateur de la feuille. Elle cédait quand même, et se retrouvait
+sans rien : ni titre, ni retour, ni croix. « Où la poser », la feuille du
+relevé, s'ouvrait sur son contenu nu.
+
+`CupertinoSheetRoute.hasParentSheet` le dit en un mot, et `FloraPage` comme
+`LargeTitlePage` s'abstiennent alors de céder. La page à la racine d'une
+feuille reçoit en plus **une croix** : elle n'a rien à dépiler — mais la
+feuille, si, et sans ce bouton elle ne se refermait qu'au glissement.
+`test/design_system/sheet_chrome_test.dart` tient les deux, et la poignée
+avec.
+
+Les pages qui prétendent à la barre forment une **pile**, et la dernière
+visible l'emporte. Une page poussée par-dessus une autre prend la barre ;
+quand elle s'en va, celle qu'elle recouvrait la reprend sans avoir à se
+redessiner — rien ne la forcerait à le faire. « Visible » se lit sur deux
+choses : la route est-elle celle du dessus, et sa branche d'onglet est-elle
+éveillée (`TickerMode`).
+
+**Le titre reste à Flutter.** La barre native n'en porte pas : le grand titre
+en argile — le « Bonsoir » arrondi — est la signature d'Auxine, et « fini les
+menus » ne dit rien des titres. Deux titres empilés seraient une faute ; c'est
+donc le natif qui se tait. À rouvrir si la bande horizontale que la barre
+garde en haut se révèle trop chère.
+
+Le bouton de tête d'une page part avec les autres — le tableau de bord
+d'« Aujourd'hui » —, à gauche de la barre, là où iOS met la navigation. Pas le
+bouton retour : celui-là attend d'être rendu par la pile de navigation
+elle-même.
+
+**`isCurrent` ne vaut que dans son navigateur.** C'est le piège de cette
+mécanique, et il a coûté trois allers-retours. Une page de la coquille vit
+dans le navigateur de son onglet ; une feuille poussée sur le navigateur
+racine la couvre sans que sa branche en sache rien, et elle se croyait donc
+encore visible. Elle redemandait la barre que l'observateur venait d'effacer,
+et la feuille se retrouvait coiffée des boutons de la page d'en dessous.
+
+Une page qui n'est pas posée sur le navigateur racine ne prétend donc à la
+barre que si rien ne couvre la coquille. Celles qui y sont posées — une fiche,
+une page secondaire — y prétendent à tout étage, puisqu'elles *sont* cet
+étage. Et `NativeShell.overlay` est écoutable, pour qu'une page couverte
+reprenne la barre quand ce qui la couvrait s'en va : rien ne la forcerait
+sinon à se redessiner, et la barre reviendrait vide.
+
+**Et rien ne s'attend entre deux envois.** Le garde-fou qui vide la barre
+avant de la masquer *attendait* la première réponse. Cette attente laissait
+passer une image : la page qui s'ouvrait demandait la barre et publiait ses
+boutons dans l'intervalle, et le masquage arrivait après, effaçant ce qu'elle
+venait de poser — une fiche de plante se retrouvait sans aucun bouton. Un
+canal de méthode livre dans l'ordre où on lui confie ; il suffit de lui
+confier les deux à la suite. `test/core/native_shell_test.dart` tient l'ordre,
+et échoue sur la version qui attendait.
+
+**La barre d'onglets se masque par son contrôleur.** `tabBar.isHidden` et
+`tabBar.alpha` portent sur la vue que le contrôleur possède ; il la remet
+comme il l'entend à chaque mise en page, et sur l'iPhone Duo c'est lui, non
+elle, qui décide de ce que le système range dans la bande verticale. La barre
+reparaissait donc par-dessus une feuille, trois tentatives de suite.
+`setTabBarHidden(_:animated:)` est l'API faite pour ça, depuis iOS 18 ; en
+deçà on retombe sur la vue, faute de mieux.
+
+**La chrome n'existe pas avant la coquille.** Au premier lancement, l'accueil
+s'ouvre sans elle : sans verrou, le contrôleur d'onglets montrait son onglet
+de départ — un rond sans nom — par-dessus, et une barre vide avec. Les deux
+barres restent donc effacées tant que la coquille n'a pas déclaré ses onglets.
+
+**Une page et une surcouche ne se valent pas.** Un menu d'action, une alerte,
+ne prennent pas la place de la page : elles se posent dessus le temps d'un
+choix. Les effacer pour de bon rendrait leur place au contenu, la marge sûre
+changerait, et la page glisserait sous le menu qui vient de s'ouvrir — ce
+qu'elle faisait. Ces routes-là ne font donc que **voiler** la chrome :
+`alpha` à zéro, intouchable, et toujours là où elle était. L'observateur les
+compte à part (`PageRoute` ou non).
+
+**Et la chrome s'efface quand une page la couvre.** UIKit ne sait rien de la
+navigation de Flutter : une fiche de plante, un scanner de QR code, une
+feuille d'ajout sont des routes que go_router pose par-dessus la coquille, et
+les barres natives restaient là — sur la page ouverte, avec les boutons de
+celle d'en dessous. `app/native_chrome_observer.dart` observe le navigateur
+racine : tant qu'il reste une route au-dessus de la première, les deux barres
+s'effacent. Les pages des branches d'onglets ne passent pas par là, elles ont
+leur propre navigateur, et c'est bien la coquille qu'on regarde alors.
+
+Le **bouton retour** part avec le reste : c'était déjà un `FloraIconButton` à
+chevron, il se décrit comme les autres et va à gauche. Le geste de balayage
+reste celui de Flutter, qui possède la pile de routes.
+
+L'**ajout** est marqué proéminent, et iOS le garde visible quand la bande
+déborde au lieu de le replier dans le menu — `pinnedTrailingGroup`, qui
+n'existe pas avant iOS 26 ; sans lui l'action reste un bouton ordinaire.
+C'est l'ajout et pas un autre parce qu'il est l'action principale d'Auxine
+partout où elle est offerte.
+
+Trois gabarits cèdent désormais leur barre :
+
+| gabarit | ce qui part |
+|---|---|
+| `LargeTitlePage` | le bouton de tête, le retour, les actions. Le grand titre reste à Flutter |
+| `FloraPage` | le retour, l'action, **et le titre** — il était centré et petit, c'est exactement ce qu'`UINavigationItem.title` dessine |
+| la fiche plante | le retour, le cœur, le menu. Ils flottaient sur la photo ; ce sont des commandes, et iOS les range comme telles |
+
+Ce qui reste : les pages qui dessinent leur propre chrome sans passer par ces
+gabarits — un scanner, une feuille —, et qui gardent leurs boutons. Elles
+n'ont pas de barre, donc rien à céder ; la chrome native s'efface pour elles.
+
+Et les marges sûres : elles viennent de la propagation d'UIKit, que les
+contraintes de `heberger` ont remise d'aplomb. Y ajouter un canal qui les
+calculerait à part créerait une seconde source de vérité capable de
+contredire la première — à ne faire que si un relevé montre qu'elle se
+trompe.
+
+## La fenêtre : téléphone, tablette, pliable (`app/window.dart`)
+
+Sur téléphone, l'application se tient en portrait : chaque écran est une
+colonne, et le paysage n'apporterait qu'une mise en page étirée. Sur tablette,
+rien n'est verrouillé — iPadOS attend qu'une application tourne et cohabite
+avec une autre, et le refuser est un motif de rejet. **Ces deux règles sont
+déclarées, pas demandées** : `ios/Runner/Info.plist` porte le portrait sur
+iPhone et les quatre orientations sur iPad, le manifeste Android porte le
+portrait partout. Aucun code ne fait de demande à l'exécution, et la section
+« Ce qu'il ne faut pas refaire », plus bas, dit pourquoi.
+
+Ce que le code décide, c'est où se poser dans la fenêtre qu'on lui donne. La
+limite est à 600 points de côté le plus court ; au-delà de 700 points de
+large, le contenu rend son surplus en marges (`readableInset`,
+`design_system/components/page_scaffold.dart`).
+
+L'iPhone Duo tient les deux rôles dans la même séance : fermé il est un
+téléphone, ouvert une tablette, et rien n'a été relancé entre les deux. Aucune
+taille n'est donc gardée : `isCompactWindow()` mesure la vue implicite à
+chaque appel, et le viseur intégré suit la même règle
+(`features/plants/presentation/inline_camera.dart`) — son verrou de capture,
+qui passe par le plugin caméra et non par UIKit, se défait quand l'appareil
+s'ouvre, faute de quoi une photo prise après le pli sortirait couchée.
+
+### Les cotes, mesurées
+
+Relevées dans Xcode 27.1 sur le simulateur, DPR 3 partout. Elles viennent du
+harnais Duo de *disquebleu* (`docs/duo-harness.md` de ce dépôt-là), pas d'un
+calcul, et d'un binaire **construit avec le SDK 27.1** — celui qui dessine
+bord-à-bord.
+
+| Pose | `MediaQuery.size` | `physicalSize` | Marges sûres (G/H/D/B) |
+|---|---:|---:|---|
+| fermé, portrait | 466 × 678 pt | 1398 × 2034 px | 0 / 82 / 0 / 34 |
+| fermé, couché | 678 × 466 pt | 2034 × 1398 px | 0 / 0 / 84 / 34 |
+| ouvert, portrait | 669 × 951 pt | 2007 × 2853 px | 0 / 82 / 0 / 34 |
+| ouvert, couché | 951 × 669 pt | 2853 × 2007 px | 0 / 0 / 84 / 34 |
+| multitâche, moitié | 445 × 626 pt | | |
+| multitâche, tiers | 320 × 626 pt | | |
+
+La bande de la caméra n'est pas toujours du même côté : selon le sens de
+rotation, les mêmes 84 points se retrouvent à gauche. **Rien n'est
+symétrique**, et chaque bord se lit pour lui-même — c'est aussi ce que
+recommande Apple. La pilule du bas comme le rail de droite ajoutent donc les
+marges du système aux leurs, bord par bord.
+
+Construite avec le SDK 27.0, la même application tourne en **mode de
+compatibilité** : bande noire, fenêtre tenue à l'écart de la zone
+heure/caméra, et 80 points perdus sur un axe — 386 × 678 fermé, 669 × 871
+ouvert. Les deux se ressemblent assez pour qu'on prenne l'un pour l'autre,
+d'où le `[auxine:sdk]` qu'écrit `ios/Runner/SceneDelegate.swift` en debug : il
+donne le SDK inscrit dans le bundle et prévient si c'est le mauvais. Changer
+de simulateur ne suffit pas, c'est le Xcode sélectionné à la construction qui
+décide. Les deux limites de l'application — 600 points pour le menu, 700 pour
+le côté le plus court — tiennent dans les deux modes.
+
+Deux constats de ces relevés valent plus que les nombres :
+
+- `MediaQuery.displayFeatures` est **vide** dans les quatre poses, pli partiel
+  compris. Flutter ne l'alimente que sur Android, et le pli partiel ne produit
+  même pas de nouveau relevé : la scène garde la même surface. Rien, côté
+  Dart, ne dit où passe la charnière.
+- `SystemChrome.setPreferredOrientations` est **refusé** par UIKit, qui répond
+  `UISceneErrorDomain Code=101`. Voir juste en dessous.
+
+Côté iOS, trois points valent d'être connus :
+
+- `UIRequiresFullScreen` ne doit pas revenir dans `Info.plist`. La clé dit au
+  système que l'application veut tout l'écran à l'ancienne manière, et la tient
+  hors de l'adaptation — fermée comme ouverte.
+- Les orientations ne se décident plus depuis le code : la déclaration de
+  `Info.plist` vaut, la demande programmatique est refusée (voir plus bas).
+  Une page doit savoir tourner, pas s'y opposer.
+- `TARGETED_DEVICE_FAMILY = "1,2"` était déjà posé pour l'iPad ; c'est cette
+  valeur qui ouvre à l'écran intérieur les mises en page larges d'UIKit.
+
+La construction demande le SDK iOS 27.1 (Xcode 27.1, en bêta depuis le
+18 septembre 2026, sur un Mac Apple Silicon en macOS 26.6 ou plus récent). En
+deçà, iOS applique ses replis de compatibilité : la fenêtre n'atteint pas les
+bords de l'écran intérieur et reste tenue en une colonne. La cible de
+déploiement, elle, ne bouge pas : iOS 17.
+
+Ce que l'ouverture change à l'écran : le menu passe debout sur le bord droit
+(`FloraTabRail`, `app/shell.dart`), le contenu prenant ce qui reste — une
+pilule posée en bas traverserait tout l'écran pour quatre onglets — et les
+boutons du haut de page rejoignent la colonne (`RailActions`). La bascule
+tient en deux nombres, dans `FloraTabRail.fitsIn`, et l'iPad n'est pas
+concerné : il garde sa barre du bas. Le détail du rail est dans docs/06,
+section « Le menu debout ».
+
+### Ce qu'il ne faut pas refaire
+
+L'application a demandé le portrait à `SystemChrome.setPreferredOrientations`
+dès que la fenêtre était compacte. Elle ne le fait plus, et ne doit pas
+recommencer.
+
+Sur l'iPhone Duo, la demande est refusée : UIKit répond `UISceneErrorDomain
+Code=101`, et Dart n'en sait rien — l'engine passe un gestionnaire d'erreur
+vide, si bien que l'appel paraît réussir. L'écran extérieur tourne donc quoi
+qu'on demande, et 678 × 466 est un état à tenir, pas à empêcher.
+
+Ailleurs, la demande ne faisait que répéter ce qui était déjà déclaré dans
+`Info.plist` et dans le manifeste. Sur iPad, Flutter note d'ailleurs qu'elle
+n'est honorée que si le multitâche est coupé — ce qu'on ne fait pas, et qu'on
+ne fera pas. Il restait donc un mécanisme qui ne décidait rien et qui, sur
+pliable, laissait une erreur UIKit dans la console à chaque lancement.
+
+C'est aussi la conclusion du harnais Duo de *disquebleu*, dans les mêmes
+termes : « ne pas réintroduire de verrouillage programmatique de
+l'orientation ; utiliser la taille de scène et les insets réellement reçus par
+Flutter ».
+
+Pour relever les cotes d'une pose qu'on n'a pas sous la main,
+`app/window_probe.dart` écrit la fenêtre dans la console à chaque changement —
+taille, marges sûres, écran, nombre de vues, pli. En debug, sans rien
+demander ; jamais ailleurs. Un relevé qui répète le précédent n'est pas
+réécrit, si bien qu'un clavier qui monte ne dit rien et qu'un pli dit tout.
+
+Elle a d'abord été muette sur l'appareil, pour deux raisons qu'il vaut mieux
+connaître : elle était derrière un `--dart-define`, qui se passe
+silencieusement de travers, et son premier relevé partait de `main()`, avant
+que l'application ait ouvert sa fenêtre — donc dans le journal de l'appareil
+avant que `flutter run` ne s'y branche. Le drapeau a disparu et le premier
+relevé attend la première image. Même chemin que le `_logDuoMetrics` de
+*disquebleu*, qui écrit depuis un `build()` pour la même raison.
+
+### Ce que le système réserve (`core/window_regions.dart`)
+Les marges sûres ne disent pas tout. Sur un pliable, trois cotes manquent, et
+chacune décidait jusqu'ici d'une constante relevée au pixel sur une capture :
+
+- **jusqu'où descend la pile du système** — caméra, heure, wifi empilés contre
+  le bord. `padding.top` annonce 82 points là où la pile descend à 140 ;
+- **sur quel axe** cette pile est posée, pour que le menu debout s'y aligne ;
+- **où passe le pli**, que `MediaQuery.displayFeatures` ne donne pas : le champ
+  est alimenté sur Android seulement.
+
+`ios/Runner/WindowRegionsChannel.swift` les demande à UIKit —
+`reservedRegions(kind: .occlusion)` pour la caméra, `.division` pour le pli,
+`statusBarManager.statusBarFrame` pour la pile — et les rend dans le repère de
+la vue Flutter, en points. `WindowRegionsService` les lit au lancement et à
+chaque `didChangeMetrics`, c'est-à-dire à chaque pli et à chaque rotation.
+
+Le relevé du 20 septembre 2026, sur le simulateur de l'écran extérieur, dit
+comment les trois se lisent — et il vaut mieux que ce qu'on espérait.
+
+`statusBarFrame` est mort sur cet appareil : il rend **466 × 2 points en haut
+à gauche** pendant que l'heure et le wifi sont debout contre le bord droit. Le
+cadre n'a pas suivi la barre dans sa rotation.
+
+Mais les occlusions en donnent deux, pas une :
+
+| région annoncée | ce qu'elle vaut |
+|---|---|
+| `382, 0 · 84 × 170` | la **bande du système**, large comme la marge sûre de ce côté. Son bas, 170, borne la pile |
+| `399,7 ; 29,3 · 37 × 37` | la **caméra**, qui flotte dedans. Son milieu tombe à 47,8 points du bord droit |
+
+D'où les deux règles de `parse`, qui se répondent. Le bas de la pile ne vient
+que d'une région qui **part du bord haut** — la bande. L'axe ne vient que d'une
+région qui **flotte** — la caméra. Chacune est écartée du rôle de l'autre, et
+pour de bonnes raisons : une caméra est le haut de la pile, jamais son bas, et
+prise seule elle poserait le menu au-dessus de l'heure ; le milieu de la bande
+n'est pas celui des glyphes, 42 points du bord contre 47,8 dans la même pose.
+
+La seconde règle compte plus qu'il n'y paraît, parce qu'iOS n'annonce pas la
+caméra dans toutes les poses :
+
+| pose | régions annoncées | ce qu'on en retient |
+|---|---|---|
+| fermé, 466 × 678 | bande `382, 0 · 84 × 170`, caméra `399,7 ; 29,3 · 37 × 37` | pile 170, axe 47,8 |
+| ouvert couché, 951 × 669 | bande `867, 0 · 84 × 120` | pile 120, **pas d'axe** |
+
+Se rabattre sur la bande dans le second cas ferait sauter le menu de six points
+d'un pli à l'autre. Sans région flottante on ne dit donc rien, et la mesure —
+48 — tient : la colonne ne bouge pas d'un dixième entre les deux poses.
+
+Le bas de la pile, lui, varie vraiment d'une pose à l'autre : 170 fermé, 120
+ouvert couché. C'est le vrai gain du canal, celui qu'aucune constante ne
+pouvait rendre. L'axe, la mesure l'avait déjà juste.
+
+**Le pli, en revanche, n'est pas venu.** `divisions` est vide dans toutes les
+poses du simulateur — fermé, semi-ouvert, ouvert —, et le passage de l'une à
+l'autre n'y change rien. Une requête par défaut ne rend que les régions
+**actives**, et rien ne dit qu'une charnière sans rupture visible en soit une.
+Le champ `fold` reste donc en place, et vide : il coûte une ligne, et c'est la
+seule voie qu'aura une mise en page qui veut éviter la charnière, puisque
+`MediaQuery.displayFeatures` ne sera jamais rempli sur iOS. À revérifier sur
+l'appareil.
+
+C'est aussi pourquoi l'air sous une région annoncée n'est pas celui d'une
+mesure — huit points sous ce que le système se réserve, trente-deux sous des
+glyphes vus sur une capture.
+
+Deux garde-fous, parce que la réponse vient de l'extérieur. Le premier est un
+`#if compiler(>=6.4)` autour des *reserved regions* : le symbole n'existe pas
+avant le SDK 27.1, et `#available` seul ne le cacherait pas au compilateur —
+sans ce test, le projet ne se construirait plus sur un Xcode plus ancien.
+`compiler`, et surtout pas `swift` : `#if swift(>=x)` interroge la version du
+**langage**, qui ne prend que des valeurs comme 4.2, 5 ou 6, si bien que
+`swift(>=6.4)` est faux partout. Écrit ainsi au départ, le bloc n'a jamais été
+compilé et les régions revenaient vides sur un appareil où elles existent. Le
+second est dans `WindowRegionsService.parse` : une pile qui prendrait plus du
+tiers de la fenêtre, ou un axe au milieu de l'écran, sont écartés. Le cadre de
+la barre d'état est le seul des trois dont on ne sache pas encore ce qu'il vaut
+quand elle passe debout, et une valeur écartée n'est pas une panne : l'appelant
+garde sa mesure.
+
+La sonde écrit deux lignes plutôt qu'une : les régions retenues, et **la
+réponse du natif**, à clés triées — la carte que rend le canal change d'ordre
+d'un appel à l'autre, et la sonde croyait à quatre fenêtres différentes là où
+il n'y en avait qu'une. Le natif y joint de quoi lire un tableau vide : la
+version de Swift qui l'a compilé, celle du système, et si les régions ont été
+demandées ou si le `#if` les a sautées. « Aucune région annoncée » a trop de causes
+pour se lire seul — pas d'iOS, un binaire construit sans le canal, un SDK
+antérieur à 27.1, une vue pas encore posée, ou une cote écartée par `parse`.
+La seconde ligne les distingue.
+
+Deux `ValueNotifier`, et leur ordre compte : les régions sont publiées
+**avant** la réponse. Un notifieur prévient ses auditeurs sur-le-champ, si bien
+que la sonde, qui écoute la réponse pour écrire son relevé, lisait des régions
+encore vides — et comme une seule réponse suffit à l'appareil, elle ne
+repassait jamais. Le relevé affichait « aucune région annoncée » sous une
+réponse qui en contenait deux. `test/core/window_regions_test.dart` tient
+l'ordre par un auditeur, et la sonde écoute désormais les deux notifieurs,
+ce qui rend l'ordre indifférent.
+
+`test/core/window_regions_codec_test.dart` fait passer la réponse mesurée par
+le codec standard avant de la lire : le canal rend des `Map<Object?, Object?>`
+jusque dans les rectangles imbriqués, là où les autres tests donnent des
+littéraux typés. Il ne dispense pas de regarder la réponse : le canal a un
+jour cessé d'envoyer les cotes de la vue, sans lesquelles `parse` ne retient
+rien, et le test les fournissait de sa main. La sonde marque donc « rien
+retenu » quand une réponse pleine ne donne aucune région — c'est la seule
+façon de distinguer un natif qui se tait d'un natif qu'on écarte.
+
+La première demande part de `main()`, avant la première image : la scène n'est
+pas encore active, la fenêtre pas encore clé, la barre d'état vaut zéro. Le
+service redemande donc une fois la fenêtre posée, et c'est cette réponse-là
+qui compte. La sonde écoute la réponse pour la même raison : elle arrive après
+son premier relevé.
+
+C'est bien l'ordre des choses — la mesure d'abord, l'annonce en raffinement.
+Hors d'iOS le canal n'existe pas, sur un binaire construit avec un SDK plus
+ancien il répond sans régions, et le menu debout se pose exactement où il se
+posait avant. Une proposition est ouverte chez Flutter pour alimenter
+`displayFeatures` depuis ces mêmes régions (flutter/flutter#192515) ; si elle
+atterrit, la moitié « pli » du canal devient inutile.
+
+Ce que le canal ne donne pas, et qu'il faut savoir : le regroupement et le
+débordement automatiques qu'iOS fait dans une barre d'outils debout. Ils
+viennent de `UINavigationController` et `UITabBarController`, pas des régions
+— une barre montée à la main ne les obtient pas, et le menu s'en passe (voir
+docs/06, « Le menu debout »).
+
+Ce qui reste à faire quand l'appareil sera là (23 octobre 2026) : les visuels
+du magasin pour l'écran intérieur (`store/README.md`) et, si la place le
+justifie, une famille de widget plus grande que `systemMedium`.
+
 ## Performance
 - Listes en `Sliver*` / `GridView.builder` (virtualisées), `RepaintBoundary` sur les cartes.
 - Requêtes drift ciblées + streams ; pas de rechargement global.
@@ -174,6 +627,16 @@ la coquille soit là, après l'onboarding s'il y en a un.
   correction météo d'un intervalle, gel et chaleur, zone de rusticité.
 - `test/data/*_repository_test.dart` : repositories sur base en mémoire (créer plante, arroser, archiver / restaurer, recherche).
 - `test/domain/reminder_planner_test.dart` : regroupement et texte des notifications.
+- `test/app/window_test.dart` : la fenêtre courante, mesurée à chaque appel et
+  non au démarrage — la réponse change au pli.
+- `test/app/window_probe_test.dart` : la sonde de fenêtre écrit sans qu'on lui
+  demande rien, attend la première image, et ne se répète pas.
+- `test/design_system/tab_rail_test.dart` : où le menu se met debout, ce qu'il
+  fait une fois debout (bord, bande réservée, cibles, bulle), et ce qu'il
+  change quand le système annonce sa géométrie.
+- `test/core/window_regions_test.dart` : la lecture des régions réservées, et
+  surtout ses refus — une cote invraisemblable disparaît au lieu de déplacer
+  le menu.
 
 ## La météo (`domain/weather/`, `features/weather/`)
 Un seul appel sert tout : `weatherWindowProvider` demande trois jours passés,
@@ -430,3 +893,68 @@ accessoires sur l'appareil, les Home APIs passent par le compte Google de
 la personne. L'écran le dit, maison par maison (`homeClimateAppleNote`,
 `homeClimateGoogleNote`), et le texte commun ne promet plus qu'une chose,
 vraie des deux : la mesure ne quitte pas l'application.
+
+## Le relevé de la maison (`domain/room/`, `features/room_scan/`)
+
+Livré, sur iPhone et iPad à LiDAR (`AppConfig.roomScanEnabled`, qu'on
+peut refermer sans rien effacer). Le dessein, le modèle de lumière et les
+paliers sont dans [docs/17](17-releve-de-la-maison.md) ; ici, ce qui tient
+au code.
+
+- **Le canal** `ios/Runner/RoomScanChannel.swift`
+  (`ch.vergasta.plant/room_scan`), sur le patron de `HomeClimateChannel` :
+  `support` rend ce que l'appareil sait faire (`lidar`, `sections`,
+  `structure`), `scan` présente `RoomCaptureView` par-dessus la fenêtre
+  Flutter, avec le coaching du système, et au « Terminer » encode le
+  `CapturedRoom` en JSON à l'endroit demandé ; `scanStructure` (iOS 17)
+  enchaîne les pièces dans le même repère — « Pièce suivante » arrête la
+  session sans mettre ARKit en pause et la relance une fois la pièce
+  rendue —, les assemble par `StructureBuilder` et écrit un fichier par
+  pièce dans le dossier demandé (`paths`). Annuler rend `nil` ; un relevé
+  qui échoue rend `error` sans `paths`. Aucun entitlement : RoomPlan et
+  ARKit sont des frameworks système, liés à l'import.
+- **Le nord.** RoomPlan ne le donne pas. `NorthEstimator` lit la boussole
+  (`CLLocationManager`, cap vrai si la position est autorisée, magnétique
+  sinon) et le lacet de la caméra ARKit au même instant, et garde la moyenne
+  circulaire de leur écart ; moins de cinq mesures, ou des mesures qui se
+  contredisent, et il ne rend rien. Le cap d'une direction se lit comme
+  `atan2(x, −z)` des deux côtés du canal (`ScannedRoom.headingOf`). Le
+  résultat vaut dix à quinze degrés : l'écran des fenêtres le montre et
+  demande de le confirmer, et l'orientation confirmée prime.
+- **Côté Dart**, `RoomScanService` (`data/services/room_scan_service.dart`) :
+  `ChannelRoomScanService` avale `PlatformException` et
+  `MissingPluginException` en réponse vide, `UnavailableRoomScanService`
+  partout ailleurs. `RoomScanStore` tient les fichiers dans
+  `Documents/rooms/`. Le lecteur `RoomPlanParser` (`domain/room/`) ne lit
+  que ce que le modèle consomme et tolère ce qu'il ne connaît pas ; le
+  format du JSON est celui du `Codable` de RoomPlan, et la fixture
+  `test/domain/fixtures/roomplan_diorama.json` en fixe une forme — à
+  confirmer sur un appareil, palier 0 de docs/17.
+- **Le modèle** est pur : `RoomLightModel.lightAt` rend un `LightNeed` en
+  chaque point, `RoomFitAdvisor.survey` lit la pièce une fois — lumière
+  selon la latitude du lieu de la météo, air qui bouge, radiateurs posés —
+  et `placeIn` classe les places d'une fiche sur ce relevé ; c'est ce qui
+  permet de juger tout le jardin sur la même grille (« Le jardin dans
+  cette pièce »). Les seuils sont calibrés sur la pièce du diorama : les six
+  emplacements de docs/13 rendent leurs six crans, ce que
+  `test/domain/room_light_model_test.dart` verrouille — sans latitude, à
+  45° de soleil ; le test dit aussi ce que Paris et les tropiques changent.
+- **Le gating** tient en trois niveaux, comme la maison : le drapeau et la
+  plateforme dans `isSupported`, le LiDAR demandé une fois au canal
+  (`roomScanAvailableProvider`), et les écrans qui n'existent pas sans lui —
+  la ligne de Profil, la section « Plan de la pièce » de la fiche
+  emplacement, l'entrée « Où la poser » sous le diorama ; la carte de la
+  fiche plante, elle, n'existe que s'il y a un relevé autour de la plante
+  (`plantRoomPlaceProvider`), ce qui suppose déjà le LiDAR.
+- **Le relevé et l'emplacement.** Un relevé se lie à un emplacement dès le
+  relevé : celui d'où l'on part (fiche emplacement, `scan(locationId:)`),
+  sinon celui qui porte le nom de la pièce reconnue, s'il est seul et pas
+  encore décrit (`RoomScanController._locationNamed`). Lié, il propose
+  de renseigner l'orientation de l'emplacement (celle de la plus grande
+  fenêtre) et sa lumière (la plus fréquente au sol, ramenée aux trois
+  crans de `locations.light` par `lightCodeFor`), sans toucher à ce qui
+  est déjà rempli (`roomFillSuggestionProvider`, la même ligne sur la
+  fiche emplacement et sur la feuille du relevé). Et si le capteur de la maison porte le nom de la pièce ou de son
+  emplacement, « Où la poser » montre sa mesure sous les places, avec le
+  même verdict que la carte « Chez vous ».
+

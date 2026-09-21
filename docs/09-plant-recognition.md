@@ -135,7 +135,7 @@ tiers. L'objectif :
 | `PlantNetIdentifier` | `lib/data/services/plantnet_identifier.dart` | adaptateur HTTP Pl@ntNet, clé utilisateur |
 | `plantIdentifierProvider` | `lib/app/providers.dart` | choisit le service selon la clé |
 | Catalogue trié | `lib/data/species/species_catalog.dart` | 297 espèces avec noms en 4 langues, famille, catégorie |
-| Catalogue étendu | `assets/species/catalog.tsv` → `SpeciesIndex` | 36 364 espèces, noms courants, chargé à la demande |
+| Catalogue étendu | `assets/species/catalog.tsv` → `SpeciesIndex` | 36 342 espèces, noms courants, chargé à la demande |
 | Appelants | création de plante, feuille « Identifier », fiche plante | affichent 5 candidats et laissent choisir |
 
 Les appelants n'ont **pas** changé : ils reçoivent toujours une liste de
@@ -282,7 +282,7 @@ groupe :
 | `PLANTNET_API_KEY` | repli Pl@ntNet de l'identification | modèle embarqué seul |
 | `INFOMANIAK_AI_API_KEY` | diagnostic « Ma plante a un problème » (jeton d'API Infomaniak, portée AI Services) | diagnostic absent |
 | `INFOMANIAK_AI_PRODUCT_ID` | identifiant du produit AI Services, dans l'URL du manager | diagnostic absent |
-| `INFOMANIAK_AI_MODEL` | modèle du diagnostic ; facultatif, `mistralai/Mistral-Small-4-119B-2603` par défaut | le défaut |
+| `INFOMANIAK_AI_MODEL` | modèle du diagnostic ; facultatif, `Qwen/Qwen3.5-397B-A17B-FP8` par défaut | le défaut |
 | `OPENROUTER_API_KEY` | couche de décision Jev sur les scans qu'Iris juge ambigus (docs/16) | politique Iris locale seule |
 | `SUPABASE_URL`, `SUPABASE_ANON_KEY` | compte, synchronisation, partage (docs/08) | application 100 % locale |
 | `SHARE_BASE_URL` | base des liens de partage : le relais `share-proxy/` (docs/08) | l'URL Supabase, qui sert la page en code source |
@@ -1126,7 +1126,7 @@ anciennes.**
 
 Le réseau n'avait donc pas besoin d'être réappris, mais d'être **borné**. Et
 la borne n'a pas sa place dans l'application : `assets/species/catalog.tsv`
-porte 36 364 noms — plus que le modèle — et `CatalogCareGuide` résout
+porte 36 342 noms — plus que le modèle — et `CatalogCareGuide` résout
 l'entretien espèce → genre → famille → catégorie, si bien que l'application
 sait déjà dire quelque chose de presque n'importe quoi. Il n'existe aucun
 ensemble « ce que l'app sait afficher » à quoi masquer.
@@ -1419,13 +1419,24 @@ modèle embarqué, qui ne sait que nommer une espèce. Il envoie les photos aux 
 Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
 (`lib/data/services/infomaniak_diagnoser.dart`) :
 
-- **Modèle** : `mistralai/Mistral-Small-4-119B-2603` par défaut, choisi
-  parce qu'il voit les images, qu'il est stable, qu'il parle bien français
-  et qu'il est le moins cher de sa taille en sortie (0,20 / 0,75 CHF par
-  million de jetons). Un diagnostic — une à trois photos réduites à
-  1 024 px, la consigne, 300 à 500 jetons de réponse — coûte de l'ordre
-  d'un millième de franc. Le modèle se change au build
-  (`INFOMANIAK_AI_MODEL`), sans toucher au code.
+- **Modèle** : `Qwen/Qwen3.5-397B-A17B-FP8` par défaut, choisi parce qu'il
+  voit les images, qu'il parle bien français et qu'il lit une photo de
+  plante malade avec plus de justesse que Mistral Small 4, qui tenait ce
+  rôle jusque-là. Il coûte quatre fois plus cher (0,80 / 3,60 CHF par
+  million de jetons contre 0,20 / 0,75) : un diagnostic — une à trois
+  photos réduites à 1 536 px, la consigne, 300 à 500 jetons de réponse —
+  revient à quelques millièmes de franc au lieu d'un seul. Le modèle se
+  change au build (`INFOMANIAK_AI_MODEL`), sans toucher au code ; Mistral
+  Small 4 reste donc disponible d'un `--dart-define`.
+- **Taille des photos** : 1 536 px sur le grand côté, et non 1 024. Mille
+  vingt-quatre suffisaient à voir une feuille jaune, pas à voir ce qui
+  sépare deux pistes : un thrips mesure un millimètre et son dégât est un
+  piqueté argenté semé de points noirs, dont il ne restait que quelques
+  pixels ternes — lus comme du calcaire, sous un constat qui disait
+  « feuilles vertes, sans taches ». L'image double de poids et de jetons ;
+  c'est le prix d'un compte rendu qui nomme le ravageur. Le délai d'une
+  tentative était passé de 40 à 60 secondes pour absorber le téléversement ;
+  il est à 90 pour laisser le modèle réfléchir (ci-dessous).
 - **Clé** : celle de l'éditeur, au build, comme Pl@ntNet (§ 3.3). Aucun
   réglage côté utilisateur ; l'écran « Diagnostic » dit seulement si le
   service est là et où partent les photos.
@@ -1437,6 +1448,85 @@ Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
   (`json_object`) ; si le service refuse ce paramètre, la même demande
   repart sans lui et le lecteur extrait le JSON du texte, balises Markdown
   comprises.
+- **Quand le service flanche** : « Analyse impossible » était la panne la plus
+  visible de l'application, et presque jamais la faute du réseau de la
+  personne. Trois causes, trois réponses. Un 5xx, un 429, un 408, une
+  coupure ou un délai dépassé repartent d'eux-mêmes : la même demande, trois
+  tentatives au plus, une pause qui grandit entre deux. Une réponse coupée
+  faute de jetons — le cas le plus fréquent — est refermée à la main par le
+  lecteur, qui revient au dernier endroit où le texte se tenait et garde les
+  pistes écrites en entier ; celle qui ne se répare pas repart une fois avec
+  de quoi finir sa phrase. Un 401, un 400 ou un refus de contenu, eux, ne se
+  rejouent pas : ils se corrigent. Ce qui reste se dit à l'écran avec le mot
+  juste — service saturé, réponse inexploitable, réseau absent — au lieu
+  d'envoyer tout le monde vérifier sa connexion.
+- **La réflexion du modèle a sa place** : Qwen 3.5 réfléchit avant de
+  répondre, par défaut, et ce monologue invisible compte dans `max_tokens`
+  comme la réponse. Devant une photo difficile, il durait parfois plus que
+  le budget entier : contenu vide, arrêté faute de place, deux fois de
+  suite, et « L'analyse n'a pas abouti » à quelqu'un dont le troisième essai
+  passait — la panne intermittente du diagnostic, celle qui se corrige en
+  réessayant. On garde la réflexion, c'est elle qui lit le motif avant de
+  nommer ; on lui laisse la place : 5 000 jetons à la première demande,
+  9 000 à celle qui repart, 3 000 au repli sur les mots et 1 500 au
+  rattachement (qui n'avait aucune chance à 300), et une minute et demie
+  par tentative au lieu d'une. Le plafond ne coûte rien tant qu'il n'est pas
+  atteint, seuls les jetons écrits se facturent. Si une réflexion se
+  retrouve dans le contenu, entre balises `<think>`, le lecteur l'écarte
+  avant de chercher le JSON — une réflexion jamais close est une réponse
+  qui n'a pas commencé, et elle repart.
+- **Lire le motif avant de nommer** : la consigne demande d'abord *où* et
+  *comment* — quelles feuilles, bord ou centre, sec ou mou, net ou diffus, et
+  si cela s'étend — avant toute conclusion. C'est le motif, pas la couleur,
+  qui sépare un jaunissement qui commence par les vieilles feuilles de celui
+  qui commence par les jeunes. Partent avec les photos ce qu'aucune d'elles
+  ne montre : la plante vit dedans ou dehors, le jour de l'analyse et
+  l'hémisphère (le signe de la latitude déjà connue, rien de plus). Une
+  cochenille de salon en février et une brûlure de balcon en juillet ne se
+  confondent pas.
+- **Une photo de plus, quand elle changerait quelque chose** : le compte rendu
+  porte une clé à part, `view`, où le service nomme la seule vue qui
+  l'aiderait — feuille de près, revers, plante entière, base de la tige,
+  terre au pied — ou `null`. C'est la seule place où une photo manquante a le
+  droit d'exister : les pistes, elles, n'en parlent jamais. L'application en
+  fait une proposition (docs/16, « Jev côté diagnostic ») : le compte rendu
+  reste entier au-dessus, la photo ajoutée relance l'analyse avec les deux ou
+  trois vues ensemble, et trois photos restent le plafond.
+- **Poser une question plutôt que deviner** : quand rien ne tranche, le
+  compte rendu porte une seconde clé à part, `questions` — une à trois
+  questions courtes, dans la langue de la personne, ou une liste vide. La
+  consigne les borne : seulement ce qui changerait l'ordre des pistes
+  (depuis quand, ce qui a changé autour de la plante, le dernier arrosage ou
+  rempotage, ce qui a déjà été tenté), jamais ce que la demande contient
+  déjà, jamais une photo — c'est `view` —, et rien du tout sur un compte
+  rendu net. Les pistes sont rendues en entier dans tous les cas : une
+  question affine une réponse, elle ne la remplace pas. Les réponses
+  repartent avec leur question (`answersLine`), pèsent comme une observation,
+  et l'analyse se refait en entier — photos comprises — au lieu de se
+  recoller à la précédente. Elles sont gardées avec le compte rendu et se
+  relisent des mois plus tard, comme les symptômes et les observations.
+  L'écran préfère les questions à la photo de plus quand il a les deux
+  (docs/16).
+- **Tout n'est pas un problème** : la consigne ouvrait les pistes aux seuls
+  troubles, ravageurs, maladies et fautes d'entretien, si bien que des gouttes
+  de nectar extrafloral n'avaient que des cochenilles pour s'expliquer. Une
+  seconde base part donc avec la demande, `assets/problems/natural.txt`
+  (docs/04) : trente-deux phénomènes numérotés `N01` à `N32` — nectar
+  extrafloral, guttation, vieille feuille du bas qui jaunit, panachure,
+  racines aériennes, latex à la coupe, repos hivernal, et les confusions qui
+  font traiter une plante saine : sores d'une fougère pris pour des
+  cochenilles, laine des aréoles, liégeage d'un cactus pris pour une
+  pourriture, nodosités des légumineuses prises pour des galles de nématodes,
+  lichens de l'écorce —, réduits comme les problèmes à ce que l'espèce, son
+  genre ou sa famille peuvent montrer, soit neuf à quatorze entrées. Le service les rend comme
+  n'importe quelle piste, numéro dans `problem` et `"natural": true`, avec leur
+  cran de vraisemblance et leurs gestes — celui de ne rien faire en est un. Les
+  deux numérotations ne se croisent jamais, et le numéro tranche contre la clé :
+  ce que la base range en ravageur n'est pas un phénomène normal. Un compte
+  rendu dont aucune piste n'est un problème n'est jamais urgent, ne met pas la
+  plante à surveiller, et n'est pas envoyé chercher un numéro à la deuxième
+  passe. La base est courte : un phénomène qui n'y est pas reste un phénomène,
+  sous le nom que le service lui donne.
 - **Toujours au moins une piste** : la consigne interdit d'en faire une de la
   photo — « la feuille sèche n'est pas visible sur l'image » n'est pas un
   diagnostic, et le symptôme a bien été vu sur la plante même quand le
@@ -1446,6 +1536,13 @@ Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
   décrits et la liste des problèmes connus suffisent à une piste incertaine,
   qui vaut mieux qu'un compte rendu vide. Ce repli est un bonus, jamais un
   motif d'échec.
+- **Une description, pas seulement des photos** : le champ des symptômes
+  était facultatif, et une photo seule ne dit ni depuis quand, ni ce qui a
+  changé, ni ce qui a déjà été tenté — le modèle n'a alors que des pixels et
+  répond ce que des pixels permettent. L'analyse attend donc une photo au
+  moins, puis quelques mots ; la barre du bas nomme celui des deux qui
+  manque (`diagnosisNeed`). Les quatre observations, elles, restent
+  facultatives.
 - **Ce que la photo ne montre pas** : quatre questions facultatives sous les
   symptômes — la terre au doigt, les racines hors du pot, la lumière reçue,
   les insectes trouvés (`DiagnosisObservations`). Ce sont elles qui
@@ -1456,6 +1553,37 @@ Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
   « Aucun insecte vu » en fait partie : une case vide ne dit rien, cochée
   elle pèse contre les ravageurs. Rien n'est coché d'avance, rien n'est
   obligatoire, et ce qui n'est pas coché ne part pas.
+
+  Un constat pèse autant qu'une photo, et non moins : la consigne plafonnait
+  à « possible » tout ce que l'image ne montre pas — la règle des symptômes
+  racontés —, si bien qu'une terre détrempée et des racines brunes ne
+  menaient jamais à une pourriture probable. Un constat de la main est une
+  observation de la plante, pas une impression : il peut rendre une piste
+  probable, en écarter une, et le résumé dit quand c'est lui qui tranche.
+  « Insectes sur la plante » va plus loin encore : la personne les a vus,
+  l'appareil non — un thrips mesure un millimètre —, donc une piste de
+  ravageur figure dans les pistes, en tête, et des phénomènes normaux seuls
+  ne sont pas une réponse.
+- **Nommer le ravageur, pas « un ravageur »** : le compte rendu restait
+  général là où un gros plan disait tout. La consigne demande maintenant de
+  lire chaque photo à son échelle — un gros plan se lit de près, il ne se
+  résume pas par la vue d'ensemble —, de regarder la surface d'une feuille
+  avant de la dire saine, et elle nomme les signatures : piqueté argenté ou
+  bronzé le long des nervures semé de points noirs de frass pour les thrips,
+  fin piqueté pâle et toile ténue pour les acariens, amas cotonneux aux
+  aisselles pour les cochenilles farineuses, boucliers bruns et miellat
+  poisseux pour les cochenilles à bouclier, moucherons sombres au ras de la
+  terre pour les sciarides. Le calcaire d'arrosage en est distingué
+  explicitement — dépôt blanc crayeux en auréoles de gouttes séchées, sur le
+  dessus, qui s'essuie et laisse le tissu vert dessous —, parce que c'est
+  pour lui que des thrips ont été pris.
+- **Un geste se range sous la cause qu'il traite** : « Vieillissement des
+  feuilles basses » portait « laisser sécher le substrat entre deux
+  arrosages ». Le geste traitait l'excès d'eau, c'est-à-dire une autre
+  piste, sous une cause qui ne demandait rien. Les gestes d'un phénomène
+  normal suivent de ce qu'il est normal — laisser faire, ôter la feuille
+  épuisée, essuyer le dépôt —, et jamais un traitement pour un problème
+  absent.
 - **Ce qui est gardé** : l'analyse enregistrée l'est entière. La note du
   journal en garde le résumé et les trois premières pistes ; le compte rendu
   complet — chaque piste avec son explication et ses gestes, l'urgence, les
@@ -1464,9 +1592,11 @@ Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
   en montre l'aperçu et le rouvre d'un doigt, des mois plus tard, dans la
   langue du moment.
 - **Ce qui n'est pas mesuré** : la justesse de ces modèles sur des maladies
-  de plantes. La seule façon de choisir entre Mistral Small 4, Qwen 3.5 et
-  Kimi est un jeu d'essai de vingt à trente photos de plantes à problème
-  connu, envoyées avec la même consigne. Il reste à constituer.
+  de plantes. Qwen 3.5 a été retenu sur sa réputation et ses classements
+  généraux, pas sur des photos de plantes. La seule façon de départager
+  Qwen 3.5, Mistral Small 4 et Kimi est un jeu d'essai de vingt à trente
+  photos de plantes à problème connu, envoyées avec la même consigne. Il
+  reste à constituer.
 
 ## 9 bis. Compléter une fiche d'entretien que le catalogue ne connaît pas
 

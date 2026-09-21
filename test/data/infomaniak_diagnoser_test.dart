@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:flora/data/services/infomaniak_diagnoser.dart';
 import 'package:flora/domain/diagnosis/plant_diagnoser.dart';
+import 'package:flora/domain/problems/natural_cause.dart';
 import 'package:flora/domain/problems/plant_problem.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -34,11 +36,25 @@ final _ok = jsonEncode({
 
 Future<File> _tmpImage() => File('${Directory.systemTemp.path}/flora-diag-${DateTime.now().microsecondsSinceEpoch}.jpg').writeAsBytes([1, 2, 3]);
 
-InfomaniakDiagnoser _diagnoser(http.Client client) =>
-    InfomaniakDiagnoser(apiKey: 'tok', productId: '12345', model: 'mistralai/Mistral-Small-4-119B-2603', client: client);
+InfomaniakDiagnoser _diagnoser(http.Client client) => InfomaniakDiagnoser(
+      apiKey: 'tok',
+      productId: '12345',
+      model: 'Qwen/Qwen3.5-397B-A17B-FP8',
+      client: client,
+      // Les renvois ne font pas attendre les tests.
+      retryPause: Duration.zero,
+    );
 
 PlantProblem _probleme(String id, ProblemKind kind, String en, {String fr = 'fr'}) =>
     PlantProblem(id: id, kind: kind, scope: ProblemScope.wide, fr: fr, en: en, it: 'it', de: 'de', hosts: const ['Tracheophyta']);
+
+NaturalCause _naturel(String id, String en, {String fr = 'fr'}) =>
+    NaturalCause(id: id, scope: ProblemScope.wide, fr: fr, en: en, it: 'it', de: 'de', hosts: const ['Tracheophyta']);
+
+final _naturels = [
+  _naturel('N01', 'Extrafloral nectar', fr: 'Nectar extrafloral'),
+  _naturel('N02', 'Guttation', fr: 'Guttation'),
+];
 
 final _pistes = [
   _probleme('002', ProblemKind.disorder, 'Waterlogging and root oxygen deficiency', fr: 'Excès d\'eau et asphyxie racinaire'),
@@ -217,6 +233,60 @@ void main() {
       expect(InfomaniakDiagnoser.parseResponse(body).summary, 'ok');
     });
 
+    test('la vue proposée est lue, un mot inconnu ne l’est pas', () {
+      Diagnosis lire(Object? view) => InfomaniakDiagnoser.parseResponse(_completion(jsonEncode({
+            'summary': '…',
+            'view': view,
+            'causes': [
+              {'title': 'Air sec', 'likelihood': 'possible'},
+            ],
+          })));
+      expect(lire('leaf_underside').suggestedView, DiagnosisView.leafUnderside);
+      expect(lire('whole_plant').suggestedView, DiagnosisView.wholePlant);
+      expect(lire('none').suggestedView, isNull);
+      expect(lire('une belle photo').suggestedView, isNull);
+      expect(lire(null).suggestedView, isNull);
+    });
+
+    test('les questions sont lues, trois au plus, sans doublon ni vide', () {
+      Diagnosis lire(Object? questions) => InfomaniakDiagnoser.parseResponse(_completion(jsonEncode({
+            'summary': '…',
+            'questions': questions,
+            'causes': [
+              {'title': 'Air sec', 'likelihood': 'possible'},
+            ],
+          })));
+      expect(lire(['Depuis quand ?', 'Arrosée quand ?']).questions, ['Depuis quand ?', 'Arrosée quand ?']);
+      // La consigne en demande trois au plus ; on ne dépend pas de son respect.
+      expect(lire(['a', 'b', 'c', 'd']).questions, ['a', 'b', 'c']);
+      expect(lire(['  Depuis quand ?  ', '', 'depuis quand ?']).questions, ['Depuis quand ?']);
+      expect(lire(null).questions, isEmpty);
+      expect(lire('depuis quand ?').questions, isEmpty, reason: 'une chaîne n’est pas une liste de questions');
+    });
+
+    test('une réponse coupée en chemin garde ce qui avait été écrit', () {
+      // Le cas le plus fréquent d'« Analyse impossible » : la réponse
+      // s'arrête au milieu d'un mot faute de jetons. Deux pistes étaient
+      // complètes, elles restent.
+      const tronquee = '{"summary":"Feuilles jaunes en bas.","urgent":false,"view":"leaf_underside","causes":['
+          '{"problem":"002","title":"Excès d\'eau","likelihood":"likely","explanation":"La terre reste humide.","actions":["Laisser sécher"]},'
+          '{"problem":"126","title":"Oïdium","likelihood":"possible","explanation":"Un voile blanc.","actions":["Aérer"]},'
+          '{"problem":"060","title":"Tétran';
+      final d = InfomaniakDiagnoser.parseResponse(_completion(tronquee));
+      expect(d.summary, 'Feuilles jaunes en bas.');
+      expect(d.causes.map((c) => c.title), ["Excès d'eau", 'Oïdium']);
+      expect(d.causes.first.actions, ['Laisser sécher']);
+      expect(d.suggestedView, DiagnosisView.leafUnderside);
+    });
+
+    test('une réponse coupée dans une phrase garde les pistes entières', () {
+      const tronquee = '{"summary":"…","causes":['
+          '{"title":"Air trop sec","likelihood":"likely","explanation":"Les pointes brunissent.","actions":["Éloigner du radiateur"]},'
+          '{"title":"Manque d\'eau","likelihood":"possible","explanation":"La terre est sèche en profon';
+      final d = InfomaniakDiagnoser.parseResponse(_completion(tronquee));
+      expect(d.causes.map((c) => c.title), ['Air trop sec']);
+    });
+
     test('sans JSON lisible, échoue proprement', () {
       expect(() => InfomaniakDiagnoser.parseResponse(_completion('Je ne vois pas de plante.')), throwsA(isA<DiagnosisException>()));
     });
@@ -224,6 +294,25 @@ void main() {
     test('un filtrage de contenu est signalé comme refus', () {
       expect(() => InfomaniakDiagnoser.parseResponse(_completion('', finish: 'content_filter')),
           throwsA(predicate((e) => e is DiagnosisException && e.message == 'refusal')));
+    });
+
+    test('une réflexion laissée dans le contenu ne se lit pas, la réponse qui la suit si', () {
+      final brouillon = jsonEncode({'summary': 'brouillon', 'causes': []});
+      final d = InfomaniakDiagnoser.parseResponse(_completion('<think>Je regarde… $brouillon</think>\n$_ok'));
+      expect(d.summary, 'ok');
+      expect(d.causes.single.title, 'Tétranyques');
+    });
+
+    test('une réflexion dont il ne reste que la fermeture s\'écarte aussi', () {
+      final d = InfomaniakDiagnoser.parseResponse(_completion('Je regarde {"summary": "non"} </think>$_ok'));
+      expect(d.summary, 'ok');
+    });
+
+    test('une réflexion jamais close est une réponse qui n\'a pas commencé', () {
+      expect(
+        () => InfomaniakDiagnoser.parseResponse(_completion('<think>Je regarde la photo… {"summary": "non", "causes": []', finish: 'length')),
+        throwsA(predicate((e) => e is DiagnosisException && e.message == 'empty')),
+      );
     });
   });
 
@@ -242,7 +331,7 @@ void main() {
       expect(captured.url.toString(), 'https://api.infomaniak.com/2/ai/12345/openai/v1/chat/completions');
       expect(captured.headers['authorization'], 'Bearer tok');
       final body = jsonDecode(captured.body) as Map<String, dynamic>;
-      expect(body['model'], 'mistralai/Mistral-Small-4-119B-2603');
+      expect(body['model'], 'Qwen/Qwen3.5-397B-A17B-FP8');
       expect(body['response_format'], {'type': 'json_object'});
       final messages = body['messages'] as List;
       expect(messages.first['role'], 'system');
@@ -274,10 +363,73 @@ void main() {
       expect(consigne, isNot(contains('return no cause')));
     });
 
+    test('la consigne lit chaque photo à son échelle et nomme le ravageur', () {
+      final consigne = InfomaniakDiagnoser.systemPrompt('fr');
+      // Le compte rendu restait général sur des gros plans : « feuilles
+      // vertes et brillantes, sans taches » sur un Monstera piqueté de
+      // thrips, et les points noirs du frass rangés avec le calcaire.
+      expect(consigne, contains('read each one at its own scale'));
+      expect(consigne, contains('Before calling a leaf clean'));
+      expect(consigne, contains('is thrips — not limescale'));
+      expect(consigne, contains('Name the pest the damage points to'));
+      // La photo qui trancherait est celle du dessous des feuilles.
+      expect(consigne, contains('"view" is "leaf_underside"'));
+    });
+
+    test('un geste se range sous la cause qu’il traite', () {
+      final consigne = InfomaniakDiagnoser.systemPrompt('fr');
+      // « Vieillissement des feuilles basses » portait « laisser sécher le
+      // substrat entre deux arrosages » : le geste traitait l'excès d'eau,
+      // sous une cause qui ne demandait rien.
+      expect(consigne, contains('an action belongs under the cause it acts on'));
+      expect(consigne, contains('never treat a problem that is not there'));
+    });
+
     test('ce que la personne décrit vaut pour vu, que la photo le montre ou non', () {
       final texte = InfomaniakDiagnoser.userPrompt(language: 'fr', symptoms: 'feuille sèche tombante');
       expect(texte, contains('feuille sèche tombante'));
       expect(texte, contains('whether or not the photos show it'));
+    });
+
+    test('la consigne peut poser des questions, mais seulement utiles', () {
+      final consigne = InfomaniakDiagnoser.systemPrompt('fr');
+      // Une photo ne dit ni depuis quand, ni ce qui a changé, ni ce qui a
+      // déjà été tenté : le service n'avait aucun moyen de le demander.
+      expect(consigne, contains('"questions" key next to "summary"'));
+      expect(consigne, contains('never ask more than three'));
+      expect(consigne, contains('Never ask what the message already answers'));
+      // Une question ne remplace jamais une réponse.
+      expect(consigne, contains('questions refine an answer, they never replace one'));
+      expect(consigne, contains('"questions" (array of strings, possibly empty)'));
+    });
+
+    test('les réponses de la personne repartent avec la question', () {
+      final texte = InfomaniakDiagnoser.userPrompt(
+        language: 'fr',
+        answers: const [
+          DiagnosisAnswer(question: 'Depuis quand ?', answer: 'Huit jours'),
+          DiagnosisAnswer(question: 'Arrosée quand ?', answer: 'Avant-hier'),
+        ],
+      );
+      // La question repart avec la réponse : « huit jours » seul ne veut rien
+      // dire.
+      expect(texte, contains('"Depuis quand ?" — Huit jours'));
+      expect(texte, contains('"Arrosée quand ?" — Avant-hier'));
+      expect(texte, contains('do not ask any of these again'));
+      // Rien à dire quand rien n'a été demandé.
+      expect(InfomaniakDiagnoser.answersLine(const []), isNull);
+      expect(InfomaniakDiagnoser.userPrompt(language: 'fr'), isNot(contains('Asked of the owner')));
+      // Une réponse vide ne part pas.
+      expect(InfomaniakDiagnoser.answersLine(const [DiagnosisAnswer(question: 'Depuis quand ?', answer: '  ')]), isNull);
+    });
+
+    test('la passe de repli emporte aussi les réponses', () {
+      final body = InfomaniakDiagnoser.buildFallbackRequest(
+        model: 'm',
+        language: 'fr',
+        answers: const [DiagnosisAnswer(question: 'Rempotée quand ?', answer: 'Au printemps')],
+      );
+      expect(jsonEncode(body), contains('Au printemps'));
     });
 
     test('la base locale part comme liste de pistes, groupée par nature', () async {
@@ -369,8 +521,23 @@ void main() {
       expect(bodies.last.containsKey('response_format'), isFalse);
     });
 
+    test('une réponse vide, arrêtée faute de place, repart avec plus de jetons', () async {
+      final corps = <Map<String, dynamic>>[];
+      final client = MockClient((req) async {
+        corps.add(jsonDecode(req.body) as Map<String, dynamic>);
+        return corps.length == 1 ? _reponse(_completion('', finish: 'length'), 200) : _reponse(_completion(_ok), 200);
+      });
+      final tmp = await _tmpImage();
+      final result = await _diagnoser(client).diagnose(images: [tmp], language: 'fr');
+      await tmp.delete();
+
+      expect(result.summary, 'ok');
+      expect(corps, hasLength(2));
+      expect(corps.last['max_tokens'], greaterThan(corps.first['max_tokens'] as int));
+    });
+
     test('traduit les codes HTTP en erreurs parlantes', () async {
-      for (final (code, expected) in [(401, 'unauthorized'), (403, 'unauthorized'), (429, 'quota'), (500, 'http 500')]) {
+      for (final (code, expected) in [(401, 'unauthorized'), (403, 'unauthorized'), (429, 'quota'), (500, 'busy'), (503, 'busy'), (404, 'http 404')]) {
         final client = MockClient((_) async => _reponse('', code));
         final tmp = await _tmpImage();
         await expectLater(
@@ -384,6 +551,110 @@ void main() {
     test('sans clé ou sans produit, ne part pas', () {
       expect(InfomaniakDiagnoser(apiKey: '', productId: '1', model: 'm').isConfigured, isFalse);
       expect(InfomaniakDiagnoser(apiKey: 'k', productId: '', model: 'm').isConfigured, isFalse);
+    });
+  });
+
+  group('les pannes du service', () {
+    /// Ce qui faisait dire « Analyse impossible » alors que le réseau allait
+    /// très bien : un 503 passager, une coupure en route, une réponse
+    /// tronquée. Aucun des trois ne dit quoi que ce soit sur la plante.
+    test('un service saturé se redemande, et c’est la réponse suivante qui compte', () async {
+      var appels = 0;
+      final client = MockClient((_) async {
+        appels++;
+        return appels == 1 ? _reponse('', 503) : _reponse(_completion(_ok), 200);
+      });
+      final tmp = await _tmpImage();
+      final result = await _diagnoser(client).diagnose(images: [tmp], language: 'fr');
+      await tmp.delete();
+
+      expect(result.summary, 'ok');
+      expect(appels, 2);
+    });
+
+    test('un réseau coupé se redemande, puis se dit tel quel', () async {
+      var appels = 0;
+      final client = MockClient((_) async {
+        appels++;
+        throw const SocketException('connection reset by peer');
+      });
+      final tmp = await _tmpImage();
+      await expectLater(
+        _diagnoser(client).diagnose(images: [tmp], language: 'fr'),
+        throwsA(predicate((e) => e is DiagnosisException && e.message == 'network')),
+      );
+      await tmp.delete();
+      expect(appels, 3, reason: 'trois tentatives, pas une de plus');
+    });
+
+    test('un délai dépassé compte comme un réseau coupé', () async {
+      var appels = 0;
+      final client = MockClient((_) async {
+        appels++;
+        throw TimeoutException('trop long');
+      });
+      final tmp = await _tmpImage();
+      await expectLater(
+        _diagnoser(client).diagnose(images: [tmp], language: 'fr'),
+        throwsA(predicate((e) => e is DiagnosisException && e.message == 'network')),
+      );
+      await tmp.delete();
+      expect(appels, 3);
+    });
+
+    test('une clé refusée ne se redemande pas', () async {
+      var appels = 0;
+      final client = MockClient((_) async {
+        appels++;
+        return _reponse('', 401);
+      });
+      final tmp = await _tmpImage();
+      await expectLater(
+        _diagnoser(client).diagnose(images: [tmp], language: 'fr'),
+        throwsA(predicate((e) => e is DiagnosisException && e.message == 'unauthorized')),
+      );
+      await tmp.delete();
+      expect(appels, 1);
+    });
+
+    test('une réponse illisible repart une fois, avec de quoi finir sa phrase', () async {
+      final corps = <Map<String, dynamic>>[];
+      final client = MockClient((req) async {
+        corps.add(jsonDecode(req.body) as Map<String, dynamic>);
+        return corps.length == 1 ? _reponse(_completion('je regarde la photo…'), 200) : _reponse(_completion(_ok), 200);
+      });
+      final tmp = await _tmpImage();
+      final result = await _diagnoser(client).diagnose(images: [tmp], language: 'fr');
+      await tmp.delete();
+
+      expect(result.summary, 'ok');
+      expect(corps, hasLength(2));
+      expect(corps.first['max_tokens'], lessThan(corps.last['max_tokens'] as int));
+    });
+
+    test('deux réponses illisibles de suite se disent comme telles', () async {
+      final client = MockClient((_) async => _reponse(_completion('je regarde la photo…'), 200));
+      final tmp = await _tmpImage();
+      await expectLater(
+        _diagnoser(client).diagnose(images: [tmp], language: 'fr'),
+        throwsA(predicate((e) => e is DiagnosisException && e.message == 'unreadable')),
+      );
+      await tmp.delete();
+    });
+
+    test('un refus de contenu ne se rejoue pas', () async {
+      var appels = 0;
+      final client = MockClient((_) async {
+        appels++;
+        return _reponse(_completion('', finish: 'content_filter'), 200);
+      });
+      final tmp = await _tmpImage();
+      await expectLater(
+        _diagnoser(client).diagnose(images: [tmp], language: 'fr'),
+        throwsA(predicate((e) => e is DiagnosisException && e.message == 'refusal')),
+      );
+      await tmp.delete();
+      expect(appels, 1);
     });
   });
 
@@ -485,6 +756,7 @@ void main() {
       expect(texte, contains('0. Toile fine'));
       expect(texte, contains('sous les feuilles'));
       expect(body['temperature'], 0.0);
+      expect(body['max_tokens'], greaterThanOrEqualTo(1500), reason: 'la réflexion du modèle se paie sur ce budget');
     });
 
     test('la lecture écarte les numéros hors liste et les rangs illisibles', () {
@@ -572,6 +844,150 @@ void main() {
       await tmp.delete();
       expect(corps, hasLength(1));
       expect(d.causes.single.problemId, '060');
+    });
+  });
+
+  group('ce qui n\'est pas un problème', () {
+    test('une piste rendue sous un numéro en N est un phénomène naturel', () {
+      final body = _completion(jsonEncode({
+        'summary': 'Des gouttes claires sous les feuilles.',
+        'urgent': false,
+        'causes': [
+          {'problem': 'N01', 'natural': true, 'title': 'Nectar extrafloral', 'likelihood': 'likely', 'explanation': '…', 'actions': ['Essuyer la feuille']},
+          {'problem': '054', 'title': 'Cochenilles farineuses', 'likelihood': 'possible', 'explanation': '…'},
+        ],
+      }));
+      final d = InfomaniakDiagnoser.parseResponse(body, allowed: const {'054'}, allowedNatural: const {'N01'});
+      final nectar = d.causes.first;
+      expect(nectar.naturalId, 'N01');
+      expect(nectar.natural, isTrue);
+      expect(nectar.problemId, isNull, reason: 'N01 n\'est pas le problème 001');
+      expect(d.causes.last.natural, isFalse);
+      expect(d.onlyNatural, isFalse, reason: 'une piste sur deux reste un problème');
+    });
+
+    test('un numéro naturel qu\'on n\'a pas soumis ne devient pas un problème', () {
+      final body = _completion(jsonEncode({
+        'summary': '…',
+        'causes': [
+          {'problem': 'N09', 'natural': true, 'title': 'Latex à la coupe', 'likelihood': 'possible'},
+        ],
+      }));
+      final d = InfomaniakDiagnoser.parseResponse(body, allowed: const {'009'}, allowedNatural: const {'N01'});
+      expect(d.causes.single.naturalId, isNull);
+      expect(d.causes.single.problemId, isNull, reason: 'les chiffres seuls ne disent pas de quelle base ils viennent');
+      expect(d.causes.single.natural, isTrue, reason: 'la clé, elle, reste lisible');
+    });
+
+    test('la base est courte : un phénomène hors base reste un phénomène', () {
+      final body = _completion(jsonEncode({
+        'summary': '…',
+        'causes': [
+          {'natural': true, 'title': 'Vieille fronde qui finit', 'likelihood': 'likely', 'explanation': '…'},
+        ],
+      }));
+      final d = InfomaniakDiagnoser.parseResponse(body);
+      expect(d.causes.single.natural, isTrue);
+      expect(d.causes.single.naturalId, isNull);
+      expect(d.onlyNatural, isTrue);
+    });
+
+    test('un numéro de problème tranche contre la clé', () {
+      final body = _completion(jsonEncode({
+        'summary': '…',
+        'causes': [
+          {'problem': '060', 'natural': true, 'title': 'Tétranyques', 'likelihood': 'possible'},
+        ],
+      }));
+      final d = InfomaniakDiagnoser.parseResponse(body, allowed: const {'060'});
+      expect(d.causes.single.problemId, '060');
+      expect(d.causes.single.natural, isFalse, reason: 'ce que la base range en ravageur n\'est pas normal');
+    });
+
+    test('le nom exact rattrape un phénomène rendu sans numéro', () {
+      final body = _completion(jsonEncode({
+        'summary': '…',
+        'causes': [
+          {'title': 'Nectar extrafloral', 'likelihood': 'possible', 'explanation': '…'},
+        ],
+      }));
+      final d = InfomaniakDiagnoser.parseResponse(
+        body,
+        allowed: const {'060'},
+        allowedNatural: const {'N01'},
+        byName: InfomaniakDiagnoser.namesOf(_pistes, 'fr', naturalCauses: _naturels),
+      );
+      expect(d.causes.single.naturalId, 'N01');
+      expect(d.causes.single.natural, isTrue);
+    });
+
+    test('un compte rendu sans le moindre problème n\'est jamais urgent', () {
+      final body = _completion(jsonEncode({
+        'summary': '…',
+        'urgent': true,
+        'causes': [
+          {'problem': 'N02', 'natural': true, 'title': 'Guttation', 'likelihood': 'likely'},
+        ],
+      }));
+      final d = InfomaniakDiagnoser.parseResponse(body, allowedNatural: const {'N02'});
+      expect(d.onlyNatural, isTrue);
+      expect(d.urgent, isFalse, reason: 'il n\'y a rien à traiter rapidement');
+    });
+
+    test('la liste des phénomènes part avec celle des problèmes, dite pour ce qu\'elle est', () async {
+      late http.Request captured;
+      final client = MockClient((req) async {
+        captured = req;
+        return _reponse(_completion(_ok), 200);
+      });
+      final tmp = await _tmpImage();
+      await _diagnoser(client).diagnose(
+        images: [tmp],
+        language: 'fr',
+        species: 'Philodendron hederaceum',
+        candidates: _pistes,
+        naturalCauses: _naturels,
+      );
+      await tmp.delete();
+      final parts = ((jsonDecode(captured.body) as Map<String, dynamic>)['messages'] as List).last['content'] as List;
+      final text = parts.last['text'] as String;
+      expect(text, contains('N01 Nectar extrafloral; N02 Guttation.'));
+      expect(text, contains('not problems'));
+    });
+
+    test('sans phénomène soumis, la demande part comme avant', () async {
+      late http.Request captured;
+      final client = MockClient((req) async {
+        captured = req;
+        return _reponse(_completion(_ok), 200);
+      });
+      final tmp = await _tmpImage();
+      await _diagnoser(client).diagnose(images: [tmp], language: 'fr', candidates: _pistes);
+      await tmp.delete();
+      final parts = ((jsonDecode(captured.body) as Map<String, dynamic>)['messages'] as List).last['content'] as List;
+      expect(parts.last['text'], isNot(contains('not problems')));
+    });
+
+    test('une piste naturelle n\'est pas envoyée chercher un numéro de problème', () async {
+      final corps = <String>[];
+      final client = MockClient((req) async {
+        corps.add(req.body);
+        return _reponse(
+          _completion(jsonEncode({
+            'summary': '…',
+            'causes': [
+              {'natural': true, 'title': 'Vieille feuille du bas qui finit', 'likelihood': 'likely', 'explanation': '…'},
+            ],
+          })),
+          200,
+        );
+      });
+      final tmp = await _tmpImage();
+      final d = await _diagnoser(client).diagnose(images: [tmp], language: 'fr', candidates: _pistes, naturalCauses: _naturels);
+      await tmp.delete();
+      expect(corps, hasLength(1), reason: 'aucune passe de rattachement ne part');
+      expect(d.causes.single.problemId, isNull);
+      expect(d.causes.single.natural, isTrue);
     });
   });
 }

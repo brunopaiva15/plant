@@ -80,6 +80,41 @@ void main() {
     expect(sans.toJson().containsKey('observations'), isFalse);
   });
 
+  test('les questions du service et les réponses se relisent', () {
+    final relu = throughJson(DiagnosisRecord(
+      diagnosis: diagnostic,
+      answers: const [DiagnosisAnswer(question: 'Depuis quand ?', answer: 'Huit jours')],
+    ))!;
+    expect(relu.answers, hasLength(1));
+    expect(relu.answers.single.question, 'Depuis quand ?');
+    expect(relu.answers.single.answer, 'Huit jours');
+
+    // Une réponse sans sa question ne se relit pas : « huit jours » seul ne
+    // dit rien.
+    final abime = DiagnosisRecord.fromMetadata(const {
+      DiagnosisRecord.metadataKey: {
+        'summary': 'Taches brunes.',
+        'answers': [
+          {'answer': 'Huit jours'},
+          {'question': 'Rempotée quand ?', 'answer': '  '},
+          {'question': 'Arrosée quand ?', 'answer': 'Avant-hier'},
+        ],
+      },
+    })!;
+    expect(abime.answers, hasLength(1));
+    expect(abime.answers.single.question, 'Arrosée quand ?');
+
+    // Rien de demandé, rien de gardé.
+    expect(DiagnosisRecord(diagnosis: diagnostic).toJson().containsKey('answers'), isFalse);
+  });
+
+  test('les questions restées sans réponse se relisent avec le compte rendu', () {
+    final avec = Diagnosis(summary: diagnostic.summary, causes: diagnostic.causes, questions: const ['Depuis quand ?']);
+    final relu = throughJson(DiagnosisRecord(diagnosis: avec))!;
+    expect(relu.diagnosis.questions, ['Depuis quand ?']);
+    expect(DiagnosisRecord(diagnosis: diagnostic).toJson().containsKey('questions'), isFalse);
+  });
+
   test('un mot d’observation inconnu vaut une case non répondue', () {
     final relu = DiagnosisRecord.fromMetadata(const {
       DiagnosisRecord.metadataKey: {
@@ -134,5 +169,53 @@ void main() {
     // Une vignette sans original se relit ; une entrée sans fichier est jetée.
     expect(relu.photos, hasLength(1));
     expect(relu.photos.single.thumbPath, 'b.jpg');
+  });
+
+  test('une piste naturelle se relit pour ce qu\'elle est', () {
+    final relu = throughJson(DiagnosisRecord(
+      diagnosis: const Diagnosis(
+        summary: 'Des gouttes claires et collantes sous les feuilles.',
+        causes: [
+          DiagnosisCause(
+            title: 'Gouttes sucrées',
+            likelihood: Likelihood.likely,
+            explanation: 'Le philodendron en produit sur le revers de ses feuilles.',
+            actions: [],
+            naturalId: 'N01',
+            natural: true,
+          ),
+        ],
+      ),
+    ))!;
+
+    final piste = relu.diagnosis.causes.single;
+    expect(piste.naturalId, 'N01', reason: 'la base la renomme dans la langue du moment');
+    expect(piste.natural, isTrue);
+    expect(piste.problemId, isNull);
+    expect(relu.diagnosis.onlyNatural, isTrue);
+  });
+
+  test('un phénomène hors base se relit aussi, et un compte rendu d\'avant reste un problème', () {
+    final relu = throughJson(DiagnosisRecord(
+      diagnosis: const Diagnosis(
+        summary: '…',
+        causes: [
+          DiagnosisCause(title: 'Vieille fronde qui finit', likelihood: Likelihood.possible, explanation: '…', actions: [], natural: true),
+        ],
+      ),
+    ))!;
+    expect(relu.diagnosis.causes.single.natural, isTrue);
+    expect(relu.diagnosis.causes.single.naturalId, isNull);
+
+    // Une analyse gardée avant que les phénomènes naturels existent ne porte
+    // pas la clé : elle se relit comme un problème, ce qu'elle disait.
+    final ancien = Diagnosis.fromJson({
+      'summary': '…',
+      'causes': [
+        {'title': 'Tétranyques', 'likelihood': 'likely', 'problemId': '060'},
+      ],
+    });
+    expect(ancien.causes.single.natural, isFalse);
+    expect(ancien.onlyNatural, isFalse);
   });
 }

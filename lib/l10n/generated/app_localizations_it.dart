@@ -741,7 +741,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgSoftPotBody =>
-      'Trapiantata presto, a due o tre centimetri di radice: un getto tenero aspetta male.';
+      'Trapiantata presto, a due o tre centimetri di radice: un getto tenero non regge l\'attesa.';
 
   @override
   String get pgLeafName => 'Talea di foglia';
@@ -2059,7 +2059,8 @@ class AppLocalizationsIt extends AppLocalizations {
   String get searchingOnline => 'Ricerca online…';
 
   @override
-  String get suggestionsLocal => 'Risultati Iris sul dispositivo · foto non inviata';
+  String get suggestionsLocal =>
+      'Risultati Iris sul dispositivo · foto non inviata';
 
   @override
   String get suggestionsRemote => 'Proposto online da Pl@ntNet';
@@ -2431,10 +2432,20 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get diagnosisHint =>
-      'Fotografate foglie, fusto o terra da più angolazioni. I risultati sono indicativi.';
+      'Fotografate le foglie, il fusto e la terra, da vicino e per intero. I risultati sono indicativi.';
 
   @override
-  String get diagnosisSymptomsHint => 'Cosa hai notato (facoltativo)…';
+  String get diagnosisMoreBelow => 'Più sotto: sintomi e osservazioni';
+
+  @override
+  String get diagnosisSymptomsHint => 'Cosa hai notato…';
+
+  @override
+  String get diagnosisNeedsPhoto => 'Almeno una foto.';
+
+  @override
+  String get diagnosisNeedsSymptoms =>
+      'Cosa hai notato, anche in poche parole.';
 
   @override
   String get diagnosisChecks => 'Osservazioni';
@@ -2489,6 +2500,27 @@ class AppLocalizationsIt extends AppLocalizations {
   String get diagnosisBugsInSoil => 'Nella terra';
 
   @override
+  String get diagnosisSymptoms => 'Sintomi';
+
+  @override
+  String get diagnosisAround => 'Intorno alla pianta';
+
+  @override
+  String get diagnosisPhotosFull => 'Al massimo tre foto.';
+
+  @override
+  String get diagnosisRemovePhoto => 'Rimuovi questa foto';
+
+  @override
+  String get diagnosisFinding => 'Constatazione';
+
+  @override
+  String get diagnosisNothingWrong => 'Niente di anomalo';
+
+  @override
+  String get diagnosisNatural => 'Fenomeno normale';
+
+  @override
   String get analyze => 'Analizza';
 
   @override
@@ -2504,6 +2536,56 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get diagnosisUnauthorized =>
       'La diagnosi non è disponibile al momento. Riprova più tardi.';
+
+  @override
+  String get diagnosisBusy =>
+      'Il servizio di analisi non risponde. Riprova tra poco.';
+
+  @override
+  String get diagnosisUnreadable => 'L\'analisi non è riuscita. Riprova.';
+
+  @override
+  String get diagnosisUncertain =>
+      'Le foto non bastano per concludere. Le ipotesi qui sotto restano da verificare.';
+
+  @override
+  String get diagnosisAnotherPhotoHint =>
+      'Un\'altra foto renderebbe l\'analisi più precisa.';
+
+  @override
+  String get diagnosisQuestionsHint => 'Ciò che manca per decidere.';
+
+  @override
+  String get diagnosisAnswerHint => 'Risposta…';
+
+  @override
+  String get diagnosisAnswerAgain => 'Rifare l\'analisi';
+
+  @override
+  String get diagnosisAnswersNoted => 'Risposte date';
+
+  @override
+  String diagnosisAnotherPhotoView(String view) {
+    return 'Da fotografare: $view.';
+  }
+
+  @override
+  String get diagnosisAnotherPhoto => 'Aggiungi una foto';
+
+  @override
+  String get diagnosisViewLeafCloseup => 'una foglia da vicino';
+
+  @override
+  String get diagnosisViewLeafUnderside => 'il rovescio di una foglia';
+
+  @override
+  String get diagnosisViewWholePlant => 'la pianta intera';
+
+  @override
+  String get diagnosisViewStemBase => 'la base del fusto';
+
+  @override
+  String get diagnosisViewSoilRoots => 'la terra ai piedi';
 
   @override
   String get possibleCauses => 'Cause possibili';
@@ -3161,10 +3243,10 @@ class AppLocalizationsIt extends AppLocalizations {
   String get careRepotNone => 'Nessun rinvaso (coltura annuale)';
 
   @override
-  String get carePotSnug => 'Ama stare stretta';
+  String get carePotSnug => 'Meglio stretta';
 
   @override
-  String get carePotRoomy => 'Ama lo spazio';
+  String get carePotRoomy => 'Un vaso largo';
 
   @override
   String get carePotSnugNote =>
@@ -3272,7 +3354,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get careHumidityAverage => 'Umidità normale';
 
   @override
-  String get careHumidityHigh => 'Ama l\'aria umida';
+  String get careHumidityHigh => 'Aria umida';
 
   @override
   String careHumidityRange(int min, int max) {
@@ -3292,7 +3374,7 @@ class AppLocalizationsIt extends AppLocalizations {
       'L\'aria secca di una casa riscaldata la danneggia: l\'aria va mantenuta umida.';
 
   @override
-  String get careHumidityMethodMist => 'Nebulizzare le foglie le fa bene.';
+  String get careHumidityMethodMist => 'Nebulizzare le foglie.';
 
   @override
   String get careHumidityMethodHumidifier => 'Un umidificatore d\'aria.';
@@ -3417,7 +3499,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get careWaterStrict => 'Acqua senza calcare';
 
   @override
-  String get careWaterTolerantNote => 'Il calcare non la disturba.';
+  String get careWaterTolerantNote => 'Il calcare non ha effetto.';
 
   @override
   String get careWaterSensitiveNote => 'Il calcare fa imbrunire le punte.';
@@ -3600,7 +3682,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careCalciumWelcome =>
-      'Calcio: l\'acqua dura le va bene, come i gusci d\'uovo tritati al rinvaso.';
+      'Calcio: l\'acqua dura è senza rischi; i gusci d\'uovo tritati al rinvaso ne apportano.';
 
   @override
   String get careCalciumNeeded =>
@@ -3628,7 +3710,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careGreenhouseAir =>
-      'Arieggiare ogni giorno: l\'aria ferma fa marcire ciò che ama l\'asciutto.';
+      'Arieggiare ogni giorno: l\'aria ferma fa marcire le piante di ambienti secchi.';
 
   @override
   String get careGreenhouseEarly =>
@@ -3671,7 +3753,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careBloomDeadheadNote =>
-      'Taglia i fiori appassiti man mano: la pianta rimette energia nei successivi.';
+      'Taglia i fiori appassiti man mano: senza semi da formare, la pianta rifiorisce.';
 
   @override
   String get careBloomKeepSpike => 'Uno stelo tenuto';
@@ -3736,7 +3818,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careBloomShortDaysNote =>
-      'Per circa sei settimane, garantisci almeno 12 ore di buio continuo ogni notte per favorire la formazione dei boccioli.';
+      'Per circa sei settimane, notti di almeno 12 ore di buio avviano la formazione dei boccioli.';
 
   @override
   String get careBloomDrySpell => 'Un periodo secco';
@@ -3757,7 +3839,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careBloomBrightLightNote =>
-      'Per fiorire ha bisogno di più luce che per crescere. Sistemala in un luogo molto luminoso, evitando il sole troppo forte.';
+      'La fioritura richiede più luce della crescita: un luogo molto luminoso, senza sole forte.';
 
   @override
   String get carePropCutting => 'Talea di fusto';
@@ -3923,24 +4005,26 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careTipThirstyPlant =>
-      'Beve molto, in estate controllala ogni giorno.';
+      'Grande bisogno d\'acqua: in estate controlla la terra ogni giorno.';
 
   @override
-  String get careTipDroopSignal => 'Quando si affloscia, ha sete.';
+  String get careTipDroopSignal =>
+      'Foglie afflosciate segnalano mancanza d\'acqua.';
 
   @override
   String get careTipWinterDry => 'In inverno tienila quasi all\'asciutto.';
 
   @override
-  String get careTipWinterRest => 'In inverno riposa e vuole molta meno acqua.';
+  String get careTipWinterRest =>
+      'In inverno la crescita si ferma: molta meno acqua.';
 
   @override
   String get careTipSummerDormant =>
-      'Riposa in estate e in quel periodo vuole pochissima acqua.';
+      'Riposo in estate: in quel periodo pochissima acqua.';
 
   @override
   String get careTipNoWaterWhileSplitting =>
-      'Non annaffiare mentre cambia le foglie.';
+      'Non annaffiare durante il rinnovo delle foglie.';
 
   @override
   String get careTipOrchidSoak =>
@@ -3978,37 +4062,37 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careTipToleratesNeglect =>
-      'Perdona le dimenticanze, quindi nel dubbio non annaffiare.';
+      'Le dimenticanze non la danneggiano: nel dubbio, non annaffiare.';
 
   @override
   String get careTipBrightForColor => 'Più luce, più i colori sono intensi.';
 
   @override
   String get careTipRotatePot =>
-      'Ruota il vaso di un quarto ogni settimana perché cresca dritta.';
+      'Un quarto di giro al vaso ogni settimana mantiene lo stelo dritto.';
 
   @override
   String get careTipHatesMoving =>
-      'Trovale un posto e lasciala lì, odia essere spostata.';
+      'Mantieni un posto fisso: ogni spostamento fa cadere foglie.';
 
   @override
   String get careTipWipeLeaves =>
-      'Pulisci le foglie perché respirino e catturino meglio la luce.';
+      'Spolvera le foglie: la polvere blocca la luce.';
 
   @override
   String get careTipTrimToBushOut =>
-      'Accorcia gli steli lunghi e si ramificherà.';
+      'Accorciare gli steli lunghi fa ramificare.';
 
   @override
   String get careTipMonsteraSupport =>
-      'Dalle un tutore di muschio e le foglie diventeranno più grandi e incise.';
+      'Su un tutore di muschio le foglie diventano più grandi e incise.';
 
   @override
-  String get careTipShallowPot => 'Un vaso largo e basso le si addice di più.';
+  String get careTipShallowPot => 'Un vaso largo e basso.';
 
   @override
   String get careTipLikesBeingPotbound =>
-      'Fiorisce meglio se stretta, quindi rinvasa di rado.';
+      'La fioritura è migliore se stretta: rinvasa di rado.';
 
   @override
   String get careTipTrunkStoresWater =>
@@ -4016,7 +4100,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careTipPupsToShare =>
-      'Fa polloni, staccali per moltiplicare o regalare.';
+      'I polloni si staccano per moltiplicare o regalare.';
 
   @override
   String get careTipKeepFlowerSpike =>
@@ -4024,15 +4108,15 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careTipDarkForRebloom =>
-      'Per rifiorire, dalle sei settimane di notti lunghe e fresche.';
+      'Per rifiorire: sei settimane di notti lunghe e fresche.';
 
   @override
   String get careTipNotADesertCactus =>
-      'Non è un cactus del deserto, ama ombra e umidità.';
+      'Cactus di foresta, non del deserto: ombra e aria umida.';
 
   @override
   String get careTipDeadheadFlowers =>
-      'Togli i fiori appassiti e fiorirà più a lungo.';
+      'Togliere i fiori appassiti prolunga la fioritura.';
 
   @override
   String get careTipPinchFlowers =>
@@ -4075,15 +4159,14 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careTipContainItsRoots =>
-      'Invade tutto, coltivala in vaso o metti una barriera.';
+      'I rizomi invadono tutto: in vaso, o dietro una barriera anti-rizomi.';
 
   @override
   String get careTipMulchIt =>
       'Pacciama la base per annaffiare meno e limitare le erbacce.';
 
   @override
-  String get careTipAcidSoil =>
-      'Richiede terra acida, non terriccio universale.';
+  String get careTipAcidSoil => 'Terra acida, non terriccio universale.';
 
   @override
   String get careTipFeedsOnInsects =>
@@ -4099,11 +4182,11 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careTipNoFertilizer =>
-      'Niente concime, un terreno troppo ricco le toglie profumo e portamento.';
+      'Niente concime: un terreno ricco indebolisce profumo e portamento.';
 
   @override
   String get careTipNoNitrogen =>
-      'Evita il concime azotato, se lo produce da sola.';
+      'Niente concime azotato: la pianta fissa da sola l\'azoto.';
 
   @override
   String get careTipLetFoliageDieBack =>
@@ -4111,7 +4194,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careTipDiesBackInWinter =>
-      'Scompare in inverno e riparte in primavera, è normale.';
+      'Il fogliame scompare in inverno e riparte in primavera.';
 
   @override
   String get careTipSummerOutdoors =>
@@ -4125,12 +4208,11 @@ class AppLocalizationsIt extends AppLocalizations {
       'Svernala in una stanza fresca e luminosa.';
 
   @override
-  String get careTipWinterCool =>
-      'Un inverno fresco (10–14 °C) e luminoso le fa bene.';
+  String get careTipWinterCool => 'Inverno fresco (10–14 °C) e luminoso.';
 
   @override
   String get careTipCoolerIsBetter =>
-      'Preferisce il fresco, tienila lontana dai termosifoni.';
+      'Meglio al fresco: lontana dai termosifoni.';
 
   @override
   String get careTipHardyOutdoors =>
@@ -4142,11 +4224,11 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careTipAirFlow =>
-      'Fai circolare l\'aria, perché l\'aria ferma favorisce le malattie.';
+      'Aria intorno alla pianta: l\'aria ferma favorisce le malattie.';
 
   @override
   String get careTipSpiderMiteWatch =>
-      'Controlla sotto le foglie, dove si annida il ragnetto rosso.';
+      'Controlla sotto le foglie, dove si insedia il ragnetto rosso.';
 
   @override
   String get careTipSlugWatch =>
@@ -4165,8 +4247,7 @@ class AppLocalizationsIt extends AppLocalizations {
       'Ogni sua parte è molto tossica, anche il fumo se bruciata.';
 
   @override
-  String get careTipSharpSpines =>
-      'Le sue punte sono pericolose, tienila lontana dai passaggi.';
+  String get careTipSharpSpines => 'Punte acuminate: lontana dai passaggi.';
 
   @override
   String get careTipSplitsAreNormal =>
@@ -5139,7 +5220,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get finderAiError => 'Nessuna proposta dall\'IA.';
 
   @override
-  String get finderReasonLight => 'Ama questa luce';
+  String get finderReasonLight => 'Luce adatta';
 
   @override
   String get finderReasonLowLight => 'Tollera l\'ombra';
@@ -5833,6 +5914,18 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
+  String encyclopediaNaturalCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count fenomeni normali',
+      one: '1 fenomeno normale',
+      zero: 'Nessun fenomeno normale',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String encyclopediaSpeciesCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -5876,6 +5969,13 @@ class AppLocalizationsIt extends AppLocalizations {
       'Ospiti principali di un gruppo mirato; l\'elenco non è esaustivo.';
 
   @override
+  String get problemOtherNames => 'Altri nomi';
+
+  @override
+  String get problemOtherNamesNote =>
+      'Nomi comuni e scientifici che indicano la stessa cosa.';
+
+  @override
   String get problemHosts => 'Ospiti';
 
   @override
@@ -5908,6 +6008,13 @@ class AppLocalizationsIt extends AppLocalizations {
       'Né l\'uno né l\'altro: la fumaggine cresce sulla melata, senza attaccare la pianta.';
 
   @override
+  String get naturalCauses => 'Fenomeni normali';
+
+  @override
+  String get naturalCauseNote =>
+      'Ciò che la pianta fa normalmente e che si scambia per un problema: niente da curare.';
+
+  @override
   String get careLightShadeNote =>
       'Lontano dalle finestre, senza raggio diretto durante il giorno.';
 
@@ -5932,7 +6039,7 @@ class AppLocalizationsIt extends AppLocalizations {
       'Sei ore di sole diretto o più, in piena giornata.';
 
   @override
-  String get careHumidityLowNote => 'L\'aria di una casa riscaldata le basta.';
+  String get careHumidityLowNote => 'L\'aria di una casa riscaldata basta.';
 
   @override
   String get careHumidityAverageNote =>
@@ -6128,4 +6235,414 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get confirmRestoreTip =>
       'Ripristinare questo consiglio? Le sue segnalazioni vengono cancellate.';
+
+  @override
+  String get roomScan => 'Rilievo della casa';
+
+  @override
+  String get roomScanHint =>
+      'Una stanza rilevata con la fotocamera e il LiDAR restituisce muri, finestre e porte. Da questi si ricava la luce di ogni posto, per dire dove posare una pianta. Il rilievo resta sul dispositivo.';
+
+  @override
+  String get roomScanStart => 'Rilevare una stanza';
+
+  @override
+  String get roomScanRooms => 'Stanze rilevate';
+
+  @override
+  String get roomScanEmptyTitle => 'Nessuna stanza rilevata';
+
+  @override
+  String get roomScanEmptySubtitle =>
+      'Il rilievo richiede uno o due minuti per stanza, girando lentamente lungo i muri.';
+
+  @override
+  String get roomScanNoLidar =>
+      'Questo dispositivo non ha il LiDAR: il rilievo richiede un iPhone Pro o un iPad Pro.';
+
+  @override
+  String get roomScanBeforeTitle => 'Prima del rilievo';
+
+  @override
+  String get roomScanBeforeText =>
+      'La fotocamera si apre sulla schermata di rilievo del sistema. Girare lentamente lungo i muri finché la stanza non è disegnata, poi terminare. Nulla lascia il dispositivo.';
+
+  @override
+  String get roomScanFailed => 'Il rilievo non è andato a buon fine.';
+
+  @override
+  String get roomScanDefaultName => 'Stanza';
+
+  @override
+  String roomScanArea(String area) {
+    return '$area m²';
+  }
+
+  @override
+  String roomScanWindowsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count finestre',
+      one: 'una finestra',
+      zero: 'nessuna finestra',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get roomScanName => 'Nome della stanza';
+
+  @override
+  String get roomScanLinkedLocation => 'Posizione';
+
+  @override
+  String get roomScanWindows => 'Finestre';
+
+  @override
+  String roomScanWindowN(int n) {
+    return 'Finestra $n';
+  }
+
+  @override
+  String get roomScanWindowUnknown => 'Orientamento sconosciuto';
+
+  @override
+  String get roomScanWindowFromCompass => 'Secondo la bussola';
+
+  @override
+  String get roomScanWindowConfirmed => 'Confermato';
+
+  @override
+  String get roomScanOrientationHelp =>
+      'La bussola sbaglia di dieci o quindici gradi. L\'orientamento di ogni finestra si corregge qui.';
+
+  @override
+  String get roomScanDelete => 'Elimina il rilievo';
+
+  @override
+  String get roomScanDeleteConfirm =>
+      'Il rilievo e i suoi riferimenti scompaiono dal dispositivo.';
+
+  @override
+  String roomScanCapturedOn(String date) {
+    return 'Rilevata il $date';
+  }
+
+  @override
+  String get roomSectionBathroom => 'Bagno';
+
+  @override
+  String get roomSectionBedroom => 'Camera da letto';
+
+  @override
+  String get roomSectionDiningRoom => 'Sala da pranzo';
+
+  @override
+  String get roomSectionKitchen => 'Cucina';
+
+  @override
+  String get roomSectionLaundryRoom => 'Lavanderia';
+
+  @override
+  String get roomSectionLivingRoom => 'Soggiorno';
+
+  @override
+  String get directionNorth => 'nord';
+
+  @override
+  String get directionNorthEast => 'nord-est';
+
+  @override
+  String get directionEast => 'est';
+
+  @override
+  String get directionSouthEast => 'sud-est';
+
+  @override
+  String get directionSouth => 'sud';
+
+  @override
+  String get directionSouthWest => 'sud-ovest';
+
+  @override
+  String get directionWest => 'ovest';
+
+  @override
+  String get directionNorthWest => 'nord-ovest';
+
+  @override
+  String get placementTitle => 'Dove metterla';
+
+  @override
+  String get placementHint =>
+      'I posti sono ordinati per la luce che ricevono, confrontata con quella della scheda.';
+
+  @override
+  String placementRoomsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count stanze rilevate',
+      one: 'una stanza rilevata',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get placementVerdictGood => 'Stanza adatta.';
+
+  @override
+  String get placementVerdictAcceptable =>
+      'Stanza accettabile, senza un posto ideale.';
+
+  @override
+  String get placementVerdictUnsuitable => 'Stanza inadatta.';
+
+  @override
+  String get placementShortfallTooDark => 'Troppo buia per la luce richiesta.';
+
+  @override
+  String get placementShortfallTooBright => 'Troppo sole diretto.';
+
+  @override
+  String get placementShortfallDrafty =>
+      'Ogni posto è vicino a una porta: correnti d\'aria.';
+
+  @override
+  String get placementShortfallTooDry =>
+      'Locale umido, aria umida: la scheda richiede aria secca.';
+
+  @override
+  String get placementGeneric =>
+      'Scheda generica: senza specie, la luce richiesta non è nota.';
+
+  @override
+  String placementDistanceM(String m) {
+    return '$m m';
+  }
+
+  @override
+  String placementDistanceCm(int cm) {
+    return '$cm cm';
+  }
+
+  @override
+  String placementNearWindow(String distance, String direction) {
+    return 'a $distance dalla finestra a $direction';
+  }
+
+  @override
+  String placementNearWindowUnknown(String distance) {
+    return 'a $distance dalla finestra';
+  }
+
+  @override
+  String get placementOnTable => 'sul tavolo';
+
+  @override
+  String get placementOnStorage => 'sul mobile';
+
+  @override
+  String placementOnSill(String direction) {
+    return 'sul davanzale della finestra a $direction';
+  }
+
+  @override
+  String get placementOnSillUnknown => 'sul davanzale della finestra';
+
+  @override
+  String get placementDeepInRoom => 'in fondo, lontano dalle finestre';
+
+  @override
+  String get placementDraftyNote => 'Vicino a una porta: corrente d\'aria.';
+
+  @override
+  String get placementHumidRoomNote => 'Locale umido: aria più umida.';
+
+  @override
+  String placementPlanSemantics(int count) {
+    return 'Pianta della stanza vista dall\'alto, $count posti selezionati.';
+  }
+
+  @override
+  String get roomScanHeaters => 'Termosifoni';
+
+  @override
+  String get roomScanHeatersHelp =>
+      'Il rilievo non vede i termosifoni. Posato sulla planimetria, un termosifone conta come aria secca e calda entro 80 cm.';
+
+  @override
+  String get roomScanAddHeater => 'Posare un termosifone';
+
+  @override
+  String get roomScanTapForHeater =>
+      'Toccare la pianta dove si trova il termosifone.';
+
+  @override
+  String roomScanHeatersCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count termosifoni',
+      one: 'un termosifone',
+      zero: 'nessun termosifone',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get roomScanRemoveHeater => 'Rimuovere questo termosifone';
+
+  @override
+  String get roomScanFillLocation => 'Compilare la posizione';
+
+  @override
+  String roomScanFillLocationDetail(String orientation, String light) {
+    return 'Orientamento $orientation, luce $light, secondo il rilievo. I campi già compilati non cambiano.';
+  }
+
+  @override
+  String get roomScanLocationFilled => 'Posizione compilata';
+
+  @override
+  String get roomScanWhoFitsHere => 'Il giardino in questa stanza';
+
+  @override
+  String get roomScanWhoFitsHint =>
+      'Ogni pianta è valutata in base alla luce della stanza e alla sua scheda.';
+
+  @override
+  String get roomScanNoPlantsToRank => 'Nessuna pianta con una specie nota.';
+
+  @override
+  String get placementShortfallHeater =>
+      'Ogni posto è vicino a un termosifone: aria secca e calda.';
+
+  @override
+  String get placementHeaterNote =>
+      'Vicino a un termosifone: aria secca e calda.';
+
+  @override
+  String get placementAtHome => 'Sensore della stanza';
+
+  @override
+  String get roomScanStartStructure => 'Rilevare tutta la casa';
+
+  @override
+  String get roomScanStructureHint =>
+      'Rilevare tutta la casa procede stanza per stanza: «Stanza successiva» tra una e l\'altra, «Fine» alla fine. Le stanze si collocano l\'una rispetto all\'altra.';
+
+  @override
+  String get roomScanNextRoom => 'Stanza successiva';
+
+  @override
+  String roomScanRoomNumber(int n) {
+    return 'Stanza $n';
+  }
+
+  @override
+  String get roomScanPlantsOnPlan => 'Piante sulla pianta';
+
+  @override
+  String get roomScanPlantsHelp =>
+      'Una pianta posata sulla planimetria è valutata al suo posto. L\'elenco segnala un posto nettamente migliore.';
+
+  @override
+  String get roomScanAddPlant => 'Posare una pianta';
+
+  @override
+  String roomScanTapForPlant(String plant) {
+    return 'Toccare la pianta dove si trova $plant.';
+  }
+
+  @override
+  String roomScanRemovePlant(String plant) {
+    return 'Rimuovere $plant dalla pianta';
+  }
+
+  @override
+  String get roomScanNoPlantToPlace => 'Nessuna pianta da posare.';
+
+  @override
+  String roomScanPlantWellPlaced(String light) {
+    return 'Posto adatto · $light';
+  }
+
+  @override
+  String roomScanPlantBetterAt(String light, String place) {
+    return 'Posto attuale $light · meglio $place';
+  }
+
+  @override
+  String get placementAllRooms => 'Tutte le stanze';
+
+  @override
+  String get placementChoose => 'Posare qui';
+
+  @override
+  String placementChosen(String place) {
+    return 'Posata $place';
+  }
+
+  @override
+  String placementCurrent(String place, String light) {
+    return 'Posto attuale: $place · $light';
+  }
+
+  @override
+  String get sectionRooms => 'Rilievi della casa';
+
+  @override
+  String get roomScanCurtain => 'Tenda';
+
+  @override
+  String get roomScanCurtainNone => 'Senza tenda';
+
+  @override
+  String get roomScanCurtainSheer => 'Tenda leggera';
+
+  @override
+  String get roomScanCurtainDrawn => 'Tenda spesso tirata';
+
+  @override
+  String get roomScanCurtainHelp =>
+      'Il rilievo non vede né le tende leggere né le tende. Una tenda leggera dimezza la luce e toglie il sole diretto; una tenda spesso tirata la divide per tre.';
+
+  @override
+  String get roomScanPlace => 'Posare';
+
+  @override
+  String roomScanRoomsShort(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count stanze',
+      one: '1 stanza',
+      zero: 'Nessuna',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get roomScanThisRoom => 'Rilevare questa stanza';
+
+  @override
+  String get roomScanThisRoomHint =>
+      'La planimetria della stanza dà la luce di ogni posto, per scegliere dove posare una pianta.';
+
+  @override
+  String get roomScanRoomPlan => 'Pianta della stanza';
+
+  @override
+  String roomScanPlantsOnPlanCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count piante sulla planimetria',
+      one: 'una pianta sulla planimetria',
+      zero: 'nessuna pianta sulla planimetria',
+    );
+    return '$_temp0';
+  }
 }

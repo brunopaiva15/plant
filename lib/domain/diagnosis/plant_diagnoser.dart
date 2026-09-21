@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import '../home/home_climate.dart';
+import '../problems/natural_cause.dart';
 import '../problems/plant_problem.dart';
 import 'diagnosis_observations.dart';
 
@@ -30,9 +31,70 @@ enum Likelihood {
   }
 }
 
+/// La vue qui manque à l'analyse, quand l'analyse en désigne une.
+///
+/// Fermée à cinq entrées : demander « une meilleure photo » ne dit pas quoi
+/// cadrer, alors que « le revers d'une feuille » se photographie sans y
+/// réfléchir. C'est le service qui la nomme, jamais l'application.
+enum DiagnosisView {
+  leafCloseup('leaf_closeup'),
+  leafUnderside('leaf_underside'),
+  wholePlant('whole_plant'),
+  stemBase('stem_base'),
+  soilRoots('soil_roots');
+
+  const DiagnosisView(this.wire);
+
+  /// Le mot tel qu'il circule : dans la réponse du service, dans l'état
+  /// envoyé à Jev, dans le compte rendu gardé au journal.
+  final String wire;
+
+  /// La vue nommée, ou `null` pour tout le reste — « none », un mot inconnu,
+  /// une clé absente. Une vue inventée ferait cadrer pour rien.
+  static DiagnosisView? parse(Object? raw) {
+    if (raw is! String) return null;
+    final mot = raw.trim().toLowerCase();
+    for (final v in DiagnosisView.values) {
+      if (v.wire == mot) return v;
+    }
+    return null;
+  }
+}
+
+/// Une question du service et ce que la personne y a répondu.
+///
+/// Les deux voyagent ensemble : une réponse seule ne veut rien dire, et la
+/// question se relit dans le compte rendu à côté d'elle.
+class DiagnosisAnswer {
+  const DiagnosisAnswer({required this.question, required this.answer});
+
+  final String question;
+  final String answer;
+
+  Map<String, Object?> toJson() => {'question': question, 'answer': answer};
+
+  /// `null` dès que l'un des deux manque : une question sans réponse n'a pas
+  /// à repartir à l'analyse, et une réponse sans question ne se relit pas.
+  static DiagnosisAnswer? fromJson(Map<String, Object?> json) {
+    final q = json['question'];
+    final a = json['answer'];
+    if (q is! String || a is! String) return null;
+    if (q.trim().isEmpty || a.trim().isEmpty) return null;
+    return DiagnosisAnswer(question: q.trim(), answer: a.trim());
+  }
+}
+
 /// Une cause possible, avec sa vraisemblance et des gestes concrets.
 class DiagnosisCause {
-  const DiagnosisCause({required this.title, required this.likelihood, required this.explanation, required this.actions, this.problemId});
+  const DiagnosisCause({
+    required this.title,
+    required this.likelihood,
+    required this.explanation,
+    required this.actions,
+    this.problemId,
+    this.naturalId,
+    this.natural = false,
+  });
 
   /// Le titre rendu par le service. Sert de repli quand la cause ne
   /// correspond à rien de la base ; sinon c'est le nom de la base qui
@@ -48,18 +110,39 @@ class DiagnosisCause {
   /// que de l'admettre.
   final String? problemId;
 
+  /// Numéro du phénomène naturel dans la base locale, quand la cause en est
+  /// un et que le service l'a reconnu. Exclusif de [problemId] : une chose
+  /// est un problème ou elle n'en est pas un.
+  final String? naturalId;
+
+  /// Vrai quand la cause n'est pas un problème : la plante fait ce qu'elle
+  /// fait normalement.
+  ///
+  /// Des gouttes collantes sous un philodendron sont du nectar extrafloral
+  /// aussi souvent que du miellat de cochenilles, et la moitié de ce qu'on
+  /// photographie inquiète sans rien avoir d'anormal. Une piste pareille
+  /// n'appelle pas de soin : elle se lit autrement, elle ne rend jamais le
+  /// compte rendu urgent, et elle ne met pas la plante à surveiller.
+  ///
+  /// Toujours vrai quand [naturalId] est donné ; vrai aussi pour un
+  /// phénomène que la base ne connaît pas — elle est courte, et la plante
+  /// fait plus de choses normales qu'on n'en a listé.
+  final bool natural;
+
   Map<String, Object?> toJson() => {
         'title': title,
         'likelihood': likelihood.name,
         'explanation': explanation,
         'actions': actions,
         if (problemId != null) 'problemId': problemId,
+        if (naturalId != null) 'naturalId': naturalId,
+        if (natural) 'natural': true,
       };
 
   /// Une piste qui n'a rien à montrer : ni nom propre, ni numéro pour que la
   /// base la nomme, ni explication. Une carte vide ne dit rien de plus qu'une
   /// carte absente.
-  bool get isBlank => title.isEmpty && problemId == null && explanation.isEmpty;
+  bool get isBlank => title.isEmpty && problemId == null && naturalId == null && explanation.isEmpty;
 
   /// Relit une cause gardée au journal. Tolérante : une analyse conservée il
   /// y a six mois a pu être écrite par une version antérieure, et un champ
@@ -73,12 +156,20 @@ class DiagnosisCause {
             if (a is String && a.trim().isNotEmpty) a,
         ],
         problemId: json['problemId'] is String ? json['problemId'] as String : null,
+        naturalId: json['naturalId'] is String ? json['naturalId'] as String : null,
+        natural: json['natural'] == true || json['naturalId'] is String,
       );
 }
 
 /// Résultat d'un diagnostic : toujours des suggestions, jamais des certitudes.
 class Diagnosis {
-  const Diagnosis({required this.summary, required this.causes, this.urgent = false});
+  const Diagnosis({
+    required this.summary,
+    required this.causes,
+    this.urgent = false,
+    this.suggestedView,
+    this.questions = const [],
+  });
 
   /// Ce que l'on observe, en une ou deux phrases.
   final String summary;
@@ -89,15 +180,57 @@ class Diagnosis {
   /// Vrai si la plante mérite une attention rapide (parasites, pourriture…).
   final bool urgent;
 
+  /// Vrai quand aucune piste n'est un problème : ce qui a été photographié
+  /// est ce que la plante fait normalement. Le compte rendu le dit alors en
+  /// tête, plutôt que de laisser lire trois cartes comme trois soucis.
+  bool get onlyNatural => causes.isNotEmpty && causes.every((c) => c.natural);
+
+  /// La vue qui manquait au service pour trancher, quand il en nomme une.
+  ///
+  /// Elle ne se lit nulle part dans le compte rendu : c'est une photo à
+  /// proposer, pas une piste. Rien n'oblige à la donner, et l'analyse reste
+  /// entière sans elle.
+  final DiagnosisView? suggestedView;
+
+  /// Ce que le service demanderait pour trancher : une à trois questions
+  /// courtes, dans la langue de la personne, ou rien.
+  ///
+  /// Une photo ne dit ni depuis quand, ni ce qui a changé dans la pièce, ni
+  /// ce qui a déjà été tenté — et le service n'avait aucun moyen de le
+  /// demander : il répondait donc avec ce qu'il avait. Comme la vue de plus,
+  /// c'est une proposition : les pistes sont rendues en entier, et personne
+  /// n'est obligé de répondre.
+  final List<String> questions;
+
+  /// Les questions telles qu'on les garde : rognées, vides écartées, doublons
+  /// écartés, trois au plus. La consigne le demande déjà ; on ne dépend pas
+  /// de son respect.
+  static List<String> readQuestions(Object? raw) {
+    final vues = <String>{};
+    final gardees = <String>[];
+    for (final q in raw is List ? raw : const []) {
+      if (q is! String) continue;
+      final texte = q.trim();
+      if (texte.isEmpty || !vues.add(texte.toLowerCase())) continue;
+      gardees.add(texte);
+      if (gardees.length == 3) break;
+    }
+    return gardees;
+  }
+
   Map<String, Object?> toJson() => {
         'summary': summary,
         'urgent': urgent,
+        if (suggestedView != null) 'view': suggestedView!.wire,
+        if (questions.isNotEmpty) 'questions': questions,
         'causes': [for (final c in causes) c.toJson()],
       };
 
   factory Diagnosis.fromJson(Map<String, Object?> json) => Diagnosis(
         summary: json['summary'] is String ? json['summary'] as String : '',
         urgent: json['urgent'] == true,
+        suggestedView: DiagnosisView.parse(json['view']),
+        questions: readQuestions(json['questions']),
         causes: [
           for (final c in json['causes'] is List ? json['causes'] as List : const [])
             if (c is Map)
@@ -131,6 +264,12 @@ abstract class PlantDiagnoser {
     /// la plante peut très bien avoir autre chose.
     List<PlantProblem> candidates = const [],
 
+    /// Ce que cette plante fait normalement et qu'on prend pour un problème :
+    /// nectar extrafloral, guttation, vieille feuille du bas qui jaunit.
+    /// Soumis à côté des problèmes — la moitié des photos d'inquiétude ne
+    /// montrent rien d'anormal, et le service n'y pensait pas tout seul.
+    List<NaturalCause> naturalCauses = const [],
+
     /// Parmi eux, ceux que la fiche d'entretien signale pour l'espèce.
     Set<String> frequentIds = const {},
 
@@ -147,6 +286,23 @@ abstract class PlantDiagnoser {
     /// lumière, les insectes. Aucune photo ne les montre, et ce sont eux qui
     /// tranchent le plus souvent.
     DiagnosisObservations? observations,
+
+    /// Ce que le service avait demandé au tour précédent, et ce qu'on lui a
+    /// répondu. Une analyse ne se recolle pas à la précédente : elle se
+    /// refait en entier, avec ces réponses en plus.
+    List<DiagnosisAnswer> answers = const [],
+
+    /// Vrai pour une plante qui vit dans la maison, faux pour une plante
+    /// dehors, `null` quand on l'ignore — une plante sans emplacement.
+    bool? indoors,
+
+    /// Le jour de l'analyse. Une cochenille en février et une brûlure en
+    /// juillet ne se confondent pas, et aucune photo ne dit la saison.
+    DateTime? date,
+
+    /// La latitude du lieu déjà connu de l'application, quand il y en a un.
+    /// Seul son signe part : il dit l'hémisphère, donc la saison du mois.
+    double? latitude,
   });
 }
 
@@ -191,10 +347,15 @@ class UnconfiguredDiagnoser implements PlantDiagnoser {
     String? species,
     String? symptoms,
     List<PlantProblem> candidates = const [],
+    List<NaturalCause> naturalCauses = const [],
     Set<String> frequentIds = const {},
     HomeReading? indoorClimate,
     ReportedClimate? reportedClimate,
     DiagnosisObservations? observations,
+    List<DiagnosisAnswer> answers = const [],
+    bool? indoors,
+    DateTime? date,
+    double? latitude,
   }) =>
       throw const DiagnosisException('unconfigured');
 }

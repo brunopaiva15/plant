@@ -217,7 +217,51 @@ floraison, le type d'engrais restent.
 multiplication, 12 floraison, 18 humidité, 143 arrosage, 134 engrais,
 127 rempotage). 33 n'ont pas de représentant RHS.
 
+## Phase 10 — Les espèces du masque Iris Indoor (faite)
+
+Les neuf phases précédentes sourcent des fiches qui existaient déjà. Celle-ci
+en **crée** : les espèces d'Iris Indoor qui n'avaient que le profil de leur
+genre ou de leur famille. La liste est la réunion du masque figé
+(`tools/plant_dataset/masque_indoor.txt`, 335 classes) et des classes
+réellement livrées (`assets/model/model.json`, 336) — 26 d'entre elles ne
+sont pas au masque. Une classe livrée sans fiche à elle reste une plante
+qu'on identifie sans savoir l'arroser.
+
+Une cote de rusticité s'y ajoute comme source : la RHS range la plante dans
+une plage (H1A à H7). La valeur déjà écrite est **confirmée** si elle y
+tombe, sinon on prend le milieu de la plage, arrondi du côté chaud.
+C'est la règle que la campagne manuelle de rusticité suivait déjà
+(`hardiness_map.py`).
+
+La fiche part de ce que l'espèce hérite aujourd'hui, **sans sa provenance** :
+un héritage n'est pas une source. Puis chaque champ repasse par les mappings
+des phases 1 à 8. Trois verrous :
+
+- la page doit être celle de l'espèce — son nom, un de ses cultivars, son
+  synonyme ; jamais celle d'une voisine du genre ;
+- une fiche qui ne dit rien de plus que son genre n'est pas écrite : elle
+  n'ajouterait qu'une copie à maintenir ;
+- la page ajoute et ordonne les méthodes de multiplication, elle n'efface
+  pas ce que le genre sait. Le bloc Propagation de la RHS est un conseil de
+  jardin, pas un inventaire : il ne nomme pas le keiki du dendrobium. Quand
+  la fiche garde une méthode que la page ne dit pas, la liste n'est plus
+  celle de la RHS et n'est pas déclarée sourcée.
+
+Une floraison héritée sans déclencheur à elle s'en va : le calendrier du
+genre vient de la page d'un autre taxon.
+
+**242 fiches espèce écrites** sur 334 candidates — 138 héritaient d'un genre,
+104 d'une famille. 82 ne disaient rien de plus que leur genre, 10 n'ont pas
+de page RHS (*Alocasia reginula*, *Chrysanthemum × morifolium*, *Citrus ×
+aurantifolia*, *Citrus × aurantium*, *Costus woodsonii*, *Lasia spinosa*,
+*Peperomia serpens*, *Pothos chinensis*, *Sedum rubrotinctum*, *Selenicereus
+undatus*). Champs sourcés : 219 rusticité, 219 lumière, 200 problèmes, 177
+floraison, 153 multiplication, 148 eau, 108 substrat, 41 humidité d'habitat ;
+241 arrosage, 219 engrais et 210 rempotage dérivés.
+
+Pipeline : `tools/rhs_care/extract_indoor.py`.
+
 ## Ordre
 
 0 → 1 → 2 → 3 → 4 → 5 (les six champs de la RHS, un lot tous les six, par
-paquets de 45 profils) → 6 → 7 → 8 → 9.
+paquets de 45 profils) → 6 → 7 → 8 → 9 → 10.

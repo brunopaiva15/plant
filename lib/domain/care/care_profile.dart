@@ -13,6 +13,14 @@ LightNeed? lightNeedFromCode(String? code) => switch (code) {
       _ => null,
     };
 
+/// Le code d'emplacement qui dit le mieux une lumière lue : l'inverse de
+/// [lightNeedFromCode], à trois crans — ce que l'emplacement sait dire.
+String lightCodeFor(LightNeed light) => switch (light) {
+      LightNeed.shade || LightNeed.lowLight => 'low',
+      LightNeed.indirect || LightNeed.brightIndirect => 'medium',
+      LightNeed.someSun || LightNeed.fullSun => 'high',
+    };
+
 /// Besoin en humidité de l'air.
 ///
 /// Le mot suffit pour poser un pot dans un salon ; sous serre ou en vitrine,

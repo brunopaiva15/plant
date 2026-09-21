@@ -38,6 +38,11 @@ CRASSULA = (
     "root, stem or leaf cuttings in spring Suggested planting"
 )
 NOTES = "Propagation See cultivation notes Pests See cultivation notes "
+ADANSONII = (
+    "Propagation Propagate by sowing seed at 18-24°C as soon as ripe, take "
+    "tip or leaf cuttings with bottom heat in summer, layer in autumn "
+    "Suggested planting locations"
+)
 GRAFT = "Propagation Propagate by grafting Pruning pruning group 1 Pests "
 NAV = (
     "How to propagate Beginners' guide Propagation Propagate by seed "
@@ -70,6 +75,15 @@ class MapTest(unittest.TestCase):
     def test_monstera_seed_and_stem(self):
         p = parse_propagation(MONSTERA)
         self.assertEqual(methods_from_rhs(p["raw"]), ["stemCutting", "seed"])
+
+    def test_tip_cutting_is_a_stem_cutting(self):
+        # « take tip or leaf cuttings » : la bouture de tête compte, sans
+        # quoi le monstera adansonii ne se multiplierait que par la feuille.
+        p = parse_propagation(ADANSONII)
+        self.assertEqual(
+            methods_from_rhs(p["raw"]),
+            ["stemCutting", "leafCutting", "seed"],
+        )
 
     def test_tomato_seed_only(self):
         p = parse_propagation(TOMATO)

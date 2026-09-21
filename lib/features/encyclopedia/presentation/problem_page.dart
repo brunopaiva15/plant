@@ -1,24 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../app/providers.dart';
-import '../../../app/router.dart';
 import '../../../core/l10n/l10n.dart';
-import '../../../data/species/species_catalog.dart';
 import '../../../design_system/design_system.dart';
-import '../../../domain/models/models.dart';
 import '../../../domain/problems/plant_problem.dart';
-import '../../../domain/repositories/repositories.dart';
 import '../../onboarding/presentation/clay_illustration.dart';
-import '../../plants/application/plant_providers.dart';
 import '../../problems/presentation/problem_kind_icon.dart';
+import 'host_sections.dart';
 
 /// La page d'un des deux cents problèmes de la base.
 ///
-/// Elle ne dit que ce que la base contient — un nom, une famille, une
-/// étendue, des hôtes — et rien de ce qu'un modèle pourrait inventer par
-/// dessus : le diagnostic, lui, a une photo sous les yeux ; ici on lit une
+/// Elle ne dit que ce que la base contient — un nom, les autres noms de la
+/// même chose, une famille, une étendue, des hôtes — et rien de ce qu'un
+/// modèle pourrait inventer par dessus : le diagnostic, lui, a une photo sous les yeux ; ici on lit une
 /// fiche, et une fiche qui broderait ne serait plus une fiche.
 class ProblemPage extends ConsumerWidget {
   const ProblemPage({super.key, required this.problemId});
@@ -57,8 +52,9 @@ class ProblemPage extends ConsumerWidget {
             footer: l10n.problemScopeNote(problem.scope),
             children: [_row(l10n.problemScope, l10n.problemScopeName(problem.scope))],
           ),
-          _Hosts(problem: problem),
-          _InGarden(problem: problem),
+          _OtherNames(problem: problem),
+          HostsSection(hosts: problem.hosts),
+          InGardenSection(scope: problem.scope, hosts: problem.hosts),
         ],
       ),
     );
@@ -139,113 +135,39 @@ class _Header extends StatelessWidget {
   }
 }
 
-/// Les hôtes cités par la base, dans son ordre à elle.
-class _Hosts extends StatelessWidget {
-  const _Hosts({required this.problem});
+/// Les autres noms sous lesquels la base connaît l'entrée.
+///
+/// Le titre n'en garde qu'un par langue, pour que deux analyses de la même
+/// chose se lisent pareil ; les autres se lisent ici, où une fiche de
+/// référence doit les donner — c'est « araignée rouge » qu'on a en tête, pas
+/// « tétranyque ».
+///
+/// Toutes langues mêlées, comme la base les range : un nom scientifique ne
+/// vaut pour aucune en particulier, et un nom courant d'ailleurs reste un
+/// nom de la même chose.
+///
+/// Absente des vingt-neuf entrées dont le titre porte déjà le mot qu'on
+/// chercherait.
+class _OtherNames extends StatelessWidget {
+  const _OtherNames({required this.problem});
 
   final PlantProblem problem;
 
   @override
   Widget build(BuildContext context) {
+    if (problem.aliases.isEmpty) return const SizedBox.shrink();
     final l10n = context.l10n;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const SizedBox(height: Space.lg),
-        Text(l10n.problemHosts, style: context.text.title3),
+        Text(l10n.problemOtherNames, style: context.text.title3),
         const SizedBox(height: Space.sm),
         FloraGroup(
-          footer: l10n.problemHostsNote,
-          children: [for (final host in problem.hosts) _HostRow(host: host)],
-        ),
-      ],
-    );
-  }
-}
-
-/// Un hôte : une espèce (deux mots), une famille (en -aceae), un genre, ou
-/// l'embranchement entier.
-///
-/// Seule une espèce que l'un des deux catalogues connaît mène quelque part :
-/// d'un genre ou d'une famille, il n'y a pas de fiche à ouvrir.
-class _HostRow extends ConsumerWidget {
-  const _HostRow({required this.host});
-
-  final String host;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = context.l10n;
-    if (host == 'Tracheophyta') {
-      return FloraListRow(
-        leading: const Text('🌍', style: TextStyle(fontSize: 18)),
-        title: l10n.problemHostsAll,
-        dense: true,
-        chevron: false,
-      );
-    }
-    final lang = Localizations.localeOf(context).languageCode;
-    final species = host.contains(' ');
-    final curated = species ? SpeciesCatalog.find(host) : null;
-    final record = species && curated == null ? ref.watch(speciesIndexProvider).value?.find(host) : null;
-    // La fiche s'ouvre dès que l'un des deux catalogues connaît l'espèce. Le
-    // nom courant, lui, ne paraît que dans la langue de l'application : le
-    // titre porte déjà le nom scientifique.
-    final known = curated != null || record != null;
-    final common = curated?.vernacularName(lang) ?? record?.vernacularName(lang);
-    return FloraListRow(
-      leading: Text(species ? '🌿' : '🗂️', style: const TextStyle(fontSize: 18)),
-      title: host,
-      titleMaxLines: 2,
-      subtitle: species ? common : (host.endsWith('aceae') ? l10n.speciesFamily : l10n.speciesGenus),
-      dense: true,
-      chevron: known,
-      onTap: known ? () => context.push(Routes.encyclopediaSpecies(host)) : null,
-    );
-  }
-}
-
-/// Les plantes du jardin que la base range parmi les hôtes.
-///
-/// Absente des problèmes universels : y aligner toute la collection ne dirait
-/// rien — un manque d'eau concerne tout le monde, la base le déclare ainsi.
-class _InGarden extends ConsumerWidget {
-  const _InGarden({required this.problem});
-
-  final PlantProblem problem;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    if (problem.scope == ProblemScope.general) return const SizedBox.shrink();
-    final l10n = context.l10n;
-    final familyOf = speciesFamilyLookup(ref);
-    final plants = ref.watch(plantSummariesProvider(const PlantFilter())).value ?? const <PlantSummary>[];
-    final concerned = [
-      for (final s in plants)
-        if (s.plant.speciesName != null && problem.affects(species: s.plant.speciesName, family: familyOf(s.plant.speciesName))) s,
-    ];
-    if (concerned.isEmpty) return const SizedBox.shrink();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const SizedBox(height: Space.lg),
-        Text(l10n.problemInGarden, style: context.text.title3),
-        const SizedBox(height: Space.sm),
-        FloraGroup(
+          footer: l10n.problemOtherNamesNote,
           children: [
-            for (final s in concerned)
-              FloraListRow(
-                leading: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: SizedBox(width: 36, height: 36, child: PlantImage(relativePath: s.thumbPath, remoteUrl: s.thumbUrl, cacheWidth: 108)),
-                ),
-                leadingWidth: 36,
-                title: s.plant.name,
-                subtitle: s.plant.speciesName,
-                dense: true,
-                onTap: () => context.push(Routes.plant(s.plant.id)),
-              ),
+            for (final name in problem.aliases)
+              FloraListRow(title: name, titleMaxLines: 2, dense: true, chevron: false),
           ],
         ),
       ],

@@ -4,6 +4,7 @@ import 'package:flora/app/app.dart';
 import 'package:flora/app/providers.dart';
 import 'package:flora/core/config/app_version.dart';
 import 'package:flora/app/router.dart';
+import 'package:flora/app/shell.dart';
 import 'package:flora/data/auth/local_auth_repository.dart';
 import 'package:flora/data/db/database.dart';
 import 'package:flora/data/db/mappers.dart';
@@ -62,9 +63,12 @@ Future<List<PlantActionRow>> actionsOf(ProviderContainer c, String plantId) {
   return (db.select(db.plantActions)..where((a) => a.plantId.equals(plantId))).get();
 }
 
-Future<void> pumpApp(WidgetTester tester, ProviderContainer container, {bool settleAfter = true}) async {
-  tester.view.physicalSize = const Size(1170, 2532);
+/// [size] est en points, pas en pixels : celle d'un iPhone par défaut. La
+/// passer sert à voir l'application ailleurs — l'écran intérieur d'un
+/// pliable, où le menu se met debout à droite.
+Future<void> pumpApp(WidgetTester tester, ProviderContainer container, {bool settleAfter = true, Size size = const Size(390, 844)}) async {
   tester.view.devicePixelRatio = 3;
+  tester.view.physicalSize = size * 3;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(UncontrolledProviderScope(container: container, child: const FloraApp()));
   if (settleAfter) await settle(tester);
@@ -92,6 +96,79 @@ Future<void> skipLater(WidgetTester tester) async {
 }
 
 void main() {
+  group('le menu, selon la fenêtre', () {
+    testWidgets('sur un téléphone, la pilule reste en bas', (tester) async {
+      final container = await boot(tester);
+      await pumpApp(tester, container);
+      expect(find.byType(FloraTabBar), findsOneWidget);
+      expect(find.byType(FloraTabRail), findsNothing);
+    });
+
+    testWidgets('sur l\'écran intérieur d\'un pliable, le menu se met debout à droite', (tester) async {
+      final container = await boot(tester);
+      await pumpApp(tester, container, size: const Size(669, 951));
+      expect(find.byType(FloraTabRail), findsOneWidget);
+      expect(find.byType(FloraTabBar), findsNothing);
+
+      // Le contenu est posé à côté du rail, pas dessous.
+      final rail = tester.getRect(find.byType(FloraTabRail));
+      expect(669 - rail.right, lessThan(20));
+      expect(tester.getRect(find.byType(AppShell)).width, 669);
+
+      // Et le menu marche : on change d'onglet depuis la colonne.
+      await tester.tap(find.bySemanticsLabel('Jardin'));
+      await settle(tester);
+      // L'onglet Jardin s'est ouvert : son grand titre et ses sections.
+      expect(find.text('Lieux'), findsWidgets);
+      expect(find.text('Inventaire'), findsWidgets);
+    });
+
+    /// Le bouton [libelle] est-il posé dans la colonne de droite ?
+    void dansLaColonne(WidgetTester tester, String libelle) {
+      final bouton = find.bySemanticsLabel(libelle);
+      expect(bouton, findsOneWidget, reason: '« $libelle » a disparu');
+      final colonne = tester.getRect(find.byType(FloraTabRail));
+      expect(
+        colonne.contains(tester.getRect(bouton).center),
+        isTrue,
+        reason: '« $libelle » est resté en haut de page',
+      );
+    }
+
+    testWidgets('les boutons du haut de page rejoignent la colonne', (tester) async {
+      final container = await boot(tester);
+      await pumpApp(tester, container, size: const Size(669, 951));
+
+      // L'écran du matin en a deux, un de chaque côté du titre.
+      dansLaColonne(tester, 'Tableau de bord');
+      dansLaColonne(tester, 'Ajouter une plante');
+
+      // L'onglet Plantes en a quatre, et ils suivent aussi.
+      await tester.tap(find.bySemanticsLabel('Plantes'));
+      await settle(tester);
+      for (final libelle in ['Scanner', 'Filtres', 'Trouver une plante', 'Ajouter une plante']) {
+        dansLaColonne(tester, libelle);
+      }
+
+      // Et en revenant, ce sont de nouveau ceux de l'écran du matin : une
+      // branche laissée montée derrière ne garde pas la main sur la colonne.
+      await tester.tap(find.bySemanticsLabel("Aujourd'hui"));
+      await settle(tester);
+      dansLaColonne(tester, 'Tableau de bord');
+      expect(find.bySemanticsLabel('Scanner'), findsNothing);
+    });
+
+    testWidgets('sur un téléphone, ils restent en haut de page', (tester) async {
+      final container = await boot(tester);
+      await pumpApp(tester, container);
+      expect(find.byType(FloraTabRail), findsNothing);
+      // Ils sont là, mais dans le tiers haut de l'écran, pas dans une colonne.
+      for (final libelle in ['Tableau de bord', 'Ajouter une plante']) {
+        expect(tester.getRect(find.bySemanticsLabel(libelle)).center.dy, lessThan(844 / 3));
+      }
+    });
+  });
+
   testWidgets('empty garden shows the first-plant call to action', (tester) async {
     final container = await boot(tester);
     await pumpApp(tester, container);
@@ -325,6 +402,35 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(milliseconds: 100));
     handle.dispose();
+  });
+
+  testWidgets("sur un écran court, la sortie de l'étape de soutien reste visible", (tester) async {
+    // L'écran extérieur du Duo : 678 points de haut. La pièce du soutien et
+    // ses deux boutons n'y tiennent plus, et « Non merci » passait sous le
+    // pli — dans une page qui n'avait l'air de rien cacher, les points
+    // d'étape en bas la faisant paraître complète.
+    final container = await boot(tester, onboardingDone: false);
+    await pumpApp(tester, container, settleAfter: false, size: const Size(466, 678));
+    await step(tester);
+    await tester.tap(find.text('Passer'));
+    await step(tester);
+    await skipLater(tester);
+    await skipLater(tester);
+    expect(find.text('Votre prénom'), findsOneWidget);
+    await tester.enterText(find.byType(EditableText), 'Bruno');
+    await skipLater(tester);
+    expect(find.text('Auxine est gratuite'), findsOneWidget);
+
+    // Visible sans défiler : le bouton est dans la fenêtre, et on peut le
+    // toucher sans l'y amener d'abord.
+    final sortie = find.text('Non merci');
+    expect(sortie, findsOneWidget);
+    final rect = tester.getRect(sortie);
+    expect(rect.bottom, lessThanOrEqualTo(678), reason: '« Non merci » passe sous le pli');
+    expect(rect.top, greaterThanOrEqualTo(0));
+    await tester.tap(sortie);
+    await settle(tester);
+    expect(container.read(preferencesProvider).onboardingDone, isTrue);
   });
 
   testWidgets('onboarding leads to Today after entering a name', (tester) async {

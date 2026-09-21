@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,11 +8,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/config/app_config.dart';
 import '../../core/haptics.dart';
 import '../theme/flora_theme.dart';
+import '../../core/native_shell.dart';
 import '../tokens/motion.dart';
 import '../tokens/radius.dart';
 import '../tokens/spacing.dart';
 import 'clay.dart';
 import 'pressable.dart';
+import 'tab_bar.dart';
 
 /// Toast avec action d'annulation. Un seul toast à la fois ; le suivant
 /// remplace le précédent (et déclenche son expiration).
@@ -66,13 +69,27 @@ class ToastHost extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final toast = ref.watch(toastProvider);
+    // Le toast flotte au-dessus de toute l'application : c'est à lui d'éviter
+    // le menu, où qu'il soit. En bas, il se pose au-dessus de la pilule ;
+    // debout à droite, il se range à gauche du rail et redescend, puisque
+    // plus rien n'occupe le bas de l'écran.
+    // Là où la chrome est celle d'UIKit, il n'y a ni pilule ni rail à éviter :
+    // la barre d'onglets est dans la marge sûre, et s'en écarter de seize
+    // points suffit. Sans cela le toast montait de quatre-vingts points, le
+    // bas de l'écran étant compté deux fois.
+    final natif = NativeShell.isSupported;
+    final rail = !natif && FloraTabRail.fitsIn(context) ? FloraTabRail.reserved(context) : 0.0;
+    // Et ce que le système réserve sur les côtés, bord par bord : sur un
+    // pliable, la bande de la caméra passe à droite ou à gauche selon la
+    // rotation.
+    final marges = MediaQuery.paddingOf(context);
     return Stack(
       children: [
         child,
         Positioned(
-          left: Space.md,
-          right: Space.md,
-          bottom: MediaQuery.paddingOf(context).bottom + 96,
+          left: Space.md + marges.left,
+          right: Space.md + math.max(rail, marges.right),
+          bottom: marges.bottom + (natif || rail > 0 ? Space.md : 96),
           child: IgnorePointer(
             ignoring: toast == null,
             child: AnimatedSwitcher(

@@ -403,3 +403,55 @@ class InventoryTags extends Table {
   @override
   Set<Column> get primaryKey => {itemId, tagId};
 }
+
+/// Un relevé de pièce (docs/17) : une ligne ici, le JSON de RoomPlan dans
+/// les documents de l'application. Pas d'outbox : le plan de chez soi ne se
+/// synchronise pas.
+@DataClassName('RoomScanRow')
+class RoomScans extends Table with Timestamps {
+  TextColumn get id => text()();
+  TextColumn get gardenId => text()();
+  TextColumn get locationId => text().nullable()();
+  TextColumn get name => text()();
+  DateTimeColumn get capturedAt => dateTime()();
+
+  /// Le cap du nord dans le repère du relevé, en degrés ; null sans boussole.
+  RealColumn get northOffsetDeg => real().nullable()();
+
+  /// Chemin du JSON, relatif au dossier des relevés.
+  TextColumn get filePath => text()();
+  RealColumn get floorAreaM2 => real().withDefault(const Constant(0))();
+
+  /// Le type de pièce reconnu par RoomPlan (`kitchen`, `bathroom`…), ou null.
+  TextColumn get sectionLabel => text().nullable()();
+
+  /// Les pièces d'un même relevé d'appartement partagent cet identifiant,
+  /// et leur repère ; null pour une pièce relevée seule.
+  TextColumn get structureId => text().nullable()();
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
+/// Ce que la main ajoute à un relevé : l'orientation confirmée d'une
+/// fenêtre, un radiateur, la place d'une plante. Séparé du capteur pour
+/// survivre à un nouveau relevé.
+@DataClassName('RoomMarkerRow')
+class RoomMarkers extends Table with Timestamps {
+  TextColumn get id => text()();
+  TextColumn get scanId => text()();
+
+  /// `windowOrientation` | `heater` | `plant`.
+  TextColumn get kind => text()();
+  RealColumn get x => real()();
+  RealColumn get z => real()();
+  IntColumn get windowIndex => integer().nullable()();
+
+  /// Un point cardinal (`south`, `northWest`…), pour `windowOrientation`.
+  TextColumn get orientation => text().nullable()();
+  TextColumn get plantId => text().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}

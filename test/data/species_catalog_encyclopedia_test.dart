@@ -34,12 +34,17 @@ void main() {
     expect(modelSpecies, hasLength(modelJson['classes'] as int));
     // Sans plafond : toutes les classes Iris, toutes les fiches curatées qui
     // ont un profil, puis tout le catalogue étendu qui en a un aussi.
-    expect(encyclopedia.entries, hasLength(33344));
+    // 33 325 depuis la réparation des libellés Wikidata : vingt-deux lignes
+    // n'avaient de nom courant que le balisage de leur source, et n'en ont
+    // plus aucun une fois celui-ci retiré (tool/repair_species_catalog.py).
+    // Puis 33 326 avec l'Iris 9 : de ses 1 233 classes nouvelles, une seule
+    // n'était pas déjà au catalogue étendu.
+    expect(encyclopedia.entries, hasLength(33326));
     expect(names.toSet().length, names.length, reason: 'noms scientifiques dupliqués');
     expect(modelNames.difference(names.toSet()), isEmpty);
     // Toutes les classes du modèle étant des fiches, le reste est le catalogue
     // étendu : la taille de l'encyclopédie moins ce que le modèle expose.
-    expect(extras, hasLength(33344 - modelNames.length));
+    expect(extras, hasLength(33326 - modelNames.length));
     expect(extraAccepted.toSet().length, extraAccepted.length, reason: 'synonymes rejoués parmi les fiches hors Iris');
     expect(extraAccepted.where(modelAccepted.contains), isEmpty, reason: 'une fiche hors Iris rejoue une classe Iris sous un synonyme');
 

@@ -52,6 +52,14 @@ ColorFilter _lumiereDeLaScene(LightNeed light) {
 /// moyens gabarits sont réellement posés sur son plateau. Les grands
 /// gabarits restent au sol.
 ///
+/// À l'ouverture, la scène **se pose** : le cadre est d'abord serré sur la
+/// plante, qui descend sur son emplacement et y laisse une onde ; puis la
+/// caméra recule et découvre la pièce autour d'elle. Le regard part de la
+/// plante et finit sur l'endroit où elle est — c'est ce que la scène
+/// raconte. La pose se rejoue quand la plante change de place, de
+/// silhouette ou de décor. En reduced motion, la scène est posée dès la
+/// première image.
+///
 /// Les effets respirent quelques cycles à l'ouverture puis se reposent :
 /// rien ne bouge en permanence dans la fiche. En reduced motion, ils sont
 /// statiques mais lisibles.
@@ -63,17 +71,58 @@ class CareEnvironmentScene extends StatefulWidget {
 
   final CareEnvironmentVisualSpec spec;
 
+  /// Le temps de la pose : la plante descend, l'onde la désigne, la caméra
+  /// recule.
+  static const Duration poseDuration = Duration(milliseconds: 1400);
+
+  /// Le grossissement de départ, centré sur la plante. Assez pour que la
+  /// pièce se découvre au recul, pas au point de perdre le sol sous le pot.
+  static const double zoomInitial = 1.30;
+
+  /// De combien la plante descend en se posant, en fraction de la hauteur
+  /// du cadre.
+  static const double chute = 0.045;
+
   @override
   State<CareEnvironmentScene> createState() => _CareEnvironmentSceneState();
 }
 
 class _CareEnvironmentSceneState extends State<CareEnvironmentScene>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
+  /// La respiration des effets d'air : trois cycles, puis le repos.
   late final AnimationController _souffle = AnimationController(
     vsync: this,
     duration: const Duration(seconds: 5),
   )..addStatusListener(_cycle);
   int _cycles = 0;
+
+  /// La pose, en un seul contrôleur : trois intervalles qui se chevauchent
+  /// pour que l'onde parte à l'instant où le pot touche, et que la caméra
+  /// recule pendant que l'onde s'éteint.
+  late final AnimationController _pose = AnimationController(
+    vsync: this,
+    duration: CareEnvironmentScene.poseDuration,
+  );
+
+  /// La plante descend sur son emplacement en s'éclaircissant.
+  late final CurvedAnimation _atterrissage = CurvedAnimation(
+    parent: _pose,
+    curve: const Interval(0.0, 0.32, curve: Motion.easeOut),
+  );
+
+  /// L'onde qui part du pot quand il touche, et s'éteint en s'élargissant.
+  late final CurvedAnimation _onde = CurvedAnimation(
+    parent: _pose,
+    curve: const Interval(0.26, 0.72, curve: Motion.easeOut),
+  );
+
+  /// La caméra recule du gros plan sur la plante au cadre entier.
+  late final CurvedAnimation _recul = CurvedAnimation(
+    parent: _pose,
+    curve: const Interval(0.40, 1.0, curve: Motion.emphasized),
+  );
+
+  bool _posee = false;
 
   void _cycle(AnimationStatus status) {
     if (status == AnimationStatus.completed) {
@@ -91,26 +140,56 @@ class _CareEnvironmentSceneState extends State<CareEnvironmentScene>
   void didChangeDependencies() {
     super.didChangeDependencies();
     _metAJourAnimation();
+    // Une seule fois : le réglage se lit ici, jamais dans `initState`, où
+    // le `MediaQuery` n'est pas encore accessible.
+    if (!_posee) {
+      _posee = true;
+      _joueLaPose();
+    }
   }
 
   @override
   void didUpdateWidget(CareEnvironmentScene oldWidget) {
     super.didUpdateWidget(oldWidget);
     _metAJourAnimation();
+    // La plante change de place, de silhouette ou de décor : elle se pose
+    // à nouveau, et le regard la retrouve là où elle est allée.
+    final avant = oldWidget.spec;
+    final apres = widget.spec;
+    if (avant.slot != apres.slot ||
+        avant.plant != apres.plant ||
+        avant.environment != apres.environment) {
+      _joueLaPose();
+    }
+  }
+
+  void _joueLaPose() {
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _pose.value = 1;
+    } else {
+      _pose.forward(from: 0);
+    }
   }
 
   void _metAJourAnimation() {
-    final anime = _effetsActifs && !MediaQuery.disableAnimationsOf(context);
+    final reduit = MediaQuery.disableAnimationsOf(context);
+    final anime = _effetsActifs && !reduit;
     if (anime && !_souffle.isAnimating) {
       _cycles = 0;
       _souffle.forward();
     } else if (!anime && _souffle.isAnimating) {
       _souffle.stop();
     }
+    // Le réglage change pendant la pose : elle se termine sur-le-champ.
+    if (reduit && _pose.isAnimating) _pose.value = 1;
   }
 
   @override
   void dispose() {
+    _atterrissage.dispose();
+    _onde.dispose();
+    _recul.dispose();
+    _pose.dispose();
     _souffle.dispose();
     super.dispose();
   }
@@ -127,117 +206,154 @@ class _CareEnvironmentSceneState extends State<CareEnvironmentScene>
     final lumiere = _lumiereDeLaScene(spec.light);
     // Le diorama est une maquette posée dans la fiche : les coins s'arrondissent
     // comme les cartes alentour, sinon le carré de pelouse fait bloc collé.
+    // Le recul part d'un gros plan sur le feuillage : l'ancre est un peu
+    // au-dessus de la base du pot, pour cadrer la plante et non le sol.
+    // Le point d'ancrage ne bouge pas à l'écran pendant le recul, si bien
+    // que la plante reste là où le regard l'a trouvée et que c'est la
+    // pièce qui se découvre autour d'elle.
+    final ancreZoom = FractionalOffset(plant.$1, plant.$2 - 0.12);
     return ClipRRect(
       borderRadius: Radii.largeAll,
       child: AspectRatio(
         aspectRatio: CareEnvironmentSlots.aspect,
         child: RepaintBoundary(
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              Image.asset(
-                spec.backdropAsset,
-                fit: BoxFit.cover,
-                excludeFromSemantics: true,
-              ),
-              // Le guéridon est un prop rendu seul, comme l'humidificateur :
-              // sa base vient se poser sur le slot lumineux, la plante sur
-              // son plateau.
-              if (spec.hasPedestal)
-                FractionalTranslation(
-                  translation: Offset(
-                    spec.slotFraction.$1 - anchor.$1,
-                    spec.slotFraction.$2 - anchor.$2,
+          child: AnimatedBuilder(
+            animation: _recul,
+            builder: (context, child) => Transform.scale(
+              scale:
+                  CareEnvironmentScene.zoomInitial +
+                  (1 - CareEnvironmentScene.zoomInitial) * _recul.value,
+              alignment: ancreZoom,
+              child: child,
+            ),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Image.asset(
+                  spec.backdropAsset,
+                  fit: BoxFit.cover,
+                  excludeFromSemantics: true,
+                ),
+                // Le guéridon est un prop rendu seul, comme l'humidificateur :
+                // sa base vient se poser sur le slot lumineux, la plante sur
+                // son plateau.
+                if (spec.hasPedestal)
+                  FractionalTranslation(
+                    translation: Offset(
+                      spec.slotFraction.$1 - anchor.$1,
+                      spec.slotFraction.$2 - anchor.$2,
+                    ),
+                    child: ColorFiltered(
+                      colorFilter: lumiere,
+                      child: Image.asset(
+                        spec.pedestalAsset,
+                        fit: BoxFit.cover,
+                        excludeFromSemantics: true,
+                      ),
+                    ),
+                  ),
+                // L'humidificateur reste au sol : à côté du guéridon quand la
+                // plante est dessus, ou à côté de la plante quand elle est au sol.
+                // Un plateau de billes prendra la même place, une fois l'image
+                // livrée ; en attendant, un besoin tenu par le plateau seul
+                // n'invente pas de machine.
+                if (spec.hasHumidifier)
+                  FractionalTranslation(
+                    translation: Offset(
+                      spec.humidifierFraction.$1 - anchor.$1,
+                      spec.humidifierFraction.$2 - anchor.$2,
+                    ),
+                    child: ColorFiltered(
+                      colorFilter: lumiere,
+                      child: Image.asset(
+                        'assets/care_scene/props/humidifier.webp',
+                        fit: BoxFit.cover,
+                        excludeFromSemantics: true,
+                      ),
+                    ),
+                  ),
+                // L'ombre du pot naît avec la plante qui se pose ; celle du
+                // guéridon, meuble de la pièce, est là dès le départ. L'onde
+                // de la pose se dessine dans la même couche, sous la plante.
+                AnimatedBuilder(
+                  animation: _pose,
+                  builder: (context, _) => CustomPaint(
+                    painter: _PlantShadowPainter(
+                      pot: Offset(plant.$1, plant.$2),
+                      support: spec.hasPedestal
+                          ? Offset(spec.slotFraction.$1, spec.slotFraction.$2)
+                          : null,
+                      color: c.ink.withValues(alpha: 0.30),
+                      pose: _atterrissage.value,
+                      onde: _onde.value,
+                      couleurOnde: c.sage,
+                    ),
+                  ),
+                ),
+                // La plante est rendue au centre du monde ; sa base de pot vient
+                // se poser soit sur le plateau du guéridon, soit sur le slot au
+                // sol. Elle descend d'un peu plus haut en s'éclaircissant, et
+                // touche exactement là où l'ombre l'attend. Si un asset manquait
+                // malgré tout (test d'assets dédié), le repli est la feuille
+                // large — jamais une image cassée.
+                AnimatedBuilder(
+                  animation: _atterrissage,
+                  builder: (context, child) => FractionalTranslation(
+                    translation: Offset(
+                      plant.$1 - anchor.$1,
+                      plant.$2 -
+                          anchor.$2 -
+                          CareEnvironmentScene.chute *
+                              (1 - _atterrissage.value),
+                    ),
+                    child: Opacity(opacity: _atterrissage.value, child: child),
                   ),
                   child: ColorFiltered(
                     colorFilter: lumiere,
                     child: Image.asset(
-                      spec.pedestalAsset,
+                      spec.plantAsset,
                       fit: BoxFit.cover,
                       excludeFromSemantics: true,
-                    ),
-                  ),
-                ),
-              // L'humidificateur reste au sol : à côté du guéridon quand la
-              // plante est dessus, ou à côté de la plante quand elle est au sol.
-              // Un plateau de billes prendra la même place, une fois l'image
-              // livrée ; en attendant, un besoin tenu par le plateau seul
-              // n'invente pas de machine.
-              if (spec.hasHumidifier)
-                FractionalTranslation(
-                  translation: Offset(
-                    spec.humidifierFraction.$1 - anchor.$1,
-                    spec.humidifierFraction.$2 - anchor.$2,
-                  ),
-                  child: ColorFiltered(
-                    colorFilter: lumiere,
-                    child: Image.asset(
-                      'assets/care_scene/props/humidifier.webp',
-                      fit: BoxFit.cover,
-                      excludeFromSemantics: true,
-                    ),
-                  ),
-                ),
-              CustomPaint(
-                painter: _PlantShadowPainter(
-                  pot: Offset(plant.$1, plant.$2),
-                  support: spec.hasPedestal
-                      ? Offset(spec.slotFraction.$1, spec.slotFraction.$2)
-                      : null,
-                  color: c.ink.withValues(alpha: 0.30),
-                ),
-              ),
-              // La plante est rendue au centre du monde ; sa base de pot vient
-              // se poser soit sur le plateau du guéridon, soit sur le slot au
-              // sol. Si un asset manquait malgré tout (test d'assets dédié), le
-              // repli est la feuille large — jamais une image cassée.
-              FractionalTranslation(
-                translation: Offset(plant.$1 - anchor.$1, plant.$2 - anchor.$2),
-                child: ColorFiltered(
-                  colorFilter: lumiere,
-                  child: Image.asset(
-                    spec.plantAsset,
-                    fit: BoxFit.cover,
-                    excludeFromSemantics: true,
-                    errorBuilder: (context, error, stack) => Image.asset(
-                      'assets/care_scene/plants/broad_leaf.webp',
-                      fit: BoxFit.cover,
-                      excludeFromSemantics: true,
-                    ),
-                  ),
-                ),
-              ),
-              if (spec.hasHumidifier)
-                AnimatedBuilder(
-                  animation: _souffle,
-                  builder: (context, _) => CustomPaint(
-                    painter: _SteamPainter(
-                      origin: Offset(
-                        spec.steamOriginFraction.$1,
-                        spec.steamOriginFraction.$2,
+                      errorBuilder: (context, error, stack) => Image.asset(
+                        'assets/care_scene/plants/broad_leaf.webp',
+                        fit: BoxFit.cover,
+                        excludeFromSemantics: true,
                       ),
-                      t: anime ? _souffle.value : 0.45,
-                      color: c.water,
                     ),
                   ),
                 ),
-              if (spec.hasAirflowEffect)
-                AnimatedBuilder(
-                  animation: _souffle,
-                  builder: (context, _) => CustomPaint(
-                    painter: _AirflowPainter(
-                      kind: spec.airflow!,
-                      slot: Offset(plant.$1, plant.$2),
-                      origin: Offset(
-                        spec.airflowOriginFraction.$1,
-                        spec.airflowOriginFraction.$2,
+                if (spec.hasHumidifier)
+                  AnimatedBuilder(
+                    animation: _souffle,
+                    builder: (context, _) => CustomPaint(
+                      painter: _SteamPainter(
+                        origin: Offset(
+                          spec.steamOriginFraction.$1,
+                          spec.steamOriginFraction.$2,
+                        ),
+                        t: anime ? _souffle.value : 0.45,
+                        color: c.water,
                       ),
-                      t: anime ? _souffle.value : 0.45,
-                      color: c.inkSecondary,
                     ),
                   ),
-                ),
-            ],
+                if (spec.hasAirflowEffect)
+                  AnimatedBuilder(
+                    animation: _souffle,
+                    builder: (context, _) => CustomPaint(
+                      painter: _AirflowPainter(
+                        kind: spec.airflow!,
+                        slot: Offset(plant.$1, plant.$2),
+                        origin: Offset(
+                          spec.airflowOriginFraction.$1,
+                          spec.airflowOriginFraction.$2,
+                        ),
+                        t: anime ? _souffle.value : 0.45,
+                        color: c.inkSecondary,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),
@@ -255,11 +371,19 @@ class _CareEnvironmentSceneState extends State<CareEnvironmentScene>
 /// Deux passes à chaque contact : un noyau serré, qui fait le contact
 /// lui-même, et un halo large et clair pour l'ombre portée. Une seule
 /// ellipse très floue ne donne ni l'un ni l'autre.
+///
+/// Elle porte aussi la pose : l'ombre du pot naît avec la plante qui
+/// descend, et deux ondes concentriques partent du point de contact quand
+/// elle touche, à plat sur le sol, avant de s'éteindre. C'est ce qui
+/// désigne l'emplacement — le seul moment où la scène pointe quelque chose.
 class _PlantShadowPainter extends CustomPainter {
   const _PlantShadowPainter({
     required this.pot,
     required this.support,
     required this.color,
+    this.pose = 1,
+    this.onde = 1,
+    this.couleurOnde = const Color(0x00000000),
   });
 
   /// Le centre de l'ombre du pot, en coordonnées fractionnaires du cadre.
@@ -272,6 +396,14 @@ class _PlantShadowPainter extends CustomPainter {
   /// La teinte de l'ombre, à son opacité de noyau ; le halo en dérive.
   final Color color;
 
+  /// L'avancement de la pose de la plante, 0 à 1 : l'ombre du pot suit.
+  final double pose;
+
+  /// L'avancement de l'onde, 0 à 1. À 0 elle n'est pas encore partie, à 1
+  /// elle s'est éteinte : dans les deux cas rien ne se dessine.
+  final double onde;
+  final Color couleurOnde;
+
   /// Le sens dans lequel l'ombre s'étire, à l'opposé de la fenêtre.
   static const _fuite = Offset(0.030, 0.006);
 
@@ -280,11 +412,12 @@ class _PlantShadowPainter extends CustomPainter {
     if (support case final s?) {
       // Le meuble au sol, puis le pot sur son plateau : deux contacts, deux
       // ombres, la seconde plus petite parce qu'elle tombe de moins haut.
-      _contact(canvas, size, s, 0.080, 0.021, 1.0);
-      _contact(canvas, size, pot, 0.058, 0.015, 0.72);
+      _contact(canvas, size, s, 0.080, 0.021, 1.0, 1.0);
+      _contact(canvas, size, pot, 0.058, 0.015, 0.72, pose);
     } else {
-      _contact(canvas, size, pot, 0.090, 0.024, 1.0);
+      _contact(canvas, size, pot, 0.090, 0.024, 1.0, pose);
     }
+    if (onde > 0 && onde < 1) _onde(canvas, size);
   }
 
   void _contact(
@@ -294,13 +427,38 @@ class _PlantShadowPainter extends CustomPainter {
     double largeur,
     double hauteur,
     double echelle,
+    double presence,
   ) {
+    if (presence <= 0) return;
     final paint = Paint();
+    final teinte = color.withValues(alpha: color.a * presence);
     // Le halo d'abord, le noyau par-dessus : l'inverse effacerait le noyau.
     _ellipse(canvas, size, paint, c + _fuite * echelle, largeur * 1.55,
-        hauteur * 1.45, 0.019, color.withValues(alpha: color.a * 0.45));
+        hauteur * 1.45, 0.019, teinte.withValues(alpha: teinte.a * 0.45));
     _ellipse(canvas, size, paint, c + _fuite * 0.42 * echelle, largeur,
-        hauteur, 0.006, color);
+        hauteur, 0.006, teinte);
+  }
+
+  /// Deux anneaux à plat sur le sol, le second un temps derrière le
+  /// premier, qui s'élargissent depuis le pied du pot et s'effacent.
+  void _onde(Canvas canvas, Size size) {
+    final centre = Offset(pot.dx * size.width, pot.dy * size.height);
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = size.width * 0.0055
+      ..strokeCap = StrokeCap.round;
+    for (final retard in const [0.0, 0.22]) {
+      final t = ((onde - retard) / (1 - retard)).clamp(0.0, 1.0);
+      if (t <= 0 || t >= 1) continue;
+      // Un départ franc, sans pop : l'anneau s'allume sur ses premiers
+      // pour cent, puis s'éteint en s'élargissant.
+      final alpha = 0.55 * math.min(1.0, t * 8) * (1 - t);
+      final largeur = size.width * (0.06 + 0.16 * t);
+      canvas.drawOval(
+        Rect.fromCenter(center: centre, width: largeur, height: largeur * 0.36),
+        paint..color = couleurOnde.withValues(alpha: alpha),
+      );
+    }
   }
 
   void _ellipse(
@@ -327,7 +485,12 @@ class _PlantShadowPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_PlantShadowPainter old) =>
-      old.pot != pot || old.support != support || old.color != color;
+      old.pot != pot ||
+      old.support != support ||
+      old.color != color ||
+      old.pose != pose ||
+      old.onde != onde ||
+      old.couleurOnde != couleurOnde;
 }
 
 /// La vapeur de l'humidificateur : trois volutes qui montent en respirant,

@@ -17,23 +17,24 @@ lib/
 ├── design_system/
 │   ├── tokens/                    colors, typography (Shantell Sans + système), spacing, radius, motion
 │   ├── theme/                     ThemeData clair / sombre, FloraTheme extension
-│   └── components/                composants réutilisables ; clay.dart = ClayBox / ClayPainter / GrainOverlay
+│   └── components/                composants réutilisables ; clay.dart = ClayBox / ClayPainter / GrainOverlay, shutter.dart = le déclencheur posé sur un viseur
 ├── domain/
 │   ├── models/                    Plant, Location, PlantAction, CareSchedule, PlantPhoto, ActionType, Tag…
 │   ├── repositories/              interfaces
 │   ├── care/                      CareEngine, ReminderPlanner, CalendarProjector, Season
 │   ├── identification/            PlantIdentifier (interface, candidats)
-│   ├── diagnosis/                 PlantDiagnoser (interface, causes), DiagnosisObservations (terre, racines, lumière, insectes), DiagnosisRecord (compte rendu gardé)
+│   ├── diagnosis/                 PlantDiagnoser (interface, causes), DiagnosisObservations (terre, racines, lumière, insectes), DiagnosisRecord (compte rendu gardé), DiagnosisNextStep (montrer / redemander une photo / rester incertain)
 │   ├── cuttings/                  PropagationGuideKind et ses étapes, choix du guide (resolver), PropagationRefinement, PropagationGuideStore
 │   ├── location/                  LocationService (lieu de la météo : onboarding, réglages)
 │   ├── home/                      HomeClimateService (capteurs Apple Maison et Google Home), MultiHomeClimateService, HomeClimateAdvisor
+│   ├── room/                      ScannedRoom, RoomPlanParser, RoomLightModel, RoomFitAdvisor, RoomScan (relevé au LiDAR, docs/17)
 │   ├── weather/                   WeatherService, WeatherAdvisor (pluie), WeatherTrend (intervalles), OutdoorAlertAdvisor (gel, chaleur), RegionClimate (zone de rusticité)
 │   ├── auth/                      AuthRepository, AppUser
 │   └── community/                 SpeciesTip, CommunityTipsService (conseils rattachés à une espèce)
 ├── data/
 │   ├── db/                        drift: database.dart, tables, daos, migrations
 │   ├── repositories/              implémentations drift
-│   ├── services/                  PhotoStorage, NotificationService, Preferences, PlantNetIdentifier, InfomaniakDiagnoser, DeviceLocationService, OpenMeteoService, HomeKitClimateService, GoogleHomeClimateService
+│   ├── services/                  PhotoStorage, NotificationService, Preferences, PlantNetIdentifier, InfomaniakDiagnoser, JevIdentificationPolicy, JevDiagnosisPolicy, DeviceLocationService, OpenMeteoService, HomeKitClimateService, GoogleHomeClimateService, RoomScanService
 │   ├── auth/                      LocalAuthRepository
 │   └── community/                 SupabaseCommunityTips (fonctions SQL security definer)
 ├── features/
@@ -51,7 +52,8 @@ lib/
 │   ├── identification/            sheet de résultats, réglage de la clé
 │   ├── weather/                   ligne météo, conseil pluie, avertissements gel et chaleur, climat du lieu, réglages
 │   ├── home_climate/              ligne et conseils du climat de la maison, carte « Chez vous », réglage du capteur (Apple Maison, Google Home)
-│   ├── diagnosis/                 sheet « Ma plante a un problème », compte rendu rouvrable, état du service
+│   ├── room_scan/                 relevé de la maison : pièces relevées, fenêtres, plan vu de dessus, « Où la poser », et ses greffes — plan de la fiche emplacement, place de la fiche plante (docs/17)
+│   ├── diagnosis/                 page « Ma plante a un problème » (viseur, observations, compte rendu), compte rendu rouvrable, état du service
 │   ├── community/                 conseils de la communauté : section de la fiche d'entretien, feuille d'écriture, écran de modération
 │   ├── encyclopedia/              les actifs embarqués à lire à froid : un écran à trois rayons (problèmes, espèces, vocabulaire), une page par problème, une par espèce
 │   ├── account/                   compte, membres, rôles
@@ -64,6 +66,8 @@ lib/
 test/
 ├── domain/care_engine_test.dart
 ├── domain/reminder_planner_test.dart
+├── domain/room_light_model_test.dart           le modèle de lumière, calibré sur la pièce du diorama
+├── domain/room_fit_advisor_test.dart           où poser une fiche : plancher, idéal, courants d'air, pièce d'eau
 ├── data/plant_repository_test.dart
 ├── data/infomaniak_propagation_refiner_test.dart  ce qui part à l'IA, ce qu'on garde de la réponse
 ├── features/propagation_guide_test.dart        le guide : choix du geste, étapes, sorties, texte précisé

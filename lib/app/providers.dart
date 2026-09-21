@@ -18,6 +18,8 @@ import '../data/repositories/tag_repository_impl.dart';
 import '../data/repositories/attachment_repository_impl.dart';
 import '../data/repositories/attribute_repository_impl.dart';
 import '../data/repositories/task_repository_impl.dart';
+import '../data/repositories/room_scan_repository_impl.dart';
+import '../data/services/room_scan_service.dart';
 import '../core/config/app_version.dart';
 import '../core/config/diagnosis_config.dart';
 import '../data/services/device_location_service.dart';
@@ -54,6 +56,7 @@ import '../data/services/photo_maintenance.dart';
 import '../data/services/photo_storage_service.dart';
 import '../data/services/open_meteo_service.dart';
 import '../data/services/plantnet_identifier.dart';
+import '../data/services/jev_diagnosis_policy.dart';
 import '../data/services/jev_identification_policy.dart';
 import '../data/services/preferences_care_store.dart';
 import '../data/services/preferences_propagation_store.dart';
@@ -200,6 +203,12 @@ final attachmentRepositoryProvider = Provider<AttachmentRepository>(
     (ref) => DriftAttachmentRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider), currentUserId: () => _remoteUserId(ref)));
 final attributeRepositoryProvider = Provider<AttributeRepository>((ref) => DriftAttributeRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
 final taskRepositoryProvider = Provider<TaskRepository>((ref) => DriftTaskRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
+final roomScanRepositoryProvider = Provider<RoomScanRepository>((ref) => DriftRoomScanRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
+
+/// Le relevé d'une pièce au LiDAR : le canal sur iPhone et iPad, derrière
+/// [AppConfig.roomScanEnabled] ; muet partout ailleurs.
+final roomScanServiceProvider = Provider<RoomScanService>((ref) => ChannelRoomScanService.isPossible ? ChannelRoomScanService() : const UnavailableRoomScanService());
+final roomScanStoreProvider = Provider<RoomScanStore>((ref) => RoomScanStore());
 final tagRepositoryProvider =
     Provider<TagRepository>((ref) => DriftTagRepository(ref.watch(databaseProvider), ref.watch(gardenIdProvider)));
 final calendarRepositoryProvider =
@@ -410,6 +419,16 @@ final jevIdentificationPolicyProvider = Provider<JevIdentificationPolicy>((ref) 
   return policy;
 });
 
+/// Même arbitrage, côté diagnostic : consulté seulement quand le compte rendu
+/// ne désigne pas une piste et une seule, et jamais avec une photo — le rang
+/// des pistes, leur vraisemblance et ce qui a été vérifié à la main suffisent
+/// à juger si une vue de plus changerait quelque chose.
+final jevDiagnosisPolicyProvider = Provider<JevDiagnosisPolicy>((ref) {
+  final policy = JevDiagnosisPolicy();
+  ref.onDispose(policy.dispose);
+  return policy;
+});
+
 /// Où partent les photos étiquetées en enregistrant, si elles partent :
 /// nulle part sans le consentement des réglages, sans compte distant, ou
 /// sans Supabase. Les trois se lisent ici, pas dans les écrans.
@@ -542,8 +561,8 @@ final speciesIndexProvider = FutureProvider<SpeciesIndex>((ref) => ref.watch(spe
 final problemCatalogLoaderProvider = Provider<ProblemCatalogLoader>((ref) => ProblemCatalogLoader());
 final problemCatalogProvider = FutureProvider<ProblemCatalog>((ref) => ref.watch(problemCatalogLoaderProvider).load());
 
-final exportServiceProvider = Provider<ExportService>((ref) => ExportService(ref.watch(databaseProvider), ref.watch(photoStorageProvider)));
-final importServiceProvider = Provider<ImportService>((ref) => ImportService(ref.watch(databaseProvider), ref.watch(photoStorageProvider)));
+final exportServiceProvider = Provider<ExportService>((ref) => ExportService(ref.watch(databaseProvider), ref.watch(photoStorageProvider), rooms: ref.watch(roomScanStoreProvider)));
+final importServiceProvider = Provider<ImportService>((ref) => ImportService(ref.watch(databaseProvider), ref.watch(photoStorageProvider), rooms: ref.watch(roomScanStoreProvider)));
 
 /// Diagnostic : AI Services d'Infomaniak avec la clé de l'éditeur fournie au
 /// build, sans plafond ; sans clé, service inactif et entrée absente des

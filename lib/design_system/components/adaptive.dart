@@ -142,14 +142,19 @@ class AdaptiveSlider extends StatelessWidget {
   }
 }
 
-/// Une action d'un action sheet.
+/// Une action d'un action sheet — ou d'un menu, quand le système en déplie
+/// un à la place (voir `FloraIconButton.menu`).
 class SheetAction {
-  const SheetAction({required this.label, required this.onPressed, this.destructive = false, this.icon});
+  const SheetAction({required this.label, required this.onPressed, this.destructive = false, this.icon, this.separated = false});
 
   final String label;
   final VoidCallback onPressed;
   final bool destructive;
   final IconData? icon;
+
+  /// Ouvre un groupe dans un menu système : iOS trace un trait au-dessus.
+  /// Sans effet dans une feuille, qui n'a qu'une colonne.
+  final bool separated;
 }
 
 /// Action sheet natif : CupertinoActionSheet sur iOS, bottom sheet liste sur Android.

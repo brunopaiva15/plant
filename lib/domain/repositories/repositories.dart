@@ -1,4 +1,6 @@
 import '../models/models.dart';
+import '../room/room_scan.dart';
+import '../room/scanned_room.dart';
 
 /// Filtre de la liste de plantes.
 class PlantFilter {
@@ -365,4 +367,34 @@ abstract class TaskRepository {
   /// Restaure l'état précédent (Undo de `complete`).
   Future<void> restore(FreeTask previous);
   Future<void> delete(String id);
+}
+
+/// Les relevés de pièces et leurs repères (docs/17). Le fichier JSON du
+/// relevé n'est pas du ressort du dépôt : `RoomScanService` l'écrit,
+/// `RoomScanStore` le lit, le dépôt n'en garde que le chemin.
+abstract class RoomScanRepository {
+  Stream<List<RoomScan>> watchAll();
+  Stream<RoomScan?> watch(String id);
+  Future<RoomScan> create({
+    required String name,
+    required String filePath,
+    required DateTime capturedAt,
+    double? northOffsetDeg,
+    double floorAreaM2 = 0,
+    RoomSectionLabel? section,
+    String? locationId,
+    String? structureId,
+  });
+  Future<void> update(RoomScan scan);
+
+  /// Retire le relevé et ses repères ; le fichier reste au service.
+  Future<void> delete(String id);
+  Stream<List<RoomMarker>> watchMarkers(String scanId);
+
+  /// Pose ou remplace l'orientation d'une fenêtre ; `null` l'efface.
+  Future<void> setWindowOrientation(String scanId, int windowIndex, CardinalDirection? orientation, {required double x, required double z});
+
+  /// Pose un repère — un radiateur, la place d'une plante — au point donné.
+  Future<RoomMarker> addMarker(String scanId, RoomMarkerKind kind, {required double x, required double z, String? plantId, int? windowIndex});
+  Future<void> removeMarker(String id);
 }

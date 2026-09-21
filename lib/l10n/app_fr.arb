@@ -353,7 +353,7 @@
   "pgSoftRootsBody": "Fines et nombreuses, elles partent de toute la partie immergée.",
   "pgSoftRootsNote": "Premières racines en une à trois semaines",
   "pgSoftPotTitle": "Le repiquage",
-  "pgSoftPotBody": "Repiquée tôt, à deux ou trois centimètres de racines : une tige tendre attend mal.",
+  "pgSoftPotBody": "Repiquée tôt, à deux ou trois centimètres de racines : une tige tendre supporte mal l'attente.",
   "pgLeafName": "Bouture de feuille",
   "pgLeafHint": "Plus lente, une feuille suffit",
   "pgLeafChooseTitle": "La feuille",
@@ -1194,8 +1194,11 @@
   },
   "you": "vous",
   "diagnosisTitle": "Diagnostic",
-  "diagnosisHint": "Photographiez les feuilles, la tige ou la terre sous plusieurs angles. Les résultats sont indicatifs.",
-  "diagnosisSymptomsHint": "Ce que vous avez remarqué (facultatif)…",
+  "diagnosisHint": "Photographiez les feuilles, la tige et la terre, de près et en entier. Les résultats sont indicatifs.",
+  "diagnosisMoreBelow": "Plus bas : symptômes et observations",
+  "diagnosisSymptomsHint": "Ce que vous avez remarqué…",
+  "diagnosisNeedsPhoto": "Une photo au moins.",
+  "diagnosisNeedsSymptoms": "Ce que vous avez remarqué, même en quelques mots.",
   "diagnosisChecks": "Observations",
   "diagnosisChecksHint": "Facultatif : ce que la photo ne montre pas affine l'analyse.",
   "diagnosisSoil": "Terre",
@@ -1213,11 +1216,40 @@
   "diagnosisBugsNone": "Aucun vu",
   "diagnosisBugsOnPlant": "Sur la plante",
   "diagnosisBugsInSoil": "Dans la terre",
+  "diagnosisSymptoms": "Symptômes",
+  "diagnosisAround": "Autour de la plante",
+  "diagnosisPhotosFull": "Trois photos au maximum.",
+  "diagnosisRemovePhoto": "Retirer cette photo",
+  "diagnosisFinding": "Constat",
+  "diagnosisNothingWrong": "Rien d'anormal",
+  "diagnosisNatural": "Phénomène normal",
   "analyze": "Analyser",
   "analyzing": "Analyse en cours…",
   "diagnosisError": "Analyse impossible. Vérifiez votre connexion et réessayez.",
   "diagnosisRefused": "L'analyse n'a pas pu être effectuée pour cette photo.",
   "diagnosisUnauthorized": "Le diagnostic est indisponible pour le moment. Réessayez plus tard.",
+  "diagnosisBusy": "Le service d'analyse ne répond pas. Réessayez dans un moment.",
+  "diagnosisUnreadable": "L'analyse n'a pas abouti. Réessayez.",
+  "diagnosisUncertain": "Les photos ne suffisent pas pour conclure. Les pistes ci-dessous restent à vérifier.",
+  "diagnosisAnotherPhotoHint": "Une photo de plus préciserait l'analyse.",
+  "diagnosisQuestionsHint": "Ce qui manque pour trancher.",
+  "diagnosisAnswerHint": "Réponse…",
+  "diagnosisAnswerAgain": "Reprendre l'analyse",
+  "diagnosisAnswersNoted": "Réponses données",
+  "diagnosisAnotherPhotoView": "À photographier : {view}.",
+  "@diagnosisAnotherPhotoView": {
+    "placeholders": {
+      "view": {
+        "type": "String"
+      }
+    }
+  },
+  "diagnosisAnotherPhoto": "Ajouter une photo",
+  "diagnosisViewLeafCloseup": "une feuille de près",
+  "diagnosisViewLeafUnderside": "le revers d'une feuille",
+  "diagnosisViewWholePlant": "la plante entière",
+  "diagnosisViewStemBase": "la base de la tige",
+  "diagnosisViewSoilRoots": "la terre au pied",
   "possibleCauses": "Pistes possibles",
   "causesHint": "Classées par vraisemblance, à confirmer.",
   "likelihoodLikely": "Probable",
@@ -1548,8 +1580,8 @@
     }
   },
   "careRepotNone": "Pas de rempotage (culture annuelle)",
-  "carePotSnug": "Aime être à l'étroit",
-  "carePotRoomy": "Aime l'espace",
+  "carePotSnug": "Mieux à l'étroit",
+  "carePotRoomy": "Un pot large",
   "carePotSnugNote": "Une racine qui sort par le fond ne suffit pas : rempotez quand la motte est un bloc de racines, ou quand l'eau ne pénètre plus.",
   "carePotSteadyNote": "Rempotez quand les racines sortent par le fond et tournent au fond du pot.",
   "carePotRoomyNote": "Rempotez dès que les racines atteignent la paroi : à l'étroit, elle arrête de pousser.",
@@ -1668,7 +1700,7 @@
   },
   "careHumidityLow": "Air sec accepté",
   "careHumidityAverage": "Humidité ordinaire",
-  "careHumidityHigh": "Aime l'air humide",
+  "careHumidityHigh": "Air humide",
   "careHumidityRange": "{min} à {max} % d'humidité de l'air",
   "@careHumidityRange": {
     "placeholders": {
@@ -1683,7 +1715,7 @@
   "careHumidityLowDetail": "Elle tolère bien l'air sec d'un logement. Une humidité durablement plus haute l'abîme.",
   "careHumidityAverageDetail": "L'air ordinaire d'un logement convient. Loin d'un radiateur en hiver, les pointes des feuilles ne brunissent pas.",
   "careHumidityHighDetail": "L'air sec d'un logement chauffé l'abîme : il faut le maintenir humide.",
-  "careHumidityMethodMist": "Brumiser le feuillage lui profite.",
+  "careHumidityMethodMist": "Brumiser le feuillage.",
   "careHumidityMethodHumidifier": "Un humidificateur d'air.",
   "careHumidityMethodTray": "Un plateau de billes d'argile humides, ou des plantes regroupées.",
   "careHumidityMethodTerrarium": "Sous verre : terrarium, cloche ou bocal.",
@@ -1742,7 +1774,7 @@
   "careWaterTolerant": "Eau du robinet",
   "careWaterSensitive": "Eau peu calcaire",
   "careWaterStrict": "Eau sans calcaire",
-  "careWaterTolerantNote": "Le calcaire ne la gêne pas.",
+  "careWaterTolerantNote": "Le calcaire est sans effet.",
   "careWaterSensitiveNote": "Le calcaire lui brunit les pointes.",
   "careWaterFluorideSensitive": "Le fluor du robinet lui brunit les pointes : eau de pluie ou osmosée.",
   "careWaterStrictNote": "Le calcaire l'abîme, même en petite quantité.",
@@ -1803,7 +1835,7 @@
   "careFertCitrus": "Engrais agrumes, riche en azote et en oligo-éléments.",
   "careFertVegetable": "Engrais tomates, riche en potasse.",
   "careCalciumAvoid": "Calcium : aucun apport, et de l'eau de pluie ; le calcaire fait jaunir son feuillage.",
-  "careCalciumWelcome": "Calcium : l'eau calcaire lui convient, des coquilles d'œufs broyées au rempotage aussi.",
+  "careCalciumWelcome": "Calcium : l'eau calcaire est sans risque ; des coquilles d'œufs broyées au rempotage en apportent.",
   "careCalciumNeeded": "Calcium : un apport régulier évite la nécrose apicale des fruits.",
   "careGreenhouse": "Sous serre",
   "careGreenhouseWarmHumid": "Chaleur et air humide",
@@ -1811,7 +1843,7 @@
   "careGreenhouseWarmDry": "Chaleur, lumière et air sec",
   "careGreenhouseGrowth": "Tenues toute l'année, ces conditions accélèrent la pousse : l'arrosage et l'engrais se rapprochent d'autant.",
   "careGreenhouseHold": "Tenez la plage d'humidité le jour, laissez-la descendre la nuit, et faites circuler l'air.",
-  "careGreenhouseAir": "Aérer chaque jour : l'air confiné fait pourrir ce qui aime le sec.",
+  "careGreenhouseAir": "Aérer chaque jour : l'air confiné fait pourrir les plantes de milieu sec.",
   "careGreenhouseEarly": "En mini-serre ou sous châssis, les semis partent quatre à six semaines plus tôt.",
   "careBloom": "Floraison",
   "careSeasonRange": "De {from} à {to}",
@@ -1833,7 +1865,7 @@
   "careBloomMaturity": "De l'âge",
   "careBloomMaturityNote": "Elle ne fleurit qu'à partir de trois ou quatre ans : avant cet âge, aucune condition n'y changera rien.",
   "careBloomDeadhead": "Des fleurs coupées",
-  "careBloomDeadheadNote": "Coupez les fleurs fanées au fur et à mesure : la plante remet alors son énergie dans les suivantes.",
+  "careBloomDeadheadNote": "Coupez les fleurs fanées au fur et à mesure : sans graines à former, la plante refleurit.",
   "careBloomKeepSpike": "Une hampe gardée",
   "careBloomKeepSpikeNote": "Tant que la hampe reste verte, laissez-la en place : elle peut refleurir depuis un œil situé plus bas.",
   "careBloomNoMove": "Une place fixe",
@@ -1871,13 +1903,13 @@
   "careBloomCoolNights": "Des nuits fraîches",
   "careBloomCoolNightsNote": "En automne, environ trois semaines avec des nuits autour de 15 °C peuvent déclencher la hampe florale.",
   "careBloomShortDays": "Des jours courts",
-  "careBloomShortDaysNote": "Pendant environ six semaines, offrez-lui des nuits d'au moins 12 heures dans l'obscurité pour favoriser la formation des boutons.",
+  "careBloomShortDaysNote": "Pendant environ six semaines, des nuits d'au moins 12 heures d'obscurité déclenchent la formation des boutons.",
   "careBloomDrySpell": "Une sécheresse",
   "careBloomDrySpellNote": "Réduisez fortement les arrosages pendant quelques semaines, puis reprenez progressivement : ce contraste peut déclencher la floraison.",
   "careBloomPotbound": "Un pot à l'étroit",
   "careBloomPotboundNote": "Elle fleurit souvent mieux lorsque ses racines occupent bien le pot. Évitez donc de rempoter trop tôt.",
   "careBloomBrightLight": "Plus de lumière",
-  "careBloomBrightLightNote": "Pour fleurir, elle a besoin de plus de lumière que pour simplement pousser. Placez-la dans un endroit très lumineux, sans soleil brûlant.",
+  "careBloomBrightLightNote": "La floraison demande plus de lumière que la pousse : un endroit très lumineux, sans soleil brûlant.",
   "carePropCutting": "Bouture de tige",
   "carePropLeaf": "Bouture de feuille",
   "carePropDivision": "Division de la touffe",
@@ -1951,12 +1983,12 @@
   "careTipWaterAtBase": "Arrosez au pied, sans mouiller le feuillage.",
   "careTipNoWaterOnLeaves": "Ne mouillez pas les feuilles, car l'eau stagnante les tache.",
   "careTipBottomWatering": "Arrosez par le bas, en posant le pot dans une soucoupe d'eau 20 minutes.",
-  "careTipThirstyPlant": "Grosse buveuse, vérifiez-la tous les jours en été.",
-  "careTipDroopSignal": "Quand elle s'affaisse, c'est qu'elle a soif.",
+  "careTipThirstyPlant": "Gros besoin d'eau : vérifiez la terre tous les jours en été.",
+  "careTipDroopSignal": "Un feuillage qui s'affaisse signale le manque d'eau.",
   "careTipWinterDry": "En hiver, gardez-la presque au sec.",
-  "careTipWinterRest": "En hiver, elle se repose et demande beaucoup moins d'eau.",
-  "careTipSummerDormant": "Elle se repose en été et demande très peu d'eau à cette période.",
-  "careTipNoWaterWhileSplitting": "N'arrosez pas pendant qu'elle change de feuilles.",
+  "careTipWinterRest": "En hiver, la croissance s'arrête : beaucoup moins d'eau.",
+  "careTipSummerDormant": "Repos en été : très peu d'eau à cette période.",
+  "careTipNoWaterWhileSplitting": "N'arrosez pas pendant le renouvellement des feuilles.",
   "careTipOrchidSoak": "Trempez le pot 10 minutes, puis laissez bien égoutter.",
   "careTipSoakMount": "Trempez la plante entière, puis laissez-la sécher à l'air.",
   "careTipDryUpsideDown": "Après le bain, laissez-la sécher tête en bas, car l'eau au cœur la fait pourrir.",
@@ -1966,21 +1998,21 @@
   "careTipHumidityTray": "Posez le pot sur un lit de billes d'argile humides.",
   "careTipNoDirectSun": "Évitez le soleil direct, qui brûle le feuillage.",
   "careTipToleratesLowLight": "Elle supporte une pièce peu lumineuse, mais pousse plus vite près d'une fenêtre.",
-  "careTipToleratesNeglect": "Elle pardonne les oublis, alors en cas de doute, n'arrosez pas.",
+  "careTipToleratesNeglect": "Les oublis ne l'abîment pas : en cas de doute, n'arrosez pas.",
   "careTipBrightForColor": "Plus la lumière est vive, plus les couleurs sont marquées.",
-  "careTipRotatePot": "Tournez le pot d'un quart de tour chaque semaine pour qu'elle reste droite.",
-  "careTipHatesMoving": "Trouvez-lui une place et laissez-la, elle déteste être déplacée.",
-  "careTipWipeLeaves": "Dépoussiérez les feuilles pour qu'elles respirent et captent mieux la lumière.",
-  "careTipTrimToBushOut": "Taillez les tiges trop longues et elle se ramifiera.",
-  "careTipMonsteraSupport": "Offrez-lui un tuteur moussu et les feuilles deviendront plus grandes et découpées.",
-  "careTipShallowPot": "Un pot large et peu profond lui convient mieux.",
-  "careTipLikesBeingPotbound": "Elle fleurit mieux à l'étroit, alors rempotez rarement.",
+  "careTipRotatePot": "Un quart de tour au pot chaque semaine garde la tige droite.",
+  "careTipHatesMoving": "Gardez une place fixe : chaque déplacement fait tomber des feuilles.",
+  "careTipWipeLeaves": "Dépoussiérez les feuilles : la poussière bloque la lumière.",
+  "careTipTrimToBushOut": "Tailler les tiges trop longues fait ramifier.",
+  "careTipMonsteraSupport": "Sur un tuteur moussu, les feuilles deviennent plus grandes et découpées.",
+  "careTipShallowPot": "Un pot large et peu profond.",
+  "careTipLikesBeingPotbound": "La floraison est meilleure à l'étroit : rempotez rarement.",
   "careTipTrunkStoresWater": "Son pied renflé stocke l'eau, mieux vaut donc trop peu que trop.",
-  "careTipPupsToShare": "Elle fait des rejets, détachez-les pour multiplier ou offrir.",
+  "careTipPupsToShare": "Les rejets se détachent pour multiplier ou offrir.",
   "careTipKeepFlowerSpike": "Ne coupez pas la hampe verte, car elle peut refleurir dessus.",
-  "careTipDarkForRebloom": "Pour la refaire fleurir, offrez-lui six semaines de nuits longues et fraîches.",
-  "careTipNotADesertCactus": "Ce n'est pas un cactus du désert, il aime l'ombre et l'humidité.",
-  "careTipDeadheadFlowers": "Retirez les fleurs fanées et elle refleurira plus longtemps.",
+  "careTipDarkForRebloom": "Pour refleurir : six semaines de nuits longues et fraîches.",
+  "careTipNotADesertCactus": "Cactus de forêt, pas du désert : ombre et air humide.",
+  "careTipDeadheadFlowers": "Retirer les fleurs fanées prolonge la floraison.",
   "careTipPinchFlowers": "Pincez les fleurs dès qu'elles montent pour garder des feuilles tendres.",
   "careTipHarvestTop": "Récoltez par le haut, au-dessus d'une paire de feuilles.",
   "careTipHarvestOutside": "Cueillez les feuilles extérieures et le cœur continuera de pousser.",
@@ -1991,30 +2023,30 @@
   "careTipPruneAfterHarvest": "Taillez après la récolte, pas au printemps.",
   "careTipCutSpentCanes": "Coupez à ras les tiges qui ont fructifié.",
   "careTipTrimTwiceAYear": "Deux tailles par an suffisent, en juin et fin août.",
-  "careTipContainItsRoots": "Elle envahit tout, plantez-la en pot ou posez une barrière anti-rhizome.",
+  "careTipContainItsRoots": "Les rhizomes envahissent tout : en pot, ou derrière une barrière anti-rhizome.",
   "careTipMulchIt": "Paillez le pied pour arroser moins et limiter les mauvaises herbes.",
-  "careTipAcidSoil": "Elle exige une terre acide, pas du terreau universel.",
+  "careTipAcidSoil": "Terre acide, pas de terreau universel.",
   "careTipFeedsOnInsects": "Elle se nourrit d'insectes : pas d'engrais, et une terre pauvre.",
   "careTipBlueNeedsAcid": "Les fleurs bleues demandent un sol acide ; en sol calcaire elles virent au rose.",
   "careTipCitrusFertilizer": "Utilisez un engrais spécial agrumes pendant toute la belle saison.",
-  "careTipNoFertilizer": "Pas d'engrais, une terre trop riche lui coûte son parfum et sa tenue.",
-  "careTipNoNitrogen": "Évitez l'engrais azoté, car elle fabrique le sien.",
+  "careTipNoFertilizer": "Pas d'engrais : une terre riche affaiblit le parfum et la tenue.",
+  "careTipNoNitrogen": "Pas d'engrais azoté : la plante fixe elle-même l'azote.",
   "careTipLetFoliageDieBack": "Laissez le feuillage jaunir sur pied, car il recharge le bulbe.",
-  "careTipDiesBackInWinter": "Elle disparaît en hiver et repart au printemps, c'est normal.",
+  "careTipDiesBackInWinter": "Le feuillage disparaît en hiver et repart au printemps.",
   "careTipSummerOutdoors": "Sortez-la l'été, à l'ombre les premiers jours.",
   "careTipWinterIndoors": "Rentrez-la avant les premières gelées.",
   "careTipWinterShelter": "Abritez-la l'hiver dans une pièce fraîche et lumineuse.",
-  "careTipWinterCool": "Un hiver frais (10–14 °C) et lumineux lui fait du bien.",
-  "careTipCoolerIsBetter": "Elle préfère la fraîcheur, éloignez-la des radiateurs.",
+  "careTipWinterCool": "Hiver frais (10–14 °C) et lumineux.",
+  "careTipCoolerIsBetter": "Mieux au frais : éloignez-la des radiateurs.",
   "careTipHardyOutdoors": "Rustique, elle passe l'hiver dehors sans protection.",
   "careTipShelterFromWind": "Placez-la à l'abri du vent, car le feuillage s'abîme vite.",
-  "careTipAirFlow": "Aérez autour d'elle, car l'air confiné favorise les maladies.",
-  "careTipSpiderMiteWatch": "Inspectez le dessous des feuilles, que les araignées rouges adorent.",
+  "careTipAirFlow": "De l'air autour de la plante : l'air confiné favorise les maladies.",
+  "careTipSpiderMiteWatch": "Inspectez le dessous des feuilles, où s'installent les araignées rouges.",
   "careTipSlugWatch": "Protégez les jeunes pousses des limaces au printemps.",
   "careTipBoxMothWatch": "Surveillez la pyrale, ses chenilles laissent des fils de soie dans le feuillage.",
   "careTipSapIrritant": "Sa sève irrite la peau et les yeux, taillez-la avec des gants.",
   "careTipVeryToxic": "Toutes ses parties sont très toxiques, y compris la fumée si on la brûle.",
-  "careTipSharpSpines": "Ses pointes sont dangereuses, éloignez-la des passages.",
+  "careTipSharpSpines": "Pointes acérées : loin des passages.",
   "careTipSplitsAreNormal": "Les feuilles se fendent avec l'âge, c'est normal et non une maladie.",
   "careTipDryToBloom": "Un léger stress hydrique déclenche la floraison.",
   "customFields": "Champs personnalisés",
@@ -2416,7 +2448,7 @@
   "finderAiSection": "Propositions de l'IA",
   "finderAiHint": "Hors catalogue, à vérifier avant d'acheter.",
   "finderAiError": "Aucune proposition de l'IA.",
-  "finderReasonLight": "Aime cette lumière",
+  "finderReasonLight": "Lumière adaptée",
   "finderReasonLowLight": "Supporte l'ombre",
   "finderReasonForgiving": "Tolère les oublis d'arrosage",
   "finderReasonEasy": "Facile",
@@ -2913,6 +2945,8 @@
   "encyclopediaSearchGlossary": "Lumière, substrat, bouture…",
   "encyclopediaProblemCount": "{count, plural, =0{Aucun problème} =1{1 problème} other{{count} problèmes}}",
   "@encyclopediaProblemCount": {"placeholders": {"count": {"type": "int"}}},
+  "encyclopediaNaturalCount": "{count, plural, =0{Aucun phénomène normal} =1{1 phénomène normal} other{{count} phénomènes normaux}}",
+  "@encyclopediaNaturalCount": {"placeholders": {"count": {"type": "int"}}},
   "encyclopediaSpeciesCount": "{count, plural, =0{Aucune espèce} =1{1 espèce} other{{count} espèces}}",
   "@encyclopediaSpeciesCount": {"placeholders": {"count": {"type": "int"}}},
   "encyclopediaNoTerm": "Aucun terme trouvé",
@@ -2925,6 +2959,8 @@
   "problemScopeGeneralNote": "Possible sur les plantes vasculaires, selon les conditions et le stade.",
   "problemScopeWideNote": "Nombreux hôtes ; les taxons cités sont des exemples.",
   "problemScopeTargetNote": "Hôtes principaux d'un groupe cible ; la liste n'est pas exhaustive.",
+  "problemOtherNames": "Autres noms",
+  "problemOtherNamesNote": "Noms courants et scientifiques qui désignent la même chose.",
   "problemHosts": "Hôtes",
   "problemHostsAll": "Toutes les plantes vasculaires",
   "problemHostsNote": "Un genre ou une famille ne rend pas toutes ses espèces sensibles.",
@@ -2934,13 +2970,15 @@
   "problemKindPestNote": "Un être vivant qui s'attaque à la plante : insecte, acarien, limace, nématode.",
   "problemKindDiseaseNote": "Un champignon, une bactérie, un virus ou un phytoplasme installé dans la plante.",
   "problemKindConditionNote": "Ni l'un ni l'autre : la fumagine pousse sur le miellat, sans s'attaquer à la plante.",
+  "naturalCauses": "Phénomènes normaux",
+  "naturalCauseNote": "Ce que la plante fait normalement et qu'on prend pour un problème : rien à soigner.",
   "careLightShadeNote": "Loin des fenêtres, sans rayon direct de la journée.",
   "careLightLowNote": "Une pièce claire mais éloignée de la fenêtre, ou exposée au nord.",
   "careLightIndirectNote": "À quelques pas d'une fenêtre, ou derrière un voilage.",
   "careLightBrightNote": "Près d'une fenêtre, hors du rayon du soleil.",
   "careLightSomeNote": "Le soleil du matin ou de fin de journée, pas celui de midi.",
   "careLightFullNote": "Six heures de soleil direct ou plus, en pleine journée.",
-  "careHumidityLowNote": "L'air d'un logement chauffé lui convient.",
+  "careHumidityLowNote": "L'air d'un logement chauffé suffit.",
   "careHumidityAverageNote": "Autour de 50 %, loin d'un radiateur en hiver.",
   "careHumidityHighNote": "Au-delà de 60 % : salle de bains, cuisine, ou un plateau de billes d'argile humides.",
   "careDifficultyEasyNote": "Supporte les oublis et les écarts de lumière.",
@@ -3015,5 +3053,275 @@
   },
   "moderationHide": "Masquer",
   "moderationRestore": "Rétablir",
-  "confirmRestoreTip": "Rétablir ce conseil ? Ses signalements sont effacés."
+  "confirmRestoreTip": "Rétablir ce conseil ? Ses signalements sont effacés.",
+  "roomScan": "Relevé de la maison",
+  "roomScanHint": "Une pièce relevée avec l'appareil photo et le LiDAR donne ses murs, ses fenêtres et ses portes. La lumière de chaque place s'en déduit, pour dire où poser une plante. Le relevé reste sur l'appareil.",
+  "roomScanStart": "Relever une pièce",
+  "roomScanRooms": "Pièces relevées",
+  "roomScanEmptyTitle": "Aucune pièce relevée",
+  "roomScanEmptySubtitle": "Le relevé prend une à deux minutes par pièce, en tournant lentement le long des murs.",
+  "roomScanNoLidar": "Cet appareil n'a pas de LiDAR : le relevé demande un iPhone Pro ou un iPad Pro.",
+  "roomScanBeforeTitle": "Avant le relevé",
+  "roomScanBeforeText": "L'appareil photo s'ouvre sur le relevé du système. Tourner lentement le long des murs jusqu'à ce que la pièce soit dessinée, puis terminer. Rien ne quitte l'appareil.",
+  "roomScanFailed": "Le relevé n'a pas abouti.",
+  "roomScanDefaultName": "Pièce",
+  "roomScanArea": "{area} m²",
+  "@roomScanArea": {
+    "placeholders": {
+      "area": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanWindowsCount": "{count, plural, =0{aucune fenêtre} =1{une fenêtre} other{{count} fenêtres}}",
+  "@roomScanWindowsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "roomScanName": "Nom de la pièce",
+  "roomScanLinkedLocation": "Emplacement",
+  "roomScanWindows": "Fenêtres",
+  "roomScanWindowN": "Fenêtre {n}",
+  "@roomScanWindowN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "roomScanWindowUnknown": "Orientation inconnue",
+  "roomScanWindowFromCompass": "D'après la boussole",
+  "roomScanWindowConfirmed": "Confirmée",
+  "roomScanOrientationHelp": "La boussole a dix à quinze degrés d'erreur. L'orientation de chaque fenêtre se corrige ici.",
+  "roomScanDelete": "Supprimer le relevé",
+  "roomScanDeleteConfirm": "Le relevé et ses repères disparaissent de l'appareil.",
+  "roomScanCapturedOn": "Relevée le {date}",
+  "@roomScanCapturedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "roomSectionBathroom": "Salle de bain",
+  "roomSectionBedroom": "Chambre",
+  "roomSectionDiningRoom": "Salle à manger",
+  "roomSectionKitchen": "Cuisine",
+  "roomSectionLaundryRoom": "Buanderie",
+  "roomSectionLivingRoom": "Salon",
+  "directionNorth": "nord",
+  "directionNorthEast": "nord-est",
+  "directionEast": "est",
+  "directionSouthEast": "sud-est",
+  "directionSouth": "sud",
+  "directionSouthWest": "sud-ouest",
+  "directionWest": "ouest",
+  "directionNorthWest": "nord-ouest",
+  "placementTitle": "Où la poser",
+  "placementHint": "Les places sont classées d'après la lumière qu'elles reçoivent, comparée à celle de la fiche.",
+  "placementRoomsCount": "{count, plural, =1{une pièce relevée} other{{count} pièces relevées}}",
+  "@placementRoomsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "placementVerdictGood": "Pièce adaptée.",
+  "placementVerdictAcceptable": "Pièce acceptable, sans place idéale.",
+  "placementVerdictUnsuitable": "Pièce inadaptée.",
+  "placementShortfallTooDark": "Trop sombre pour la lumière demandée.",
+  "placementShortfallTooBright": "Trop de soleil direct.",
+  "placementShortfallDrafty": "Chaque place est près d'une porte : courants d'air.",
+  "placementShortfallTooDry": "Pièce d'eau, air humide : la fiche demande l'air sec.",
+  "placementGeneric": "Fiche générique : sans espèce, la lumière demandée n'est pas connue.",
+  "placementDistanceM": "{m} m",
+  "@placementDistanceM": {
+    "placeholders": {
+      "m": {
+        "type": "String"
+      }
+    }
+  },
+  "placementDistanceCm": "{cm} cm",
+  "@placementDistanceCm": {
+    "placeholders": {
+      "cm": {
+        "type": "int"
+      }
+    }
+  },
+  "placementNearWindow": "à {distance} de la fenêtre {direction}",
+  "@placementNearWindow": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      },
+      "direction": {
+        "type": "String"
+      }
+    }
+  },
+  "placementNearWindowUnknown": "à {distance} de la fenêtre",
+  "@placementNearWindowUnknown": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "placementOnTable": "sur la table",
+  "placementOnStorage": "sur le meuble",
+  "placementOnSill": "sur l'appui de la fenêtre {direction}",
+  "@placementOnSill": {
+    "placeholders": {
+      "direction": {
+        "type": "String"
+      }
+    }
+  },
+  "placementOnSillUnknown": "sur l'appui de la fenêtre",
+  "placementDeepInRoom": "au fond, loin des fenêtres",
+  "placementDraftyNote": "Près d'une porte : courant d'air.",
+  "placementHumidRoomNote": "Pièce d'eau : air plus humide.",
+  "placementPlanSemantics": "Plan de la pièce vu de dessus, {count} places retenues.",
+  "@placementPlanSemantics": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "roomScanHeaters": "Radiateurs",
+  "roomScanHeatersHelp": "Le relevé ne voit pas les radiateurs. Posé sur le plan, un radiateur compte comme air sec et chaud à moins de 80 cm.",
+  "roomScanAddHeater": "Poser un radiateur",
+  "roomScanTapForHeater": "Toucher le plan là où se trouve le radiateur.",
+  "roomScanHeatersCount": "{count, plural, =0{aucun radiateur} =1{un radiateur} other{{count} radiateurs}}",
+  "@roomScanHeatersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "roomScanRemoveHeater": "Retirer ce radiateur",
+  "roomScanFillLocation": "Renseigner l'emplacement",
+  "roomScanFillLocationDetail": "Orientation {orientation}, lumière {light}, d'après le relevé. Les champs déjà remplis ne changent pas.",
+  "@roomScanFillLocationDetail": {
+    "placeholders": {
+      "orientation": {
+        "type": "String"
+      },
+      "light": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanLocationFilled": "Emplacement renseigné",
+  "roomScanWhoFitsHere": "Le jardin dans cette pièce",
+  "roomScanWhoFitsHint": "Chaque plante est notée d'après la lumière de la pièce et sa fiche.",
+  "roomScanNoPlantsToRank": "Aucune plante avec une espèce connue.",
+  "placementShortfallHeater": "Chaque place est près d'un radiateur : air sec et chaud.",
+  "placementHeaterNote": "Près d'un radiateur : air sec et chaud.",
+  "placementAtHome": "Capteur de la pièce",
+  "roomScanStartStructure": "Relever l'appartement",
+  "roomScanStructureHint": "Relever l'appartement enchaîne les pièces : « Pièce suivante » entre chaque, « Terminé » à la fin. Les pièces se placent les unes par rapport aux autres.",
+  "roomScanNextRoom": "Pièce suivante",
+  "roomScanRoomNumber": "Pièce {n}",
+  "@roomScanRoomNumber": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "roomScanPlantsOnPlan": "Plantes sur le plan",
+  "roomScanPlantsHelp": "Une plante posée sur le plan est notée à sa place. La liste signale une place nettement meilleure.",
+  "roomScanAddPlant": "Poser une plante",
+  "roomScanTapForPlant": "Toucher le plan là où se trouve {plant}.",
+  "@roomScanTapForPlant": {
+    "placeholders": {
+      "plant": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanRemovePlant": "Retirer {plant} du plan",
+  "@roomScanRemovePlant": {
+    "placeholders": {
+      "plant": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanNoPlantToPlace": "Aucune plante à poser.",
+  "roomScanPlantWellPlaced": "Place adaptée · {light}",
+  "@roomScanPlantWellPlaced": {
+    "placeholders": {
+      "light": {
+        "type": "String"
+      }
+    }
+  },
+  "roomScanPlantBetterAt": "Place actuelle {light} · mieux {place}",
+  "@roomScanPlantBetterAt": {
+    "placeholders": {
+      "light": {
+        "type": "String"
+      },
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "placementAllRooms": "Toutes les pièces",
+  "placementChoose": "Poser ici",
+  "placementChosen": "Posée {place}",
+  "@placementChosen": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "placementCurrent": "Place actuelle : {place} · {light}",
+  "@placementCurrent": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      },
+      "light": {
+        "type": "String"
+      }
+    }
+  },
+  "sectionRooms": "Relevés de la maison",
+  "roomScanCurtain": "Rideau",
+  "roomScanCurtainNone": "Sans rideau",
+  "roomScanCurtainSheer": "Voilage",
+  "roomScanCurtainDrawn": "Rideau souvent tiré",
+  "roomScanCurtainHelp": "Le relevé ne voit ni les voilages ni les rideaux. Un voilage divise la lumière par deux et ôte le soleil direct ; un rideau souvent tiré la divise par trois.",
+  "roomScanPlace": "Poser",
+  "roomScanRoomsShort": "{count, plural, =0{Aucune} =1{1 pièce} other{{count} pièces}}",
+  "@roomScanRoomsShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "roomScanThisRoom": "Relever cette pièce",
+  "roomScanThisRoomHint": "Le plan de la pièce donne la lumière de chaque place, pour choisir où poser une plante.",
+  "roomScanRoomPlan": "Plan de la pièce",
+  "roomScanPlantsOnPlanCount": "{count, plural, =0{aucune plante sur le plan} =1{une plante sur le plan} other{{count} plantes sur le plan}}",
+  "@roomScanPlantsOnPlanCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -1,7 +1,6 @@
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -10,10 +9,13 @@ import 'app/app.dart';
 import 'app/providers.dart';
 import 'app/router.dart';
 import 'app/sync_coordinator.dart';
+import 'app/window_probe.dart';
 import 'core/l10n/l10n.dart';
 import 'core/config/app_version.dart';
 import 'core/config/supabase_config.dart';
 import 'core/network/connectivity.dart';
+import 'core/native_shell.dart';
+import 'core/window_regions.dart';
 import 'core/demo/demo_seed.dart';
 import 'data/auth/local_auth_repository.dart';
 import 'data/auth/supabase_auth_repository.dart';
@@ -33,24 +35,17 @@ Future<void> main() async {
     debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
   }
 
-  // Sur téléphone, l'application se tient en portrait : chaque écran est une
-  // colonne, et le paysage n'apporterait qu'une mise en page étirée. Sur
-  // tablette, en revanche, on ne verrouille rien : iPadOS attend qu'une
-  // application tourne et cohabite avec une autre, et le refuser est un motif
-  // de rejet.
-  //
-  // `Info.plist` dit déjà la même chose côté iOS ; ce code couvre le reste.
-  // Le manifeste Android, lui, reste en portrait sur tous les appareils :
-  // c'est un choix propre à cette plateforme, et il l'emporte sur ces lignes.
-  if (!kIsWeb) {
-    final views = WidgetsBinding.instance.platformDispatcher.views;
-    final size = views.isEmpty ? Size.zero : views.first.physicalSize / views.first.devicePixelRatio;
-    // Tant que la fenêtre n'est pas mesurable, on ne verrouille pas : mieux
-    // vaut une tablette libre qu'un téléphone bloqué par erreur.
-    if (!size.isEmpty && size.shortestSide < 600) {
-      await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    }
-  }
+  // Ce que le système réserve dans la fenêtre — la pile de l'heure, la
+  // caméra, le pli —, pour que le menu debout demande sa géométrie au lieu
+  // de la supposer. Muet hors d'iOS.
+  await WindowRegionsService.attach();
+
+  // La barre d'onglets d'iOS est un `UITabBarController` : sans cette
+  // écoute, toucher un onglet ne changerait rien. Muet ailleurs.
+  NativeShell.attach();
+
+  // Relevé des cotes de la fenêtre dans la console, en debug seulement.
+  WindowProbe.attach();
 
   // La version vient du binaire, jamais d'une constante recopiée : c'est
   // `pubspec.yaml` qui la fixe, et les deux plateformes l'y prennent déjà.

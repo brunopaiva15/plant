@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme/flora_theme.dart';
 import '../tokens/motion.dart';
 import '../tokens/spacing.dart';
+import 'adaptive.dart';
 import 'clay.dart';
 import 'clay_loader.dart';
 import 'pressable.dart';
@@ -96,7 +97,7 @@ class FloraButton extends StatelessWidget {
 
 /// Bouton icône circulaire (barres de navigation, cartes).
 class FloraIconButton extends StatelessWidget {
-  const FloraIconButton({super.key, required this.icon, required this.onPressed, required this.semanticLabel, this.size = 40, this.filled = true, this.color, this.background});
+  const FloraIconButton({super.key, required this.icon, required this.onPressed, required this.semanticLabel, this.size = 40, this.filled = true, this.color, this.background, this.menu});
 
   final IconData icon;
   final VoidCallback? onPressed;
@@ -105,6 +106,18 @@ class FloraIconButton extends StatelessWidget {
   final bool filled;
   final Color? color;
   final Color? background;
+
+  /// Ce que le bouton déplie **quand le système tient la barre**.
+  ///
+  /// iOS fait sortir un menu du bouton touché, à sa place, en floutant ce
+  /// qu'il recouvre : c'est un `UIMenu`, et seul UIKit sait le dessiner.
+  /// `components/native_actions.dart` traduit cette liste pour lui.
+  ///
+  /// Le bouton en argile, lui, ne change pas : là où le natif n'est pas —
+  /// Android, ou une barre qu'il a refusée —, c'est [onPressed] qui répond,
+  /// et une feuille d'actions reste la bonne réponse de cette plateforme-là.
+  /// Les deux disent la même chose ; ce n'est pas la même façon de la dire.
+  final List<SheetAction>? menu;
 
   @override
   Widget build(BuildContext context) {

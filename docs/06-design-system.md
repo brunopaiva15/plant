@@ -327,6 +327,211 @@ départ et l'arrivée. Les libellés virent au passage — leur couleur suit la
 part de l'onglet que la bulle recouvre — au lieu de basculer à l'arrivée, et
 l'icône qui l'accueille se pose au ressort.
 
+### Le grand titre là où la barre est celle d'UIKit
+Deux barres se superposaient : celle du système portait les boutons, et celle
+de Flutter dessinait le titre une rangée plus bas. Le titre replié descendait
+donc d'une hauteur de barre, ce qu'aucune application native ne fait.
+
+Là où UIKit tient la barre, Flutter n'en dessine plus : le **grand titre
+devient du contenu**, en tête des slivers, avec sa police arrondie intacte.
+C'est le système qui porte le **titre replié**, sur la même ligne que les
+boutons — « Auxine » à côté du tableau de bord et de l'ajout.
+
+Le passage de l'un à l'autre se lit sur la position de défilement, au même
+seuil que le titre replié de la barre de Flutter — cinquante-deux points —,
+ce qui garde les deux chemins d'accord.
+
+Une première version guettait la sortie d'un sliver posé après le titre. Elle
+basculait **une hauteur de barre trop tard** : un sliver ne sait pas qu'il
+approche du bord, seulement qu'il l'a franchi, et le titre avait donc
+entièrement disparu avant que le système n'affiche le sien. iOS, lui, bascule
+dès que le grand titre glisse *sous* la barre.
+
+Ailleurs — Android, et iOS avant que la chrome ne soit passée au natif — la
+`CupertinoSliverNavigationBar` et son repli restent ce qu'ils étaient.
+
+### La bande du système, et qui la retire
+Sur un pliable, la bande de la caméra et de l'heure occupe un bord entier —
+quatre-vingt-quatre points sur l'iPhone Duo — et change de côté avec la
+rotation. La règle est simple à dire et facile à rater : **elle est retirée
+une fois, et une seule.**
+
+| gabarit | qui la retire |
+|---|---|
+| `LargeTitlePage` | la page, dans ses `SliverPadding` |
+| `FloraPage` | le `SafeArea` de son corps — ne rien ajouter par-dessus |
+| la fiche d'une plante | un `SliverPadding` qui couvre tout, **photo comprise** |
+| une feuille | `_MargesLaterales`, parce que la feuille d'iOS les efface — et c'est sa **surface** qui s'écarte, pas seulement son contenu |
+
+La deuxième ligne a coûté un aller-retour : ajouter la marge à `FloraPage`
+donnait 188 points au lieu de 104, le `SafeArea` l'ayant déjà retirée. Le test
+de `wide_layout_test.dart` fixe donc la **cote exacte** et non un maximum —
+un test qui n'accepte qu'un plafond laisse passer le double comptage.
+
+`systemSideInsets` existe pour les pages qui n'ont ni l'un ni l'autre : elle
+dit à quoi sert la valeur, là où un `MediaQuery.paddingOf` recopié ne dit rien.
+
+**La photo ne fait pas exception**, contrairement à ce qu'on avait d'abord
+laissé. Une région réservée n'est pas une marge de confort : le système y pose
+l'heure et le wifi, et une image qui passe dessous les rend illisibles. La
+hauteur de l'en-tête se calcule donc sur la largeur qui reste, sans quoi les
+proportions de l'image se faussent de ce que la bande a pris.
+
+### Ce qui vit dans la barre, et ce qui vit dessous
+La barre garde toute la largeur — c'est ce que fait iOS —, et seul le contenu
+se tient dans les marges. D'où une règle facile à oublier : **ce qui est posé
+dans la barre doit prendre ses marges lui-même.** Le champ de recherche est le
+cas d'espèce ; posé dans le `bottom` de la barre, il ignorait les marges des
+contenus et passait sous la bande verticale de l'iPhone Duo. Il prend
+désormais `max(Space.md, marge)` de chaque côté : sa marge ordinaire sur un
+téléphone, celle du système là où il y en a une.
+
+`test/design_system/wide_layout_test.dart` le tient sur les deux plateformes.
+Le premier test écrit ne prouvait rien : sous `flutter test`, la plateforme
+par défaut est Android, et c'est la barre d'iOS qui laissait passer le champ.
+
+### Les feuilles portent leur poignée (`components/sheets.dart`)
+
+Deux feuilles chez Auxine, et le même trait en haut des deux. `showFloraSheet`
+monte à hauteur de contenu et pose sa `SheetHandle` dans sa colonne ;
+`showFloraFlow` et `showFloraScrollableFlow` donnent toute la hauteur à une
+page, et la poignée se pose donc **par-dessus** — c'est la marge sûre qui lui
+fait sa place, si bien que la page s'en écarte d'elle-même, comme elle
+s'écarte de l'heure et du wifi, sans rien savoir d'elle.
+
+Une feuille d'iOS se referme d'un glissement vers le bas, et c'est la poignée
+qui le dit. Sans elle, une feuille dont le contenu n'offre rien pour sortir
+n'a l'air de rien — ni page, ni fenêtre. `showCupertinoSheet` sait la dessiner
+lui-même (`showDragHandle`), mais ne transmet pas le drapeau à sa route quand
+on lui demande la navigation imbriquée, et nos flows la demandent tous : le
+drapeau restait sans effet.
+
+### Le menu debout (`FloraTabRail`)
+Quand la fenêtre est large sans être celle d'une tablette — l'écran intérieur
+d'un iPhone Duo ouvert —, le menu passe à droite, en colonne : une pilule de
+64 points de large, centrée dans la hauteur, contre le bord. Une barre posée
+en bas y traverserait tout l'écran pour quatre onglets, et la main qui tient
+l'appareil ouvert est sur le côté, pas en bas.
+
+C'est la même pièce : la même bulle, le même ressort, la même argile,
+seulement couchée (`_TabStrip` prend un `Axis`). Deux choses changent.
+
+Les **libellés tombent** : quatre mots debout doubleraient la largeur de la
+colonne. L'icône reste, et `Semantics` dit toujours le libellé à VoiceOver —
+c'est ce que le rail perd pour l'œil qu'il garde pour l'oreille. En retour, la
+colonne ne bouge plus avec Dynamic Type, là où la barre du bas s'agrandit et
+passe à deux lignes.
+
+La colonne se pose **dans** la bande que le système réserve à droite — 84
+points mesurés —, pas à côté d'elle. C'est là que le pliable met les commandes
+d'une application, sous l'heure et le wifi ; s'en écarter laissait une colonne
+vide large comme un pouce. Ce n'est pas contredire la marge : elle vaut pour
+le **contenu**, qui s'arrête bien avant, puisqu'il ne prend que ce que la
+colonne lui laisse. Le menu, lui, est du châssis, comme la barre d'outils
+debout d'iOS. Ce qui l'empêche de heurter l'heure, c'est sa position : centrée
+dans la hauteur, quand les éléments du système se tiennent en haut de la bande
+dans toutes les poses mesurées. Ce qui flotte par-dessus l'application évite
+la colonne à son tour — le toast se range à sa gauche et redescend, puisque
+plus rien n'occupe le bas (`FloraTabRail.reserved`).
+
+La bascule est dans `FloraTabRail.fitsIn`, et tient en trois conditions.
+
+| | Pourquoi |
+|---|---|
+| côté le plus court < 700 | pas une tablette : le plus petit iPad en fait 744, et l'iPad garde sa barre du bas |
+| largeur ≥ 460 | assez large pour céder les 80 points de la colonne ; l'écran extérieur du Duo en fait 466, il lui reste 386 |
+| largeur / hauteur > 0,6 | pas une colonne de téléphone — c'est la **forme** qui tranche, pas la taille |
+
+La troisième est celle qui compte. Un iPhone en portrait est étroit et long
+(402 × 874, soit 0,46) et une barre en bas y est chez elle ; les fenêtres du
+Duo sont trapues — 0,69 fermé, 0,70 ouvert, 1,4 couché. Toutes les poses du
+Duo passent donc debout, écran extérieur compris. Les tranches de multitâche
+(445 × 626, 320 × 626) restent en bas, et l'iPad en Split View aux deux tiers
+— 678 × 1133, soit 0,60 — aussi, ce que la règle précédente ratait.
+
+La bande fait 84 points mesurés et change de côté selon la rotation. La
+colonne reste au bord droit dans les deux cas ; c'est le contenu et la pilule
+du bas qui s'écartent, bord par bord — rien n'est supposé symétrique. Voir
+docs/05, section « La fenêtre ».
+
+#### Les boutons de la page descendent avec
+Debout, la colonne ne porte pas que les onglets : les boutons du haut de page
+la rejoignent, sous la pilule, le dernier de la liste — le « + », le plus
+souvent — au plus près du pouce. Deux choses restent en haut : le titre, et le
+bouton de retour, qui est un geste de navigation et non une commande de la
+page.
+
+C'est un relais, parce que les deux bouts ne se voient pas : la coquille
+dessine la colonne, chaque page connaît ses boutons. Une page se déclare par
+`RailActions`, le relais garde les déclarations en pile, et c'est la dernière
+**visible** qui gagne — la visibilité se lit au `TickerMode` que go_router
+coupe sur les branches hors écran, sans quoi un onglet resté monté derrière
+garderait la main. La colonne se redessine après l'image, jamais pendant : la
+coquille est construite avant les pages, et la prévenir en cours de route
+reviendrait à rebâtir un ancêtre déjà bâti.
+
+D'où `LargeTitlePage.actions`, une **liste** et non une `Row` toute faite :
+une rangée ne se range pas debout. Les pages qui n'ont qu'un bouton gardent
+`trailing`, qui marche pareil.
+
+**L'ordre est celui d'iOS : les boutons en haut, les onglets en bas.** Apple
+le dit dans « Raise the bar with iPhone Duo » — « reserve the top for primary
+navigation controls, like back or close, followed by prominent actions » —, et
+la barre d'onglets, elle, « moves to the bottom of the vertical bar ». C'est la
+rotation à quatre-vingt-dix degrés de ce qu'un iPhone montre déjà : la
+navigation en haut, les onglets en bas.
+
+Rien n'est centré, et rien ne bouge. Les boutons sont calés sous le dégagement
+du haut, la pilule contre le bas, et c'est le vide entre les deux groupes qui
+absorbe la différence — le même vide que le système met entre ses placements du
+haut et ceux du bas. Centrer, même la pilule seule, la faisait bouger dès que
+la fenêtre changeait de hauteur ; centrer le groupe entier la faisait remonter
+d'un cran à chaque bouton de plus, jusqu'à passer sous l'heure.
+
+Les 172 points qui dégagent le haut sont une mesure plus une marge : sur l'écran extérieur du Duo,
+la pile caméra + heure + wifi descend à 140 points, là où
+`MediaQuery.padding.top` n'en annonce que 82. iOS ne dit donc pas où s'arrête
+sa propre colonne, et la nôtre commence sous la mesure. Si une pose annonçait
+davantage, c'est l'annonce qui l'emporterait. Les 32 points d'air ne sont pas
+décoratifs : douze collaient la pilule au wifi, et deux pièces d'argile de 64
+points de large demandent plus d'écart qu'un glyphe de vingt.
+
+Le dégagement cède avant les cibles : dans une fenêtre trop courte — un Duo
+fermé et couché, 466 points de haut pour quatre onglets et quatre boutons —
+le groupe du haut remonte de ce qu'il faut, et les onglets gardent leurs
+44 points.
+
+**Horizontalement, les deux colonnes partagent un axe.** iOS pose sa pile à
+47,7 points du bord droit, mesuré au pixel dans les trois poses du Duo — 466,
+669 et 951 points de large. La pilule en fait 64, donc 16 de blanc mettent
+son axe à 48. Douze la décalaient de quatre points : c'est tout l'écart entre
+une colonne qui prolonge celle du système et une colonne posée à côté.
+
+**Ces deux cotes sont désormais des replis.** Un canal natif demande à UIKit
+où sont réellement la bande du système, la caméra et le pli, et le menu s'y
+range quand la réponse est plausible — voir docs/05, « Ce que le système
+réserve ». Sur l'écran extérieur du Duo, iOS annonce une bande haute de 170
+points et une caméra à 47,8 du bord droit : le menu commence à 178 au lieu de
+172, et son axe ne bouge pas d'un dixième. Ouvert et couché, la bande ne fait
+plus que 120 et la colonne remonte d'autant — il y a moins de système
+au-dessus d'elle. Aucune constante ne savait faire ça. Les 140 et les 47,7 points restent
+écrits dans le code, et servent partout où le canal se tait : ailleurs que sur iOS, sur un binaire construit avec un SDK
+plus ancien, ou quand la réponse est invraisemblable. Le menu se pose alors où
+il se posait avant, ce qui est déjà juste : l'annonce affine, elle ne porte
+rien.
+
+Ce que le canal ne rattrape pas : iOS regroupe et fait déborder tout seul les
+commandes d'une barre d'outils debout, mais seulement pour les barres de
+`UINavigationController` et `UITabBarController`. Une barre montée à la main
+n'y a pas droit, régions réservées ou non. C'est le prix d'un menu dessiné par
+l'application, et il se paie en gardant la colonne courte.
+
+La colonne mesure cette place avant de se donner une hauteur — elle ne peut
+pas mesurer ses enfants d'abord. Un bouton compte pour 44 points et non 40 :
+c'est `Pressable` qui décide, en garantissant la cible des HIG
+(`kMinTapTarget`). Les quatre points d'écart passaient inaperçus jusqu'à ce
+que quatre boutons débordent de onze.
+
 
 Un second tap sur l'onglet courant ramène sa liste en haut, comme sur iOS.
 Chaque branche du shell pose son propre `ScrollController` en
@@ -335,6 +540,17 @@ devant celui que la route fournit d'elle-même, la liste de l'onglet s'y
 attache sans qu'on le lui dise, et le tap sur la barre d'état — que le
 `Scaffold` sert avec ce même contrôleur — continue de marcher. La remontée
 suit *réduire les animations* : un saut au lieu d'une glissade.
+
+### Une page que la barre du bas referme (`ScrollFade`)
+Une barre posée sous la page la referme : le dernier élément visible s'arrête
+net sur elle, au pixel près, et rien ne distingue une page qui se termine là
+d'une page qui continue. `FloraPage` efface donc le bas de sa zone défilante
+tant qu'il reste du contenu dessous — une couche teintée du `canvas`, réglée
+sur ce qui reste à défiler, qui s'efface elle-même une fois le bas atteint.
+C'est une couche colorée et non un masque d'opacité (`HeaderFade`) : la page
+porte la même couleur des deux côtés de la barre, le voile n'a donc rien à
+trahir, et il évite un `saveLayer` par-dessus un viseur de caméra. Les pages
+sans barre du bas s'en passent : leur contenu touche déjà le bord de l'écran.
 
 ## Les textes (`lib/l10n/*.arb`)
 Le ton est celui d'un outil, pas d'un assistant : sobre, factuel, court.
@@ -362,7 +578,7 @@ d'exclamation, pas de titre en forme de question, et une liste de tournures
 interdites par langue. Une tournure à bannir de plus s'ajoute là.
 
 ## Composants (`design_system/components/`)
-Button · IconButton · PressableScale · ClayBox · ClayLoader · Appear · Card · ActionTile · PlantCard · CareCard · PaperSheet · ActionChip · Pill · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · Slider (natif) · StepDots · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · IrisMark · PhotoGrid · PhotoViewer · QuantityStepper · DatePicker (natif) · PlantPicker · PhotoPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader · WhatsNewWindow
+Button · IconButton · PressableScale · ClayBox · ClayLoader · Appear · Card · ActionTile · PlantCard · CareCard · PaperSheet · ActionChip · Pill · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · Slider (natif) · StepDots · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · IrisMark · PhotoGrid · PhotoViewer · QuantityStepper · DatePicker (natif) · PlantPicker · PhotoPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader · ScrollFade · WhatsNewWindow
 
 ## L'écran du matin (`features/today/`)
 Le grand titre salue : « Bonjour Paul » jusqu'à dix-huit heures, « Bonsoir
@@ -424,7 +640,7 @@ sur toute carte teintée —, le nom du volet, le constat dessous, puis une lign
 par précision qui ne vaut que pour lui. Ces précisions sont le fond de la
 fiche :
 
-- **Humidité** : le taux de l'espèce, puis par quoi l'obtenir. « Aime l'air
+- **Humidité** : le taux de l'espèce, puis par quoi l'obtenir. « Air
   humide » seul ne se compare à rien, et ne suffit pas à régler une serre :
   entre deux plantes du même mot, l'une tient à 50 % et l'autre en veut 85.
   Le pourcentage vient de la fiche quand elle le précise, de la catégorie
@@ -520,6 +736,98 @@ figé pour le geste destructif.
 Deux vignettes de la même photo peuvent se trouver sur la fiche — la bande
 Croissance et le journal — : chacune a son nom de héros (`growth-` et
 `photo-`), et la visionneuse reçoit celui de la vignette d'où elle part.
+
+## La page du diagnostic (`features/diagnosis/presentation/diagnosis_screen.dart`)
+« Ma plante a un problème » était une feuille tirée du bas de la fiche : un
+viseur n'y tenait pas, et le compte rendu — cinq pistes, leurs explications,
+leurs gestes — défilait dans une demi-hauteur d'écran. C'est une page,
+poussée depuis la fiche (`/plants/:id/diagnosis`), et elle suit les trois
+temps du geste sans jamais changer d'écran.
+
+**Montrer.** Le viseur occupe le haut de la page, en 4:5, avec ses commandes
+posées dessus : le déclencheur au centre en bas (`Shutter`, partagé avec la
+création d'une plante), la galerie à sa gauche à douze points, et le cadre
+qui déclenche aussi quand on le touche. Sans caméra (refus, appareil sans
+viseur, test), le cadre garde son invite, ouvre l'appareil du système, et
+les deux boutons écrits — « Prendre une photo », « Choisir une photo » —
+prennent le relais sous lui, exactement comme à la création d'une plante.
+Une fois la première photo prise, une bande montre ce qui partira à
+l'analyse et les places qui restent ; elle ne sert qu'à montrer, la croix
+d'une vignette mise à part.
+
+**Ce qu'on a remarqué se demande, il ne se propose plus.** Le champ des
+symptômes était facultatif, et c'est ce qui rendait les comptes rendus
+généraux : une photo seule ne dit ni depuis quand, ni ce qui a changé, ni ce
+qu'on a déjà fait à la plante. « Analyser » attend donc une photo, puis une
+description — dans cet ordre, une chose à la fois. Le bouton éteint ne reste
+pas muet : la barre du bas nomme ce qui manque au-dessus de lui, et quand
+c'est la description, elle le dit avec la pastille qui y mène et y pose le
+curseur. Les observations, elles, restent facultatives : on ne fait pas
+sortir une motte de son pot pour avoir le droit de demander.
+
+Puis ce qu'on décrit, et ce qu'on est allé vérifier de sa main : une carte par
+sujet, tuile d'emoji et teinte comprises, comme les volets de la fiche
+d'entretien — la terre en terre cuite, les racines en sauge, la lumière en
+ocre, les insectes en rose, l'air autour de la plante en bleu. Rien n'est
+coché d'avance, et ce qui n'est pas coché ne part pas. Ce qui est coché part
+comme un constat et non comme une impression : la consigne le pèse comme une
+photo — une terre détrempée et des racines brunes peuvent mener à une piste
+*probable* que l'image ne montre pas —, et le compte rendu dit dans son
+constat quand c'est ce qui tranche.
+
+**Ce qui attend dessous se dit.** Le viseur prend le haut de l'écran et la
+barre du bas referme la page : les symptômes et les observations — ce qui
+affine le plus l'analyse — tiennent entièrement sous la ligne de flottaison,
+et rien dans le dessin ne le laissait deviner. Une pastille posée sous la
+consigne de prise de vue les nomme, « Plus bas : symptômes et observations »,
+et y mène d'un toucher — la section se pose sous la barre du titre, non
+derrière elle. Le fondu du bas de page (`ScrollFade`) dit le reste : la page
+ne s'arrête plus net sur la barre.
+
+**Chercher.** La photo passe au centre dans son propre halo, les quatre
+familles de problèmes tournant autour (`AnalysisWait`) ; le formulaire
+s'efface, la barre du bas avec lui.
+
+**Répondre.** Le compte rendu prend la page : les pistes d'abord — c'est ce
+qu'on est venu lire —, puis le constat sur une carte crème, puis ce qui avait
+été signalé et coché. Le constat et les symptômes ont longtemps ouvert le
+compte rendu ; un paragraphe et sa propre phrase prenaient l'écran, et on
+descendait sous eux pour apprendre ce que la plante a. Ils suivent, pour qui
+veut comprendre sur quoi les pistes reposent. Quand il y a urgence, une carte
+terre cuite précède tout — « À traiter rapidement », seule couleur qui change
+—, et ne dit rien de plus : les pistes disent quoi, juste dessous. Chaque
+piste porte la tuile de sa famille (l'illustration d'argile de la base sur sa
+teinte), son cran de vraisemblance, son explication, et ses gestes sous un
+filet ; celles que la base connaît mènent à leur fiche de l'encyclopédie.
+Quand l'analyse ne tranche pas, c'est dit sous le titre des pistes, à la place
+de « Classées par vraisemblance, à confirmer », et non dans le constat.
+
+**Une piste peut n'être un problème pour personne.** Des gouttes claires et
+collantes sous un philodendron sont du nectar extrafloral aussi souvent que du
+miellat de cochenilles, et la moitié de ce qu'on photographie par inquiétude
+n'a rien d'anormal. Ces pistes-là viennent dans la même liste, au même rang de
+vraisemblance, et se lisent autrement : sur la sauge, leur propre dessin
+d'argile — les sores d'une fougère, la laine des aréoles, le liégeage d'un
+cactus — au lieu de celui d'une famille, dont elles ne relèvent pas ; et une
+seconde pastille, « Phénomène normal », à côté du cran. Un phénomène hors base
+porte le symbole commun, la feuille et sa goutte claire. Elles ne mènent nulle part : l'encyclopédie
+parle de ce qui se soigne. Quand aucune piste n'est un problème, la première
+carte le dit par sa pastille, et le constat le redit en titre : « Rien
+d'anormal », sur la feuille, plutôt que « Constat » sur le stéthoscope. Un
+compte rendu pareil n'est jamais urgent. Quand rien ne
+tranche, ce qui manque se propose après les pistes, jamais à leur place
+(docs/16) : d'abord les une à trois questions que le service a posées — une
+carte ocre, un champ par question, « Reprendre l'analyse » dessous —, et la
+photo de plus quand il n'en a posé aucune. Une seule des deux, et jamais sur
+un compte rendu net. Répondre refait l'analyse entière ; les réponses
+rejoignent ensuite les symptômes et les observations dans le compte rendu
+gardé. Le même corps sert à la réouverture depuis le journal, à ceci près
+que l'incertitude, elle, ne se relit pas : c'est une décision du moment, pas
+une ligne du compte rendu.
+
+**La barre du bas ne porte qu'un geste à la fois** : analyser, puis
+enregistrer dans le journal. `test/features/diagnosis_screen_test.dart` tient
+le formulaire.
 
 ## La fenêtre des nouveautés (`features/whats_new/`)
 Ce que l'application montre après une mise à jour : un bandeau teinté qui
