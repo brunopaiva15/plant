@@ -584,8 +584,17 @@ une description, et une description ne dit pas quoi faire.
 
 `test/l10n/arb_tone_test.dart` verrouille la part mécanique : pas de point
 d'exclamation, pas de titre en forme de question, une liste de tournures
-interdites par langue, et les mêmes marqueurs ICU d'une langue à l'autre. Une
-tournure à bannir de plus s'ajoute là. `tool/audit_textes.py` relève ce qui
+interdites par langue, les mêmes marqueurs ICU d'une langue à l'autre,
+l'apostrophe droite, la longueur maximale d'une aide et un seul registre par
+langue. Une tournure à bannir de plus s'ajoute là.
+
+Deux réserves que le test assume, parce qu'aucune machine ne les lève : en
+allemand, un « Sie » ou un « Ihre » en tête de phrase désigne aussi bien la
+plante (« Sie wächst in Erde ») que la personne ; en italien, une terminaison
+en -ate est autant un participe (« Modificate ») qu'un impératif de politesse.
+Le test ne verrouille donc que les marques sûres — celles dont le participe
+est irrégulier, ou qui n'ont pas d'homographe. `tool/audit_textes.py` signale
+les cas ambigus sous `registre-a-verifier`, à relire à l'œil. `tool/audit_textes.py` relève ce qui
 demande un œil : consigne à l'infinitif, pronominal impersonnel, passif sans
 agent, nombre en toutes lettres, phrase trop longue, registre mêlé. Le chantier
 de réécriture et ses lots sont dans `docs/18-clarte-des-textes.md`.

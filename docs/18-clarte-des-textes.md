@@ -1,6 +1,6 @@
 # La clarté des textes (`lib/l10n/*.arb`)
 
-> Statut : **lots 1 à 10 livrés**, lot 11 à faire. La charte du § 3 est reportée
+> Statut : **chantier terminé**, les onze lots sont livrés. La charte du § 3 est reportée
 > dans `docs/06-design-system.md`, le relevé mécanique (`tool/audit_textes.py`)
 > et le test de parité ICU sont en place. Le registre allemand est tranché :
 > *du*.
@@ -605,7 +605,14 @@ est la forme française juste pour une commande.
 
 ### Lot 11 — Les passes mécaniques, quatre langues
 
-À passer en dernier, quand plus aucune chaîne ne bouge :
+> **Livré** — et pour l'essentiel, livré d'avance. Les apostrophes sont
+> tombées au lot 4, le registre aux lots 4, 7, 8, 9 et 10, les nombres aux
+> lots 2 et 6. Le lot 11 n'a donc pas été une passe de correction mais une
+> passe de **verrouillage** : les trois tests que le § 7 réservait pour la fin
+> sont dans `test/l10n/arb_tone_test.dart`, et chacun a été vérifié en lui
+> soumettant la faute qu'il doit attraper.
+
+Ce que le plan prévoyait, et où c'est parti :
 
 1. **L'apostrophe** — 27 chaînes françaises et 13 italiennes portent `’` là où
    283 et 135 portent `'`. Aligner sur l'apostrophe droite, qui est la
@@ -640,9 +647,9 @@ concerné est vert, sinon la suite casse dès le premier commit :
 
 | Test | Verrouille | Entre après |
 |---|---|---|
-| longueur maximale | 140 signes pour une aide, 220 pour un chapeau, la liste des exceptions de consentement étant écrite dans le test | lot 10 |
-| apostrophe unique | aucune `’` dans les quatre ARB | lot 11 |
-| registre unique | aucun *Sie* en allemand (ou aucun *du*), aucun *voi* en italien | lot 11 |
+| longueur maximale ✓ | 140 signes pour une aide, 220 pour un chapeau ou un consentement, et deux phrases au plus ; les exceptions sont écrites dans le test | **en place** |
+| apostrophe unique ✓ | aucune `’` dans les quatre ARB | **en place** |
+| registre unique ✓ | aucune marque sûre de vouvoiement allemand, aucun *voi* italien | **en place** |
 | parité ICU ✓ | chaque marqueur déclaré par `@clé.placeholders` du modèle français se retrouve dans les quatre langues | **en place** |
 
 ## 8. Le déroulé d'un lot
@@ -691,5 +698,5 @@ concerné est vert, sinon la suite casse dès le premier commit :
 | 8 ✓ | Compte, partage | 132 | 35 | **livré** |
 | 9 ✓ | Données, hors-ligne | 74 | 26 | **livré** |
 | 10 ✓ | Jardin au jour le jour | 575 | 69 | **livré** — libellés courts, passe rapide |
-| 11 | Passes mécaniques | — | — | quand plus rien ne bouge |
+| 11 ✓ | Passes mécaniques | — | — | **livré** — surtout absorbé par les lots précédents |
 | | **Total** | **1 851** | **513** | soit 2 052 chaînes sur quatre langues |

@@ -76,8 +76,10 @@ NOMBRES = {
 REGISTRE_DE_TROP = {
     'de': re.compile(r'\bIhnen\b|\b\w+en Sie\b'
                      r'|(?<![.:;!?]\s)(?<!^)\b(?:Ihre\w*|Ihr)\b'),
-    'it': re.compile(r'\b(voi|vostr\w+|potete|dovete|avete|desiderate|scegliete|toccate|'
-                     r'aggiungete|verificate|inserite|attivate|premete|aprite)\b', re.I),
+    # Seuls les verbes au participe irrégulier sont sûrs : « aprite » ne peut
+    # être qu'un impératif, quand « inviate » ou « verificate » sont aussi des
+    # participes féminins pluriels. Les ambigus tombent dans VOI_EN_TETE.
+    'it': re.compile(r'\b(voi|vostr\w+|potete|dovete|avete|siete|sapete|fate|scegliete|aggiungete|premete|aprite)\b', re.I),
 }
 
 # En allemand, « Sie » en tête de phrase est ambigu : le vouvoiement, ou
