@@ -440,3 +440,34 @@ qu'une classe (sinon `monstera-deliciosa#captive` compterait une bonne
 réponse comme fausse), elles sont prises **au mieux** et non additionnées
 — additionner favoriserait l'espèce qui a le plus de vues —, et une image
 absente du cache est écartée avec son compte, jamais comptée fausse.
+
+### Le terrain adverse
+
+```bash
+python3 plantnet_avis.py --terrain plantnet --combien 2000 \
+  --iris ../../assets/model --plantnet ~/plant-data/plantnet.tflite
+```
+
+Mesurer sur notre banc penche en notre faveur : il est bâti sur notre corpus
+GBIF/iNaturalist, donc ses photos ressemblent à celles qui ont entraîné Iris.
+La mesure symétrique fait jouer les deux modèles sur le **jeu de test de
+PlantNet-300K**, où c'est lui qui est à domicile — 18 396 images des 123
+espèces communes, dont **93 % de gros plans** de fleur ou de feuille, ce
+qu'Iris n'a jamais appris.
+
+Rien à télécharger : l'archive Zenodo fait 29,5 Gio, mais un zip se lit par
+plages et le chemin d'une image se déduit de ses métadonnées
+(`plantnet_300K/images/{split}/{species_id}/{clé}.jpg`). Seules les images
+tirées sont cherchées. Passer `--archive` sur un zip local si on l'a
+téléchargé : c'est alors instantané.
+
+**Le split de test de PlantNet, jamais son entraînement** — le faire jouer
+sur des images qu'il a apprises ne dirait rien. Et le filtre de licence est
+celui de la collecte (§ 4.1) : il ne change presque rien ici, mais une mesure
+qui s'autoriserait des images inutilisables mentirait sur ce qui est
+reproductible.
+
+Les lectures sont **résistantes** : deux mille requêtes par plage d'affilée,
+il y en a toujours une qui casse. La lecture est retentée, l'archive rouverte
+en dernier recours, et une image qui résiste est **sautée avec son compte** —
+un top-1 calculé sur moins d'images qu'annoncé serait un mensonge tranquille.

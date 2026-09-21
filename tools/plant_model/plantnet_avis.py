@@ -81,12 +81,13 @@ import argparse
 import csv
 import json
 import re
+import time
 import urllib.request
 from pathlib import Path
 
 import numpy as np
 
-from compare_models import load_model, prepare, tally
+from compare_models import load_model, prepare, prepare_octets, tally
 
 SEAFILE = 'https://seafile.plantnet.org/d/bed81bc15e8944969cf6/files/?p=%2F{}&dl=1'
 NOMS = 'plantnet300K_species_id_2_name.json'
@@ -95,6 +96,14 @@ NOMS = 'plantnet300K_species_id_2_name.json'
 MOYENNE = np.array([0.485, 0.456, 0.406], dtype=np.float32)
 ECART = np.array([0.229, 0.224, 0.225], dtype=np.float32)
 ENTREE = 224
+
+#: L'archive Zenodo des 306 146 images. On n'en télécharge jamais les 29,5
+#: Gio : un zip se lit par plages, et seules les images tirées sont cherchées.
+ARCHIVE = 'https://zenodo.org/api/records/5645731/files/plantnet_300K.zip/content'
+METADONNEES = 'plantnet300K_metadata.json'
+
+#: La règle du § 4.1, dans le vocabulaire de Pl@ntNet.
+LICENCES = {'cc-by-sa', 'cc-by', 'cc0'}
 
 
 # --------------------------------------------------------------------------
@@ -239,6 +248,129 @@ def predire_iris(model, chemin: str) -> np.ndarray:  # pragma: no cover - Tensor
     return predict(model, chemin)
 
 
+def sur_octets(model, octets, plantnet: bool) -> np.ndarray:  # pragma: no cover - TensorFlow
+    """La même inférence, sur une image qui n'est pas un fichier.
+
+    Les deux chaînes restent celles du tableau ci-dessus : c'est le seul
+    endroit où elles pourraient diverger, et une divergence ici ne planterait
+    pas — elle rendrait faux.
+    """
+    if plantnet:
+        x = prepare_octets(octets, ENTREE, ENTREE)[0] / 255.0
+        x = np.transpose((x - MOYENNE) / ECART, (2, 0, 1))[None, ...].astype(np.float32)
+    else:
+        x = prepare_octets(octets, model['load_size'], model['input_size'])
+        if model['in']['dtype'] != np.float32:
+            x = x.astype(model['in']['dtype'])
+    model['interpreter'].set_tensor(model['in']['index'], x)
+    model['interpreter'].invoke()
+    brut = model['interpreter'].get_tensor(model['out']['index'])[0]
+    return agreger(brut, model['groupes'], len(model['labels'])) if plantnet else brut
+
+
+# --------------------------------------------------------------------------
+# Le terrain adverse : le jeu de test de PlantNet-300K
+# --------------------------------------------------------------------------
+
+def membre(cle: str, ligne: dict) -> str:
+    """Le chemin d'une image dans l'archive, déduit de ses métadonnées.
+
+    `plantnet_300K/images/{split}/{species_id}/{clé}.jpg`, la clé du
+    dictionnaire de métadonnées étant le nom du fichier. Rien à lister :
+    306 146 entrées d'index coûteraient plus cher que les images tirées.
+    """
+    return f"plantnet_300K/images/{ligne['split']}/{ligne['species_id']}/{cle}.jpg"
+
+
+def lignes_plantnet(metadonnees: dict[str, dict], vers_id: dict[str, str],
+                    split: str = 'test',
+                    licences: set[str] = LICENCES) -> list[tuple[str, str]]:
+    """(membre, vérité) pour les images de ce split sur les espèces communes.
+
+    **Le split de PlantNet, pas le nôtre.** Mesurer sur son entraînement
+    serait le faire jouer sur des images qu'il a apprises, et le résultat ne
+    dirait rien — c'est la faute que `splits.csv` évite de notre côté depuis
+    la v1.
+
+    Le filtre de licence est celui de la collecte (§ 4.1) : il ne change
+    presque rien ici (99,9 % des images communes passent), mais une mesure
+    qui s'autoriserait des images qu'on ne pourrait pas utiliser mentirait
+    sur ce qui est reproductible.
+    """
+    sortie = []
+    for cle, ligne in metadonnees.items():
+        if ligne.get('split') != split:
+            continue
+        interne = vers_id.get(ligne.get('species_id'))
+        if interne is None or ligne.get('license') not in licences:
+            continue
+        sortie.append((membre(cle, ligne), interne))
+    return sortie
+
+
+def especes_communes(noms: dict[str, str], etiquettes: list[str],
+                     plants: dict[str, str]) -> dict[str, str]:
+    """{species_id de PlantNet: notre identifiant}, pour les seules espèces
+    qu'Iris expose."""
+    par_nom = {plants[i]: i for i in etiquettes if i in plants}
+    return {sid: par_nom[binome(n)] for sid, n in noms.items() if binome(n) in par_nom}
+
+
+def lecteur(source: str, essais: int = 4):  # pragma: no cover - réseau
+    """Rend `lire(chemin)`, qui survit à une connexion qui tombe.
+
+    Deux mille lectures par plage d'affilée, il y en a toujours une qui
+    casse — coupure du côté du serveur, proxy qui ferme, réseau qui hoquette.
+    Abandonner la passe entière pour une image serait absurde ; la compter
+    comme une erreur du modèle le serait davantage.
+
+    D'abord on retente la lecture, qui suffit le plus souvent. Puis on rouvre
+    l'archive, ce qui coûte la relecture de son répertoire — trente
+    mégaoctets — donc seulement en dernier recours. Une image qui résiste aux
+    quatre essais est **sautée**, et le compte des sautées est rendu : un
+    top-1 calculé sur moins d'images qu'annoncé serait un mensonge tranquille.
+    """
+    etat = {'z': ouvrir_archive(source)}
+
+    def lire(chemin: str):
+        for n in range(essais):
+            try:
+                return etat['z'].read(chemin)
+            except Exception:
+                if n == essais - 1:
+                    return None
+                time.sleep(2 ** n)
+                if n >= 1:
+                    try:
+                        etat['z'].close()
+                    except Exception:
+                        pass
+                    etat['z'] = ouvrir_archive(source)
+        return None
+
+    return lire, etat
+
+
+def ouvrir_archive(source: str):  # pragma: no cover - réseau ou gros fichier
+    """L'archive, locale si elle est là, distante sinon.
+
+    À distance chaque image coûte une requête par plage — quelques minutes
+    pour deux mille images, contre 29,5 Gio à télécharger. En local, c'est
+    instantané, et c'est le bon choix si l'on compte y revenir.
+    """
+    chemin = Path(source).expanduser()
+    if chemin.exists():
+        import zipfile
+        return zipfile.ZipFile(chemin)
+    try:
+        from remotezip import RemoteZip
+    except ImportError as e:
+        raise SystemExit(
+            f'{e}. Pour lire l\'archive à distance : pip install remotezip ; '
+            'ou télécharger le zip et le passer à --archive.') from e
+    return RemoteZip(source)
+
+
 # --------------------------------------------------------------------------
 # Le banc
 # --------------------------------------------------------------------------
@@ -286,6 +418,12 @@ def main() -> int:  # pragma: no cover - demande TensorFlow et le jeu d'images
     ap.add_argument('--couverture-sur', default='ood_plante',
                     help='tranche où compter ce que PlantNet rattrape')
     ap.add_argument('--combien', type=int, default=0, help='limiter les images ; 0 = toutes')
+    ap.add_argument('--terrain', choices=['banc', 'plantnet'], default='banc',
+                    help="« plantnet » mesure sur le jeu de test de PlantNet-300K, "
+                         'son propre terrain')
+    ap.add_argument('--archive', default=ARCHIVE,
+                    help="le zip Zenodo, local s'il existe, distant sinon")
+    ap.add_argument('--graine', type=int, default=20260919)
     args = ap.parse_args()
 
     banc = Path(args.banc).expanduser()
@@ -312,6 +450,52 @@ def main() -> int:  # pragma: no cover - demande TensorFlow et le jeu d'images
         print(f'  dont PlantNet en nomme   : {c["rattrapees_par_plantnet"]} '
               f'({c["part_rattrapee"]})')
         print(f'  perdues pour les deux    : {c["perdues_pour_les_deux"]}\n')
+
+    # 2 bis. Le terrain adverse : les images de test de PlantNet lui-même.
+    if args.terrain == 'plantnet':
+        import random
+        meta = json.loads(telecharger(METADONNEES, Path(args.cache).expanduser()).read_text())
+        plants = {r['internal_id']: r['scientific_name']
+                  for r in csv.DictReader(open(Path(args.plants).expanduser(),
+                                               newline='', encoding='utf-8'))}
+        vers_iris = especes_communes(noms, iris['labels'], plants)
+        lignes = lignes_plantnet(meta, vers_iris)
+        random.Random(args.graine).shuffle(lignes)
+        if args.combien:
+            lignes = lignes[:args.combien]
+        print(f'— terrain de PlantNet — {len(lignes)} images de test, '
+              f'{len(set(v for _, v in lignes))} espèces —')
+        lire, etat = lecteur(args.archive)
+        predictions = {iris['name']: [], plantnet['name']: []}
+        sautees = 0
+        try:
+            for i, (chemin, verite) in enumerate(lignes, 1):
+                octets = lire(chemin)
+                if octets is None:
+                    sautees += 1
+                    continue
+                predictions[iris['name']].append((verite, sur_octets(iris, octets, False)))
+                predictions[plantnet['name']].append((verite, sur_octets(plantnet, octets, True)))
+                if i % 200 == 0:
+                    print(f'  {i}/{len(lignes)}'
+                          + (f', {sautees} sautées' if sautees else ''), flush=True)
+        finally:
+            try:
+                etat['z'].close()
+            except Exception:
+                pass
+        if sautees:
+            print(f'  {sautees} images illisibles, écartées du compte')
+        for modele in (iris, plantnet):
+            p = predictions[modele['name']]
+            masque, entier = tally(p, modele, communes), tally(p, modele, None)
+            print(f"\n  {modele['name']} ({modele['version']})")
+            print(f"    sorties masquées : top-1 {masque['top1']}  top-3 {masque['top3']}")
+            print(f"    sorties entières : top-1 {entier['top1']}  top-3 {entier['top3']}")
+            for l in courbe(p, modele, communes, (0.5, 0.7, 0.9)):
+                print(f"    seuil {l['seuil']} : {l['accepted_rate']} acceptées, "
+                      f"{l['precision_when_accepted']} justes")
+        return 0
 
     # 2. La justesse, à armes égales, sur les mêmes images.
     tranches = {t.strip() for t in args.tranches.split(',') if t.strip()}

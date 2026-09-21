@@ -8,7 +8,8 @@ L'inférence, elle, ne se teste pas sans TensorFlow.
 import numpy as np
 import pytest
 
-from plantnet_avis import agreger, binome, couverture, espace, etiquettes_plantnet
+from plantnet_avis import (agreger, binome, couverture, espace, especes_communes,
+                           etiquettes_plantnet, lignes_plantnet, membre)
 
 
 # --------------------------------------------------------------------------
@@ -134,3 +135,49 @@ def test_rien_a_rattraper_quand_iris_sait_tout():
 def test_une_espece_que_les_deux_connaissent_nest_pas_un_rattrapage():
     c = couverture(['a'], iris={'a'}, plantnet={'a'})
     assert c['rattrapees_par_plantnet'] == 0
+
+
+# --------------------------------------------------------------------------
+# Le terrain adverse
+# --------------------------------------------------------------------------
+
+def ligne(**kw):
+    base = {'species_id': '1355868', 'split': 'test', 'license': 'cc-by-sa', 'organ': 'leaf'}
+    base.update(kw)
+    return base
+
+
+def test_le_chemin_dune_image_se_deduit_de_ses_metadonnees():
+    """306 146 entrées d'index coûteraient plus cher que les images tirées."""
+    assert membre('abc123', ligne()) == 'plantnet_300K/images/test/1355868/abc123.jpg'
+
+
+def test_seul_le_split_de_test_de_plantnet_est_pris():
+    """Mesurer sur son entraînement le ferait jouer sur des images qu'il a
+    apprises, et le chiffre ne dirait rien."""
+    meta = {'a': ligne(split='test'), 'b': ligne(split='train'), 'c': ligne(split='val')}
+    lignes = lignes_plantnet(meta, {'1355868': 'lactuca-virosa'})
+    assert [c for c, _ in lignes] == ['plantnet_300K/images/test/1355868/a.jpg']
+
+
+def test_une_espece_quiris_nexpose_pas_est_ecartee():
+    meta = {'a': ligne(species_id='999')}
+    assert lignes_plantnet(meta, {'1355868': 'lactuca-virosa'}) == []
+
+
+def test_le_filtre_de_licence_est_celui_de_la_collecte():
+    meta = {'a': ligne(license='cc-by-nc'), 'b': ligne(license='cc-by-sa')}
+    lignes = lignes_plantnet(meta, {'1355868': 'lactuca-virosa'})
+    assert len(lignes) == 1 and lignes[0][0].endswith('/b.jpg')
+
+
+def test_la_verite_est_notre_identifiant_pas_celui_de_plantnet():
+    meta = {'a': ligne()}
+    assert lignes_plantnet(meta, {'1355868': 'lactuca-virosa'})[0][1] == 'lactuca-virosa'
+
+
+def test_les_especes_communes_se_rattachent_par_le_binome():
+    noms = {'1': 'Lactuca virosa L.', '2': 'Acacia dealbata Link'}
+    plants = {'lactuca-virosa': 'Lactuca virosa', 'acacia-dealbata': 'Acacia dealbata'}
+    communes = especes_communes(noms, ['lactuca-virosa'], plants)
+    assert communes == {'1': 'lactuca-virosa'}
