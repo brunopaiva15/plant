@@ -199,22 +199,26 @@ def test_la_degradation_est_reproductible():
     assert np.allclose(degrader(v, 0.9), degrader(v, 0.9))
 
 
-def test_centrer_retire_la_direction_commune():
-    """Des vecteurs qui partagent une forte composante se retrouvent bien
-    plus écartés une fois centrés — c'est tout l'objet du correctif."""
-    from voisins import centrer
+def test_recaler_deplace_le_cone_sans_le_deformer():
+    """Le student revient au centre du teacher, et son étalement interne ne
+    change pas : on déplace, on ne redistribue pas."""
+    from voisins import recaler
     from student import etalement
     alea = np.random.default_rng(0)
-    # Le bruit se somme sur les 64 axes : à 0,1 par axe sa norme vaut 0,8,
-    # assez pour que la direction commune domine sans l'écraser.
     v = alea.standard_normal((200, 64)).astype(np.float32) * 0.1
-    v[:, 0] += 1.0                                   # une direction commune à tous
+    v[:, 0] += 1.0
     v /= np.linalg.norm(v, axis=1, keepdims=True)
-    assert etalement(v) > 0.5
-    assert abs(etalement(centrer(v))) < 0.05
+    cible = np.zeros(64, dtype=np.float32)
+    cible[1] = 1.0
+    deplace = recaler(v, cible)
+    assert np.allclose(np.linalg.norm(deplace, axis=1), 1.0, atol=1e-5)
+    # la direction dominante a changé d'axe
+    assert abs(deplace.mean(axis=0)[1]) > abs(deplace.mean(axis=0)[0])
 
 
-def test_centrer_rend_des_vecteurs_unitaires():
-    from voisins import centrer
+def test_recaler_rend_des_vecteurs_unitaires():
+    from voisins import recaler
     v = np.random.default_rng(1).standard_normal((30, 16)).astype(np.float32)
-    assert np.allclose(np.linalg.norm(centrer(v), axis=1), 1.0, atol=1e-5)
+    cible = np.zeros(16, dtype=np.float32)
+    cible[0] = 1.0
+    assert np.allclose(np.linalg.norm(recaler(v, cible), axis=1), 1.0, atol=1e-5)

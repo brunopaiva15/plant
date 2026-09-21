@@ -178,30 +178,39 @@ def degrader(embeddings: np.ndarray, cible: float, graine: int = 20260919) -> np
     return cible * v + np.sqrt(max(0.0, 1.0 - cible ** 2)) * u
 
 
-def centrer(embeddings: np.ndarray) -> np.ndarray:
-    """Les mêmes vecteurs, débarrassés de leur direction commune.
+def recaler(embeddings: np.ndarray, centre_cible: np.ndarray) -> np.ndarray:
+    """Le student déplacé au centre du teacher, sans toucher aux références.
 
-    **Le remède que le diagnostic appelle.** Le student a un cône plus serré
-    que son teacher — 0,4179 contre 0,2889 de cosinus entre deux images
-    quelconques —, ce qui signale une composante partagée par tous ses
-    vecteurs. Elle ne s'annule pas au classement : identique pour chaque
-    image, elle biaise chaque rang de la même façon, là où un bruit
-    aléatoire se compense.
+    **Mesuré le 21 septembre 2026 : centrer les seules images ne marche pas**,
+    et c'était une faute de méthode. Retirer la direction commune d'un côté
+    de la comparaison seulement casse l'alignement avec les références, qui
+    gardent la leur — le top-1 du répertoire entier tombait de 0,2662 à
+    0,1615, signature de l'erreur et non d'une hypothèse fausse.
 
-    Retirer la moyenne puis renormaliser la fait disparaître. Si le top-1
-    remonte, la composante commune était le coupable — et le correctif se
-    pose à l'inférence, sans réentraîner quoi que ce soit.
+    La question reste pourtant entière : le cône du student est plus serré
+    que celui du teacher (0,4179 contre 0,2889), donc ses vecteurs partagent
+    une direction que le teacher n'a pas. Bien posée, l'expérience consiste
+    à **retirer la moyenne du student et ajouter celle du teacher** : les
+    références ne bougent pas, et le student revient dans le repère où
+    elles ont un sens.
 
-    La moyenne est celle des images **mesurées**, donc elle ne se transporte
-    pas telle quelle dans l'application : il faudrait l'estimer une fois sur
-    un jeu de validation et la livrer avec le modèle. C'est une mesure de
-    diagnostic avant d'être un correctif.
+    Si le top-1 remonte, l'écart était un décalage constant, et le correctif
+    tient dans un vecteur à livrer avec le modèle. Sinon, l'erreur est une
+    confusion entre espèces proches, et aucun recalage ne la répare.
     """
     v = np.asarray(embeddings, dtype=np.float32)
-    v = v - v.mean(axis=0, keepdims=True)
+    v = v - v.mean(axis=0, keepdims=True) + np.asarray(centre_cible, dtype=np.float32)
     n = np.linalg.norm(v, axis=1, keepdims=True)
     n[n == 0] = 1.0
     return v / n
+
+
+def centre(cache: Path, chemins: list[str]) -> np.ndarray:
+    """La direction moyenne des images de ce cache, non normalisée."""
+    _, v = lire_embeddings(cache, chemins)
+    if len(v) == 0:
+        raise SystemExit(f'{cache} ne contient aucune de ces images')
+    return v.astype(np.float32).mean(axis=0)
 
 
 def lire_embeddings(cache: Path, chemins: list[str]) -> tuple[list[int], np.ndarray]:
@@ -301,9 +310,10 @@ def main() -> int:  # pragma: no cover - demande le cache et le banc
                     help="restreindre Iris 9 au masque du lieu pour cette tranche, "
                          "comme le fait l'application (§ 14 de docs/09). Sans lui, "
                          'Iris répond sur ses 1 569 classes, ce que l\'app ne fait pas')
-    ap.add_argument('--centrer', action='store_true',
-                    help='retirer la direction commune aux vecteurs avant de classer — '
-                         'le correctif que le cône refermé appelle')
+    ap.add_argument('--recaler', action='store_true',
+                    help='déplacer les vecteurs de --embeddings au centre de ceux de '
+                         '--cache, références inchangées. Teste si l\'écart au teacher '
+                         "n'est qu'un décalage constant")
     ap.add_argument('--degrader', default='',
                     help='cosinus cibles séparés par des virgules : relit le top-1 sur '
                          'des vecteurs du teacher écartés à ce cosinus. Dit quel accord '
@@ -353,8 +363,11 @@ def main() -> int:  # pragma: no cover - demande le cache et le banc
             print(f'\n— {tranche} — aucune image dans le cache, sautée')
             continue
         verites = [lignes[i][1] for i in gardes]
-        if args.centrer:
-            embeddings = centrer(embeddings)
+        if args.recaler:
+            if not args.embeddings:
+                raise SystemExit('--recaler demande --embeddings : il déplace un cache '
+                                 "vers le centre d'un autre")
+            embeddings = recaler(embeddings, centre(cache, [lignes[i][0] for i in gardes]))
         manquantes = len(lignes) - len(gardes)
         print(f'\n— {tranche} — {len(gardes)} images'
               + (f' ({manquantes} absentes du cache)' if manquantes else ''))
