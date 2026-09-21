@@ -282,6 +282,28 @@ test ne pouvait pas montrer.
 > images, les mêmes classes » ne suffit pas, si les images viennent d'un seul
 > des deux mondes.
 
+**Et ce n'est pas qu'une affaire de cadrage.** L'explication tentante était
+que son jeu est à 93 % des gros plans, qu'Iris n'a jamais appris. Restreinte
+aux 187 images de **plante entière** de son test, la mesure la réfute à
+moitié :
+
+| `habit`, 187 images, 69 espèces | Iris 9 | PlantNet-300K |
+|---|---|---|
+| top-1, sorties masquées | 0,7540 | **0,8021** |
+| top-1, sorties entières | 0,5668 | **0,7005** |
+
+L'écart se resserre — 7,75 points sur tous les organes, 4,8 sur les plantes
+entières — mais il ne s'inverse pas, et à 187 images ces 4,8 points valent
+une neuvaine d'images : ils ne sont pas solidement établis. PlantNet gagne
+sur **ses** photos quel que soit l'organe. Ce qui sépare les deux modèles
+est la provenance des images, pas le seul recadrage.
+
+> **Iris est par ailleurs pénalisé par sa largeur** dans ces tableaux :
+> sorties entières, il perd 18,7 points contre 10 pour PlantNet, parce qu'il
+> répartit sa confiance sur 1 569 classes au lieu de 1 022. C'est le § 6.7
+> bis, et c'est le prix que les masques de lieu paient dans l'application —
+> masques que cette comparaison n'applique pas.
+
 **Décision : on ne l'embarque pas** — et la raison n'est plus qu'il est
 mauvais, puisqu'il ne l'est pas.
 
