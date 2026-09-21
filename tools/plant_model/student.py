@@ -161,6 +161,43 @@ def encoder(session, nom_entree: str, nom_sortie: str, chemins: list[str],
     return sortie
 
 
+def accord(cache_teacher: Path, cache_student: Path) -> dict:
+    """Le cosinus entre les deux caches, sur les images qu'ils partagent.
+
+    C'est le seul diagnostic qui sépare **« notre chaîne est fausse »** de
+    **« ce student est faible »**. Un student distillé par perte cosinus
+    annonce son accord avec le teacher ; si on ne le retrouve pas sur nos
+    images, c'est le prétraitement qu'il faut regarder, pas le modèle.
+
+    Le cosinus moyen est plus sévère qu'il n'y paraît : à 0,84, deux vecteurs
+    pointent encore dans la même direction générale mais leur **voisinage**
+    peut être entièrement différent, et c'est le voisinage qui nomme.
+    """
+    ti, si = lire_index(cache_teacher), lire_index(cache_student)
+    communs = sorted(set(ti) & set(si))
+    if not communs:
+        raise SystemExit('les deux caches ne partagent aucune image')
+    par_cache = []
+    for index, cache in ((ti, cache_teacher), (si, cache_student)):
+        fragments: dict[str, np.ndarray] = {}
+        lignes = []
+        for chemin in communs:
+            frag, ligne = index[chemin]
+            if frag not in fragments:
+                fragments[frag] = np.load(cache / f'{frag}.npy')
+            lignes.append(fragments[frag][ligne])
+        v = np.stack(lignes).astype(np.float32)
+        par_cache.append(v / np.linalg.norm(v, axis=1, keepdims=True))
+    cos = (par_cache[0] * par_cache[1]).sum(axis=1)
+    return {
+        'images': len(communs),
+        'cosinus_moyen': float(cos.mean()),
+        'cosinus_median': float(np.median(cos)),
+        'centile_10': float(np.percentile(cos, 10)),
+        'centile_90': float(np.percentile(cos, 90)),
+    }
+
+
 def main() -> int:  # pragma: no cover - demande onnxruntime et les images
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -174,7 +211,20 @@ def main() -> int:  # pragma: no cover - demande onnxruntime et les images
     ap.add_argument('--fragment', type=int, default=4096)
     ap.add_argument('--combien', type=int, default=0, help='limiter ; 0 = toutes')
     ap.add_argument('--forcer', action='store_true')
+    ap.add_argument('--accord', metavar='CACHE_TEACHER',
+                    help='ne rien encoder : comparer ce cache-ci à celui du teacher, '
+                         'image par image. Le diagnostic qui dit si la chaîne est '
+                         'fausse ou si le student est faible')
     args = ap.parse_args()
+
+    if args.accord:
+        r = accord(Path(args.accord).expanduser(), Path(args.cache).expanduser())
+        print(f'{r["images"]} images communes')
+        print(f'  cosinus moyen   {r["cosinus_moyen"]:.4f}')
+        print(f'  médiane         {r["cosinus_median"]:.4f}')
+        print(f'  10e centile     {r["centile_10"]:.4f}')
+        print(f'  90e centile     {r["centile_90"]:.4f}')
+        return 0
 
     cache = Path(args.cache).expanduser()
     modele = Path(args.modele).expanduser()
