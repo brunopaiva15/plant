@@ -9,6 +9,7 @@ import '../tokens/motion.dart';
 import '../tokens/spacing.dart';
 import 'adaptive.dart';
 import 'buttons.dart';
+import 'collapsed_title.dart';
 import 'native_actions.dart';
 import 'rail_actions.dart';
 import 'scroll_fade.dart';
@@ -320,7 +321,13 @@ class LargeTitlePage extends StatelessWidget {
           slivers: [
             header,
             if (aTitreNatif)
-              SliverToBoxAdapter(child: _TitreReplie(notifier: replie, texte: collapsedTitle ?? title)),
+              SliverToBoxAdapter(
+                child: CollapsedTitleWatcher(
+                  notifier: replie,
+                  title: collapsedTitle ?? title,
+                  threshold: CollapsedTitleWatcher.largeTitleCollapse,
+                ),
+              ),
             if (gauche == 0 && droite == 0)
               ...slivers
             else
@@ -386,8 +393,9 @@ class _CollapsedTitle extends StatefulWidget {
 }
 
 class _CollapsedTitleState extends State<_CollapsedTitle> {
-  /// Le repli du grand titre, en points de défilement.
-  static const double _collapse = 52;
+  /// Le repli du grand titre, en points de défilement. Celui du guetteur qui
+  /// sert la barre du système, pour que les deux chemins basculent ensemble.
+  static const double _collapse = CollapsedTitleWatcher.largeTitleCollapse;
 
   /// De combien le mot monte pour se poser, et d'où il part.
   static const double _rise = 7;
@@ -600,66 +608,6 @@ class _GrandTitreNatif extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Dit à la barre du système quand le grand titre passe dessous.
-///
-/// « Dessous », et non « hors de l'écran » : iOS bascule dès que le grand
-/// titre glisse sous la barre, pas une fois qu'il a disparu. Mesuré sur la
-/// position de défilement, comme le fait déjà le titre replié de la barre de
-/// Flutter, et avec le même seuil — ce qui garde les deux chemins d'accord.
-///
-/// Une première version guettait la sortie d'un sliver posé après le titre.
-/// Elle basculait une hauteur de barre trop tard : un sliver ne sait pas
-/// qu'il *approche* du bord, seulement qu'il l'a franchi.
-class _TitreReplie extends StatefulWidget {
-  const _TitreReplie({required this.notifier, required this.texte});
-
-  final ValueNotifier<String> notifier;
-  final String texte;
-
-  @override
-  State<_TitreReplie> createState() => _TitreReplieState();
-}
-
-class _TitreReplieState extends State<_TitreReplie> {
-  /// Le repli du grand titre, en points de défilement. Celui de
-  /// `_CollapsedTitleState`, pour que les deux barres basculent ensemble.
-  static const double _seuil = 52;
-
-  ScrollPosition? _position;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final position = Scrollable.maybeOf(context)?.position;
-    if (identical(position, _position)) return;
-    _position?.removeListener(_relire);
-    _position = position;
-    _position?.addListener(_relire);
-    _relire();
-  }
-
-  @override
-  void didUpdateWidget(_TitreReplie old) {
-    super.didUpdateWidget(old);
-    if (old.texte != widget.texte || old.notifier != widget.notifier) _relire();
-  }
-
-  @override
-  void dispose() {
-    _position?.removeListener(_relire);
-    super.dispose();
-  }
-
-  void _relire() {
-    final position = _position;
-    final passe = position != null && position.hasPixels && position.pixels >= _seuil;
-    widget.notifier.value = passe ? widget.texte : '';
-  }
-
-  @override
-  Widget build(BuildContext context) => const SizedBox.shrink();
 }
 
 /// Porte le titre replié d'une page, et le fait vivre aussi longtemps qu'elle.

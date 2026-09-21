@@ -7,6 +7,7 @@ export 'cards.dart';
 export 'clay.dart';
 export 'clay_loader.dart';
 export 'chips.dart';
+export 'collapsed_title.dart';
 export 'due_badge.dart';
 export 'empty_state.dart';
 export 'header_fade.dart';

@@ -81,6 +81,7 @@ void main() {
       }));
 
   _testsDuTitreNatif();
+  _testsDuGuetteur();
 }
 
 /// Là où UIKit tient la barre, le grand titre devient du contenu et c'est le
@@ -107,5 +108,44 @@ void _testsDuTitreNatif() {
     await tester.pump();
     expect(find.byType(CupertinoSliverNavigationBar), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+}
+
+/// Le guetteur qui sert la barre. Il ne dessine rien : il dit quand le titre
+/// de la page est passé dessous, et le seuil lui est donné — cinquante-deux
+/// points pour un grand titre, la hauteur de la photo pour une fiche.
+void _testsDuGuetteur() {
+  testWidgets('le titre rejoint la barre au seuil, et la quitte au retour', (tester) async {
+    final replie = ValueNotifier<String>('');
+    final controller = ScrollController();
+    addTearDown(replie.dispose);
+    addTearDown(controller.dispose);
+
+    await tester.pumpWidget(MaterialApp(
+      home: Material(
+        child: CustomScrollView(
+          controller: controller,
+          slivers: [
+            SliverToBoxAdapter(child: CollapsedTitleWatcher(notifier: replie, title: 'Monstera', threshold: 200)),
+            const SliverToBoxAdapter(child: SizedBox(height: 2000)),
+          ],
+        ),
+      ),
+    ));
+    await tester.pump();
+    expect(replie.value, '', reason: 'en haut de page, la barre reste nue');
+
+    // Un point avant le seuil, le titre de la page se lit encore.
+    controller.jumpTo(199);
+    await tester.pump();
+    expect(replie.value, '');
+
+    controller.jumpTo(200);
+    await tester.pump();
+    expect(replie.value, 'Monstera');
+
+    controller.jumpTo(0);
+    await tester.pump();
+    expect(replie.value, '', reason: 'revenu en haut, la barre rend le titre à la page');
   });
 }

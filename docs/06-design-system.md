@@ -350,6 +350,26 @@ dès que le grand titre glisse *sous* la barre.
 Ailleurs — Android, et iOS avant que la chrome ne soit passée au natif — la
 `CupertinoSliverNavigationBar` et son repli restent ce qu'ils étaient.
 
+### Le nom d'une plante dans la barre de sa fiche
+La fiche n'a pas de grand titre : son en-tête est une photo, et le nom se lit
+dessous. Défilée, la barre restait donc nue — plus rien ne disait quelle
+plante on regardait.
+
+Le nom y monte maintenant au moment où il passe sous la barre, et la quitte au
+retour en haut. C'est le même guetteur
+(`CollapsedTitleWatcher`, `design_system/components/collapsed_title.dart`),
+à ceci près que le seuil d'une fiche se compte : l'en-tête se replie d'abord —
+la hauteur de la photo moins celle de la barre —, puis la première ligne du
+nom glisse dessous. Le nom est donc dans la barre dès qu'il cesse d'être
+lisible en dessous, jamais avant.
+
+Le porteur est un `ValueNotifier` tenu par l'état de la fiche : elle se
+redessine à chaque soin enregistré, et la barre garde son titre. UIKit
+l'affiche là où il tient la barre ; ailleurs, c'est la case de la
+`SliverAppBar`, où le nom paraît en fondu. Les deux ne coexistent jamais :
+la case de Flutter reste vide dès que le système porte le titre.
+`test/features/plant_detail_title_test.dart` tient le trajet complet.
+
 ### La bande du système, et qui la retire
 Sur un pliable, la bande de la caméra et de l'heure occupe un bord entier —
 quatre-vingt-quatre points sur l'iPhone Duo — et change de côté avec la

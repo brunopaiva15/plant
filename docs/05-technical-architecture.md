@@ -263,11 +263,16 @@ redessiner — rien ne la forcerait à le faire. « Visible » se lit sur deux
 choses : la route est-elle celle du dessus, et sa branche d'onglet est-elle
 éveillée (`TickerMode`).
 
-**Le titre reste à Flutter.** La barre native n'en porte pas : le grand titre
-en argile — le « Bonsoir » arrondi — est la signature d'Auxine, et « fini les
-menus » ne dit rien des titres. Deux titres empilés seraient une faute ; c'est
-donc le natif qui se tait. À rouvrir si la bande horizontale que la barre
-garde en haut se révèle trop chère.
+**Le grand titre reste à Flutter.** Le « Bonsoir » arrondi est la signature
+d'Auxine, et « fini les menus » ne dit rien des titres : tant qu'il se lit
+dans la page, la barre native n'en porte pas. Deux titres empilés seraient une
+faute ; c'est donc le natif qui se tait.
+
+Ce qu'il porte, c'est le **titre replié** — celui qui prend la place du grand
+une fois qu'il est passé sous la barre : « Auxine » sur l'écran du matin, le
+nom de la plante sur sa fiche. Il voyage par `NativeActions.titleListenable`,
+qu'un `CollapsedTitleWatcher` alimente depuis la position de défilement
+(docs/06, « Le grand titre là où la barre est celle d'UIKit »).
 
 Le bouton de tête d'une page part avec les autres — le tableau de bord
 d'« Aujourd'hui » —, à gauche de la barre, là où iOS met la navigation. Pas le
@@ -388,7 +393,7 @@ Trois gabarits cèdent désormais leur barre :
 |---|---|
 | `LargeTitlePage` | le bouton de tête, le retour, les actions. Le grand titre reste à Flutter |
 | `FloraPage` | le retour, l'action, **et le titre** — il était centré et petit, c'est exactement ce qu'`UINavigationItem.title` dessine |
-| la fiche plante | le retour, le cœur, le menu. Ils flottaient sur la photo ; ce sont des commandes, et iOS les range comme telles |
+| la fiche plante | le retour, le cœur, le menu. Ils flottaient sur la photo ; ce sont des commandes, et iOS les range comme telles. **Et le nom de la plante**, une fois qu'il est passé sous la barre |
 
 Ce qui reste : les pages qui dessinent leur propre chrome sans passer par ces
 gabarits — un scanner, une feuille —, et qui gardent leurs boutons. Elles

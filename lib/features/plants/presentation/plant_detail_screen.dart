@@ -56,7 +56,19 @@ class PlantDetailScreen extends ConsumerStatefulWidget {
 class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
   final Set<String> _justDone = {};
 
+  /// Le nom de la plante, une fois qu'il est passé sous la barre.
+  ///
+  /// Porté par l'état plutôt que par le rendu : la fiche se redessine à chaque
+  /// soin enregistré, et la barre, elle, garde le titre qu'elle montre.
+  final ValueNotifier<String> _titreDeBarre = ValueNotifier<String>('');
+
   String get id => widget.plantId;
+
+  @override
+  void dispose() {
+    _titreDeBarre.dispose();
+    super.dispose();
+  }
 
   Future<void> _quick(String typeKey, String plantName) async {
     if (typeKey == CareKind.photo.key) return _addPhoto();
@@ -254,12 +266,21 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
     final plant = summary.plant;
     final photos = ref.watch(plantPhotosProvider(id)).value ?? const <PlantPhoto>[];
     final primary = photos.where((p) => p.id == plant.primaryPhotoId).firstOrNull ?? photos.firstOrNull;
-    final top = MediaQuery.paddingOf(context).top;
     // La largeur qui reste à la photo une fois la bande du système retirée :
     // c'est elle qui donne la hauteur de l'en-tête, sinon les proportions de
     // l'image se faussent de ce que la bande a pris.
     final marges = systemSideInsets(context);
     final width = MediaQuery.sizeOf(context).width - marges.left - marges.right;
+    // L'en-tête déployé, et ce qu'il en reste une fois replié.
+    final entete = primary == null ? width * 0.62 : width * 1.05;
+    const barre = 56.0;
+    // Le nom de la plante rejoint la barre quand il passe dessous : l'en-tête
+    // s'est replié, puis la première ligne du nom a glissé sous la barre. Le
+    // titre de la fiche devient alors celui de la page, comme iOS le fait
+    // d'un grand titre.
+    final titre1 = context.text.title1;
+    final ligne = MediaQuery.textScalerOf(context).scale(titre1.fontSize ?? 28) * (titre1.height ?? 1.2);
+    final seuil = entete - barre + ligne;
 
     // Le retour, le cœur et le menu partent à UIKit quand il tient la barre :
     // ils flottent sur la photo, mais ce sont des commandes de navigation et
@@ -303,12 +324,15 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
             sliver: SliverMainAxisGroup(
               slivers: [
           SliverAppBar(
-            expandedHeight: primary == null ? width * 0.62 : width * 1.05,
+            expandedHeight: entete,
             pinned: true,
             stretch: true,
             backgroundColor: c.canvas,
             surfaceTintColor: Colors.transparent,
             automaticallyImplyLeading: false,
+            // Là où UIKit tient la barre, c'est lui qui porte le titre : la
+            // case de Flutter reste vide pour qu'il ne s'écrive pas deux fois.
+            title: natif != null ? null : _TitreDeBarre(notifier: _titreDeBarre, nom: plant.name),
             leadingWidth: natif == null ? 64 : 0,
             leading: natif != null
                 ? null
@@ -360,8 +384,12 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
                   ),
               ],
             ),
-            toolbarHeight: 56,
-            collapsedHeight: 56 + (top > 0 ? 0 : 0),
+            toolbarHeight: barre,
+            collapsedHeight: barre,
+          ),
+          // Ne dessine rien : dit à la barre quand le nom lui revient.
+          SliverToBoxAdapter(
+            child: CollapsedTitleWatcher(notifier: _titreDeBarre, title: plant.name, threshold: seuil),
           ),
           SliverToBoxAdapter(
             child: Padding(
@@ -493,7 +521,36 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
     );
 
     if (natif == null) return page;
-    return NativeActions(title: '', leading: natif.leading, actions: natif.actions, child: page);
+    return NativeActions(title: '', titleListenable: _titreDeBarre, leading: natif.leading, actions: natif.actions, child: page);
+  }
+}
+
+/// Le nom de la plante dans la barre de Flutter, là où le système ne la tient
+/// pas — Android, et iOS sans la coquille native.
+///
+/// Il paraît en fondu au moment où le nom de la fiche passe dessous, et
+/// s'efface quand il revient : le même nom écrit deux fois à l'écran se
+/// répète, et la photo n'a pas à porter un titre par-dessus.
+class _TitreDeBarre extends StatelessWidget {
+  const _TitreDeBarre({required this.notifier, required this.nom});
+
+  final ValueNotifier<String> notifier;
+  final String nom;
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<String>(
+      valueListenable: notifier,
+      builder: (context, titre, child) => AnimatedOpacity(
+        opacity: titre.isEmpty ? 0.0 : 1.0,
+        duration: Motion.of(context, Motion.micro),
+        curve: Motion.easeOut,
+        child: child,
+      ),
+      // Le nom reste posé : c'est son opacité qui bouge, et le fondu a donc de
+      // quoi se jouer dans les deux sens.
+      child: Text(nom, maxLines: 1, overflow: TextOverflow.ellipsis),
+    );
   }
 }
 
