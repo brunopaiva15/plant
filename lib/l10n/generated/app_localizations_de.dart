@@ -2321,7 +2321,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get signInHint =>
-      'Ein Konto sichert Ihre Daten, synchronisiert sie zwischen Geräten und ermöglicht das Teilen eines Gartens.';
+      'Ein Konto sichert deine Daten, synchronisiert sie zwischen Geräten und lässt dich einen Garten teilen.';
 
   @override
   String get continueWithApple => 'Mit Apple fortfahren';
@@ -4421,7 +4421,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get shareUnlistedHint =>
-      'Die Seite bittet Suchmaschinen, sie nicht zu indexieren. Wer den Link hat, sieht sie trotzdem.';
+      'Die Seite bittet Suchmaschinen, sie nicht zu indexieren, aber wer den Link hat, sieht sie.';
 
   @override
   String get shareExpiry => 'Läuft ab am';
@@ -5376,7 +5376,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get gardensHint =>
-      'Der geöffnete Garten ist der überall in der App angezeigte. Der Wechsel geschieht hier.';
+      'Der geöffnete Garten ist der, den die App überall anzeigt. Wechsle ihn hier.';
 
   @override
   String get gardenMine => 'Mein Garten';
@@ -5422,7 +5422,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get joinGardenHint =>
-      'Geben Sie den erhaltenen Code ein oder öffnen Sie den Einladungslink.';
+      'Gib den erhaltenen Code ein oder öffne den Einladungslink.';
 
   @override
   String get inviteCodeHint => 'Einladungscode';
@@ -5446,11 +5446,11 @@ class AppLocalizationsDe extends AppLocalizations {
       'Für den Beitritt zu einem Garten braucht es ein Konto.';
 
   @override
-  String get joinSignInHint => 'Anmeldung mit Ihrer Apple-ID.';
+  String get joinSignInHint => 'Anmeldung mit deiner Apple-ID.';
 
   @override
   String joinInvitedBy(String name, String garden) {
-    return '$name lädt Sie in „$garden“ ein';
+    return '$name lädt dich in „$garden“ ein';
   }
 
   @override
@@ -5465,7 +5465,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get joinAsViewer => 'Nur ansehen, keine Änderungen.';
 
   @override
-  String get joinAlreadyMember => 'Sie gehören bereits zu diesem Garten.';
+  String get joinAlreadyMember => 'Du gehörst bereits zu diesem Garten.';
 
   @override
   String joined(String name) {
@@ -5477,7 +5477,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String leaveGardenConfirm(String name) {
-    return 'Sie haben keinen Zugriff mehr auf „$name“.';
+    return 'Du hast keinen Zugriff mehr auf „$name“.';
   }
 
   @override
@@ -5502,11 +5502,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get deleteGardenLast => 'Ein Konto behält mindestens einen Garten.';
 
   @override
-  String get openGardenTitle => 'Ihre Gärten';
+  String get openGardenTitle => 'Deine Gärten';
 
   @override
   String get openGardenHint =>
-      'Dieses Konto hat bereits Gärten. Öffnen Sie den mit Ihren Pflanzen.';
+      'Dieses Konto gibt Zugriff auf diese Gärten. Öffne den mit deinen Pflanzen.';
 
   @override
   String get collaborationNeedsAccount =>
@@ -5534,7 +5534,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get inviteShareHint =>
-      'Senden Sie diesen Link oder Code. Zum Empfang ist die App nicht nötig.';
+      'Sende diesen Link oder Code. Zum Empfang braucht die Person die App nicht.';
 
   @override
   String get inviteShare => 'Link teilen';
@@ -5569,7 +5569,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get membersHint =>
-      'Mitglieder sehen dieselben Pflanzen und können sie pflegen.';
+      'Mitglieder sehen deine Pflanzen und können sie pflegen.';
 
   @override
   String get membersGuestHint => 'Von einem anderen Nutzer geteilter Garten.';
@@ -6150,7 +6150,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get communityTipPublicNote =>
-      'Der Tipp erscheint mit deinem Namen auf der Seite dieser Art, für alle.';
+      'Dein Tipp wird für alle sichtbar, mit deinem Namen, auf der Seite dieser Art.';
 
   @override
   String communityTipLength(int used, int max) {

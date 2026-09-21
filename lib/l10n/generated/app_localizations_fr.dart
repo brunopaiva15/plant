@@ -2394,7 +2394,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get inviteHint =>
-      'L\'invité doit déjà avoir un compte Auxine avec cette adresse.';
+      'La personne invitée doit déjà avoir un compte Auxine à cette adresse.';
 
   @override
   String get roleOwner => 'Propriétaire';
@@ -4438,7 +4438,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get shareUnlistedHint =>
-      'La page demande aux moteurs de recherche de ne pas l\'indexer. Toute personne ayant le lien peut la voir.';
+      'La page demande aux moteurs de recherche de ne pas l\'indexer, mais toute personne qui a le lien peut la voir.';
 
   @override
   String get shareExpiry => 'Expire le';
@@ -4472,7 +4472,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Révoquer ce lien ? La page ne sera plus accessible.';
 
   @override
-  String get shareNeedsAccount => 'Le partage par lien nécessite un compte.';
+  String get shareNeedsAccount => 'Le partage par lien demande un compte.';
 
   @override
   String get shareFailed => 'Le lien n\'a pas pu être créé. Réessayez.';
@@ -5395,7 +5395,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get gardensHint =>
-      'Le jardin ouvert est celui affiché partout dans l\'application. Le passage de l\'un à l\'autre se fait ici.';
+      'Le jardin ouvert est celui affiché partout dans l\'application. Changez-en ici.';
 
   @override
   String get gardenMine => 'Mon jardin';
@@ -5441,7 +5441,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get joinGardenHint =>
-      'Saisissez le code reçu, ou ouvrez le lien d\'invitation qu\'on vous a envoyé.';
+      'Saisissez le code reçu, ou ouvrez votre lien d\'invitation.';
 
   @override
   String get inviteCodeHint => 'Code d\'invitation';
@@ -5454,7 +5454,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get joinInvalid =>
-      'Ce code ne vaut plus rien. Il a déjà servi, a expiré, ou n\'existe pas.';
+      'Ce code n\'est plus valable : il a déjà servi, a expiré, ou n\'existe pas.';
 
   @override
   String get joinWrongEmail =>
@@ -5524,7 +5524,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get openGardenHint =>
-      'Ce compte donne accès à ces jardins. Ouvrez celui où sont vos plantes.';
+      'Ce compte donne accès à ces jardins. Ouvrez celui qui contient vos plantes.';
 
   @override
   String get collaborationNeedsAccount =>
@@ -5552,7 +5552,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get inviteShareHint =>
-      'Envoyez ce lien ou ce code. L\'application n\'est pas nécessaire pour le recevoir.';
+      'Envoyez ce lien ou ce code. La personne n\'a pas besoin de l\'application pour le recevoir.';
 
   @override
   String get inviteShare => 'Partager le lien';
@@ -5587,7 +5587,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get membersHint =>
-      'Les membres voient les mêmes plantes et peuvent s\'en occuper.';
+      'Les membres voient vos plantes et peuvent s\'en occuper.';
 
   @override
   String get membersGuestHint => 'Jardin partagé par un autre utilisateur.';
@@ -6147,7 +6147,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get communityTipsHint =>
-      'Ce que d\'autres personnes ont observé en gardant cette espèce, hors du catalogue.';
+      'Ce que d\'autres personnes ont observé en cultivant cette espèce, hors catalogue.';
 
   @override
   String get communityTipsEmpty => 'Aucun conseil sur cette espèce.';
@@ -6168,7 +6168,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get communityTipPublicNote =>
-      'Le conseil paraît sous votre nom sur la fiche de cette espèce, pour tout le monde.';
+      'Votre conseil sera visible par tout le monde, sous votre nom, sur la fiche de cette espèce.';
 
   @override
   String communityTipLength(int used, int max) {
@@ -6216,7 +6216,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get moderationHint =>
-      'Les conseils signalés, du plus signalé au moins signalé.';
+      'Les conseils signalés, du plus au moins signalé.';
 
   @override
   String get moderationEmpty => 'Aucun conseil signalé.';

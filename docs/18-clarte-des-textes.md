@@ -1,6 +1,6 @@
 # La clarté des textes (`lib/l10n/*.arb`)
 
-> Statut : **lots 1 à 7 livrés**, lots 8 à 11 à faire. La charte du § 3 est reportée
+> Statut : **lots 1 à 8 livrés**, lots 9 à 11 à faire. La charte du § 3 est reportée
 > dans `docs/06-design-system.md`, le relevé mécanique (`tool/audit_textes.py`)
 > et le test de parité ICU sont en place. Le registre allemand est tranché :
 > *du*.
@@ -516,15 +516,29 @@ d'un questionnaire, et `docs/06` les exempte explicitement.
 
 ### Lot 8 — Le compte, le partage, la collaboration (132 clés, 35 explicatives)
 
+> **Livré.** 49 chaînes réécrites sur les quatre langues, le relevé du lot
+> tombe de 15 clés signalées à 0. `flutter gen-l10n` passé, tests et
+> `flutter analyze` verts.
+
 Préfixes `sign…`, `auth…`, `sync…`, `share…`, `invite…`, `join…`, `member…`,
 `garden…`, `community…`, `moderation…`.
+
+Encore un lot de registre : rejoindre un jardin, en ouvrir un, être invité —
+tout le parcours de collaboration vouvoyait en allemand et en italien. Dix-sept
+chaînes passent au *du* et au *tu*.
+
+**Une faute d'anglais au passage** : `inviteHint` disait « a Auxine account »
+au lieu de « an Auxine account ». Et `openGardenHint` divergeait du
+français — l'anglais disait « This account already has gardens », le français
+« Ce compte donne accès à ces jardins » ; les quatre langues disent désormais
+la même chose.
 
 | Clé | Avant | Après |
 |---|---|---|
 | `gardensHint` | Le jardin ouvert est celui affiché partout dans l'application. Le passage de l'un à l'autre se fait ici. | Le jardin ouvert est celui affiché partout dans l'application. Changez-en ici. |
 | `openGardenHint` | Ce compte donne accès à ces jardins. Ouvrez celui où sont vos plantes. | Ce compte donne accès à ces jardins. Ouvrez celui qui contient vos plantes. |
 | `joinInvalid` | Ce code ne vaut plus rien. Il a déjà servi, a expiré, ou n'existe pas. | Ce code n'est plus valable : il a déjà servi, a expiré, ou n'existe pas. |
-| `joinGardenHint` | Saisissez le code reçu, ou ouvrez le lien d'invitation qu'on vous a envoyé. | Saisissez le code reçu, ou ouvrez le lien d'invitation qui vous a été envoyé. |
+| `joinGardenHint` | Saisissez le code reçu, ou ouvrez le lien d'invitation qu'on vous a envoyé. | Saisissez le code reçu, ou ouvrez votre lien d'invitation. |
 | `inviteShareHint` | Envoyez ce lien ou ce code. L'application n'est pas nécessaire pour le recevoir. | Envoyez ce lien ou ce code. La personne n'a pas besoin de l'application pour le recevoir. |
 | `inviteHint` | L'invité doit déjà avoir un compte Auxine avec cette adresse. | La personne invitée doit déjà avoir un compte Auxine à cette adresse. |
 | `shareUnlistedHint` | La page demande aux moteurs de recherche de ne pas l'indexer. Toute personne ayant le lien peut la voir. | La page demande aux moteurs de recherche de ne pas l'indexer, mais toute personne qui a le lien peut la voir. |
@@ -532,7 +546,7 @@ Préfixes `sign…`, `auth…`, `sync…`, `share…`, `invite…`, `join…`, `
 | `communityTipsHint` | Ce que d'autres personnes ont observé en gardant cette espèce, hors du catalogue. | Ce que d'autres personnes ont observé en cultivant cette espèce, hors catalogue. |
 | `communityTipPublicNote` | Le conseil paraît sous votre nom sur la fiche de cette espèce, pour tout le monde. | Votre conseil sera visible par tout le monde, sous votre nom, sur la fiche de cette espèce. |
 | `moderationHint` | Les conseils signalés, du plus signalé au moins signalé. | Les conseils signalés, du plus au moins signalé. |
-| `readOnlyHint` | Vous consultez ce jardin en lecture seule. | Vous consultez ce jardin en lecture seule. *(inchangé)* |
+| `readOnlyHint` | Vous consultez ce jardin en lecture seule. | Vous consultez ce jardin en lecture seule. |
 
 ### Lot 9 — Les données, la sauvegarde, le hors-ligne (74 clés, 26 explicatives)
 
@@ -646,7 +660,7 @@ concerné est vert, sinon la suite casse dès le premier commit :
 | 5 ✓ | Diagnostic, encyclopédie | 138 | 23 | **livré** |
 | 6 ✓ | Fiches d'entretien | 303 | 117 | **livré** — volumineux mais déjà propre |
 | 7 ✓ | Découverte, soutien | 111 | 36 | **livré** — première impression |
-| 8 | Compte, partage | 132 | 35 | |
+| 8 ✓ | Compte, partage | 132 | 35 | **livré** |
 | 9 | Données, hors-ligne | 74 | 26 | |
 | 10 | Jardin au jour le jour | 575 | 69 | libellés courts, passe rapide |
 | 11 | Passes mécaniques | — | — | quand plus rien ne bouge |

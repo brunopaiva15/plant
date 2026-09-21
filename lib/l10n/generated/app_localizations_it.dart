@@ -2321,7 +2321,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get signInHint =>
-      'Un account salva i dati, li sincronizza tra dispositivi e permette di condividere un giardino.';
+      'Un account salva i tuoi dati, li sincronizza tra dispositivi e permette di condividere un giardino.';
 
   @override
   String get continueWithApple => 'Continua con Apple';
@@ -4433,7 +4433,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get shareUnlistedHint =>
-      'La pagina chiede ai motori di ricerca di non indicizzarla. Chi ha il link può comunque vederla.';
+      'La pagina chiede ai motori di ricerca di non indicizzarla, ma chi ha il link può vederla.';
 
   @override
   String get shareExpiry => 'Scade il';
@@ -5392,7 +5392,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get gardensHint =>
-      'Il giardino aperto è quello mostrato ovunque nell\'app. Il passaggio dall\'uno all\'altro avviene qui.';
+      'Il giardino aperto è quello mostrato ovunque nell\'app. Cambialo qui.';
 
   @override
   String get gardenMine => 'Il mio giardino';
@@ -5438,7 +5438,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get joinGardenHint =>
-      'Inserite il codice ricevuto, o aprite il link d\'invito.';
+      'Inserisci il codice ricevuto, o apri il link d\'invito.';
 
   @override
   String get inviteCodeHint => 'Codice d\'invito';
@@ -5451,7 +5451,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get joinInvalid =>
-      'Questo codice non vale più. Già usato, scaduto o inesistente.';
+      'Questo codice non è più valido: già usato, scaduto o inesistente.';
 
   @override
   String get joinWrongEmail =>
@@ -5461,11 +5461,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String get joinNeedsAccount => 'Serve un account per unirsi a un giardino.';
 
   @override
-  String get joinSignInHint => 'Accesso con il vostro ID Apple.';
+  String get joinSignInHint => 'Accesso con il tuo ID Apple.';
 
   @override
   String joinInvitedBy(String name, String garden) {
-    return '$name vi invita in «$garden»';
+    return '$name ti invita in «$garden»';
   }
 
   @override
@@ -5480,7 +5480,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get joinAsViewer => 'Sola consultazione, senza modifiche.';
 
   @override
-  String get joinAlreadyMember => 'Fate già parte di questo giardino.';
+  String get joinAlreadyMember => 'Fai già parte di questo giardino.';
 
   @override
   String joined(String name) {
@@ -5492,7 +5492,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String leaveGardenConfirm(String name) {
-    return 'Non avrete più accesso a «$name».';
+    return 'Non avrai più accesso a «$name».';
   }
 
   @override
@@ -5517,11 +5517,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String get deleteGardenLast => 'Un account conserva almeno un giardino.';
 
   @override
-  String get openGardenTitle => 'I vostri giardini';
+  String get openGardenTitle => 'I tuoi giardini';
 
   @override
   String get openGardenHint =>
-      'Questo account dà accesso a questi giardini. Aprite quello con le vostre piante.';
+      'Questo account dà accesso a questi giardini. Apri quello con le tue piante.';
 
   @override
   String get collaborationNeedsAccount =>
@@ -5549,14 +5549,14 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get inviteShareHint =>
-      'Inviate questo link o codice. L\'app non è necessaria per riceverlo.';
+      'Invia questo link o codice. Per riceverlo non serve l\'app.';
 
   @override
   String get inviteShare => 'Condividi il link';
 
   @override
   String inviteMessage(String link) {
-    return 'Invito a unirvi al mio giardino su Auxine: $link';
+    return 'Invito a unirti al mio giardino su Auxine: $link';
   }
 
   @override
@@ -5584,7 +5584,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get membersHint =>
-      'I membri vedono le stesse piante e possono prendersene cura.';
+      'I membri vedono le tue piante e possono prendersene cura.';
 
   @override
   String get membersGuestHint => 'Giardino condiviso da un altro utente.';
@@ -6141,7 +6141,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get communityTipsHint =>
-      'Ciò che altre persone hanno osservato coltivando questa specie, fuori dal catalogo.';
+      'Ciò che altre persone hanno osservato coltivando questa specie, fuori catalogo.';
 
   @override
   String get communityTipsEmpty => 'Nessun consiglio su questa specie.';
@@ -6162,7 +6162,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get communityTipPublicNote =>
-      'Il consiglio appare con il tuo nome sulla scheda di questa specie, per tutti.';
+      'Il tuo consiglio sarà visibile a tutti, con il tuo nome, sulla scheda di questa specie.';
 
   @override
   String communityTipLength(int used, int max) {
@@ -6210,7 +6210,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get moderationHint =>
-      'I consigli segnalati, dal più segnalato al meno segnalato.';
+      'I consigli segnalati, dal più al meno segnalato.';
 
   @override
   String get moderationEmpty => 'Nessun consiglio segnalato.';

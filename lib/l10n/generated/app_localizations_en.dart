@@ -2391,7 +2391,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inviteHint =>
-      'The person must already have a Auxine account with this address.';
+      'The person must already have an Auxine account with this address.';
 
   @override
   String get roleOwner => 'Owner';
@@ -4413,7 +4413,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shareUnlistedHint =>
-      'The page asks search engines not to index it. Anyone with the link can still see it.';
+      'The page asks search engines not to index it, but anyone with the link can see it.';
 
   @override
   String get shareExpiry => 'Expires on';
@@ -5364,7 +5364,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gardensHint =>
-      'The open garden is the one shown everywhere in the app. Switching between them happens here.';
+      'The open garden is the one shown everywhere in the app. Switch between them here.';
 
   @override
   String get gardenMine => 'My garden';
@@ -5410,7 +5410,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get joinGardenHint =>
-      'Enter the code you were given, or open the invitation link you received.';
+      'Enter the code you were given, or open your invitation link.';
 
   @override
   String get inviteCodeHint => 'Invitation code';
@@ -5493,7 +5493,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openGardenHint =>
-      'This account already has gardens. Open the one holding your plants.';
+      'This account gives access to these gardens. Open the one holding your plants.';
 
   @override
   String get collaborationNeedsAccount => 'Sharing a garden needs an account';
@@ -5520,7 +5520,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inviteShareHint =>
-      'Send this link or code. The app is not needed to receive it.';
+      'Send this link or code. The person does not need the app to receive it.';
 
   @override
   String get inviteShare => 'Share the link';
@@ -5555,7 +5555,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get membersHint =>
-      'Members see the same plants and can take care of them.';
+      'Members see your plants and can take care of them.';
 
   @override
   String get membersGuestHint => 'Garden shared by another user.';
@@ -6129,7 +6129,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get communityTipPublicNote =>
-      'The tip appears under your name on this species page, for everyone.';
+      'Your tip will be visible to everyone, under your name, on this species page.';
 
   @override
   String communityTipLength(int used, int max) {

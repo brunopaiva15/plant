@@ -4251,7 +4251,7 @@ abstract class AppLocalizations {
   /// No description provided for @inviteHint.
   ///
   /// In fr, this message translates to:
-  /// **'L\'invité doit déjà avoir un compte Auxine avec cette adresse.'**
+  /// **'La personne invitée doit déjà avoir un compte Auxine à cette adresse.'**
   String get inviteHint;
 
   /// No description provided for @roleOwner.
@@ -7665,7 +7665,7 @@ abstract class AppLocalizations {
   /// No description provided for @shareUnlistedHint.
   ///
   /// In fr, this message translates to:
-  /// **'La page demande aux moteurs de recherche de ne pas l\'indexer. Toute personne ayant le lien peut la voir.'**
+  /// **'La page demande aux moteurs de recherche de ne pas l\'indexer, mais toute personne qui a le lien peut la voir.'**
   String get shareUnlistedHint;
 
   /// No description provided for @shareExpiry.
@@ -7731,7 +7731,7 @@ abstract class AppLocalizations {
   /// No description provided for @shareNeedsAccount.
   ///
   /// In fr, this message translates to:
-  /// **'Le partage par lien nécessite un compte.'**
+  /// **'Le partage par lien demande un compte.'**
   String get shareNeedsAccount;
 
   /// No description provided for @shareFailed.
@@ -9303,7 +9303,7 @@ abstract class AppLocalizations {
   /// No description provided for @gardensHint.
   ///
   /// In fr, this message translates to:
-  /// **'Le jardin ouvert est celui affiché partout dans l\'application. Le passage de l\'un à l\'autre se fait ici.'**
+  /// **'Le jardin ouvert est celui affiché partout dans l\'application. Changez-en ici.'**
   String get gardensHint;
 
   /// No description provided for @gardenMine.
@@ -9369,7 +9369,7 @@ abstract class AppLocalizations {
   /// No description provided for @joinGardenHint.
   ///
   /// In fr, this message translates to:
-  /// **'Saisissez le code reçu, ou ouvrez le lien d\'invitation qu\'on vous a envoyé.'**
+  /// **'Saisissez le code reçu, ou ouvrez votre lien d\'invitation.'**
   String get joinGardenHint;
 
   /// No description provided for @inviteCodeHint.
@@ -9393,7 +9393,7 @@ abstract class AppLocalizations {
   /// No description provided for @joinInvalid.
   ///
   /// In fr, this message translates to:
-  /// **'Ce code ne vaut plus rien. Il a déjà servi, a expiré, ou n\'existe pas.'**
+  /// **'Ce code n\'est plus valable : il a déjà servi, a expiré, ou n\'existe pas.'**
   String get joinInvalid;
 
   /// No description provided for @joinWrongEmail.
@@ -9501,7 +9501,7 @@ abstract class AppLocalizations {
   /// No description provided for @openGardenHint.
   ///
   /// In fr, this message translates to:
-  /// **'Ce compte donne accès à ces jardins. Ouvrez celui où sont vos plantes.'**
+  /// **'Ce compte donne accès à ces jardins. Ouvrez celui qui contient vos plantes.'**
   String get openGardenHint;
 
   /// No description provided for @collaborationNeedsAccount.
@@ -9549,7 +9549,7 @@ abstract class AppLocalizations {
   /// No description provided for @inviteShareHint.
   ///
   /// In fr, this message translates to:
-  /// **'Envoyez ce lien ou ce code. L\'application n\'est pas nécessaire pour le recevoir.'**
+  /// **'Envoyez ce lien ou ce code. La personne n\'a pas besoin de l\'application pour le recevoir.'**
   String get inviteShareHint;
 
   /// No description provided for @inviteShare.
@@ -9609,7 +9609,7 @@ abstract class AppLocalizations {
   /// No description provided for @membersHint.
   ///
   /// In fr, this message translates to:
-  /// **'Les membres voient les mêmes plantes et peuvent s\'en occuper.'**
+  /// **'Les membres voient vos plantes et peuvent s\'en occuper.'**
   String get membersHint;
 
   /// No description provided for @membersGuestHint.
@@ -10431,7 +10431,7 @@ abstract class AppLocalizations {
   /// No description provided for @communityTipsHint.
   ///
   /// In fr, this message translates to:
-  /// **'Ce que d\'autres personnes ont observé en gardant cette espèce, hors du catalogue.'**
+  /// **'Ce que d\'autres personnes ont observé en cultivant cette espèce, hors catalogue.'**
   String get communityTipsHint;
 
   /// No description provided for @communityTipsEmpty.
@@ -10467,7 +10467,7 @@ abstract class AppLocalizations {
   /// No description provided for @communityTipPublicNote.
   ///
   /// In fr, this message translates to:
-  /// **'Le conseil paraît sous votre nom sur la fiche de cette espèce, pour tout le monde.'**
+  /// **'Votre conseil sera visible par tout le monde, sous votre nom, sur la fiche de cette espèce.'**
   String get communityTipPublicNote;
 
   /// No description provided for @communityTipLength.
@@ -10551,7 +10551,7 @@ abstract class AppLocalizations {
   /// No description provided for @moderationHint.
   ///
   /// In fr, this message translates to:
-  /// **'Les conseils signalés, du plus signalé au moins signalé.'**
+  /// **'Les conseils signalés, du plus au moins signalé.'**
   String get moderationHint;
 
   /// No description provided for @moderationEmpty.
