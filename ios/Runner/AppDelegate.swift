@@ -28,6 +28,9 @@ import UIKit
     WindowRegionsChannel.register(with: engineBridge.applicationRegistrar.messenger())
     // La barre d'onglets, rendue par UIKit et pilotée depuis Dart.
     NativeShell.register(with: engineBridge.applicationRegistrar.messenger())
+    // L'attestation de l'appareil, qui ouvre le relais des clés d'API : la
+    // Secure Enclave prouve que c'est bien Auxine qui demande (docs/19).
+    AppAttestChannel.register(with: engineBridge.applicationRegistrar.messenger())
     // Le relevé d'une pièce par RoomPlan, et le nord à la boussole : de quoi
     // dire où une plante serait le mieux (docs/17). Muet sans LiDAR.
     RoomScanChannel.register(with: engineBridge.applicationRegistrar.messenger())

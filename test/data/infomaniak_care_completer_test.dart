@@ -27,7 +27,7 @@ const _generique = CareProfile(
 );
 
 InfomaniakCareCompleter _completer(http.Client client) =>
-    InfomaniakCareCompleter(apiKey: 'tok', productId: '12345', model: 'Qwen/Qwen3.5-397B-A17B-FP8', client: client);
+    InfomaniakCareCompleter(endpoint: Uri.parse('https://relais.test/ai'), client: client);
 
 void main() {
   group('la lecture de la réponse', () {
@@ -232,8 +232,8 @@ void main() {
       }
     });
 
-    test('sans clé, ne part pas', () {
-      expect(InfomaniakCareCompleter(apiKey: '', productId: '1', model: 'm').isConfigured, isFalse);
+    test('sans relais, ne part pas', () {
+      expect(InfomaniakCareCompleter(endpoint: Uri.parse('')).isConfigured, isFalse);
       expect(const UnconfiguredCareCompleter().isConfigured, isFalse);
     });
   });

@@ -2,38 +2,38 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../../core/config/relay_config.dart';
 import '../../domain/care/care_completion.dart';
 import '../../domain/care/care_profile.dart';
 
 /// Complète une fiche d'entretien par les AI Services d'Infomaniak, via leur
-/// route compatible OpenAI. Même clé et même produit que le diagnostic.
+/// route compatible OpenAI, relayée. Même route que le diagnostic.
 ///
 /// Seul le nom scientifique part. Pas de photo, pas de nom de plante, rien de
 /// l'utilisateur. La réponse est une poignée de chiffres et de mots d'un
 /// vocabulaire fermé, ce qui laisse peu de place a l'invention et permet de
 /// jeter tout ce qui n'entre pas dedans.
 class InfomaniakCareCompleter implements CareCompleter {
-  InfomaniakCareCompleter({required this.apiKey, required this.productId, required this.model, http.Client? client})
-      : _client = client ?? http.Client();
+  InfomaniakCareCompleter({Uri? endpoint, http.Client? client})
+      : endpoint = endpoint ?? RelayConfig.route('ai'),
+        _client = client ?? http.Client();
 
-  final String apiKey;
-  final String productId;
-  final String model;
+  /// Le relais, qui tient la clé et choisit le modèle. Les quatre appels aux
+  /// AI Services passent par la même route : même amont, même corps.
+  final Uri endpoint;
   final http.Client _client;
 
-  Uri get endpoint => Uri.parse('https://api.infomaniak.com/2/ai/$productId/openai/v1/chat/completions');
-
   @override
-  bool get isConfigured => apiKey.trim().isNotEmpty && productId.trim().isNotEmpty;
+  bool get isConfigured => endpoint.hasAuthority;
 
   @override
   Future<CareCompletion> complete({required String scientificName, required String language}) async {
     if (!isConfigured) throw const CareCompletionException('unconfigured');
     final name = scientificName.trim();
     if (name.isEmpty) throw const CareCompletionException('no_species');
-    var response = await _post(buildRequest(model: model, scientificName: name, language: language, constrainJson: true));
+    var response = await _post(buildRequest(scientificName: name, language: language, constrainJson: true));
     if (response.statusCode == 400) {
-      response = await _post(buildRequest(model: model, scientificName: name, language: language, constrainJson: false));
+      response = await _post(buildRequest(scientificName: name, language: language, constrainJson: false));
     }
     if (response.statusCode == 401 || response.statusCode == 403) throw const CareCompletionException('unauthorized');
     if (response.statusCode == 429) throw const CareCompletionException('quota');
@@ -42,18 +42,16 @@ class InfomaniakCareCompleter implements CareCompleter {
   }
 
   Future<http.Response> _post(Map<String, Object?> body) => _client
-      .post(endpoint, headers: {'content-type': 'application/json', 'authorization': 'Bearer ${apiKey.trim()}'}, body: jsonEncode(body))
+      .post(endpoint, headers: const {'content-type': 'application/json'}, body: jsonEncode(body))
       .timeout(const Duration(seconds: 45));
 
   /// Corps de requête, au format OpenAI (exposé pour les tests).
   static Map<String, Object?> buildRequest({
-    required String model,
     required String scientificName,
     required String language,
     required bool constrainJson,
   }) =>
       {
-        'model': model,
         'max_tokens': 500,
         // Il s'agit de restituer un savoir, pas d'en inventer un.
         'temperature': 0.0,

@@ -8,3 +8,11 @@ project_id = "plant"
 # 401 avant même d'appeler la fonction ; elle ne rend de toute façon que ce
 # que deux fonctions SQL security definer acceptent de montrer.
 verify_jwt = false
+
+[functions.relay]
+# Le relais des clés d'API (docs/19-relais-des-cles.md). Ses appelants sont
+# des appareils, pas des comptes : ils se présentent avec un jeton qu'il a
+# lui-même délivré contre une attestation App Attest, et non avec un JWT
+# Supabase. Avec la vérification par défaut, la plateforme répondrait 401
+# avant que la fonction ait pu regarder l'attestation.
+verify_jwt = false

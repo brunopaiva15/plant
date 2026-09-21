@@ -25,6 +25,7 @@ seul `AppConfig.appName` porte le nom vu par l'utilisateur.
 | [docs/13-care-environment-scenes.md](docs/13-care-environment-scenes.md) | Scène d'environnement idéal : diorama clay, projection des besoins, pipeline Blender |
 | [docs/17-releve-de-la-maison.md](docs/17-releve-de-la-maison.md) | Relevé de la maison au LiDAR (expérimental) : où poser une plante, modèle de lumière, canal RoomPlan, paliers |
 | [docs/18-clarte-des-textes.md](docs/18-clarte-des-textes.md) | Clarté des textes : charte de rédaction, lots de réécriture des quatre ARB, garde-fous |
+| [docs/19-relais-des-cles.md](docs/19-relais-des-cles.md) | Relais des clés d'API : pourquoi elles ont quitté le binaire, App Attest, quotas, déploiement |
 
 ## Démarrer
 ```bash
@@ -43,6 +44,18 @@ Schéma et politiques RLS : `supabase/schema.sql`, à rejouer en entier dans l'�
 iPhone et iPad, et par rien d'autre : pas d'e-mail, et Google attend son tour
 (`AppConfig.googleSignInEnabled`) — sur Android le compte reste local. Sign in with Apple demande la capability sur
 l'App ID et le bundle dans les *Authorized Client IDs* de Supabase. Détails : docs/08.
+
+## Les services de l'éditeur (identification en ligne, diagnostic, Jev)
+Trois services payants — Pl@ntNet, les AI Services d'Infomaniak, OpenRouter —
+sont appelés avec les clés de l'éditeur, pas celles de l'utilisateur. Ces clés
+ne sont pas dans le binaire : un `--dart-define` n'est pas un secret, il
+devient une constante que `strings` sort d'un paquet démonté. Elles vivent
+dans la fonction Edge `relay` (`supabase functions deploy relay`), à qui
+l'application parle après s'être fait attester par App Attest — la Secure
+Enclave prouve que c'est bien Auxine qui demande, et des quotas par appareil
+et par jour bornent la facture. Rien à passer au build : l'adresse du relais
+se déduit de `SUPABASE_URL`. Sans relais, ces trois fonctions sont simplement
+absentes. Marche à suivre, secrets à poser et rotation des clés : docs/19.
 
 ## Les capteurs de la maison (facultatif)
 Un capteur de température ou d'humidité de la maison peut être branché à

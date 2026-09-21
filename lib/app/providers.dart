@@ -21,7 +21,6 @@ import '../data/repositories/task_repository_impl.dart';
 import '../data/repositories/room_scan_repository_impl.dart';
 import '../data/services/room_scan_service.dart';
 import '../core/config/app_version.dart';
-import '../core/config/diagnosis_config.dart';
 import '../data/services/device_location_service.dart';
 import '../data/services/infomaniak_advisor.dart';
 import '../data/services/infomaniak_care_completer.dart';
@@ -31,8 +30,11 @@ import '../data/services/gbif_species_service.dart';
 import '../data/services/wikimedia_species_service.dart';
 import '../data/services/google_home_climate_service.dart';
 import '../data/services/home_kit_climate_service.dart';
-import '../core/config/identification_config.dart';
+import '../core/config/relay_config.dart';
 import '../core/config/supabase_config.dart';
+import '../core/network/relay_client.dart';
+import '../data/services/preferences_relay_store.dart';
+import '../data/services/jev_decision_service.dart';
 import '../data/community/supabase_community_tips.dart';
 import '../data/sharing/supabase_collaboration_service.dart';
 import '../data/sharing/supabase_sharing_service.dart';
@@ -404,6 +406,18 @@ class LocalModelStatus {
   final String? error;
 }
 
+/// Le client qui se présente au relais avant de lui parler.
+///
+/// Un seul pour toute l'application, et c'est le point : la poignée de main
+/// coûte une signature de la Secure Enclave et un aller-retour, et le jeton
+/// qu'elle rend vaut une heure. Cinq services qui en ouvriraient chacun un
+/// en feraient cinq.
+final relayClientProvider = Provider<RelayClient>((ref) {
+  final client = RelayClient(store: PreferencesRelayKeyStore(ref.watch(preferencesServiceProvider)));
+  ref.onDispose(client.close);
+  return client;
+});
+
 /// Compteurs de la cascade, persistés dans les réglages.
 final identificationMetricsStoreProvider = Provider<IdentificationMetricsStore>((ref) => PreferencesMetricsStore(ref.watch(preferencesServiceProvider)));
 
@@ -413,6 +427,7 @@ final identificationMetricsStoreProvider = Provider<IdentificationMetricsStore>(
 /// cascade : des totaux, sur l'appareil.
 final jevIdentificationPolicyProvider = Provider<JevIdentificationPolicy>((ref) {
   final policy = JevIdentificationPolicy(
+    service: JevDecisionService(client: ref.watch(relayClientProvider)),
     metrics: ref.watch(identificationMetricsStoreProvider),
   );
   ref.onDispose(policy.dispose);
@@ -424,7 +439,7 @@ final jevIdentificationPolicyProvider = Provider<JevIdentificationPolicy>((ref) 
 /// des pistes, leur vraisemblance et ce qui a été vérifié à la main suffisent
 /// à juger si une vue de plus changerait quelque chose.
 final jevDiagnosisPolicyProvider = Provider<JevDiagnosisPolicy>((ref) {
-  final policy = JevDiagnosisPolicy();
+  final policy = JevDiagnosisPolicy(service: JevDecisionService(client: ref.watch(relayClientProvider)));
   ref.onDispose(policy.dispose);
   return policy;
 });
@@ -447,13 +462,14 @@ final irisFeedbackRecorderProvider = Provider<IrisFeedbackRecorder>((ref) {
   return SupabaseIrisFeedbackRecorder(Supabase.instance.client, userId: user.id, appVersion: ref.watch(appVersionProvider).name);
 });
 
-/// Identification : modèle local puis Pl@ntNet en repli si une clé est
-/// configurée. Sans modèle ni clé, service inactif.
+/// Identification : modèle local puis Pl@ntNet en repli, par le relais.
+/// Sans modèle ni relais, service inactif.
 final plantIdentifierProvider = Provider<PlantIdentifier>((ref) {
-  const key = IdentificationConfig.plantNetApiKey;
   final fallbackEnabled = ref.watch(preferencesProvider.select((p) => p.identificationFallbackEnabled));
   final local = ref.watch(localPlantModelProvider);
-  final remote = key.isEmpty ? const UnconfiguredIdentifier() as PlantIdentifier : PlantNetIdentifier(key);
+  final remote = RelayConfig.isConfigured
+      ? PlantNetIdentifier(client: ref.watch(relayClientProvider))
+      : const UnconfiguredIdentifier() as PlantIdentifier;
   if (!local.isAvailable && !remote.isConfigured) return const UnconfiguredIdentifier();
   return CascadeIdentifier(
     local: local,
@@ -564,12 +580,12 @@ final problemCatalogProvider = FutureProvider<ProblemCatalog>((ref) => ref.watch
 final exportServiceProvider = Provider<ExportService>((ref) => ExportService(ref.watch(databaseProvider), ref.watch(photoStorageProvider), rooms: ref.watch(roomScanStoreProvider)));
 final importServiceProvider = Provider<ImportService>((ref) => ImportService(ref.watch(databaseProvider), ref.watch(photoStorageProvider), rooms: ref.watch(roomScanStoreProvider)));
 
-/// Diagnostic : AI Services d'Infomaniak avec la clé de l'éditeur fournie au
-/// build, sans plafond ; sans clé, service inactif et entrée absente des
-/// écrans.
+/// Diagnostic : AI Services d'Infomaniak, par le relais, qui tient la clé de
+/// l'éditeur et compte ce qui est consommé ; sans relais, service inactif et
+/// entrée absente des écrans.
 final plantDiagnoserProvider = Provider<PlantDiagnoser>((ref) {
-  if (!DiagnosisConfig.isConfigured) return const UnconfiguredDiagnoser();
-  return InfomaniakDiagnoser(apiKey: DiagnosisConfig.apiKey, productId: DiagnosisConfig.productId, model: DiagnosisConfig.model);
+  if (!RelayConfig.isConfigured) return const UnconfiguredDiagnoser();
+  return InfomaniakDiagnoser(client: ref.watch(relayClientProvider));
 });
 
 /// « Trouver une plante » : le catalogue intégré et les fiches d'entretien
@@ -578,19 +594,19 @@ final plantFinderProvider = Provider<PlantFinder>(
     (ref) => PlantFinder(entries: SpeciesCatalog.entries, guide: ref.watch(careGuideProvider)));
 
 /// Second tour de « Trouver une plante », quand le catalogue n'a rien de
-/// convaincant : même clé Infomaniak que le diagnostic, appelée seulement si
-/// l'utilisateur le demande. Sans clé, le bouton n'apparaît pas.
+/// convaincant : même route de relais que le diagnostic, appelée seulement si
+/// l'utilisateur le demande. Sans relais, le bouton n'apparaît pas.
 final plantAdvisorProvider = Provider<PlantAdvisor>((ref) {
-  if (!DiagnosisConfig.isConfigured) return const UnconfiguredAdvisor();
-  return InfomaniakAdvisor(apiKey: DiagnosisConfig.apiKey, productId: DiagnosisConfig.productId, model: DiagnosisConfig.model);
+  if (!RelayConfig.isConfigured) return const UnconfiguredAdvisor();
+  return InfomaniakAdvisor(client: ref.watch(relayClientProvider));
 });
 
 /// Complément des fiches d'entretien par l'IA, pour les espèces dont le
-/// catalogue n'a que des repères généraux. Même clé Infomaniak que le
-/// diagnostic ; sans clé, la fiche s'en tient à ce qu'elle sait.
+/// catalogue n'a que des repères généraux. Même route de relais que le
+/// diagnostic ; sans relais, la fiche s'en tient à ce qu'elle sait.
 final careCompleterProvider = Provider<CareCompleter>((ref) {
-  if (!DiagnosisConfig.isConfigured) return const UnconfiguredCareCompleter();
-  return InfomaniakCareCompleter(apiKey: DiagnosisConfig.apiKey, productId: DiagnosisConfig.productId, model: DiagnosisConfig.model);
+  if (!RelayConfig.isConfigured) return const UnconfiguredCareCompleter();
+  return InfomaniakCareCompleter(client: ref.watch(relayClientProvider));
 });
 
 /// Les réponses déjà obtenues, gardées sur l'appareil.
@@ -623,11 +639,11 @@ final careCompletionProvider = FutureProvider.autoDispose.family<CareCompletion?
 });
 
 /// Précision des textes du guide de multiplication par l'IA, pour l'espèce
-/// de la plante mère. Même clé Infomaniak que le diagnostic ; sans clé, le
-/// guide s'en tient à ses textes locaux, qui sont déjà justes.
+/// de la plante mère. Même route de relais que le diagnostic ; sans relais,
+/// le guide s'en tient à ses textes locaux, qui sont déjà justes.
 final propagationRefinerProvider = Provider<PropagationGuideRefiner>((ref) {
-  if (!DiagnosisConfig.isConfigured) return const UnconfiguredPropagationGuideRefiner();
-  return InfomaniakPropagationRefiner(apiKey: DiagnosisConfig.apiKey, productId: DiagnosisConfig.productId, model: DiagnosisConfig.model);
+  if (!RelayConfig.isConfigured) return const UnconfiguredPropagationGuideRefiner();
+  return InfomaniakPropagationRefiner(client: ref.watch(relayClientProvider));
 });
 
 /// Les guides déjà précisés, gardés sur l'appareil.

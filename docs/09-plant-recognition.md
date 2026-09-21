@@ -230,65 +230,55 @@ appliquée sans un geste de sa part.
 
 ### 3.3 Repli Pl@ntNet
 
-**La clé est celle de l'éditeur, fournie au build**, pas celle de
-l'utilisateur : l'identification en ligne fait partie de l'application,
-personne n'a à ouvrir un compte chez un tiers pour s'en servir.
+**La clé est celle de l'éditeur**, pas celle de l'utilisateur :
+l'identification en ligne fait partie de l'application, personne n'a à ouvrir
+un compte chez un tiers pour s'en servir.
 
-```bash
-flutter build ipa --dart-define=PLANTNET_API_KEY=xxxxxxxx
-```
+Elle n'est plus dans le binaire pour autant. Elle l'a été, derrière un
+`--dart-define`, et ce mécanisme ne cachait rien : une valeur passée ainsi
+devient une constante du code compilé, que `strings` sort d'un paquet démonté
+en quelques secondes. Elle vit maintenant dans la fonction Edge `relay`, qui
+tient les trois clés de l'éditeur et signe les requêtes ;
+`PlantNetIdentifier` ne connaît qu'une adresse et n'envoie que les photos et
+la langue. Tout est dans **docs/19-relais-des-cles.md** : ce que le relais
+vérifie avant de répondre (App Attest), les quotas qui bornent la facture, et
+la marche à suivre pour le déployer.
 
-Elle est lue par `IdentificationConfig` (`lib/core/config/identification_config.dart`),
-sur le même modèle que `SupabaseConfig`. Sans clé au build, le repli est
+`RelayConfig` (`lib/core/config/relay_config.dart`) remplace
+`IdentificationConfig`, qui a disparu avec `DiagnosisConfig` et `JevConfig`.
+L'adresse du relais se déduit de `SUPABASE_URL` : sans backend, le repli est
 simplement absent et l'application se contente du modèle embarqué.
-
-Une clé compilée dans un binaire mobile est extractible par qui démonte le
-paquet — c'est vrai de toute application qui en embarque une. Ce qui limite
-le risque ici : le modèle local absorbe la majorité des demandes, et le
-quota mensuel par appareil borne la casse. Le jour où l'usage le
-justifie, la parade est un relais côté serveur qui garde la clé et signe les
-requêtes ; `PlantNetIdentifier` n'aurait alors qu'à changer d'URL.
 
 **Configuration dans Codemagic**
 
-1. Codemagic → l'application → **Environment variables**.
-2. Nom `PLANTNET_API_KEY`, valeur la clé, groupe par exemple `flora_secrets`,
-   **Secure** coché — une variable sécurisée est chiffrée et masquée dans les
-   journaux de build.
-3. Le groupe doit être attaché au workflow (`groups:` dans `codemagic.yaml`,
-   ou la case du groupe dans l'éditeur d'interface).
-3. Passer la variable au build :
+Les trois clés de services n'y sont plus : elles sont posées sur le projet
+Supabase (`supabase secrets set`, docs/19), et le build n'a plus à les
+connaître. Ce qui reste à passer :
 
 ```yaml
 environment:
   groups:
-    - flora_secrets          # contient les variables ci-dessous
+    - flora_secrets
 scripts:
   - name: Build iOS
     script: |
       flutter build ipa --release \
-        --dart-define=PLANTNET_API_KEY=$PLANTNET_API_KEY \
-        --dart-define=INFOMANIAK_AI_API_KEY=$INFOMANIAK_AI_API_KEY \
-        --dart-define=INFOMANIAK_AI_PRODUCT_ID=$INFOMANIAK_AI_PRODUCT_ID \
-        --dart-define=INFOMANIAK_AI_MODEL=$INFOMANIAK_AI_MODEL \
-        --dart-define=OPENROUTER_API_KEY=$OPENROUTER_API_KEY
+        --dart-define=SUPABASE_URL=$SUPABASE_URL \
+        --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY \
+        --dart-define=SHARE_BASE_URL=$SHARE_BASE_URL
 ```
-
-Toutes les variables de build de l'application, à mettre dans le même
-groupe :
 
 | Variable | Sert à | Sans elle |
 |---|---|---|
-| `PLANTNET_API_KEY` | repli Pl@ntNet de l'identification | modèle embarqué seul |
-| `INFOMANIAK_AI_API_KEY` | diagnostic « Ma plante a un problème » (jeton d'API Infomaniak, portée AI Services) | diagnostic absent |
-| `INFOMANIAK_AI_PRODUCT_ID` | identifiant du produit AI Services, dans l'URL du manager | diagnostic absent |
-| `INFOMANIAK_AI_MODEL` | modèle du diagnostic ; facultatif, `Qwen/Qwen3.5-397B-A17B-FP8` par défaut | le défaut |
-| `OPENROUTER_API_KEY` | couche de décision Jev sur les scans qu'Iris juge ambigus (docs/16) | politique Iris locale seule |
-| `SUPABASE_URL`, `SUPABASE_ANON_KEY` | compte, synchronisation, partage (docs/08) | application 100 % locale |
+| `SUPABASE_URL`, `SUPABASE_ANON_KEY` | compte, synchronisation, partage (docs/08), et l'adresse du relais (docs/19) | application 100 % locale, sans identification en ligne ni diagnostic |
 | `SHARE_BASE_URL` | base des liens de partage : le relais `share-proxy/` (docs/08) | l'URL Supabase, qui sert la page en code source |
 
-Le `--dart-define` est indispensable : une variable d'environnement de CI
-n'entre pas toute seule dans le binaire Flutter.
+`RELAY_DEV_TOKEN` n'entre jamais dans une construction publiée : c'est le
+laissez-passer du simulateur et d'Android, et c'est un mot de passe partagé,
+pas une preuve (docs/19, § 4).
+
+Le `--dart-define` reste indispensable pour celles-ci : une variable
+d'environnement de CI n'entre pas toute seule dans le binaire Flutter.
 
 - Déclenché automatiquement seulement sur `noCandidate`, erreur locale ou absence de modèle. Une liste `uncertain` reste visible pour permettre la seconde photo.
 - Coupable par l'utilisateur (réglage « Repli en ligne ») : tout reste alors
@@ -1426,8 +1416,9 @@ Services d'Infomaniak, hébergés en Suisse, par leur route compatible OpenAI
   million de jetons contre 0,20 / 0,75) : un diagnostic — une à trois
   photos réduites à 1 536 px, la consigne, 300 à 500 jetons de réponse —
   revient à quelques millièmes de franc au lieu d'un seul. Le modèle se
-  change au build (`INFOMANIAK_AI_MODEL`), sans toucher au code ; Mistral
-  Small 4 reste donc disponible d'un `--dart-define`.
+  change par un secret du relais (`INFOMANIAK_AI_MODEL`, docs/19), sans
+  toucher au code ni republier : Mistral Small 4 reste donc disponible d'un
+  `supabase secrets set`.
 - **Taille des photos** : 1 536 px sur le grand côté, et non 1 024. Mille
   vingt-quatre suffisaient à voir une feuille jaune, pas à voir ce qui
   sépare deux pistes : un thrips mesure un millimètre et son dégât est un

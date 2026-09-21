@@ -83,7 +83,6 @@ void main() {
     // Le repli juge sur les mots, les photos n'ayant rien donné : c'est là
     // que ce qui a été vérifié compte le plus.
     final body = InfomaniakDiagnoser.buildFallbackRequest(
-      model: 'm',
       language: 'fr',
       species: 'Calathea orbifolia',
       observations: const DiagnosisObservations(roots: RootState.crowded, light: LightExposure.dim),

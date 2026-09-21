@@ -26,6 +26,7 @@
 		7A1C0B082F0100AA00C63821 /* WindowRegionsChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C0B072F0100AA00C63820 /* WindowRegionsChannel.swift */; };
 		7A1C0B0C2F0100AA00C63825 /* NativeShell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C0B0B2F0100AA00C63824 /* NativeShell.swift */; };
 		7A1C0B0A2F0100AA00C63823 /* RoomScanChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C0B092F0100AA00C63822 /* RoomScanChannel.swift */; };
+		7A1C0B0E2F0100AA00C63827 /* AppAttestChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C0B0D2F0100AA00C63826 /* AppAttestChannel.swift */; };
 		7A1C0B0A2F0100AA00C6380A /* QuickActionsChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C0B092F0100AA00C63809 /* QuickActionsChannel.swift */; };
 		7A1C0B0C2F0100AA00C6380C /* TodayWidgetChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C0B0B2F0100AA00C6380B /* TodayWidgetChannel.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
@@ -103,6 +104,7 @@
 		7A1C0B072F0100AA00C63820 /* WindowRegionsChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowRegionsChannel.swift; sourceTree = "<group>"; };
 		7A1C0B0B2F0100AA00C63824 /* NativeShell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeShell.swift; sourceTree = "<group>"; };
 		7A1C0B092F0100AA00C63822 /* RoomScanChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomScanChannel.swift; sourceTree = "<group>"; };
+		7A1C0B0D2F0100AA00C63826 /* AppAttestChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAttestChannel.swift; sourceTree = "<group>"; };
 		7A1C0B092F0100AA00C63809 /* QuickActionsChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickActionsChannel.swift; sourceTree = "<group>"; };
 		7A1C0B0B2F0100AA00C6380B /* TodayWidgetChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayWidgetChannel.swift; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
@@ -225,6 +227,7 @@
 				7A1C0B072F0100AA00C63820 /* WindowRegionsChannel.swift */,
 				7A1C0B0B2F0100AA00C63824 /* NativeShell.swift */,
 				7A1C0B092F0100AA00C63822 /* RoomScanChannel.swift */,
+				7A1C0B0D2F0100AA00C63826 /* AppAttestChannel.swift */,
 				7A1C0B092F0100AA00C63809 /* QuickActionsChannel.swift */,
 				7A1C0B0B2F0100AA00C6380B /* TodayWidgetChannel.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
@@ -532,6 +535,7 @@
 				7A1C0B082F0100AA00C63821 /* WindowRegionsChannel.swift in Sources */,
 				7A1C0B0C2F0100AA00C63825 /* NativeShell.swift in Sources */,
 				7A1C0B0A2F0100AA00C63823 /* RoomScanChannel.swift in Sources */,
+				7A1C0B0E2F0100AA00C63827 /* AppAttestChannel.swift in Sources */,
 				7A1C0B0A2F0100AA00C6380A /* QuickActionsChannel.swift in Sources */,
 				7A1C0B0C2F0100AA00C6380C /* TodayWidgetChannel.swift in Sources */,
 			);
