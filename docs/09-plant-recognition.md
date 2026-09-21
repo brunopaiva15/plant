@@ -8,10 +8,12 @@
 > l'appareil** et n'appelle Pl@ntNet que sur hésitation ; deux photos de la
 > même plante valent quatorze points de top-1, trois en valent vingt-deux.
 
-Le modèle embarqué s'appelle **Iris**, et la version livrée est la première
-spécialiste d'intérieur : c'est **Iris Indoor** que l'application nomme à l'écran.
-Quand ce document parle de « la v8 », il parle de la version précédente,
-restée la référence contre laquelle Iris Indoor s'est mesurée.
+Le modèle embarqué s'appelle **Iris**, et la version livrée est la première à
+porter ses deux domaines dans un seul fichier :
+c'est **Iris 9** que l'application nomme à l'écran.
+Quand ce document parle de « la v8 » ou
+d'« Iris Indoor », il parle des versions précédentes, restées les références
+contre lesquelles l'Iris 9 s'est mesurée.
 
 Les numéros plus anciens qu'on croise ici — la v6, l'Iris 7 — **datent une
 mesure** : ils disent sur quel modèle un chiffre a été obtenu, et une section
@@ -44,25 +46,32 @@ relit le fichier et fait échouer la suite si cette table s'en écarte.
 
 | clé de `model.json` | valeur | |
 |---|---|---|
-| `version` | Indoor | le numéro affiché, collé à « Iris » |
+| `version` | 9 | le numéro affiché, collé à « Iris » |
 | `architecture` | MobileNetV3Large | la dorsale |
-| `classes` | 336 | espèces exposées, une ligne de `labels.txt` chacune |
+| `classes` | 1 569 | espèces exposées, une ligne de `labels.txt` chacune |
 | `input_size` | 320 | pixels de côté à l'inférence |
 | `load_size` | 366 | décodage avant recadrage |
 | `source_size` | 448 | côté des images du jeu |
 | `preprocessing` | `included_in_graph_uint8_0_255` | la normalisation est dans le graphe |
-| `bytes` | 6 635 756 | soit 6,64 Mo de `.tflite` |
-| `sha256` | 6a33f3dfd94c… | empreinte du fichier de poids |
-| `metrics.images` | 6 856 | images de test |
-| `metrics.top1` | 0,7461 | la bonne espèce en tête |
-| `metrics.top3` | 0,8677 | dans les trois premières |
-| `metrics.macro_f1` | 0,7101 | moyenne par classe, sans pondérer par le volume |
-| `metrics.mean_confidence` | 0,7464 | score moyen du premier candidat |
-| `metrics.captive.images` | 2 871 | sous-ensemble des plantes cultivées |
-| `metrics.captive.top1` | 0,7262 | ce que voit qui photographie son pot |
-| `metrics.captive.top3` | 0,8589 | |
+| `bytes` | 9 005 584 | soit 9,01 Mo de `.tflite` |
+| `sha256` | a919ae6a24f7… | empreinte du fichier de poids |
+| `metrics.images` | 30 954 | images de test |
+| `metrics.top1` | 0,6876 | la bonne espèce en tête |
+| `metrics.top3` | 0,8227 | dans les trois premières |
+| `metrics.macro_f1` | 0,6702 | moyenne par classe, sans pondérer par le volume |
+| `metrics.mean_confidence` | 0,7299 | score moyen du premier candidat |
+| `metrics.captive.images` | 4 649 | sous-ensemble des plantes cultivées |
+| `metrics.captive.top1` | 0,6728 | ce que voit qui photographie son pot |
+| `metrics.captive.top3` | 0,8101 | |
 
 <!-- /fiche -->
+
+**Ces chiffres sont ceux des 1 569 sorties, sans masque.** Le fichier porte
+aussi, pour la première fois, un objet `masks` : **336 classes** pour
+l'intérieur, **1 424** pour l'extérieur. L'application renormalise sur celles
+du lieu, et ce qu'elle rend alors n'est pas dans cette table — c'est mesuré au
+§ 14.6. Un ordre de grandeur : sur les photos de plantes cultivées, le masque
+intérieur fait passer le top-1 de 0,7230 à **0,7650**.
 
 Le fichier porte en plus `threshold_curve` — pour chaque couple (seuil,
 marge), l'autonomie et la justesse qui vont avec. C'est de là que sort le
