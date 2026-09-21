@@ -1,6 +1,6 @@
 # La clarté des textes (`lib/l10n/*.arb`)
 
-> Statut : **chantier terminé**, les onze lots sont livrés. La charte du § 3 est reportée
+> Statut : **chantier terminé**, les onze lots sont livrés. La charte est reportée
 > dans `docs/06-design-system.md`, le relevé mécanique (`tool/audit_textes.py`)
 > et le test de parité ICU sont en place. Le registre allemand est tranché :
 > *du*.
@@ -87,42 +87,27 @@ doute.
 Deux points sains, à préserver : les marqueurs ICU sont identiques d'une
 langue à l'autre sur les 1 851 clés, et aucune clé ne manque nulle part.
 
-## 3. La charte révisée
+## 3. La charte
 
-À reporter dans `docs/06-design-system.md`, § « Les textes », en remplacement
-du paragraphe actuel.
+Elle vit dans **`docs/06-design-system.md`, § « Les textes »**, et nulle part
+ailleurs : dix règles, de « on s'adresse à la personne » à « chaque langue
+s'écrit depuis l'intention ». `CLAUDE.md` en donne le résumé qu'une session
+lit en premier. Ce document-ci ne les recopie pas — deux copies finissent
+toujours par diverger.
 
-1. **On s'adresse à la personne.** Une consigne est à l'impératif, deuxième
-   personne : « Scannez la pièce », jamais « Tourner lentement » ni « La pièce
-   se scanne ». Ce qui lui appartient se dit « votre » : vos plantes, votre
-   appareil, votre jardin.
-2. **Chaque phrase a un sujet nommé.** Quand c'est le logiciel qui agit, on le
-   dit : « l'application calcule la lumière de chaque emplacement ». Décrire un
-   traitement n'est pas se personnifier — ce qui reste interdit, c'est de lui
-   prêter des états d'âme (« Auxine regarde la pluie », « il sait dire qu'il
-   hésite »).
-3. **Une aide dit une chose.** Deux phrases et 140 signes au plus pour une
-   aide en ligne, 220 pour un chapeau d'écran. Trois phrases sont réservées aux
-   écrans de consentement et de confidentialité, où chaque phrase porte une
-   garantie distincte.
-4. **On coupe ce qui est déjà dit ailleurs.** « Rien ne quitte l'appareil »
-   répété dans le chapeau, dans l'écran d'avant-scan et dans les réglages : une
-   fois suffit, à l'endroit où la question se pose.
-5. **Le mot courant l'emporte sur le mot juste.** Un *emplacement*, pas une
-   *place* ; un *scan*, pas un *relevé* ; *placer* une plante, pas la *poser*.
-   Les termes de botanique (nœud, keiki, sphaigne, cal) restent, c'est le
-   vocabulaire du sujet.
-6. **Les nombres s'écrivent en chiffres, les unités en abrégé** : « 5 à 8 cm »,
-   « 10 à 15 semaines », « 2 fois sur 3 ». Les textes d'interface se lisent en
-   diagonale ; un chiffre s'y voit, « cinq à huit centimètres » se lit.
-7. **Chaque langue s'écrit depuis l'intention, pas depuis le français.** On
-   part de ce que la chaîne doit faire comprendre, et on l'écrit dans la
-   langue. Une tournure française qui n'a pas d'équivalent idiomatique se perd,
-   elle ne se transpose pas.
-8. **Ce qui ne change pas** (et que `test/l10n/arb_tone_test.dart` verrouille
-   déjà) : pas de point d'exclamation, pas de « nos » ni de « notre », pas de
-   réassurance ni de politesse de remplissage, un titre est un nom et non une
-   question, les `careTip…` gardent le registre du jardinage.
+Ce qu'il faut retenir du changement, en revanche, tient en une phrase :
+**sobre ne veut pas dire impersonnel**. L'ancienne rédaction disait « sobre,
+factuel, court » et « l'application n'interpelle pas la personne » ; appliquée
+à la lettre, elle a produit une règle non écrite — ne jamais nommer d'acteur —
+et les trois échappatoires du § 1. La charte dit maintenant l'inverse pour la
+deuxième personne (on s'adresse à qui lit, à l'impératif) et garde
+l'interdiction là où elle valait : la politesse creuse, la réassurance, le
+point d'exclamation.
+
+Deux ajouts n'étaient pas dans l'ancienne version et se sont imposés en cours
+de route : le budget de longueur (140 signes pour une aide, 220 pour ce qui
+est seul sur sa page, trois phrases pour un consentement) et le registre
+unique par langue.
 
 ## 4. Les quatre langues
 
@@ -167,7 +152,7 @@ Onze lots, du plus visible au moins visible. Chacun se relit, se réécrit, se
 teste et se livre seul. Les `avant → après` ci-dessous sont les réécritures
 retenues, pas des exemples : elles se reportent telles quelles dans
 `app_fr.arb`, et les trois autres langues s'écrivent depuis l'intention selon
-la règle 7.
+la règle 10.
 
 ### Lot 1 — Le relevé de la maison (95 clés, 27 explicatives)
 
@@ -184,7 +169,7 @@ le chantier ; il concentre les trois échappatoires à la fois.
 d'abord : « Emplacement » désigne déjà les `Location` du jardin
 (`roomScanLinkedLocation`, `roomScanFillLocation`), et les confondre aurait
 rendu « Renseigner l'emplacement » ambigu sur un écran qui parle des deux. Le
-mot est celui de la charte, règle 5 ; il vaut pour toute l'application. Les
+mot est celui de la charte, règle 7 ; il vaut pour toute l'application. Les
 trois autres langues n'avaient pas la collision et gardent *spot*, *Platz*,
 *posto*.
 
@@ -336,7 +321,7 @@ Trois choses s'y ajoutent à ce que le plan prévoyait :
 
 `weatherRainCountsHint` perd sa troisième phrase (« Coupé, l'écran du matin le
 propose en un tap ») : le bouton « Noter arrosé » est déjà sur l'écran du
-matin, la phrase décrivait ce qui se voit. C'est la règle 4 appliquée.
+matin, la phrase décrivait ce qui se voit. C'est la règle 3 appliquée.
 
 | Clé | Avant | Après |
 |---|---|---|
@@ -569,7 +554,7 @@ Un piège de ma propre main, à retenir : remplacer la virgule par un
 deux-points dans « Les articles ne sont pas supprimés : ils rejoignent le
 groupe choisi » se transpose mal en allemand, où la majuscule après
 deux-points rend le « Sie » qui suit indistinguable du vouvoiement. La
-virgule y reste, et le « sie » minuscule avec elle — la règle 7 en acte : on
+virgule y reste, et le « sie » minuscule avec elle — la règle 10 en acte : on
 écrit chaque langue depuis l'intention, pas depuis la ponctuation
 française.
 
@@ -655,9 +640,9 @@ concerné est vert, sinon la suite casse dès le premier commit :
 ## 8. Le déroulé d'un lot
 
 1. `python3 tool/audit_textes.py --lot <préfixe> --liste` pour l'état d'entrée.
-2. Réécrire `app_fr.arb`, lot par lot, d'après la charte du § 3.
+2. Réécrire `app_fr.arb`, lot par lot, d'après la charte (`docs/06`).
 3. Réécrire `app_en.arb`, `app_de.arb`, `app_it.arb` **depuis l'intention**,
-   le français sous les yeux mais pas sous la plume (règle 7).
+   le français sous les yeux mais pas sous la plume (règle 10).
 4. `flutter gen-l10n` — les fichiers de `lib/l10n/generated/` sont commités.
 5. `flutter test test/l10n/` puis `flutter analyze`.
 6. Ouvrir les écrans du lot sur un appareil, en allemand : c'est la langue qui
@@ -680,7 +665,7 @@ concerné est vert, sinon la suite casse dès le premier commit :
   *emplacement* croise `location…` et `placement…`, déjà traduits par
   « emplacement ». Vérifier qu'un même mot français ne désigne pas deux choses
   après le lot 1.
-- **`docs/06-design-system.md`.** La charte du § 3 y remplace le paragraphe
+- **`docs/06-design-system.md`.** La charte y remplace le paragraphe
   « Les textes » dans le même commit que le premier lot, sinon les deux
   documents se contredisent.
 
