@@ -173,6 +173,49 @@ List<ReleaseNote> releaseNotes(AppLocalizations l10n) => [
           ),
         ],
       ),
+      ReleaseNote(
+        id: 'beta-rooms-1',
+        eyebrow: l10n.appName,
+        title: l10n.whatsNewTitle,
+        body: l10n.whatsNewRoomsIntro,
+        accent: ReleaseAccent.water,
+        mark: ReleaseMark.icon,
+        // Le plan, et non la maison : c'est ce que la livraison donne de
+        // nouveau, et la maison est déjà la pastille du premier point fort.
+        icon: CupertinoIcons.map,
+        highlights: [
+          ReleaseHighlight(
+            icon: CupertinoIcons.house_fill,
+            accent: ReleaseAccent.water,
+            title: l10n.roomScan,
+            body: l10n.whatsNewRoomScanBody,
+          ),
+          ReleaseHighlight(
+            icon: CupertinoIcons.viewfinder,
+            accent: ReleaseAccent.sage,
+            title: l10n.whatsNewIndoorOutdoorTitle,
+            body: l10n.whatsNewIndoorOutdoorBody,
+          ),
+          ReleaseHighlight(
+            icon: CupertinoIcons.question_circle,
+            accent: ReleaseAccent.rose,
+            title: l10n.diagnosisTitle,
+            body: l10n.whatsNewDiagnosisQuestionsBody,
+          ),
+          ReleaseHighlight(
+            icon: CupertinoIcons.book,
+            accent: ReleaseAccent.sun,
+            title: l10n.whatsNewNaturalTitle,
+            body: l10n.whatsNewNaturalBody,
+          ),
+          ReleaseHighlight(
+            icon: CupertinoIcons.checkmark_circle_fill,
+            accent: ReleaseAccent.terracotta,
+            title: l10n.careGuide,
+            body: l10n.whatsNewCareSourcesBody,
+          ),
+        ],
+      ),
     ];
 
 /// Décide s'il y a quelque chose à annoncer, et s'en souvient.

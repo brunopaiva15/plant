@@ -8670,6 +8670,54 @@ abstract class AppLocalizations {
   /// **'Deux espèces qui se ressemblent : les deux sont proposées.'**
   String get whatsNewIrisDoubtBody;
 
+  /// No description provided for @whatsNewRoomsIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le plan de la maison, un modèle qui distingue l\'intérieur du dehors, et une encyclopédie plus large.'**
+  String get whatsNewRoomsIntro;
+
+  /// No description provided for @whatsNewRoomScanBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le LiDAR dessine vos pièces, l\'application calcule la lumière de chaque endroit. Sur iPhone Pro et iPad Pro.'**
+  String get whatsNewRoomScanBody;
+
+  /// No description provided for @whatsNewIndoorOutdoorTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Intérieur et extérieur'**
+  String get whatsNewIndoorOutdoorTitle;
+
+  /// No description provided for @whatsNewIndoorOutdoorBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Iris tient les deux domaines dans un seul modèle. Le lieu de la plante affine la liste des espèces proposées.'**
+  String get whatsNewIndoorOutdoorBody;
+
+  /// No description provided for @whatsNewDiagnosisQuestionsBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le diagnostic demande ce qui manque pour trancher : une observation, ou la photo d\'une autre vue.'**
+  String get whatsNewDiagnosisQuestionsBody;
+
+  /// No description provided for @whatsNewNaturalTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Phénomènes normaux'**
+  String get whatsNewNaturalTitle;
+
+  /// No description provided for @whatsNewNaturalBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Guttation, nectar extrafloral, vieille feuille du bas : ce qui n\'est pas une maladie se lit aussi dans l\'encyclopédie.'**
+  String get whatsNewNaturalBody;
+
+  /// No description provided for @whatsNewCareSourcesBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chaque repère dit d\'où il vient : la RHS, l\'habitat d\'origine ou une règle de culture.'**
+  String get whatsNewCareSourcesBody;
+
   /// No description provided for @onbStepOf.
   ///
   /// In fr, this message translates to:

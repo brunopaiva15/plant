@@ -5038,6 +5038,36 @@ class AppLocalizationsIt extends AppLocalizations {
       'Due specie che si somigliano: vengono proposte entrambe.';
 
   @override
+  String get whatsNewRoomsIntro =>
+      'La pianta di casa, un modello che distingue interno ed esterno, e un\'enciclopedia più ampia.';
+
+  @override
+  String get whatsNewRoomScanBody =>
+      'Il LiDAR rileva le tue stanze, l\'app calcola la luce di ogni punto. Su iPhone Pro e iPad Pro.';
+
+  @override
+  String get whatsNewIndoorOutdoorTitle => 'Interno ed esterno';
+
+  @override
+  String get whatsNewIndoorOutdoorBody =>
+      'Iris tiene i due ambiti in un solo modello. Il luogo della pianta restringe le specie proposte.';
+
+  @override
+  String get whatsNewDiagnosisQuestionsBody =>
+      'La diagnosi chiede quello che manca: un\'osservazione, o una foto da un\'altra angolazione.';
+
+  @override
+  String get whatsNewNaturalTitle => 'Fenomeni normali';
+
+  @override
+  String get whatsNewNaturalBody =>
+      'Guttazione, nettare extrafloreale, una vecchia foglia in basso: anche ciò che non è una malattia ha la sua scheda.';
+
+  @override
+  String get whatsNewCareSourcesBody =>
+      'Ogni valore dice da dove viene: la RHS, l\'habitat d\'origine o una regola di coltivazione.';
+
+  @override
   String onbStepOf(int current, int total) {
     return 'Passo $current di $total';
   }

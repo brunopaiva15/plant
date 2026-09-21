@@ -128,16 +128,29 @@ void main() {
     });
   });
 
+  group('le catalogue', () {
+    testWidgets('les identifiants livrés ne bougent plus', (tester) async {
+      // Un identifiant est la mémoire des appareils : le renommer rouvre la
+      // fenêtre chez qui l'avait fermée, le réemployer avale en silence celle
+      // qui devait s'ouvrir. Cette liste ne s'édite donc que par la fin.
+      await tester.pumpWidget(_app(const Scaffold(key: Key('host'), body: SizedBox.expand())));
+      final l10n = AppLocalizations.of(tester.element(find.byKey(const Key('host'))));
+      final ids = [for (final note in releaseNotes(l10n)) note.id];
+      expect(ids.take(2).toList(), ['beta-feedback-1', 'beta-rooms-1']);
+      expect(ids.toSet(), hasLength(ids.length));
+    });
+  });
+
   group('la fenêtre', () {
-    testWidgets('montre les cinq nouveautés de la bêta', (tester) async {
+    testWidgets('montre les cinq points forts de la dernière livraison', (tester) async {
       await _pumpWindow(tester);
       expect(find.text('AUXINE'), findsOneWidget);
       expect(find.text('Nouveautés'), findsOneWidget);
-      expect(find.text("Fiche d'entretien"), findsOneWidget);
-      expect(find.text('Multiplication'), findsOneWidget);
+      expect(find.text('Scan de la maison'), findsOneWidget);
+      expect(find.text('Intérieur et extérieur'), findsOneWidget);
       expect(find.text('Diagnostic'), findsOneWidget);
-      expect(find.text('Encyclopédie'), findsOneWidget);
-      expect(find.text('Conseils de la communauté'), findsOneWidget);
+      expect(find.text('Phénomènes normaux'), findsOneWidget);
+      expect(find.text("Fiche d'entretien"), findsOneWidget);
       expect(find.byType(IrisMark), findsNothing);
     });
 

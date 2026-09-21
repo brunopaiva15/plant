@@ -2369,6 +2369,14 @@
   "whatsNewIrisOfflineBody": "La reconnaissance reste locale : rien ne part sans votre accord, et vous pouvez couper le repli en ligne.",
   "whatsNewIrisDoubtTitle": "Doute signalé",
   "whatsNewIrisDoubtBody": "Deux espèces qui se ressemblent : les deux sont proposées.",
+  "whatsNewRoomsIntro": "Le plan de la maison, un modèle qui distingue l'intérieur du dehors, et une encyclopédie plus large.",
+  "whatsNewRoomScanBody": "Le LiDAR dessine vos pièces, l'application calcule la lumière de chaque endroit. Sur iPhone Pro et iPad Pro.",
+  "whatsNewIndoorOutdoorTitle": "Intérieur et extérieur",
+  "whatsNewIndoorOutdoorBody": "Iris tient les deux domaines dans un seul modèle. Le lieu de la plante affine la liste des espèces proposées.",
+  "whatsNewDiagnosisQuestionsBody": "Le diagnostic demande ce qui manque pour trancher : une observation, ou la photo d'une autre vue.",
+  "whatsNewNaturalTitle": "Phénomènes normaux",
+  "whatsNewNaturalBody": "Guttation, nectar extrafloral, vieille feuille du bas : ce qui n'est pas une maladie se lit aussi dans l'encyclopédie.",
+  "whatsNewCareSourcesBody": "Chaque repère dit d'où il vient : la RHS, l'habitat d'origine ou une règle de culture.",
   "onbStepOf": "Étape {current} sur {total}",
   "@onbStepOf": {
     "placeholders": {
