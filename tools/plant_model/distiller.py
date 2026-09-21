@@ -50,7 +50,7 @@ from pathlib import Path
 
 import numpy as np
 
-from bioclip import lire_index
+from bioclip import flux_de_lots, lire_index
 
 DIM = 1024
 ENTREE = 224
@@ -197,6 +197,10 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
     ap.add_argument('--taux', type=float, default=1e-3)
     ap.add_argument('--contrastive', type=float, default=1.0,
                     help='poids du terme qui écarte ; 0 reproduit la recette publique')
+    ap.add_argument('--fils', type=int, default=6,
+                    help='fils de décodage. En série, le décodage tient 83 images/s '
+                         "et la carte attend : c'est le défaut du § 2 bis de docs/10, "
+                         'et il se reproduit à chaque nouvelle boucle')
     ap.add_argument('--pas', type=int, default=60, help='pas chronométrés par `mesure`')
     ap.add_argument('--graine', type=int, default=20260919)
     args = ap.parse_args()
@@ -217,14 +221,18 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
         from student import preparer
         optimiseur = torch.optim.AdamW(modele.parameters(), lr=args.taux)
         ordre = melanger(len(lot_complet), args.graine)
+        # Les lots sont bâtis d'avance, et leurs images décodées pendant que
+        # la carte travaille sur le lot précédent. En série, le décodage tient
+        # 83 images/s et la carte attend les neuf dixièmes du temps.
+        lots = [[lot_complet[i] for i in ordre[d:d + args.batch]]
+                for d in range(0, (args.pas + 5) * args.batch, args.batch)]
+        lots = [l for l in lots if len(l) == args.batch]
+        memo: dict = {}
         debut = None
-        for pas in range(args.pas + 5):
-            lot = [lot_complet[i] for i in ordre[pas * args.batch:(pas + 1) * args.batch]]
-            if len(lot) < args.batch:
-                break
-            x = torch.from_numpy(np.concatenate([preparer(c) for c, _, _ in lot]))
-            y = torch.from_numpy(cibles(cache, lot))
-            x, y = x.to(appareil), y.to(appareil)
+        for pas, (lot, images) in enumerate(
+                flux_de_lots(lots, lambda t: preparer(t[0])[0], args.fils)):
+            x = torch.from_numpy(np.stack(images)).to(appareil)
+            y = torch.from_numpy(cibles(cache, lot, memo)).to(appareil)
             sortie = modele(x)
             perte = perte_cosinus(sortie, y) + args.contrastive * perte_contrastive(sortie, y)
             optimiseur.zero_grad()
@@ -234,6 +242,8 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
                 if appareil == 'cuda':
                     torch.cuda.synchronize()
                 debut = time.perf_counter()
+            if pas >= args.pas + 4:
+                break
         if appareil == 'cuda':
             torch.cuda.synchronize()
         secondes = time.perf_counter() - debut
