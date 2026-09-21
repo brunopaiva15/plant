@@ -766,6 +766,51 @@ prétraitement n'explique rien**. Le 0,8383 annoncé a dû être mesuré sur
 iNat21, son propre domaine ; sur le nôtre il tombe à 0,748. La dispersion est
 large — 0,61 au dixième centile, 0,90 au quatre-vingt-dixième.
 
+#### Le mécanisme, et ce qu'il en reste après correction
+
+`voisins.py --degrader` écarte les vecteurs du teacher **au hasard**, jusqu'à
+un cosinus donné, et relit le top-1. La courbe est **plate** :
+
+| cosinus | 1,00 | 0,95 | 0,90 | 0,85 | 0,80 |
+|---|---|---|---|---|---|
+| indoor, texte | 0,8119 | 0,8066 | 0,7968 | 0,7897 | 0,7817 |
+
+Un bruit aléatoire à 0,80 coûte **trois points**. Le student réel, à 0,748,
+en coûte **cinquante**. Son erreur n'est donc pas du bruit : elle est
+structurée, et c'est la structure qui détruit la recherche.
+
+`student.py --accord` en donne la première pièce, la **largeur du cône** —
+le cosinus moyen entre deux images quelconques :
+
+| | cône |
+|---|---|
+| teacher | 0,2889 |
+| student | **0,4179** |
+
+Le cône du student s'est refermé : ses vecteurs partagent une direction que
+le teacher n'a pas. Un bruit aléatoire se compense au classement ; une
+direction commune, non — elle biaise chaque rang de la même façon.
+
+`voisins.py --recaler` la retire proprement, en déplaçant le student au
+centre du teacher sans toucher aux références :
+
+| indoor, à armes égales | teacher | student | student recalé |
+|---|---|---|---|
+| texte | 0,8119 | 0,3132 | **0,3673** |
+| centroïdes | 0,8456 | 0,3833 | **0,4490** |
+
+> **Le décalage constant vaut six points sur les quarante-cinq qui
+> manquent.** Il est réel, il se corrige à l'inférence avec un vecteur livré
+> à côté du modèle, et il n'explique qu'un septième du déficit. Le reste est
+> une confusion entre espèces proches, qu'aucune correction géométrique ne
+> répare.
+
+> **Et une faute de méthode, gardée parce qu'elle se reproduira.** Le premier
+> essai centrait les seules images, références inchangées : les deux côtés de
+> la comparaison n'étaient plus dans le même repère, et le top-1 tombait à
+> 0,1615. On l'a d'abord lu comme un résultat. Centrer, blanchir, projeter —
+> toute transformation de ce genre s'applique **aux deux côtés ou à aucun**.
+
 #### Ce que ça change pour notre distillation
 
 > **Une perte cosinus qui converge ne garantit pas la recherche.** À 0,748
@@ -778,11 +823,15 @@ Deux conséquences pour l'étape 5, et elles ne coûtent rien à appliquer :
 1. **la distillation se juge à `voisins.py`, pas à sa perte.** Le top-1 par
    référence, à chaque point de contrôle. Sinon on entraînera un modèle qui
    « converge bien » et ne sait rien retrouver ;
-2. **le cosinus à viser se mesure avant d'entraîner.** `voisins.py
-   --degrader 0.95,0.9,0.85,0.8` écarte les vecteurs du teacher jusqu'à un
-   cosinus donné — exactement, le bruit étant tiré orthogonalement — et relit
-   le top-1. La courbe dit quel accord la distillation doit atteindre pour
-   que l'espace reste utilisable, en quelques secondes de numpy.
+2. **le cosinus n'est pas la cible, l'étalement l'est aussi.** La courbe
+   plate le prouve : à 0,80 d'accord on garde 96 % du top-1 si l'erreur est
+   isotrope. Ce qu'il faut surveiller, c'est la **largeur du cône** —
+   `student.py --accord` — autant que la perte ;
+3. **la contrastive et les *hard negatives* passent de l'étape 7 à la
+   baseline.** Une perte cosinus seule fabrique exactement ce cône refermé :
+   rien n'y pousse deux images différentes à s'écarter, et rien n'y travaille
+   les paires difficiles. Les trente-huit points que le recalage ne récupère
+   pas sont précisément ce que ces deux termes visent.
 
 C'est un **plancher optimiste** : un vrai student ne s'écarte pas au hasard,
 il se trompe sur les espèces proches, là où ça coûte le plus. La courbe rend
