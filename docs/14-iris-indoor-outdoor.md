@@ -537,13 +537,14 @@ une architecture.
 
 1. ✅ **Finir et mesurer Iris Indoor** comme baseline Indoor — livré le 19
    septembre, 336 classes, mesuré au § 13.3 de `docs/09`.
-2. **Finir Iris 9** comme baseline classifier large/étroit — passe complète
-   en cours, `--batch 128` ; c'est sa tête qui portera Indoor *et* Outdoor
-   (§ 14.1 de `docs/09`).
+2. ✅ **Finir Iris 9** comme baseline classifier large/étroit — livré le 21
+   septembre, 1 569 classes, deux masques de lieu tirés de la même tête
+   (§ 14.6 de `docs/09`).
 3. ✅ Construire le jeu de benchmark Iris 10 : Indoor, Outdoor, multi-photo,
    OOD — `tools/plant_model/benchmark.py`, § 20 bis.
 4. Cacher les embeddings **BioCLIP 2.5** sur le corpus et générer les références
-   textuelles/taxonomiques.
+   textuelles/taxonomiques — outil écrit (`tools/plant_model/bioclip.py`), la
+   passe reste à lancer sur la machine.
 5. Implémenter une première distillation **BioCLIP-only** vers FastViT et
    MobileNetV4 Hybrid.
 6. Choisir le student au benchmark réel.
@@ -563,8 +564,9 @@ une architecture.
 
 ## 20 bis. Le banc figé, et ce qu'il faut avant la première distillation
 
-L'étape 3 est faite : `tools/plant_model/benchmark.py` assemble le jeu de
-mesure. Les étapes 4 à 6 ne demandent toujours aucune architecture nouvelle,
+Les étapes 3 et 4 ont leur outil : `tools/plant_model/benchmark.py` assemble
+le jeu de mesure, `tools/plant_model/bioclip.py` passe le teacher sur le
+corpus. Les étapes 4 à 6 ne demandent toujours aucune architecture nouvelle,
 seulement du calcul et une discipline. Cette section dit laquelle.
 
 ### Le banc
@@ -621,6 +623,52 @@ Deux précautions, parce qu'un cache faux est pire qu'un cache absent :
 - **les références textuelles et taxonomiques se calculent dans la même
   passe** (§ 7), avec la même version du teacher. Des références d'une
   version et des images d'une autre ne vivent pas dans le même espace.
+
+#### Ce que l'outil en fait
+
+`tools/plant_model/bioclip.py`, quatre commandes dans l'ordre où elles se
+lancent : `mesure`, `cache`, `textes`, `centroides`.
+
+Les deux précautions ci-dessus n'y sont pas des consignes mais des refus.
+Le dossier de cache porte un `signature.json` — teacher, dimension, taille
+d'entrée, normalisation — et une passe d'une autre signature **refuse
+d'écrire dedans** au lieu d'y mêler deux espaces ; `textes` et `centroides`
+relisent cette signature plutôt que d'en refaire une, si bien qu'on ne peut
+pas produire de références d'une autre version du teacher que celle qui a vu
+les images.
+
+Trois choses que l'écriture a tranchées, et qui n'étaient pas dans le
+cadrage :
+
+- **les vecteurs sont rangés normalisés.** La perte cosinus de l'étape 5 et
+  le k-plus-proches-voisins de l'étape 6 ne lisent que la direction ; garder
+  la norme coûterait la moitié de la précision utile du `float16` sans rien
+  servir ;
+- **le découpage se fait en parts entrelacées, pas par dossier.**
+  `splits.csv` est rangé par espèce : deux parts contiguës donneraient à
+  l'une les classes riches et à l'autre les pauvres, donc deux durées
+  différentes là où on les veut égales. C'est la leçon des parts de collecte
+  (§ 3 de `docs/10`), et elle s'applique telle quelle ;
+- **le tableau s'écrit avant l'index.** L'index est la vérité du cache ; une
+  coupure entre les deux perd un fragment à recalculer, jamais un vecteur
+  qu'on croirait présent.
+
+Le cache est incrémental : relancer la même ligne reprend où elle s'est
+arrêtée. Contrairement à la reprise de `train.py` (§ 13.6 de `docs/09`), il
+n'y a ici rien à perdre à reprendre — un vecteur ne dépend d'aucun état
+d'optimiseur, seulement de l'image et de la signature.
+
+**Un venv séparé de celui d'entraînement.** `tensorflow[and-cuda]` et
+PyTorch embarquent chacun leurs CUDA et cuDNN ; les mettre ensemble rejoue
+en plus gros l'accident de `tensorflow-cpu` installé à côté de la version
+GPU (§ 2 de `docs/10`), et c'est la version lente qui gagne, sans un
+message. Voir `requirements-bioclip.txt`.
+
+**Et les 8 Go de VRAM sont la même contrainte dure qu'à 320 px.** Un
+ViT-H/14 en `float16` tient ses poids dans 1,3 Go, le reste est de
+l'activation et croît avec le lot : `--batch 32` est le défaut. `mesure`
+affiche ce que la carte a réellement réservé, et c'est ce chiffre-là qu'on
+lit avant de lancer la nuit — pas celui qu'on espère.
 
 ### Étape 5 — la première distillation, et une seule variable
 

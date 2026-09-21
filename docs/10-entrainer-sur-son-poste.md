@@ -78,6 +78,22 @@ traîne dans l'environnement (`pip uninstall tensorflow-cpu`). Ne pas
 continuer avant que cette ligne réponde — `train.py` le redira au démarrage,
 mais autant le savoir tout de suite.
 
+### Le teacher d'Iris 10 a son propre environnement
+
+`tools/plant_model/bioclip.py` tourne sous PyTorch, et PyTorch embarque ses
+CUDA et cuDNN comme `tensorflow[and-cuda]` embarque les siens. Les deux dans
+un même venv est l'accident du paragraphe précédent en plus gros : ça
+s'installe sans erreur, ça tourne, et c'est la pile lente qui gagne.
+
+```bash
+python3 -m venv ~/venv-torch && source ~/venv-torch/bin/activate
+pip install -r ~/plant/tools/plant_model/requirements-bioclip.txt
+python3 -c "import torch; print(torch.cuda.is_available())"
+```
+
+Deux venvs, deux `source`, et on ne lance jamais `train.py` depuis
+`~/venv-torch` ni `bioclip.py` depuis `~/venv`.
+
 ## 2 bis. Ce que la machine rend, mesuré
 
 Avant de déplacer des dizaines de gigaoctets vers une machine, il faut savoir

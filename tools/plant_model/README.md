@@ -249,3 +249,83 @@ celle du § 6.7 de `docs/09`, porte sur les versions et non sur les seuils :
 fait remonter le seuil à 0,70 pour l'Iris 7 — il y rendait l'autonomie qu'avait
 la v6 à 0,60 (47 %) avec 85,9 % de précision au lieu de 82,8 %. L'Iris 8 l'a
 gardé tel quel et rend davantage des deux côtés (§ 6.7 bis de `docs/09`).
+
+## Iris 10 : le banc, puis le teacher
+
+Ces deux outils ne servent pas le classifieur : ils préparent Iris Core
+(`docs/14-iris-indoor-outdoor.md`, § 20 pour l'ordre, § 20 bis pour le
+détail). Aucun ne demande d'architecture nouvelle ; ils demandent du calcul
+et une discipline.
+
+### Le jeu de mesure, figé une fois pour toutes
+
+```bash
+python3 benchmark.py --dataset ~/plant-data/dataset-v8-indoor --out benchmark.csv
+```
+
+Cinq tranches — `indoor`, `outdoor`, `multi`, `ood_plante`, `ood_autre` —,
+graine 20260919, échantillonnage **par groupe** pour qu'une observation à
+plusieurs photos parte entière dans une tranche. Le manifeste ne se
+régénère pas pour arranger un modèle : c'est ce qui a manqué pendant huit
+versions, où chaque entraînement produisait son propre test et où « gagner
+trois points » pouvait n'être qu'un test plus facile.
+
+### Le teacher, passé une fois sur le corpus
+
+BioCLIP 2.5 définit l'espace d'Iris Core. Il tourne **une fois**, et ses
+vecteurs servent ensuite toutes les distillations sans jamais le rappeler.
+
+**Un venv à part.** `tensorflow[and-cuda]` et PyTorch embarquent chacun
+leurs CUDA et cuDNN ; les mettre ensemble rejoue en plus gros l'accident de
+`tensorflow-cpu` installé à côté de la version GPU.
+
+```bash
+python3 -m venv ~/venv-torch && source ~/venv-torch/bin/activate
+pip install -r requirements-bioclip.txt
+```
+
+Puis, dans l'ordre :
+
+```bash
+# 1. ce que la passe coûtera, avant de la lancer
+python3 bioclip.py mesure --dataset ~/plant-data/dataset-echantillon
+
+# 2. le corpus (reprenable : relancer la même ligne continue)
+python3 bioclip.py cache --dataset ~/plant-data/dataset-v8-indoor \
+  --cache ~/plant-data/bioclip
+
+# 3. les références d'espèces, dans le même espace
+python3 bioclip.py textes --cache ~/plant-data/bioclip
+python3 bioclip.py centroides --dataset ~/plant-data/dataset-v8-indoor \
+  --cache ~/plant-data/bioclip
+```
+
+`mesure` d'abord, et ce n'est pas une politesse : un ViT-H/14 n'a pas le
+débit d'un MobileNet, le chiffre ne se devine pas depuis les 831 img/s de
+`train.py`, et une passe qui dépasse la nuit se découpe en parts **avant**
+d'être lancée. La commande chronomètre cent images — premier lot jeté, il
+paie les noyaux CUDA — extrapole au corpus, et affiche la VRAM réservée :
+c'est elle qui décide du `--batch`, comme à l'entraînement en 320 px.
+
+| option | pourquoi |
+|---|---|
+| `--batch 32` | 8 Go de VRAM face à un ViT-H/14 ; c'est une décision, pas un accident |
+| `--part i --parts n` | deux machines ou deux nuits ; les parts sont entrelacées, pas contiguës, parce que `splits.csv` est rangé par espèce |
+| `--fragment 8192` | vecteurs par fichier `.npy` : 16 Mo, une coupure ne perd jamais plus que ça |
+| `--splits train` | pour `centroides` : une référence tirée des images de test rendrait le banc faux |
+
+**La clé du cache porte le prétraitement.** Le dossier reçoit un
+`signature.json` — teacher, dimension, taille d'entrée, normalisation — et
+une passe d'une autre signature refuse d'écrire dedans. Un cache mélangé ne
+se voit pas à l'usage : il rend des vecteurs, simplement ils ne décrivent
+pas tous le même espace. C'est le seul défaut de cette étape qui ne se
+rattrape pas par une relecture.
+
+Les vecteurs sont rangés **normalisés**, en `float16` : la perte cosinus de
+l'étape 5 et le k-plus-proches-voisins de l'étape 6 ne lisent que la
+direction. 1 024 dimensions à deux octets font 2 Ko par image, soit 1,6 Gio
+pour les 794 000 images d'entraînement et 2,0 Gio pour tout le corpus.
+
+Et les deux commandes de références relisent la signature du cache au lieu
+d'en refaire une : des vecteurs d'espèces d'une version du teacher et des
+vecteurs de photos d'une autre ne vivent pas dans le même espace.

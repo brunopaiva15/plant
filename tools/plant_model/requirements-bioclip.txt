@@ -1,0 +1,15 @@
+# Le teacher d'Iris 10 (étape 4 du § 20 de `docs/14`), dans un venv à lui.
+#
+# NE PAS installer à côté de `tensorflow[and-cuda]` : les deux embarquent
+# leurs propres CUDA et cuDNN, et le mélange rejoue en plus gros l'accident
+# de `tensorflow-cpu` installé à côté de la version GPU — dix fois plus lent,
+# sans un message.
+#
+#   python3 -m venv ~/venv-torch && source ~/venv-torch/bin/activate
+#   pip install -r requirements-bioclip.txt
+#   python3 -c "import torch; print(torch.cuda.is_available())"
+torch>=2.4
+torchvision>=0.19
+open_clip_torch>=2.24
+numpy
+Pillow
