@@ -148,6 +148,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) => platformPage(context, state, const OnboardingScreen()),
       ),
       StatefulShellRoute.indexedStack(
+        // Les navigateurs de branche gardent leurs mouvements pour eux.
+        // Sans cela, go_router renvoie chaque page d'onglet aux observateurs
+        // de la racine, avec `previousRoute` à `null` : l'observateur de la
+        // chrome la comptait comme une page posée sur la coquille, et les
+        // barres natives s'effaçaient dès le premier écran.
+        notifyRootObserver: false,
         builder: (context, state, shell) => AppShell(shell: shell),
         branches: [
           StatefulShellBranch(routes: [

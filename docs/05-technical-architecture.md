@@ -351,6 +351,17 @@ au-dessus de la plus basse efface les deux barres. Les pages des branches
 d'onglets ne passent pas par là, elles ont leur propre navigateur, et c'est
 bien la coquille qu'on regarde alors.
 
+**Les branches ne comptent pas, et il faut le dire deux fois.** go_router
+renvoie par défaut aux observateurs de la racine ce qui se passe dans les
+navigateurs de branche (`notifyRootObserver`), et la page d'un onglet y arrive
+avec `previousRoute` à `null` : comptée comme une page posée sur la coquille,
+elle effaçait les deux barres dès le premier écran — plus de menu du tout, au
+lancement comme après l'introduction. Le routeur coupe donc ce renvoi, et
+l'observateur s'en tient de son côté au navigateur de sa première route, qui
+est forcément la racine. Ce qu'un test à la main ne voit pas :
+`test/app/native_chrome_boot_test.dart` monte l'application entière et lit ce
+qui part sur le canal.
+
 **Une liste, et non un compteur.** Le compteur ignorait la page du bas — elle
 n'a rien en dessous, donc c'est la coquille — et se trompait à la fin de
 l'introduction : `context.go` pose la coquille **par-dessus** l'introduction,
