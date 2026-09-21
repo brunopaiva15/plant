@@ -150,6 +150,34 @@ def classer(embeddings: np.ndarray, references: np.ndarray, cles: list[str],
     return especes, sortie
 
 
+def degrader(embeddings: np.ndarray, cible: float, graine: int = 20260919) -> np.ndarray:
+    """Les mêmes vecteurs, écartés jusqu'à ce cosinus exactement.
+
+    **Répond à « quel cosinus la distillation doit-elle viser ? » sans
+    entraîner quoi que ce soit.** On sait qu'un student à 0,748 ne garde que
+    39 % du top-1 du teacher ; on ignore où est le seuil. Bruiter les vecteurs
+    du teacher à un cosinus donné et relire le top-1 rend toute la courbe en
+    quelques secondes de numpy.
+
+    Le bruit est tiré **orthogonalement** à chaque vecteur, puis dosé : le
+    cosinus obtenu vaut la cible au flottant près, et non « environ ». Un
+    bruit isotrope ajouté puis renormalisé donnerait une cible approchée, et
+    c'est justement la précision qui fait l'intérêt de la courbe.
+
+    C'est un **plancher optimiste** : un vrai student ne s'écarte pas au
+    hasard, il se trompe de façon structurée — sur les espèces proches, là où
+    ça coûte le plus. La courbe dit donc le cosinus **minimum** nécessaire,
+    pas le cosinus suffisant.
+    """
+    alea = np.random.default_rng(graine)
+    v = np.asarray(embeddings, dtype=np.float32)
+    v = v / np.linalg.norm(v, axis=1, keepdims=True)
+    u = alea.standard_normal(v.shape).astype(np.float32)
+    u -= (u * v).sum(axis=1, keepdims=True) * v      # orthogonal à chaque vecteur
+    u /= np.linalg.norm(u, axis=1, keepdims=True)
+    return cible * v + np.sqrt(max(0.0, 1.0 - cible ** 2)) * u
+
+
 def lire_embeddings(cache: Path, chemins: list[str]) -> tuple[list[int], np.ndarray]:
     """Les vecteurs déjà cachés pour ces images, et lesquelles en ont un.
 
@@ -247,6 +275,10 @@ def main() -> int:  # pragma: no cover - demande le cache et le banc
                     help="restreindre Iris 9 au masque du lieu pour cette tranche, "
                          "comme le fait l'application (§ 14 de docs/09). Sans lui, "
                          'Iris répond sur ses 1 569 classes, ce que l\'app ne fait pas')
+    ap.add_argument('--degrader', default='',
+                    help='cosinus cibles séparés par des virgules : relit le top-1 sur '
+                         'des vecteurs du teacher écartés à ce cosinus. Dit quel accord '
+                         'la distillation doit viser, sans entraîner')
     ap.add_argument('--avec-iris', action='store_true',
                     help="faire aussi tourner Iris 9 sur les mêmes images (demande "
                          'TensorFlow). Sans lui, ce script ne dit pas si l\'espace fait '
@@ -314,6 +346,15 @@ def main() -> int:  # pragma: no cover - demande le cache et le banc
                 r = tally(predictions, modele, garde, renormalise=renorm, seuil=args.seuil)
                 print(f'  {"Iris 9":<10} {titre:<18} top-1 {r["top1"]}  '
                       f'top-3 {r["top3"]}  ({atteignable}/{len(verites)} nommables)')
+
+        for cible in [float(c) for c in args.degrader.split(',') if c.strip()]:
+            abimes = degrader(embeddings, cible)
+            for nom, (cles, vecteurs) in jeux.items():
+                c, v = restreindre(cles, vecteurs, expose)
+                especes, scores = classer(abimes, v, c, args.temperature)
+                r = compter(verites, especes, scores, args.seuil)
+                print(f'  {nom:<10} {f"cosinus {cible:.2f}":<18} top-1 {r["top1"]}  '
+                      f'top-3 {r["top3"]}')
 
         for nom, (cles, vecteurs) in jeux.items():
             for titre, garder in (('à armes égales', expose), ('répertoire entier', None)):

@@ -10,8 +10,8 @@ import csv
 import numpy as np
 import pytest
 
-from voisins import (charger_references, classer, compter, lire_embeddings,
-                     restreindre, sans_suffixe)
+from voisins import (charger_references, classer, compter, degrader,
+                     lire_embeddings, restreindre, sans_suffixe)
 
 
 def unitaire(*v) -> np.ndarray:
@@ -163,3 +163,37 @@ def test_des_references_depareillees_sarretent(tmp_path):
         w.writerow(['a'])
     with pytest.raises(SystemExit):
         charger_references(tmp_path, 'texte')
+
+
+# --------------------------------------------------------------------------
+# La courbe « quel cosinus viser »
+# --------------------------------------------------------------------------
+
+def test_le_cosinus_obtenu_est_exactement_la_cible():
+    """« Environ 0,85 » ne servirait à rien : c'est la précision qui fait
+    l'intérêt de la courbe."""
+    v = np.random.default_rng(0).standard_normal((50, 32)).astype(np.float32)
+    v /= np.linalg.norm(v, axis=1, keepdims=True)
+    for cible in (0.95, 0.85, 0.75, 0.5):
+        cos = (v * degrader(v, cible)).sum(axis=1)
+        assert np.allclose(cos, cible, atol=1e-5)
+
+
+def test_les_vecteurs_degrades_restent_unitaires():
+    v = np.random.default_rng(1).standard_normal((20, 16)).astype(np.float32)
+    v /= np.linalg.norm(v, axis=1, keepdims=True)
+    d = degrader(v, 0.8)
+    assert np.allclose(np.linalg.norm(d, axis=1), 1.0, atol=1e-5)
+
+
+def test_un_cosinus_de_un_ne_change_rien():
+    v = np.random.default_rng(2).standard_normal((10, 8)).astype(np.float32)
+    v /= np.linalg.norm(v, axis=1, keepdims=True)
+    assert np.allclose(degrader(v, 1.0), v, atol=1e-5)
+
+
+def test_la_degradation_est_reproductible():
+    """Même graine, même bruit : deux lectures de la courbe se comparent."""
+    v = np.random.default_rng(3).standard_normal((10, 8)).astype(np.float32)
+    v /= np.linalg.norm(v, axis=1, keepdims=True)
+    assert np.allclose(degrader(v, 0.9), degrader(v, 0.9))

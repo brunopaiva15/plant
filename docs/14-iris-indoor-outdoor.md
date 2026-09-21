@@ -725,8 +725,7 @@ softmax en payait dix.
 
 - **Ce sont les chiffres du teacher**, ViT-H/14, 630 M de paramètres, 1,3 Go,
   79 img/s sur une RTX 2070 Super. C'est le **plafond** de la distillation,
-  pas ce qu'un téléphone rendra. Le student public annonce 71,7 % d'accord
-  avec son teacher (§ 5) : la marche à descendre est réelle ;
+  pas ce qu'un téléphone rendra — et le § 19 bis mesure de combien ;
 - **aucun seuil, donc aucune autonomie.** Un cosinus n'est pas une
   probabilité, et le 0,70 d'Iris a été réglé sur ses sorties (§ 3.1 de
   `docs/09`). Ce que l'application accepte et avec quelle justesse reste
@@ -734,6 +733,60 @@ softmax en payait dix.
 - **rien sur le refus.** `ood_autre` est toujours vide faute de photos hors
   sujet, et un espace qui nomme bien ne dit pas encore « ce n'est pas une
   plante » (§ 16).
+
+### 19 bis. Le plancher, mesuré — et ce qu'il apprend sur la recette
+
+`student.py` fait encoder les mêmes images du banc par
+`crazedcodernate/bioclip-2.5-mobile-fastvit` — 11,6 M de paramètres — et
+`voisins.py --embeddings` les lit **contre les mêmes références**.
+
+| top-1, à armes égales | teacher | student public |
+|---|---|---|
+| indoor, texte | 0,8119 | **0,3132** |
+| indoor, centroïdes | 0,8456 | **0,3833** |
+| outdoor, texte | 0,9095 | **0,5385** |
+| ood_plante, centroïdes (répertoire entier) | 0,8405 | **0,3765** |
+
+**Le raccourci est fermé** : ce student ne garde que 39 % du top-1 intérieur
+du teacher. L'étape 5 ne sera pas un affinage.
+
+#### Le diagnostic, avant le verdict
+
+Un effondrement pareil peut venir de la chaîne d'appel autant que du modèle.
+`student.py --accord` compare les deux caches image par image :
+
+| | cosinus |
+|---|---|
+| recadrage `carre` (celui du teacher) | **0,7480** |
+| recadrage `etire` (celui de sa carte) | 0,7423 |
+| annoncé par le modèle | 0,8383 |
+
+Les deux recadrages donnent le même résultat à six millièmes près : **le
+prétraitement n'explique rien**. Le 0,8383 annoncé a dû être mesuré sur
+iNat21, son propre domaine ; sur le nôtre il tombe à 0,748. La dispersion est
+large — 0,61 au dixième centile, 0,90 au quatre-vingt-dixième.
+
+#### Ce que ça change pour notre distillation
+
+> **Une perte cosinus qui converge ne garantit pas la recherche.** À 0,748
+> d'accord moyen, deux vecteurs pointent encore dans la même direction
+> générale, mais le classement de 5 813 références se joue sur des écarts
+> bien plus fins. Le student perd 61 % du top-1 en gardant 75 % du cosinus.
+
+Deux conséquences pour l'étape 5, et elles ne coûtent rien à appliquer :
+
+1. **la distillation se juge à `voisins.py`, pas à sa perte.** Le top-1 par
+   référence, à chaque point de contrôle. Sinon on entraînera un modèle qui
+   « converge bien » et ne sait rien retrouver ;
+2. **le cosinus à viser se mesure avant d'entraîner.** `voisins.py
+   --degrader 0.95,0.9,0.85,0.8` écarte les vecteurs du teacher jusqu'à un
+   cosinus donné — exactement, le bruit étant tiré orthogonalement — et relit
+   le top-1. La courbe dit quel accord la distillation doit atteindre pour
+   que l'espace reste utilisable, en quelques secondes de numpy.
+
+C'est un **plancher optimiste** : un vrai student ne s'écarte pas au hasard,
+il se trompe sur les espèces proches, là où ça coûte le plus. La courbe rend
+donc le cosinus **minimum** nécessaire, jamais le cosinus suffisant.
 
 ### Porte D — Indoor / Outdoor collaborent-ils vraiment ?
 
