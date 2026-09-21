@@ -51,6 +51,12 @@ Future<T?> showFloraSheet<T>(
 /// Sheet plein écran pour un flow (création de plante) : sur iOS, la sheet
 /// native qui repousse l'écran précédent ; sur Android, un dialogue plein écran.
 ///
+/// **Elle porte sa poignée**, comme [showFloraSheet]. Une feuille d'iOS se
+/// referme d'un glissement vers le bas, et c'est la poignée qui le dit : sans
+/// elle, une feuille dont le contenu n'offre rien pour sortir n'a l'air de
+/// rien — ni page, ni fenêtre. Voir [_AvecPoignee], qui la pose et lui fait
+/// sa place.
+///
 /// Pour un contenu qui défile d'un seul tenant, prendre
 /// [showFloraScrollableFlow] : cette version-ci laisse tomber le
 /// `ScrollController` de la sheet, et le contenu ne défilerait pas.
@@ -60,7 +66,7 @@ Future<T?> showFloraFlow<T>(BuildContext context, {required WidgetBuilder builde
     return showCupertinoSheet<T>(
       context: context,
       useNestedNavigation: true,
-      scrollableBuilder: (ctx, _) => _MargesLaterales(child: builder(ctx)),
+      scrollableBuilder: (ctx, _) => _MargesLaterales(child: _AvecPoignee(child: builder(ctx))),
     );
   }
   return Navigator.of(context, rootNavigator: true).push<T>(
@@ -95,7 +101,7 @@ Future<T?> showFloraScrollableFlow<T>(
 }) {
   Haptics.light();
   if (isCupertino(context)) {
-    return showCupertinoSheet<T>(context: context, useNestedNavigation: true, scrollableBuilder: (ctx, controller) => _MargesLaterales(child: builder(ctx, controller)));
+    return showCupertinoSheet<T>(context: context, useNestedNavigation: true, scrollableBuilder: (ctx, controller) => _MargesLaterales(child: _AvecPoignee(child: builder(ctx, controller))));
   }
   return Navigator.of(context, rootNavigator: true).push<T>(
     MaterialPageRoute(fullscreenDialog: true, builder: (ctx) => builder(ctx, null)),
@@ -104,6 +110,10 @@ Future<T?> showFloraScrollableFlow<T>(
 
 class SheetHandle extends StatelessWidget {
   const SheetHandle({super.key});
+
+  /// Ce que la poignée prend en hauteur, marges comprises. Une feuille qui la
+  /// pose par-dessus son contenu doit lui rendre autant.
+  static const double height = Space.xs + 5 + Space.xs;
 
   @override
   Widget build(BuildContext context) {
@@ -114,6 +124,43 @@ class SheetHandle extends StatelessWidget {
         height: 5,
         decoration: BoxDecoration(color: context.colors.line, borderRadius: Radii.fullAll),
       ),
+    );
+  }
+}
+
+/// La poignée d'une feuille plein écran, et la place qu'elle prend.
+///
+/// [showFloraSheet] pose la sienne dans une colonne, au-dessus du contenu :
+/// sa feuille est à hauteur de contenu, et une ligne de plus ne gêne personne.
+/// Une feuille de flow, elle, donne toute sa hauteur à une page — un
+/// `Scaffold`, une [FloraPage] — qui la remplit du haut jusqu'en bas. La
+/// poignée se pose donc **par-dessus**, et c'est la marge sûre qui lui fait
+/// sa place : la page s'écarte d'elle-même, comme elle s'écarte de l'heure et
+/// du wifi, sans rien savoir de cette poignée.
+///
+/// `showCupertinoSheet` sait le faire lui-même — `showDragHandle` —, mais ne
+/// transmet pas le drapeau à sa route quand on lui demande la navigation
+/// imbriquée, et nos flows la demandent tous. Le drapeau restait donc sans
+/// effet, et la feuille sans poignée.
+class _AvecPoignee extends StatelessWidget {
+  const _AvecPoignee({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final heritee = MediaQuery.of(context);
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        MediaQuery(
+          data: heritee.copyWith(padding: heritee.padding.copyWith(top: heritee.padding.top + SheetHandle.height)),
+          child: child,
+        ),
+        // Sous les doigts de personne : le glissement qui referme la feuille
+        // est déjà pris par la route, sur toute sa surface.
+        const Align(alignment: Alignment.topCenter, child: IgnorePointer(child: SheetHandle())),
+      ],
     );
   }
 }

@@ -148,8 +148,17 @@ class _RoomScanDetailBodyState extends ConsumerState<_RoomScanDetailBody> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final c = context.colors;
-    final scan = (ref.watch(roomScansProvider).value ?? const <RoomScan>[]).where((s) => s.id == widget.scanId).firstOrNull;
-    if (scan == null) return const SizedBox.shrink();
+    final scans = ref.watch(roomScansProvider);
+    final scan = (scans.value ?? const <RoomScan>[]).where((s) => s.id == widget.scanId).firstOrNull;
+    // Le relevé arrive par un flux : la feuille s'ouvre dans la foulée du
+    // scan, et la ligne n'est pas toujours lue à la première image. Une
+    // attente se dit ; une boîte vide ne dit rien.
+    if (scan == null) {
+      return Padding(
+        padding: const EdgeInsets.all(Space.xl),
+        child: Center(child: scans.hasValue ? EmptyState(emoji: '📐', title: l10n.roomScanFailed, compact: true) : const AdaptiveProgress()),
+      );
+    }
     if (!_seeded) {
       _name.text = scan.name;
       _seeded = true;

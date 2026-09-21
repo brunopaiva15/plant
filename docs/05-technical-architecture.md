@@ -241,6 +241,21 @@ reste en argile et c'est `showAdaptiveActionSheet` qui répond, comme avant :
 une feuille reste la bonne réponse de cette plateforme-là. Les deux disent la
 même chose ; ce n'est pas la même façon de la dire.
 
+**Une page posée dans une feuille garde la sienne.** C'est le pendant de la
+règle : la barre d'UIKit est celle de la coquille, et une feuille de Flutter
+passe *par-dessus* la coquille — l'observateur l'efface au moment de la
+poussée, et la page qui s'ouvre dedans ne peut pas la reprendre, puisqu'elle
+vit dans le navigateur de la feuille. Elle cédait quand même, et se retrouvait
+sans rien : ni titre, ni retour, ni croix. « Où la poser », la feuille du
+relevé, s'ouvrait sur son contenu nu.
+
+`CupertinoSheetRoute.hasParentSheet` le dit en un mot, et `FloraPage` comme
+`LargeTitlePage` s'abstiennent alors de céder. La page à la racine d'une
+feuille reçoit en plus **une croix** : elle n'a rien à dépiler — mais la
+feuille, si, et sans ce bouton elle ne se refermait qu'au glissement.
+`test/design_system/sheet_chrome_test.dart` tient les deux, et la poignée
+avec.
+
 Les pages qui prétendent à la barre forment une **pile**, et la dernière
 visible l'emporte. Une page poussée par-dessus une autre prend la barre ;
 quand elle s'en va, celle qu'elle recouvrait la reprend sans avoir à se

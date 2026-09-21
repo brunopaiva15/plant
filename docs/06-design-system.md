@@ -390,6 +390,22 @@ téléphone, celle du système là où il y en a une.
 Le premier test écrit ne prouvait rien : sous `flutter test`, la plateforme
 par défaut est Android, et c'est la barre d'iOS qui laissait passer le champ.
 
+### Les feuilles portent leur poignée (`components/sheets.dart`)
+
+Deux feuilles chez Auxine, et le même trait en haut des deux. `showFloraSheet`
+monte à hauteur de contenu et pose sa `SheetHandle` dans sa colonne ;
+`showFloraFlow` et `showFloraScrollableFlow` donnent toute la hauteur à une
+page, et la poignée se pose donc **par-dessus** — c'est la marge sûre qui lui
+fait sa place, si bien que la page s'en écarte d'elle-même, comme elle
+s'écarte de l'heure et du wifi, sans rien savoir d'elle.
+
+Une feuille d'iOS se referme d'un glissement vers le bas, et c'est la poignée
+qui le dit. Sans elle, une feuille dont le contenu n'offre rien pour sortir
+n'a l'air de rien — ni page, ni fenêtre. `showCupertinoSheet` sait la dessiner
+lui-même (`showDragHandle`), mais ne transmet pas le drapeau à sa route quand
+on lui demande la navigation imbriquée, et nos flows la demandent tous : le
+drapeau restait sans effet.
+
 ### Le menu debout (`FloraTabRail`)
 Quand la fenêtre est large sans être celle d'une tablette — l'écran intérieur
 d'un iPhone Duo ouvert —, le menu passe à droite, en colonne : une pilule de
