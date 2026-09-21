@@ -6619,6 +6619,32 @@ class AppLocalizationsDe extends AppLocalizations {
   String get roomScanPlace => 'Setzen';
 
   @override
+  String get roomScanAddWindow => 'Fenster hinzufügen';
+
+  @override
+  String get roomScanAddWindowHelp =>
+      'Der Scan sieht ein Fenster hinter einem zugezogenen Vorhang nicht. Füge es hier in seiner Größe hinzu.';
+
+  @override
+  String get roomScanTapForWindow =>
+      'Tippe auf dem Grundriss neben die Wand, in der das Fenster sitzt.';
+
+  @override
+  String get roomScanWindowSmall => 'Kleines Fenster · 0,6 m';
+
+  @override
+  String get roomScanWindowStandard => 'Fenster · 1,2 m';
+
+  @override
+  String get roomScanWindowWide => 'Fenstertür · 2,2 m';
+
+  @override
+  String get roomScanWindowByHand => 'Von Hand ergänzt';
+
+  @override
+  String get roomScanRemoveWindow => 'Dieses Fenster entfernen';
+
+  @override
   String roomScanRoomsShort(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,

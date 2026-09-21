@@ -126,6 +126,36 @@ void main() {
     expect(windowDressings(room, await repo.watchMarkers(a.id).first), [WindowDressing.sheer, WindowDressing.none, WindowDressing.drawn]);
   });
 
+  test('une fenêtre ajoutée à la main porte sa taille dans son genre', () async {
+    final a = await repo.create(name: 'Salon', filePath: 'a.json', capturedAt: DateTime(2026, 9, 1));
+    final w = await repo.addMarker(a.id, RoomMarkerKind.windowWide, x: -2.0, z: 0.3);
+    expect(w.kind.handWindow, HandWindow.wide);
+    expect(RoomMarkerKind.of(HandWindow.small), RoomMarkerKind.windowSmall);
+    expect(handWindowMarkers(await repo.watchMarkers(a.id).first).map((m) => m.id), [w.id]);
+  });
+
+  test('retirer une fenêtre de la main fait descendre les rangs au-dessus', () async {
+    final a = await repo.create(name: 'Salon', filePath: 'a.json', capturedAt: DateTime(2026, 9, 1));
+    // Une fenêtre au relevé (rang 0), deux ajoutées à la main (rangs 1 et 2).
+    await repo.setWindowOrientation(a.id, 0, CardinalDirection.south, x: 0, z: 0);
+    await repo.addMarker(a.id, RoomMarkerKind.windowStandard, x: -2.0, z: 0.3);
+    await repo.addMarker(a.id, RoomMarkerKind.windowSmall, x: 2.0, z: 0.3);
+    await repo.setWindowOrientation(a.id, 1, CardinalDirection.east, x: -2.0, z: 0.3);
+    await repo.addMarker(a.id, RoomMarkerKind.windowDrawn, x: 2.0, z: 0.3, windowIndex: 2);
+
+    // Le rang d'une fenêtre de la main est sa place dans la liste des
+    // repères : c'est celle-là qu'on retire.
+    final hands = handWindowMarkers(await repo.watchMarkers(a.id).first);
+    expect(hands, hasLength(2));
+    await repo.removeWindow(hands.first.id, scanId: a.id, windowIndex: 1);
+    final left = await repo.watchMarkers(a.id).first;
+    expect(handWindowMarkers(left).map((m) => m.id), [hands.last.id]);
+    // Son orientation part avec elle ; le rideau de la suivante la suit,
+    // et la fenêtre du relevé garde son rang.
+    expect(left.where((m) => m.kind == RoomMarkerKind.windowOrientation).map((m) => m.windowIndex), [0]);
+    expect(left.where((m) => m.kind == RoomMarkerKind.windowDrawn).single.windowIndex, 1);
+  });
+
   test('supprimer retire le relevé et ses repères', () async {
     final a = await repo.create(name: 'Salon', filePath: 'a.json', capturedAt: DateTime(2026, 9, 1));
     await repo.setWindowOrientation(a.id, 0, CardinalDirection.south, x: 0, z: 0);

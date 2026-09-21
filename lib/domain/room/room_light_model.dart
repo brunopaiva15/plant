@@ -114,7 +114,13 @@ abstract final class RoomLightModel {
       sample(room, p, height: height, southern: southern, directions: directions, dressings: dressings, sunElevationDeg: sunElevationDeg).light;
 
   /// La fenêtre se voit-elle du point ? Aucun mur entre les deux — sauf
-  /// celui qui la porte — ni aucun meuble plus haut que le point.
+  /// celui qui la porte — ni aucun meuble qui dépasse la visée.
+  ///
+  /// La visée monte : elle part du pot et va au milieu de la vitre, qui est
+  /// presque toujours plus haut. Un bureau, une table, un lit ne la coupent
+  /// donc pas — la lumière leur passe au-dessus —, là où une armoire la
+  /// coupe. Comparer la hauteur du meuble à celle du pot rendait un bureau
+  /// aussi opaque qu'un mur.
   static bool isVisible(ScannedRoom room, RoomPoint p, RoomSurface window, {required double height}) {
     // Le point de visée est ramené juste devant la vitre : un mur qui
     // finit dans le même plan que la fenêtre ne doit pas la cacher.
@@ -124,15 +130,30 @@ abstract final class RoomLightModel {
       if (_holds(wall, window)) continue;
       if (segmentsCross(p, target, wall.start, wall.end)) return false;
     }
+    final from = room.floorY + height;
+    final to = window.bottomY + window.height / 2;
     for (final o in room.objects) {
-      if (o.topY - room.floorY <= height) continue;
+      // Le meuble qui porte le pot ne se cache pas lui-même.
       if (o.contains(p)) continue;
-      final c = o.corners;
-      for (var i = 0; i < 4; i++) {
-        if (segmentsCross(p, target, c[i], c[(i + 1) % 4])) return false;
-      }
+      final t = _entersObject(p, target, o);
+      if (t == null) continue;
+      // La visée est au plus bas là où elle entre dans l'empreinte : c'est
+      // là que le meuble la coupe, s'il la coupe.
+      if (o.topY >= from + (to - from) * t) return false;
     }
     return true;
+  }
+
+  /// La fraction du chemin où une visée entre dans l'empreinte d'un meuble,
+  /// ou `null` quand elle passe à côté.
+  static double? _entersObject(RoomPoint from, RoomPoint to, RoomObject o) {
+    final c = o.corners;
+    double? first;
+    for (var i = 0; i < 4; i++) {
+      final t = crossFraction(from, to, c[i], c[(i + 1) % 4]);
+      if (t != null && (first == null || t < first)) first = t;
+    }
+    return first;
   }
 
   /// Le mur porte-t-il la fenêtre ? Quand RoomPlan ne le dit pas, la
@@ -166,8 +187,32 @@ abstract final class RoomLightModel {
     // Le soleil balaie : la tache déborde de l'ouverture d'un peu, plus loin.
     final lateral = toP.dot(w.along).abs();
     if (lateral > w.width / 2 + 0.15 * depth) return SunPatch.none;
+    if (_shaded(room, p, w, depth: depth, reach: reach)) return SunPatch.none;
     if (weak) return SunPatch.edge;
     return depth >= reach * sunEdgeFraction ? SunPatch.edge : SunPatch.full;
+  }
+
+  /// Un meuble met-il le point à l'ombre ? Le rayon qui arrive au point
+  /// descend depuis la vitre ; à la profondeur d'un meuble, il est à
+  /// *(profondeur du point − celle du meuble) × tan(hauteur du soleil)* du
+  /// sol, et un meuble plus haut que cela lui porte son ombre. Un bureau
+  /// collé à la vitre ombre ainsi le sol derrière lui tout en laissant
+  /// passer la lumière du jour, que la visibilité juge sur le milieu de la
+  /// vitre.
+  static bool _shaded(ScannedRoom room, RoomPoint p, RoomSurface w, {required double depth, required double reach}) {
+    // La pente du rayon : la tache porte à [reach] pour une vitre haute de
+    // [top], donc tan(hauteur du soleil) vaut leur rapport.
+    final slope = (w.topY - room.floorY) / reach;
+    for (final o in room.objects) {
+      // Le meuble qui porte le pot ne lui fait pas d'ombre.
+      if (o.contains(p)) continue;
+      final t = _entersObject(p, w.center, o);
+      if (t == null) continue;
+      // Sa profondeur depuis la vitre, le long de la visée.
+      final at = depth * (1 - t);
+      if (o.topY - room.floorY >= (depth - at) * slope) return true;
+    }
+    return false;
   }
 
   static CardinalDirection _mirror(CardinalDirection d) => switch (d) {

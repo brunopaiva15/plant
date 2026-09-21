@@ -25,7 +25,7 @@ void main() {
     room = RoomPlanParser.parse(Map<String, Object?>.from(json), northOffsetDeg: 90);
   });
 
-  Future<void> ouvrir(WidgetTester tester, Size fenetre) async {
+  Future<void> ouvrir(WidgetTester tester, Size fenetre, {RoomMarkerPlacement kind = RoomMarkerPlacement.heater, HandWindow? windowSize}) async {
     await tester.binding.setSurfaceSize(fenetre);
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(MaterialApp(
@@ -37,7 +37,7 @@ void main() {
           body: Center(
             child: FloraButton(
               label: 'Ouvrir',
-              onPressed: () => showRoomMarkerPlacer(context, room: room, markers: const [], kind: RoomMarkerPlacement.heater),
+              onPressed: () => showRoomMarkerPlacer(context, room: room, markers: const [], kind: kind, windowSize: windowSize),
             ),
           ),
         ),
@@ -82,6 +82,20 @@ void main() {
 
         expect(find.text('Place'), findsOneWidget, reason: 'le glissement ne doit pas refermer la feuille');
         expect(tester.widget<FloraButton>(find.widgetWithText(FloraButton, 'Place')).onPressed, isNotNull, reason: 'le repère a suivi le doigt');
+      }));
+
+  testWidgets("une fenêtre se pose d'un toucher, même à côté de la pièce", (tester) => _surIOS(() async {
+        await ouvrir(tester, const Size(393, 852), kind: RoomMarkerPlacement.window, windowSize: HandWindow.wide);
+        expect(find.text('Add a window'), findsOneWidget);
+        expect(tester.widget<FloraButton>(find.widgetWithText(FloraButton, 'Place')).onPressed, isNull);
+
+        // Le coin du cadre est hors des murs : une fenêtre s'y pose quand
+        // même, elle ira au mur le plus proche.
+        final plan = tester.getRect(find.byType(FloraCard).first);
+        await tester.tapAt(plan.topLeft + const Offset(4, 4));
+        await tester.pumpAndSettle();
+
+        expect(tester.widget<FloraButton>(find.widgetWithText(FloraButton, 'Place')).onPressed, isNotNull);
       }));
 }
 

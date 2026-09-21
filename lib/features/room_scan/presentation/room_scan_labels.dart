@@ -65,6 +65,12 @@ extension RoomScanLabels on AppLocalizations {
         WindowDressing.drawn => roomScanCurtainDrawn,
       };
 
+  String handWindowName(HandWindow w) => switch (w) {
+        HandWindow.small => roomScanWindowSmall,
+        HandWindow.standard => roomScanWindowStandard,
+        HandWindow.wide => roomScanWindowWide,
+      };
+
   String verdictLine(RoomFitVerdict v) => switch (v) {
         RoomFitVerdict.good => placementVerdictGood,
         RoomFitVerdict.acceptable => placementVerdictAcceptable,
