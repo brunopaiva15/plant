@@ -837,6 +837,50 @@ C'est un **plancher optimiste** : un vrai student ne s'écarte pas au hasard,
 il se trompe sur les espèces proches, là où ça coûte le plus. La courbe rend
 donc le cosinus **minimum** nécessaire, jamais le cosinus suffisant.
 
+### 19 ter. La recette, tranchée par deux bras — 21 septembre 2026
+
+Deux runs identiques sauf un terme : même dorsal `fastvit_sa12`, mêmes
+150 000 images, trois époques, précision mixte. `--contrastive 0` reproduit
+la recette publique, `--contrastive 1` ajoute l'InfoNCE sur les négatifs du
+lot.
+
+| indoor, à armes égales | témoin | **contrastive** | student public | teacher |
+|---|---|---|---|---|
+| texte, top-1 | 0,3718 | **0,4295** | 0,3132 | 0,8119 |
+| centroïdes, top-1 | 0,4898 | **0,5084** | 0,3833 | 0,8456 |
+| **largeur du cône** | **0,5096** | **0,1243** | 0,4179 | 0,2806 |
+| cosinus au teacher | 0,7162 | 0,6074 | 0,7480 | — |
+
+**Le témoin reproduit l'échec du modèle public, et l'aggrave** — cône à
+0,5096 contre 0,4179. Une perte cosinus seule referme le cône : ce n'était
+pas une particularité de ce modèle-là, c'est une propriété de la recette.
+
+**Le terme contrastif le répare**, et le top-1 monte de 5,8 points en
+références textuelles.
+
+> **Et la preuve la plus directe de tout ce fil :** le bras contrastif a un
+> **cosinus plus faible** au teacher — 0,6074 contre 0,7162 — et un **top-1
+> meilleur**. Moins d'accord moyen, meilleure recherche. Même budget, même
+> dorsal, une seule variable. Le cosinus n'est pas la cible, et ce n'est plus
+> une déduction.
+
+#### Ce que ces chiffres ne disent pas encore
+
+- **Le poids de 1,0 sur-corrige.** Le cône tombe à 0,1243, soit **plus étalé
+  que le teacher** (0,2806). L'InfoNCE maximise l'uniformité, et rien ne lui
+  dit de s'arrêter à la géométrie qu'on veut copier. La cible n'est pas un
+  cône minimal, c'est **celui du teacher** ;
+- **le répertoire entier y perd un peu** — 0,3123 contre 0,3310 en textes.
+  Une vingtaine d'images sur 1 127, donc à confirmer, mais cohérent avec un
+  espace trop étalé quand 5 813 références se disputent le rang ;
+- **trois époques sur 150 000 images ne sont pas une recette finale.** Le
+  plafond du teacher est à 0,8119 et Iris 9 masqué aussi ; on est à la moitié
+  du chemin, avec un vingtième du budget prévu.
+
+**La suite est donc un balayage du poids**, avec un critère clair : viser le
+cône du teacher, pas le plus bas. Puis la passe complète, sur le poids
+retenu.
+
 ### Porte D — Indoor / Outdoor collaborent-ils vraiment ?
 
 La séparation doit améliorer le produit sans créer une explosion de faux
