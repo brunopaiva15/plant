@@ -1,6 +1,6 @@
 # La clarté des textes (`lib/l10n/*.arb`)
 
-> Statut : **lots 1 à 9 livrés**, lots 10 et 11 à faire. La charte du § 3 est reportée
+> Statut : **lots 1 à 10 livrés**, lot 11 à faire. La charte du § 3 est reportée
 > dans `docs/06-design-system.md`, le relevé mécanique (`tool/audit_textes.py`)
 > et le test de parité ICU sont en place. Le registre allemand est tranché :
 > *du*.
@@ -586,6 +586,14 @@ française.
 
 ### Lot 10 — Le jardin au jour le jour (575 clés, 69 explicatives)
 
+> **Livré.** 15 chaînes réécrites — le lot était sain, comme le plan
+> l'annonçait. Ce qu'il portait de décisif tient en une ligne : les derniers
+> états vides vouvoyaient (`emptyPlantsSubtitle`, `emptyGardenSubtitle`,
+> `growthEmptySubtitle`, `leftGarden`). Après eux, **le corpus ne contient
+> plus un seul vouvoiement allemand ni un seul *voi* italien** — vérifié hors
+> détecteur, chaîne par chaîne. Le gros du lot 11 est donc fait.
+
+
 Tout le reste : `plant…`, `task…`, `photo…`, `event…`, `field…`, `note…`,
 `item…`, `add…`, `edit…`, `sort…`, `filter…`, `empty…`, `no…`. Pas de tableau :
 ce sont des libellés courts, bons dans l'ensemble. Le lot consiste à passer
@@ -682,6 +690,6 @@ concerné est vert, sinon la suite casse dès le premier commit :
 | 7 ✓ | Découverte, soutien | 111 | 36 | **livré** — première impression |
 | 8 ✓ | Compte, partage | 132 | 35 | **livré** |
 | 9 ✓ | Données, hors-ligne | 74 | 26 | **livré** |
-| 10 | Jardin au jour le jour | 575 | 69 | libellés courts, passe rapide |
+| 10 ✓ | Jardin au jour le jour | 575 | 69 | **livré** — libellés courts, passe rapide |
 | 11 | Passes mécaniques | — | — | quand plus rien ne bouge |
 | | **Total** | **1 851** | **513** | soit 2 052 chaînes sur quatre langues |

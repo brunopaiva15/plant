@@ -397,7 +397,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get emptyPlantsTitle => 'Noch keine Pflanzen';
 
   @override
-  String get emptyPlantsSubtitle => 'Fügen Sie Ihre erste Pflanze hinzu.';
+  String get emptyPlantsSubtitle => 'Füge deine erste Pflanze hinzu.';
 
   @override
   String get addPlant => 'Pflanze hinzufügen';
@@ -1444,7 +1444,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get reduceMotion => 'Bewegung reduzieren';
 
   @override
-  String get reduceMotionHint => 'Standardmäßig gilt die Systemeinstellung.';
+  String get reduceMotionHint =>
+      'Standardmäßig folgt die App der Systemeinstellung.';
 
   @override
   String get notifications => 'Mitteilungen';
@@ -1941,7 +1942,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get noInventoryTitle => 'Leeres Inventar';
 
   @override
-  String get noInventorySubtitle => 'Dünger, Erde, Töpfe, Werkzeuge …';
+  String get noInventorySubtitle => 'Dünger, Erde, Töpfe, Werkzeuge…';
 
   @override
   String get deleteItem => 'Artikel löschen';
@@ -2298,7 +2299,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get play => 'Abspielen';
 
   @override
-  String get timelapseHint => 'Tippen zum Pausieren.';
+  String get timelapseHint => 'Tippe zum Pausieren.';
 
   @override
   String notifLowStockOne(String name) {
@@ -2901,7 +2902,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get noTasksSubtitle =>
-      'Aussaat, Gewächshaus reinigen, Erde bestellen …';
+      'Aussaat, Gewächshaus reinigen, Erde bestellen…';
 
   @override
   String get noDoneTasks => 'Noch nichts erledigt';
@@ -5116,7 +5117,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get supportNoThanks => 'Nein danke';
 
   @override
-  String get emptyGardenSubtitle => 'Fügen Sie Ihre erste Pflanze hinzu.';
+  String get emptyGardenSubtitle => 'Füge deine erste Pflanze hinzu.';
 
   @override
   String get finderTitle => 'Pflanze finden';
@@ -5482,7 +5483,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String leftGarden(String name) {
-    return 'Sie haben „$name“ verlassen';
+    return 'Du hast „$name“ verlassen';
   }
 
   @override
@@ -5646,7 +5647,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get growthEmptySubtitle =>
-      'Fügen Sie regelmäßig Fotos hinzu, um das Wachstum zu verfolgen.';
+      'Füge regelmäßig Fotos hinzu, um das Wachstum zu verfolgen.';
 
   @override
   String growthSummary(int count, String since) {

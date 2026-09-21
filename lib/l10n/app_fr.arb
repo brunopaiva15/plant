@@ -625,7 +625,7 @@
   "themeLight": "Clair",
   "themeDark": "Sombre",
   "reduceMotion": "Réduire les animations",
-  "reduceMotionHint": "Par défaut, le réglage du système s'applique.",
+  "reduceMotionHint": "Par défaut, l'application suit le réglage du système.",
   "notifications": "Notifications",
   "enableNotifications": "Rappel quotidien",
   "notificationTime": "Heure",

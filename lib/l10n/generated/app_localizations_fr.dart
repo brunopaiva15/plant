@@ -1443,7 +1443,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get reduceMotionHint =>
-      'Par défaut, le réglage du système s\'applique.';
+      'Par défaut, l\'application suit le réglage du système.';
 
   @override
   String get notifications => 'Notifications';

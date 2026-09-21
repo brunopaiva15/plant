@@ -2631,7 +2631,7 @@ abstract class AppLocalizations {
   /// No description provided for @reduceMotionHint.
   ///
   /// In fr, this message translates to:
-  /// **'Par défaut, le réglage du système s\'applique.'**
+  /// **'Par défaut, l\'application suit le réglage du système.'**
   String get reduceMotionHint;
 
   /// No description provided for @notifications.

@@ -1441,7 +1441,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reduceMotion => 'Reduce motion';
 
   @override
-  String get reduceMotionHint => 'By default, the system setting applies.';
+  String get reduceMotionHint =>
+      'By default, the app follows the system setting.';
 
   @override
   String get notifications => 'Notifications';

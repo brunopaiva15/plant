@@ -102,7 +102,9 @@ PHRASES = 2             # au-delà, l'aide devient un paragraphe
 # d'une page d'accueil, seul à l'écran, et les blocs de référence de la fiche
 # d'entretien — le risque d'une eau, le détail d'une humidité, la période de
 # repos —, qui forment un document.
-CHAPEAU_DE_PAGE = re.compile(r'^care\w*(Risk|Detail)$|^careRestNote$|^onb\w*Body$')
+CHAPEAU_DE_PAGE = re.compile(
+    r'^care\w*(Risk|Detail)$|^careRestNote$|^onb\w*Body$'
+    r'|^roomScan(Hint|BeforeText)$')
 
 # Le consentement et la confidentialité ont droit à trois phrases et au même
 # budget (docs/06, « Les textes », règle 3) : chaque phrase y porte une
@@ -123,8 +125,16 @@ def chaines(locale: str) -> dict[str, str]:
 
 
 def sans_icu(texte: str) -> str:
-    """Le texte débarrassé des accolades ICU, pour ne pas compter leur syntaxe."""
-    return re.sub(r'\{[^{}]*\}', '…', texte)
+    """Le texte débarrassé des accolades ICU, pour ne pas compter leur syntaxe.
+
+    Elles s'imbriquent — « {unit, select, days{{count, plural, …}}} } » —, donc
+    on pèle de l'intérieur vers l'extérieur jusqu'à ce que plus rien ne bouge.
+    """
+    while True:
+        reduit = re.sub(r'\{[^{}]*\}', '…', texte)
+        if reduit == texte:
+            return texte
+        texte = reduit
 
 
 def defauts(locale: str, cle: str, texte: str) -> list[str]:

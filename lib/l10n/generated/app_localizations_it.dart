@@ -396,7 +396,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get emptyPlantsTitle => 'Nessuna pianta';
 
   @override
-  String get emptyPlantsSubtitle => 'Aggiungete la prima pianta.';
+  String get emptyPlantsSubtitle => 'Aggiungi la tua prima pianta.';
 
   @override
   String get addPlant => 'Aggiungi una pianta';
@@ -1442,7 +1442,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get reduceMotionHint =>
-      'Per impostazione predefinita, vale il valore del sistema.';
+      'Per impostazione predefinita, l\'app segue il valore del sistema.';
 
   @override
   String get notifications => 'Notifiche';
@@ -5129,7 +5129,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get supportNoThanks => 'No grazie';
 
   @override
-  String get emptyGardenSubtitle => 'Aggiungete la prima pianta.';
+  String get emptyGardenSubtitle => 'Aggiungi la tua prima pianta.';
 
   @override
   String get finderTitle => 'Trovare una pianta';
@@ -5497,7 +5497,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String leftGarden(String name) {
-    return 'Avete lasciato «$name»';
+    return 'Hai lasciato «$name»';
   }
 
   @override
@@ -5659,7 +5659,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get growthEmptySubtitle =>
-      'Aggiungete foto regolarmente per seguire la crescita.';
+      'Aggiungi foto regolarmente per seguire la crescita.';
 
   @override
   String growthSummary(int count, String since) {

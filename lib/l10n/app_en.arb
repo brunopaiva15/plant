@@ -428,7 +428,7 @@
   "themeLight": "Light",
   "themeDark": "Dark",
   "reduceMotion": "Reduce motion",
-  "reduceMotionHint": "By default, the system setting applies.",
+  "reduceMotionHint": "By default, the app follows the system setting.",
   "notifications": "Notifications",
   "enableNotifications": "Daily reminder",
   "notificationTime": "Time",
