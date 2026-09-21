@@ -3024,15 +3024,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careSupportMossPoleCare =>
-      'Humidifier le tuteur à chaque arrosage : les racines aériennes s\'y fixent.';
+      'Humidifiez le tuteur à chaque arrosage : les racines aériennes s\'y fixent.';
 
   @override
   String get careSupportStakeCare =>
-      'Attacher la tige sans serrer, à mesure qu\'elle monte.';
+      'Attachez la tige sans serrer, à mesure qu\'elle monte.';
 
   @override
   String get careSupportTrellisCare =>
-      'Guider les tiges à mesure qu\'elles poussent.';
+      'Guidez les tiges à mesure qu\'elles poussent.';
 
   @override
   String get careIssues => 'À surveiller';
@@ -3259,7 +3259,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get carePotDormantNote =>
-      'Le rempotage se fait à la reprise, quand le repos s\'achève, et non sur une racine qui sort.';
+      'Rempotez à la reprise, quand le repos s\'achève, et non parce qu\'une racine sort.';
 
   @override
   String careTempIdeal(int min, int max) {
@@ -3407,7 +3407,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careToxicPets =>
-      'Tenir hors de portée des animaux et des enfants.';
+      'Tenez-la hors de portée des animaux et des enfants.';
 
   @override
   String get careToxicityFromSpecies => 'Vérifié pour cette espèce';
@@ -3548,7 +3548,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careWaterRainRisk =>
-      'Recueillie sur un toit, elle emporte poussières et fientes ; une réserve à l\'air libre verdit. Écarter les premières minutes de pluie, couvrir le tonneau.';
+      'Recueillie sur un toit, elle emporte poussières et fientes ; une réserve à l\'air libre verdit. Écartez les premières minutes de pluie et couvrez le tonneau.';
 
   @override
   String get careWaterFiltered => 'Eau filtrée';
@@ -3592,7 +3592,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careWaterCondensateRisk =>
-      'Elle a ruisselé sur un échangeur et dans un bac où s\'accumulent poussières, biofilm et bactéries, et peut emporter des traces de métaux. À réserver aux plantes d\'ornement, sur un appareil propre, jamais sur ce qui se mange.';
+      'Elle a ruisselé sur un échangeur et dans un bac où s\'accumulent poussières et bactéries, et peut emporter des traces de métaux. Réservez-la aux plantes d\'ornement, sur un appareil propre, jamais sur ce qui se mange.';
 
   @override
   String get careWaterSoftened => 'Eau adoucie';
@@ -3708,11 +3708,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careGreenhouseAir =>
-      'Aérer chaque jour : l\'air confiné fait pourrir les plantes de milieu sec.';
+      'Aérez chaque jour : l\'air confiné fait pourrir les plantes de milieu sec.';
 
   @override
   String get careGreenhouseEarly =>
-      'En mini-serre ou sous châssis, les semis partent quatre à six semaines plus tôt.';
+      'En mini-serre ou sous châssis, les semis partent 4 à 6 semaines plus tôt.';
 
   @override
   String get careBloom => 'Floraison';
@@ -3730,7 +3730,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careBloomChillBulbNote =>
-      'Comptez dix à quinze semaines entre 5 et 9 °C, au noir, avant de remettre le pot à la chaleur et à la lumière.';
+      'Comptez 10 à 15 semaines entre 5 et 9 °C, au noir, avant de remettre le pot à la chaleur et à la lumière.';
 
   @override
   String get careBloomFertilizer => 'Un engrais de floraison';
@@ -3744,7 +3744,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careBloomMaturityNote =>
-      'Elle ne fleurit qu\'à partir de trois ou quatre ans : avant cet âge, aucune condition n\'y changera rien.';
+      'Elle ne fleurit qu\'à partir de 3 ou 4 ans : avant cet âge, aucune condition n\'y changera rien.';
 
   @override
   String get careBloomDeadhead => 'Des fleurs coupées';
@@ -3802,21 +3802,21 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careBloomCoolRestNote =>
-      'Pour préparer la floraison, gardez-la environ deux mois entre 10 et 12 °C et réduisez fortement les arrosages.';
+      'Pour préparer la floraison, gardez-la environ 2 mois entre 10 et 12 °C et réduisez fortement les arrosages.';
 
   @override
   String get careBloomCoolNights => 'Des nuits fraîches';
 
   @override
   String get careBloomCoolNightsNote =>
-      'En automne, environ trois semaines avec des nuits autour de 15 °C peuvent déclencher la hampe florale.';
+      'En automne, environ 3 semaines avec des nuits autour de 15 °C peuvent déclencher la hampe florale.';
 
   @override
   String get careBloomShortDays => 'Des jours courts';
 
   @override
   String get careBloomShortDaysNote =>
-      'Pendant environ six semaines, des nuits d\'au moins 12 heures d\'obscurité déclenchent la formation des boutons.';
+      'Pendant environ 6 semaines, des nuits d\'au moins 12 heures d\'obscurité déclenchent la formation des boutons.';
 
   @override
   String get careBloomDrySpell => 'Une sécheresse';
@@ -5329,7 +5329,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careAssistedNote =>
-      'Espèce absente du catalogue : ces repères viennent de l\'IA. Seul le nom scientifique a été envoyé. La toxicité n\'est pas renseignée.';
+      'Espèce absente du catalogue : ces repères viennent de l\'IA, qui n\'a reçu que le nom scientifique. La toxicité n\'est pas renseignée.';
 
   @override
   String get careMatchEdited => 'Fiche retouchée';
@@ -5354,7 +5354,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careStudioHint =>
-      'Corrigez une fiche d\'entretien. La retouche s\'applique sur cet appareil.';
+      'Corrigez une fiche d\'entretien. Votre retouche ne vaut que sur cet appareil.';
 
   @override
   String get careStudioSearch => 'Chercher une espèce';
@@ -5388,7 +5388,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careAssistHint =>
-      'Pour une espèce absente du catalogue, le nom scientifique est envoyé à l\'IA pour compléter la fiche. Rien d\'autre ne quitte l\'appareil. La réponse est conservée.';
+      'Pour une espèce absente du catalogue, l\'application envoie le nom scientifique à l\'IA pour compléter la fiche. Rien d\'autre ne quitte votre appareil. La réponse est conservée.';
 
   @override
   String get gardensTitle => 'Mes jardins';
@@ -6042,7 +6042,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get careLightFullNote =>
-      'Six heures de soleil direct ou plus, en pleine journée.';
+      '6 heures de soleil direct ou plus, en pleine journée.';
 
   @override
   String get careHumidityLowNote => 'L\'air d\'un logement chauffé suffit.';
@@ -6120,11 +6120,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get carePropDivisionNote =>
-      'La touffe se sépare en deux au rempotage, racines comprises.';
+      'Une touffe séparée en deux au rempotage, racines comprises.';
 
   @override
   String get carePropOffsetsNote =>
-      'Les jeunes pousses nées au pied se détachent une fois enracinées.';
+      'Les jeunes pousses nées au pied, détachées une fois enracinées.';
 
   @override
   String get carePropLayeringNote =>
@@ -6140,7 +6140,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get carePropTuberNote =>
-      'Le tubercule se coupe en morceaux portant chacun un œil.';
+      'Un tubercule coupé en morceaux portant chacun un œil.';
 
   @override
   String get communityTipsTitle => 'Conseils de la communauté';

@@ -1,6 +1,6 @@
 # La clarté des textes (`lib/l10n/*.arb`)
 
-> Statut : **lots 1 à 5 livrés**, lots 6 à 11 à faire. La charte du § 3 est reportée
+> Statut : **lots 1 à 6 livrés**, lots 7 à 11 à faire. La charte du § 3 est reportée
 > dans `docs/06-design-system.md`, le relevé mécanique (`tool/audit_textes.py`)
 > et le test de parité ICU sont en place. Le registre allemand est tranché :
 > *du*.
@@ -426,8 +426,29 @@ Deux corrections de traduction que le relevé ne pouvait pas voir :
 
 ### Lot 6 — Les fiches d'entretien (303 clés, 117 explicatives)
 
+> **Livré.** 80 chaînes réécrites sur les quatre langues, le relevé du lot
+> tombe de 34 clés signalées à 8 — toutes des faux positifs vérifiés à la
+> main : un « Sie » ou un « Ihre » allemand en tête de phrase qui désigne la
+> plante (« Sie wächst in Erde », « Ihre Wurzeln leben im Wasser »), pas la
+> personne.
+
 Préfixe `care…` hors `careTip…`. Le lot le plus volumineux, mais le mieux
 écrit : l'impératif y est déjà courant (« Rempotez quand… », « Comptez… »).
+
+Un écart au plan, décidé en relisant l'ensemble : les `carePropDivisionNote`
+et `carePropTuberNote` ne passent **pas** à l'impératif. Leurs six voisines
+décrivent une méthode au moule nominal — « Une tige coupée sous un nœud,
+plantée dans un substrat humide » —, et les étapes à faire vivent dans les
+guides `pg…`. Elles gardent donc la description, mais perdent le pronominal
+qui escamotait l'acteur : « La touffe se sépare en deux » devient « Une touffe
+séparée en deux au rempotage ». `carePropOffsetsNote` suit, pour la même
+raison.
+
+La fiche d'entretien est un document, pas de la chrome d'interface : ses blocs
+de référence (`care…Risk`, `care…Detail`, `careRestNote`) se lisent posément
+et sont désormais jugés au budget d'un chapeau, pas à celui d'une aide en
+ligne. Seul `careWaterCondensateRisk` dépassait même ce budget ; il est
+raccourci.
 Le travail y est de trois ordres, et se fait au fil des sections de
 `docs/06`, § « La fiche d'entretien » :
 
@@ -605,7 +626,7 @@ concerné est vert, sinon la suite casse dès le premier commit :
 | 3 ✓ | Écran du matin, météo | 132 | 35 | **livré** — vu tous les jours |
 | 4 ✓ | Identification, Iris | 84 | 21 | **livré** — porte trois consentements |
 | 5 ✓ | Diagnostic, encyclopédie | 138 | 23 | **livré** |
-| 6 | Fiches d'entretien | 303 | 117 | volumineux mais déjà propre |
+| 6 ✓ | Fiches d'entretien | 303 | 117 | **livré** — volumineux mais déjà propre |
 | 7 | Découverte, soutien | 111 | 36 | première impression |
 | 8 | Compte, partage | 132 | 35 | |
 | 9 | Données, hors-ligne | 74 | 26 | |

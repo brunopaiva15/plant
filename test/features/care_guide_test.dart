@@ -382,7 +382,7 @@ void main() {
     expect(find.text('De décembre à mai'), findsOneWidget);
     expect(find.text('Des nuits fraîches · Une hampe gardée'), findsOneWidget);
     expect(
-      find.textContaining('trois semaines avec des nuits autour de 15 °C'),
+      find.textContaining('3 semaines avec des nuits autour de 15 °C'),
       findsOneWidget,
     );
   });
@@ -636,7 +636,7 @@ void main() {
     expect(find.text('Floraison'), findsOneWidget);
     expect(find.text('De février à avril'), findsOneWidget);
     expect(
-      find.textContaining('dix à quinze semaines entre 5 et 9 °C'),
+      find.textContaining('10 à 15 semaines entre 5 et 9 °C'),
       findsOneWidget,
     );
     expect(find.text('Repos'), findsOneWidget);
@@ -670,9 +670,7 @@ void main() {
       expect(find.text('Tuteur'), findsOneWidget);
       expect(find.text('Tuteur moussu'), findsOneWidget);
       expect(
-        find.text(
-          "Humidifier le tuteur à chaque arrosage : les racines aériennes s'y fixent.",
-        ),
+        find.textContaining('Humidifiez le tuteur à chaque arrosage'),
         findsOneWidget,
       );
     });

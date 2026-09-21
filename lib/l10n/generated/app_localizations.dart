@@ -5295,19 +5295,19 @@ abstract class AppLocalizations {
   /// No description provided for @careSupportMossPoleCare.
   ///
   /// In fr, this message translates to:
-  /// **'Humidifier le tuteur à chaque arrosage : les racines aériennes s\'y fixent.'**
+  /// **'Humidifiez le tuteur à chaque arrosage : les racines aériennes s\'y fixent.'**
   String get careSupportMossPoleCare;
 
   /// No description provided for @careSupportStakeCare.
   ///
   /// In fr, this message translates to:
-  /// **'Attacher la tige sans serrer, à mesure qu\'elle monte.'**
+  /// **'Attachez la tige sans serrer, à mesure qu\'elle monte.'**
   String get careSupportStakeCare;
 
   /// No description provided for @careSupportTrellisCare.
   ///
   /// In fr, this message translates to:
-  /// **'Guider les tiges à mesure qu\'elles poussent.'**
+  /// **'Guidez les tiges à mesure qu\'elles poussent.'**
   String get careSupportTrellisCare;
 
   /// No description provided for @careIssues.
@@ -5673,7 +5673,7 @@ abstract class AppLocalizations {
   /// No description provided for @carePotDormantNote.
   ///
   /// In fr, this message translates to:
-  /// **'Le rempotage se fait à la reprise, quand le repos s\'achève, et non sur une racine qui sort.'**
+  /// **'Rempotez à la reprise, quand le repos s\'achève, et non parce qu\'une racine sort.'**
   String get carePotDormantNote;
 
   /// No description provided for @careTempIdeal.
@@ -5913,7 +5913,7 @@ abstract class AppLocalizations {
   /// No description provided for @careToxicPets.
   ///
   /// In fr, this message translates to:
-  /// **'Tenir hors de portée des animaux et des enfants.'**
+  /// **'Tenez-la hors de portée des animaux et des enfants.'**
   String get careToxicPets;
 
   /// No description provided for @careToxicityFromSpecies.
@@ -6165,7 +6165,7 @@ abstract class AppLocalizations {
   /// No description provided for @careWaterRainRisk.
   ///
   /// In fr, this message translates to:
-  /// **'Recueillie sur un toit, elle emporte poussières et fientes ; une réserve à l\'air libre verdit. Écarter les premières minutes de pluie, couvrir le tonneau.'**
+  /// **'Recueillie sur un toit, elle emporte poussières et fientes ; une réserve à l\'air libre verdit. Écartez les premières minutes de pluie et couvrez le tonneau.'**
   String get careWaterRainRisk;
 
   /// No description provided for @careWaterFiltered.
@@ -6237,7 +6237,7 @@ abstract class AppLocalizations {
   /// No description provided for @careWaterCondensateRisk.
   ///
   /// In fr, this message translates to:
-  /// **'Elle a ruisselé sur un échangeur et dans un bac où s\'accumulent poussières, biofilm et bactéries, et peut emporter des traces de métaux. À réserver aux plantes d\'ornement, sur un appareil propre, jamais sur ce qui se mange.'**
+  /// **'Elle a ruisselé sur un échangeur et dans un bac où s\'accumulent poussières et bactéries, et peut emporter des traces de métaux. Réservez-la aux plantes d\'ornement, sur un appareil propre, jamais sur ce qui se mange.'**
   String get careWaterCondensateRisk;
 
   /// No description provided for @careWaterSoftened.
@@ -6429,13 +6429,13 @@ abstract class AppLocalizations {
   /// No description provided for @careGreenhouseAir.
   ///
   /// In fr, this message translates to:
-  /// **'Aérer chaque jour : l\'air confiné fait pourrir les plantes de milieu sec.'**
+  /// **'Aérez chaque jour : l\'air confiné fait pourrir les plantes de milieu sec.'**
   String get careGreenhouseAir;
 
   /// No description provided for @careGreenhouseEarly.
   ///
   /// In fr, this message translates to:
-  /// **'En mini-serre ou sous châssis, les semis partent quatre à six semaines plus tôt.'**
+  /// **'En mini-serre ou sous châssis, les semis partent 4 à 6 semaines plus tôt.'**
   String get careGreenhouseEarly;
 
   /// No description provided for @careBloom.
@@ -6465,7 +6465,7 @@ abstract class AppLocalizations {
   /// No description provided for @careBloomChillBulbNote.
   ///
   /// In fr, this message translates to:
-  /// **'Comptez dix à quinze semaines entre 5 et 9 °C, au noir, avant de remettre le pot à la chaleur et à la lumière.'**
+  /// **'Comptez 10 à 15 semaines entre 5 et 9 °C, au noir, avant de remettre le pot à la chaleur et à la lumière.'**
   String get careBloomChillBulbNote;
 
   /// No description provided for @careBloomFertilizer.
@@ -6489,7 +6489,7 @@ abstract class AppLocalizations {
   /// No description provided for @careBloomMaturityNote.
   ///
   /// In fr, this message translates to:
-  /// **'Elle ne fleurit qu\'à partir de trois ou quatre ans : avant cet âge, aucune condition n\'y changera rien.'**
+  /// **'Elle ne fleurit qu\'à partir de 3 ou 4 ans : avant cet âge, aucune condition n\'y changera rien.'**
   String get careBloomMaturityNote;
 
   /// No description provided for @careBloomDeadhead.
@@ -6585,7 +6585,7 @@ abstract class AppLocalizations {
   /// No description provided for @careBloomCoolRestNote.
   ///
   /// In fr, this message translates to:
-  /// **'Pour préparer la floraison, gardez-la environ deux mois entre 10 et 12 °C et réduisez fortement les arrosages.'**
+  /// **'Pour préparer la floraison, gardez-la environ 2 mois entre 10 et 12 °C et réduisez fortement les arrosages.'**
   String get careBloomCoolRestNote;
 
   /// No description provided for @careBloomCoolNights.
@@ -6597,7 +6597,7 @@ abstract class AppLocalizations {
   /// No description provided for @careBloomCoolNightsNote.
   ///
   /// In fr, this message translates to:
-  /// **'En automne, environ trois semaines avec des nuits autour de 15 °C peuvent déclencher la hampe florale.'**
+  /// **'En automne, environ 3 semaines avec des nuits autour de 15 °C peuvent déclencher la hampe florale.'**
   String get careBloomCoolNightsNote;
 
   /// No description provided for @careBloomShortDays.
@@ -6609,7 +6609,7 @@ abstract class AppLocalizations {
   /// No description provided for @careBloomShortDaysNote.
   ///
   /// In fr, this message translates to:
-  /// **'Pendant environ six semaines, des nuits d\'au moins 12 heures d\'obscurité déclenchent la formation des boutons.'**
+  /// **'Pendant environ 6 semaines, des nuits d\'au moins 12 heures d\'obscurité déclenchent la formation des boutons.'**
   String get careBloomShortDaysNote;
 
   /// No description provided for @careBloomDrySpell.
@@ -9183,7 +9183,7 @@ abstract class AppLocalizations {
   /// No description provided for @careAssistedNote.
   ///
   /// In fr, this message translates to:
-  /// **'Espèce absente du catalogue : ces repères viennent de l\'IA. Seul le nom scientifique a été envoyé. La toxicité n\'est pas renseignée.'**
+  /// **'Espèce absente du catalogue : ces repères viennent de l\'IA, qui n\'a reçu que le nom scientifique. La toxicité n\'est pas renseignée.'**
   String get careAssistedNote;
 
   /// No description provided for @careMatchEdited.
@@ -9225,7 +9225,7 @@ abstract class AppLocalizations {
   /// No description provided for @careStudioHint.
   ///
   /// In fr, this message translates to:
-  /// **'Corrigez une fiche d\'entretien. La retouche s\'applique sur cet appareil.'**
+  /// **'Corrigez une fiche d\'entretien. Votre retouche ne vaut que sur cet appareil.'**
   String get careStudioHint;
 
   /// No description provided for @careStudioSearch.
@@ -9291,7 +9291,7 @@ abstract class AppLocalizations {
   /// No description provided for @careAssistHint.
   ///
   /// In fr, this message translates to:
-  /// **'Pour une espèce absente du catalogue, le nom scientifique est envoyé à l\'IA pour compléter la fiche. Rien d\'autre ne quitte l\'appareil. La réponse est conservée.'**
+  /// **'Pour une espèce absente du catalogue, l\'application envoie le nom scientifique à l\'IA pour compléter la fiche. Rien d\'autre ne quitte votre appareil. La réponse est conservée.'**
   String get careAssistHint;
 
   /// No description provided for @gardensTitle.
@@ -10269,7 +10269,7 @@ abstract class AppLocalizations {
   /// No description provided for @careLightFullNote.
   ///
   /// In fr, this message translates to:
-  /// **'Six heures de soleil direct ou plus, en pleine journée.'**
+  /// **'6 heures de soleil direct ou plus, en pleine journée.'**
   String get careLightFullNote;
 
   /// No description provided for @careHumidityLowNote.
@@ -10389,13 +10389,13 @@ abstract class AppLocalizations {
   /// No description provided for @carePropDivisionNote.
   ///
   /// In fr, this message translates to:
-  /// **'La touffe se sépare en deux au rempotage, racines comprises.'**
+  /// **'Une touffe séparée en deux au rempotage, racines comprises.'**
   String get carePropDivisionNote;
 
   /// No description provided for @carePropOffsetsNote.
   ///
   /// In fr, this message translates to:
-  /// **'Les jeunes pousses nées au pied se détachent une fois enracinées.'**
+  /// **'Les jeunes pousses nées au pied, détachées une fois enracinées.'**
   String get carePropOffsetsNote;
 
   /// No description provided for @carePropLayeringNote.
@@ -10419,7 +10419,7 @@ abstract class AppLocalizations {
   /// No description provided for @carePropTuberNote.
   ///
   /// In fr, this message translates to:
-  /// **'Le tubercule se coupe en morceaux portant chacun un œil.'**
+  /// **'Un tubercule coupé en morceaux portant chacun un œil.'**
   String get carePropTuberNote;
 
   /// No description provided for @communityTipsTitle.

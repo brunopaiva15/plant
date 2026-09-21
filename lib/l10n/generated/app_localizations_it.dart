@@ -3026,14 +3026,14 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careSupportMossPoleCare =>
-      'Inumidire il tutore a ogni annaffiatura: le radici aeree vi si attaccano.';
+      'Inumidisci il tutore a ogni annaffiatura: le radici aeree vi si attaccano.';
 
   @override
   String get careSupportStakeCare =>
-      'Legare il fusto senza stringere, man mano che sale.';
+      'Lega il fusto senza stringere, man mano che sale.';
 
   @override
-  String get careSupportTrellisCare => 'Guidare i fusti man mano che crescono.';
+  String get careSupportTrellisCare => 'Guida i fusti man mano che crescono.';
 
   @override
   String get careIssues => 'Da tenere d\'occhio';
@@ -3262,7 +3262,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get carePotDormantNote =>
-      'Il rinvaso si fa alla ripresa, alla fine del riposo, non per una radice che esce.';
+      'Rinvasa alla ripresa, alla fine del riposo, non perché esce una radice.';
 
   @override
   String careTempIdeal(int min, int max) {
@@ -3409,7 +3409,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get careToxicUnknown => 'Tossicità non nota';
 
   @override
-  String get careToxicPets => 'Tenere lontano da animali e bambini.';
+  String get careToxicPets => 'Tienila lontano da animali e bambini.';
 
   @override
   String get careToxicityFromSpecies => 'Verificata per questa specie';
@@ -3594,7 +3594,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careWaterCondensateRisk =>
-      'È scorsa su uno scambiatore e in una vasca dove si accumulano polvere, biofilm e batteri, e può portare tracce di metalli. Da riservare alle piante ornamentali, da un apparecchio pulito, mai su ciò che si mangia.';
+      'È scorsa su uno scambiatore e in una vaschetta dove si accumulano polvere e batteri, e può trasportare tracce di metalli. Riservala alle piante ornamentali, da un apparecchio pulito, mai su ciò che si mangia.';
 
   @override
   String get careWaterSoftened => 'Acqua addolcita';
@@ -3710,11 +3710,11 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careGreenhouseAir =>
-      'Arieggiare ogni giorno: l\'aria ferma fa marcire le piante di ambienti secchi.';
+      'Arieggia ogni giorno: l\'aria ferma fa marcire le piante di ambienti secchi.';
 
   @override
   String get careGreenhouseEarly =>
-      'In serra fredda o sotto cassone, le semine partono con quattro-sei settimane di anticipo.';
+      'In serra fredda o sotto cassone, le semine partono con 4-6 settimane di anticipo.';
 
   @override
   String get careBloom => 'Fioritura';
@@ -3732,7 +3732,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careBloomChillBulbNote =>
-      'Conta da dieci a quindici settimane tra 5 e 9 °C al buio, prima di riportare il vaso al caldo e alla luce.';
+      'Conta 10-15 settimane tra 5 e 9 °C al buio, prima di riportare il vaso al caldo e alla luce.';
 
   @override
   String get careBloomFertilizer => 'Un concime da fioritura';
@@ -3746,7 +3746,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careBloomMaturityNote =>
-      'Fiorisce solo dai tre o quattro anni: prima di quell\'età nessuna condizione cambia le cose.';
+      'Fiorisce solo dai 3 o 4 anni: prima di quell\'età nessuna condizione cambia le cose.';
 
   @override
   String get careBloomDeadhead => 'Fiori appassiti tagliati';
@@ -3804,21 +3804,21 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careBloomCoolRestNote =>
-      'Per preparare la fioritura, tienila per circa due mesi tra 10 e 12 °C e riduci molto le annaffiature.';
+      'Per preparare la fioritura, tienila per circa 2 mesi tra 10 e 12 °C e riduci molto le annaffiature.';
 
   @override
   String get careBloomCoolNights => 'Notti fresche';
 
   @override
   String get careBloomCoolNightsNote =>
-      'In autunno, circa tre settimane con notti intorno ai 15 °C possono stimolare lo stelo fiorale.';
+      'In autunno, circa 3 settimane con notti intorno ai 15 °C possono stimolare lo stelo fiorale.';
 
   @override
   String get careBloomShortDays => 'Giorni corti';
 
   @override
   String get careBloomShortDaysNote =>
-      'Per circa sei settimane, notti di almeno 12 ore di buio avviano la formazione dei boccioli.';
+      'Per circa 6 settimane, notti di almeno 12 ore di buio avviano la formazione dei boccioli.';
 
   @override
   String get careBloomDrySpell => 'Un periodo secco';
@@ -5325,7 +5325,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careAssistedNote =>
-      'Specie assente dal catalogo: questi riferimenti vengono dall\'IA. È stato inviato solo il nome scientifico. La tossicità non è indicata.';
+      'Specie assente dal catalogo: questi riferimenti vengono dall\'IA, che ha ricevuto solo il nome scientifico. La tossicità non è indicata.';
 
   @override
   String get careMatchEdited => 'Scheda modificata';
@@ -5350,7 +5350,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careStudioHint =>
-      'Correggi una scheda di cura. La modifica vale su questo dispositivo.';
+      'Correggi una scheda di cura. La tua modifica vale solo su questo dispositivo.';
 
   @override
   String get careStudioSearch => 'Cerca una specie';
@@ -5385,7 +5385,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careAssistHint =>
-      'Per una specie assente dal catalogo, il nome scientifico viene inviato all\'IA per completare la scheda. Nient\'altro lascia il dispositivo. La risposta viene conservata.';
+      'Per una specie assente dal catalogo, l\'app invia il nome scientifico all\'IA per completare la scheda. Nient\'altro lascia il tuo dispositivo. La risposta viene conservata.';
 
   @override
   String get gardensTitle => 'I miei giardini';
@@ -6036,7 +6036,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careLightFullNote =>
-      'Sei ore di sole diretto o più, in piena giornata.';
+      '6 ore di sole diretto o più, in piena giornata.';
 
   @override
   String get careHumidityLowNote => 'L\'aria di una casa riscaldata basta.';
@@ -6114,11 +6114,11 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get carePropDivisionNote =>
-      'Il cespo si divide in due al rinvaso, radici comprese.';
+      'Un cespo diviso in due al rinvaso, radici comprese.';
 
   @override
   String get carePropOffsetsNote =>
-      'I germogli nati alla base si staccano una volta radicati.';
+      'I giovani getti nati alla base, staccati una volta radicati.';
 
   @override
   String get carePropLayeringNote =>
@@ -6134,7 +6134,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get carePropTuberNote =>
-      'Il tubero si taglia in pezzi, ciascuno con una gemma.';
+      'Un tubero tagliato in pezzi, ciascuno con una gemma.';
 
   @override
   String get communityTipsTitle => 'Consigli della comunità';

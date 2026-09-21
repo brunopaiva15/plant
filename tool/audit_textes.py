@@ -74,7 +74,8 @@ NOMBRES = {
 # *you* en anglais, *du* en allemand, *tu* en italien. Ne reste signalé que le
 # registre de trop.
 REGISTRE_DE_TROP = {
-    'de': re.compile(r'\bIhnen\b|\bIhre\w*\b|\bIhr\b|\b\w+en Sie\b'),
+    'de': re.compile(r'\bIhnen\b|\b\w+en Sie\b'
+                     r'|(?<![.:;!?]\s)(?<!^)\b(?:Ihre\w*|Ihr)\b'),
     'it': re.compile(r'\b(voi|vostr\w+|potete|dovete|avete|desiderate|scegliete|toccate|'
                      r'aggiungete|verificate|inserite|attivate|premete|aprite)\b', re.I),
 }
@@ -83,7 +84,7 @@ REGISTRE_DE_TROP = {
 # simplement « elle » et « ils » (« Sie wächst in Erde », « Sie versorgen den
 # Steckling »). Seule la relecture tranche — et une chaîne où l'ambiguïté
 # subsiste mérite d'être tournée autrement, le lecteur hésite comme la machine.
-SIE_EN_TETE = re.compile(r'(?:^|(?<=[.:;!?]\s))Sie\b')
+SIE_EN_TETE = re.compile(r'(?:^|(?<=[.:;!?]\s))(?:Sie|Ihre\w*|Ihr)\b')
 
 # En italien, l'impératif de politesse se reconnaît à sa terminaison — -ate,
 # -ete, -ite en tête de phrase (« Fotografate le foglie », « Inserite il
@@ -100,6 +101,8 @@ PHRASES = 2             # au-delà, l'aide devient un paragraphe
 # d'un chapeau (docs/06, « Les textes », règle 3) : chaque phrase y porte une
 # garantie distincte — ce qui part, qui peut le lire, ce qu'il advient si l'on
 # refuse. Une clé ne s'ajoute ici que si elle demande un consentement.
+REFERENCE = re.compile(r'^care\w*(Risk|Detail)$|^careRestNote$')
+
 CONSENTEMENT = frozenset({
     'irisFeedbackHint',
     'irisFeedbackAskBody',
@@ -131,7 +134,7 @@ def defauts(locale: str, cle: str, texte: str) -> list[str]:
         trouves.append('apostrophe-courbe')
     if NOMBRES[locale].search(nu):
         trouves.append('nombre-en-lettres')
-    consentement = cle in CONSENTEMENT
+    consentement = cle in CONSENTEMENT or REFERENCE.match(cle) is not None
     if len(nu) > CHAPEAU:
         trouves.append('phrase-tres-longue')
     elif len(nu) > LONGUEUR and not consentement:

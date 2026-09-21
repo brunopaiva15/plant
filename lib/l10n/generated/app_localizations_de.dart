@@ -2980,7 +2980,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get careGuideSubtitle => 'Wann gießen, wie viel Licht, worauf achten.';
 
   @override
-  String get careHowTo => 'So pflegen Sie sie';
+  String get careHowTo => 'So pflegst du sie';
 
   @override
   String get careWatering => 'Gießen';
@@ -3026,15 +3026,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get careSupportMossPoleCare =>
-      'Den Moosstab bei jedem Gießen befeuchten: daran halten sich die Luftwurzeln.';
+      'Befeuchte den Moosstab bei jedem Gießen: daran halten sich die Luftwurzeln.';
 
   @override
   String get careSupportStakeCare =>
-      'Den Trieb locker anbinden, während er nach oben wächst.';
+      'Bind den Trieb locker an, während er nach oben wächst.';
 
   @override
-  String get careSupportTrellisCare =>
-      'Die Triebe führen, während sie wachsen.';
+  String get careSupportTrellisCare => 'Führe die Triebe, während sie wachsen.';
 
   @override
   String get careIssues => 'Darauf achten';
@@ -3261,7 +3260,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get carePotDormantNote =>
-      'Umgetopft wird beim Neuaustrieb, am Ende der Ruhe, nicht wegen einer austretenden Wurzel.';
+      'Topfe beim Neuaustrieb um, am Ende der Ruhe, nicht wegen einer austretenden Wurzel.';
 
   @override
   String careTempIdeal(int min, int max) {
@@ -3408,7 +3407,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get careToxicUnknown => 'Giftigkeit unbekannt';
 
   @override
-  String get careToxicPets => 'Von Haustieren und Kindern fernhalten.';
+  String get careToxicPets => 'Halte sie von Haustieren und Kindern fern.';
 
   @override
   String get careToxicityFromSpecies => 'Für diese Art belegt';
@@ -3549,7 +3548,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get careWaterRainRisk =>
-      'Vom Dach gesammelt, trägt es Staub und Vogelkot mit; ein offenes Fass wird grün. Die ersten Minuten Regen ablaufen lassen und die Tonne abdecken.';
+      'Vom Dach gesammelt, trägt es Staub und Vogelkot mit; ein offenes Fass wird grün. Lass die ersten Minuten Regen ablaufen und deck die Tonne ab.';
 
   @override
   String get careWaterFiltered => 'Gefiltertes Wasser';
@@ -3592,7 +3591,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get careWaterCondensateRisk =>
-      'Es ist über einen Wärmetauscher und durch eine Wanne gelaufen, in der sich Staub, Biofilm und Bakterien sammeln, und kann Metallspuren mitführen. Nur für Zierpflanzen, aus einem sauberen Gerät, nie auf Essbares.';
+      'Es ist über einen Wärmetauscher und durch eine Wanne gelaufen, in der sich Staub und Bakterien sammeln, und kann Metallspuren mitführen. Nimm es nur für Zierpflanzen, aus einem sauberen Gerät, nie auf Essbares.';
 
   @override
   String get careWaterSoftened => 'Enthärtetes Wasser';
@@ -3707,11 +3706,11 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get careGreenhouseAir =>
-      'Täglich lüften: stehende Luft lässt Pflanzen aus trockenen Lebensräumen faulen.';
+      'Lüfte täglich: stehende Luft lässt Pflanzen aus trockenen Lebensräumen faulen.';
 
   @override
   String get careGreenhouseEarly =>
-      'Im Frühbeet oder Mini-Gewächshaus starten Aussaaten vier bis sechs Wochen früher.';
+      'Im Frühbeet oder Mini-Gewächshaus starten Aussaaten 4 bis 6 Wochen früher.';
 
   @override
   String get careBloom => 'Blüte';
@@ -3729,7 +3728,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get careBloomChillBulbNote =>
-      'Rechnen Sie mit zehn bis fünfzehn Wochen bei 5 bis 9 °C im Dunkeln, bevor der Topf wieder warm und hell steht.';
+      'Rechne mit 10 bis 15 Wochen bei 5 bis 9 °C im Dunkeln, bevor der Topf wieder warm und hell steht.';
 
   @override
   String get careBloomFertilizer => 'Blühdünger';
@@ -3743,7 +3742,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get careBloomMaturityNote =>
-      'Sie blüht erst ab drei oder vier Jahren: davor ändert keine Maßnahme etwas.';
+      'Sie blüht erst ab 3 oder 4 Jahren: davor ändert keine Maßnahme etwas.';
 
   @override
   String get careBloomDeadhead => 'Verblühtes abschneiden';
@@ -3801,28 +3800,28 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get careBloomCoolRestNote =>
-      'Für die Blütenbildung etwa zwei Monate bei 10–12 °C halten und deutlich weniger gießen.';
+      'Halte sie für die Blütenbildung etwa 2 Monate bei 10–12 °C und gieß deutlich weniger.';
 
   @override
   String get careBloomCoolNights => 'Kühle Nächte';
 
   @override
   String get careBloomCoolNightsNote =>
-      'Im Herbst können etwa drei Wochen mit Nächten um 15 °C die Bildung des Blütentriebs anregen.';
+      'Im Herbst können etwa 3 Wochen mit Nächten um 15 °C die Bildung des Blütentriebs anregen.';
 
   @override
   String get careBloomShortDays => 'Kurze Tage';
 
   @override
   String get careBloomShortDaysNote =>
-      'Etwa sechs Wochen lang lösen Nächte mit mindestens 12 Stunden Dunkelheit die Knospenbildung aus.';
+      'Etwa 6 Wochen lang lösen Nächte mit mindestens 12 Stunden Dunkelheit die Knospenbildung aus.';
 
   @override
   String get careBloomDrySpell => 'Eine Trockenzeit';
 
   @override
   String get careBloomDrySpellNote =>
-      'Gießen Sie einige Wochen deutlich weniger und steigern Sie danach langsam wieder. Dieser Wechsel kann die Blüte auslösen.';
+      'Gieß einige Wochen deutlich weniger und steigere danach langsam wieder. Dieser Wechsel kann die Blüte auslösen.';
 
   @override
   String get careBloomPotbound => 'Ein enger Topf';
@@ -5311,7 +5310,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get careAssistedNote =>
-      'Art nicht im Katalog: diese Richtwerte stammen von der KI. Nur der wissenschaftliche Name wurde gesendet. Giftigkeit ist nicht enthalten.';
+      'Art nicht im Katalog: Diese Richtwerte stammen von der KI, die nur den wissenschaftlichen Namen bekommen hat. Giftigkeit ist nicht enthalten.';
 
   @override
   String get careMatchEdited => 'Bearbeitetes Profil';
@@ -5336,14 +5335,13 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get careStudioHint =>
-      'Korrigieren Sie ein Pflegeprofil. Die Änderung gilt auf diesem Gerät.';
+      'Korrigiere ein Pflegeblatt. Deine Änderung gilt nur auf diesem Gerät.';
 
   @override
   String get careStudioSearch => 'Art suchen';
 
   @override
-  String get careStudioPrompt =>
-      'Suchen Sie eine Art, um ihr Profil zu korrigieren.';
+  String get careStudioPrompt => 'Such eine Art, um ihr Blatt zu korrigieren.';
 
   @override
   String get careStudioEmpty => 'Keine Art passt.';
@@ -5371,7 +5369,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get careAssistHint =>
-      'Bei einer Art, die nicht im Katalog ist, wird der wissenschaftliche Name an die KI gesendet, um die Anleitung zu ergänzen. Sonst verlässt nichts das Gerät. Die Antwort wird gespeichert.';
+      'Bei einer Art, die nicht im Katalog ist, sendet die App den wissenschaftlichen Namen an die KI, um das Blatt zu ergänzen. Sonst verlässt nichts dein Gerät. Die Antwort wird gespeichert.';
 
   @override
   String get gardensTitle => 'Meine Gärten';
@@ -6027,7 +6025,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get careLightFullNote =>
-      'Sechs Stunden direkte Sonne oder mehr, mitten am Tag.';
+      '6 Stunden direkte Sonne oder mehr, mitten am Tag.';
 
   @override
   String get careHumidityLowNote => 'Die Luft einer beheizten Wohnung genügt.';
@@ -6104,11 +6102,11 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get carePropDivisionNote =>
-      'Der Horst wird beim Umtopfen samt Wurzeln geteilt.';
+      'Ein Horst, beim Umtopfen samt Wurzeln geteilt.';
 
   @override
   String get carePropOffsetsNote =>
-      'Junge Triebe am Fuß werden abgetrennt, sobald sie Wurzeln haben.';
+      'Die jungen Triebe am Fuß, abgetrennt sobald sie Wurzeln haben.';
 
   @override
   String get carePropLayeringNote =>
@@ -6124,7 +6122,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get carePropTuberNote =>
-      'Die Knolle wird in Stücke geteilt, jedes mit einem Auge.';
+      'Eine Knolle, in Stücke mit je einem Auge geteilt.';
 
   @override
   String get communityTipsTitle => 'Tipps aus der Gemeinschaft';

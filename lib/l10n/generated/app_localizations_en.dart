@@ -3254,7 +3254,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get carePotDormantNote =>
-      'Repotting happens when growth restarts, at the end of the rest, not on a root coming out.';
+      'Repot when growth restarts, at the end of the rest, not because a root is coming out.';
 
   @override
   String careTempIdeal(int min, int max) {
@@ -3584,7 +3584,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careWaterCondensateRisk =>
-      'It has run over a heat exchanger and through a tray where dust, biofilm and bacteria gather, and it can carry traces of metal. Keep it for ornamental plants, from a clean unit, never on anything edible.';
+      'It has run over a heat exchanger and through a tray where dust and bacteria build up, and may carry traces of metals. Keep it for ornamental plants, from a clean appliance, never on anything edible.';
 
   @override
   String get careWaterSoftened => 'Softened water';
@@ -3704,7 +3704,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careGreenhouseEarly =>
-      'In a cold frame or a small greenhouse, sowings start four to six weeks earlier.';
+      'In a cold frame or a small greenhouse, sowings start 4 to 6 weeks earlier.';
 
   @override
   String get careBloom => 'Flowering';
@@ -3722,7 +3722,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careBloomChillBulbNote =>
-      'Allow ten to fifteen weeks between 5 and 9 °C in the dark before bringing the pot back to warmth and light.';
+      'Allow 10 to 15 weeks between 5 and 9 °C in the dark before bringing the pot back to warmth and light.';
 
   @override
   String get careBloomFertilizer => 'A bloom fertilizer';
@@ -3736,7 +3736,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careBloomMaturityNote =>
-      'It only flowers from three or four years old: before that age, no condition will change anything.';
+      'It only flowers from 3 or 4 years old: before that age, no condition will change anything.';
 
   @override
   String get careBloomDeadhead => 'Spent flowers cut';
@@ -3794,21 +3794,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careBloomCoolRestNote =>
-      'To prepare for flowering, keep it around 10–12 °C for about two months and reduce watering sharply.';
+      'To prepare for flowering, keep it at 10–12 °C for about 2 months and reduce watering sharply.';
 
   @override
   String get careBloomCoolNights => 'Cool nights';
 
   @override
   String get careBloomCoolNightsNote =>
-      'In autumn, about three weeks with nights around 15 °C can encourage the flower spike to form.';
+      'In autumn, about 3 weeks with nights around 15 °C can encourage the flower spike to form.';
 
   @override
   String get careBloomShortDays => 'Short days';
 
   @override
   String get careBloomShortDaysNote =>
-      'For about six weeks, nights of at least 12 hours of darkness trigger bud formation.';
+      'For about 6 weeks, nights of at least 12 hours of darkness trigger bud formation.';
 
   @override
   String get careBloomDrySpell => 'A dry spell';
@@ -5297,7 +5297,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careAssistedNote =>
-      'Species not in the catalogue: these guidelines come from the AI. Only the scientific name was sent. Toxicity is not covered.';
+      'Species missing from the catalogue: these guides come from the AI, which received only the scientific name. Toxicity is not covered.';
 
   @override
   String get careMatchEdited => 'Edited profile';
@@ -5322,7 +5322,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careStudioHint =>
-      'Fix a care profile. The edit applies on this device.';
+      'Fix a care sheet. Your edit applies on this device only.';
 
   @override
   String get careStudioSearch => 'Search for a species';
@@ -5356,7 +5356,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careAssistHint =>
-      'For a species not in the catalogue, the scientific name is sent to the AI to complete the guide. Nothing else leaves the device. The answer is kept.';
+      'For a species missing from the catalogue, the app sends the scientific name to the AI to fill out the sheet. Nothing else leaves your device. The answer is kept.';
 
   @override
   String get gardensTitle => 'My gardens';
@@ -6006,7 +6006,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get careLightFullNote =>
-      'Six hours of direct sun or more, through the middle of the day.';
+      '6 hours of direct sun or more, through the middle of the day.';
 
   @override
   String get careHumidityLowNote => 'The air of a heated home is enough.';
@@ -6081,11 +6081,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get carePropDivisionNote =>
-      'The clump is split in two at repotting, roots included.';
+      'A clump split in two at repotting, roots included.';
 
   @override
   String get carePropOffsetsNote =>
-      'Young shoots at the base are detached once rooted.';
+      'The young shoots born at the base, detached once rooted.';
 
   @override
   String get carePropLayeringNote =>
@@ -6100,8 +6100,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'The cutting sits in a glass of water until roots appear.';
 
   @override
-  String get carePropTuberNote =>
-      'The tuber is cut into pieces, each with an eye.';
+  String get carePropTuberNote => 'A tuber cut into pieces, each with an eye.';
 
   @override
   String get communityTipsTitle => 'Community tips';
