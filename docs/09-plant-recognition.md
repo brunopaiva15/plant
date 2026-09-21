@@ -4117,7 +4117,7 @@ complète de l'Iris 9.
 | mesure | comment | ce qu'elle décide |
 |---|---|---|
 | Indoor 363 vs Indoor élargi 421 | deux retaillages, `compare_models.py` sur le même jeu | quel masque intérieur on livre — **pas encore fait**, l'Iris 9 livre le masque de 363 |
-| Outdoor 1 444 contre l'Iris 8 | `compare_models.py`, classes communes | si l'Outdoor a le droit d'exister — **pas encore fait**, et c'est la porte qui reste (§ 14.6) |
+| Outdoor 1 424 sur son terrain | retaillage sur le seul masque extérieur | ✅ **fait** le 21 septembre : 0,6898 top-1, 60,9 % acceptées à 0,9073 (§ 14.6). La comparaison directe avec l'Iris 8 demande encore son fichier sur la même machine |
 | union 1 612 + masque appliqué | `compare_models.py` sur le jeu Indoor | ✅ **fait** le 21 septembre : 1 569 classes gardées, et le masque rend bien ce qu'annonçait le § 14.2 |
 | hors-sujet sur l'union masquée | `hors_sujet.py` | le masque restreint 1 612 sorties à ~363 : le taux d'affirmation à tort des plantes hors catalogue remonte-t-il au-dessus des 27,5 % du § 12.7 |
 | fiches manquantes sur 1 612 | le compteur du § 12.1 | combien de classes exposées ne mènent à rien — le défaut du § 12.14, à l'échelle de l'union |
@@ -4196,17 +4196,39 @@ prévu : le modèle déclare un masque extérieur, `TflitePlantModel.contexts`
 n'est plus vide, et la feuille d'identification cesse de retenir Iris à un
 emplacement extérieur. Aucune constante n'a été touchée.
 
-**C'est là qu'il faut s'arrêter, parce que cette moitié-là n'est pas
-mesurée.** Le § 8 de `docs/14` est explicite : *Outdoor doit recevoir son
-propre jeu de test avant d'être considéré prêt.* On ne connaît ni son top-1,
-ni sa courbe de seuil, et le seul chiffre qui l'approche — 0,6785 sur les
-949 espèces qu'Iris Indoor ignorait — décrit une couverture, pas un domaine.
-La réserve s'est donc levée sur une promesse, pas sur une preuve.
+#### L'Outdoor a enfin son propre terrain
 
-Trois choses restent à mesurer avant de livrer à quelqu'un :
+Le § 8 de `docs/14` l'exigeait avant de le considérer prêt : *Outdoor doit
+recevoir son propre jeu de test.* La même tête retaillée sur le seul masque
+extérieur, évaluée sur le jeu de test, le lui donne.
 
-- **l'Outdoor sur son terrain**, en retaillant la même tête sur le seul
-  masque extérieur : ses métriques et sa courbe de seuil, sans collecte ;
+| | classes | top-1 | top-3 | autonomie à 0,70 | justesse |
+|---|---|---|---|---|---|
+| **masque extérieur** | 1 424 | **0,6898** | 0,8246 | 60,9 % | 0,9073 |
+| union, sans masque | 1 569 | 0,6876 | 0,8227 | 60,8 % | 0,9051 |
+| Iris 8, même masque (§ 13.6) | 1 444 | 0,6672 | 0,8063 | 55,0 % | 0,9176 |
+
+Deux points au-dessus de l'Iris 8, qui était le généraliste extérieur que
+l'application livrait avant Indoor — sur un tirage d'images différent, donc
+un indice fort plutôt qu'une mesure. La version décisive demanderait un
+`compare_models.py` entre les deux, et donc le fichier de l'Iris 8 sur la
+même machine.
+
+**Et les deux masques ne valent pas la même chose.** Le masque extérieur
+garde 1 424 sorties sur 1 569 — il n'en retire que 145 — et ne rapporte que
+deux dixièmes de point, courbes de seuil quasi superposées. Le masque
+intérieur garde 336 sorties sur 1 569 et rapporte 4,2 points.
+
+> **La valeur d'un masque est dans ce qu'il enlève, pas dans ce qu'il garde.**
+
+C'est « la largeur se paie dans les sorties » vue par l'autre bout. Dehors,
+l'Iris 9 est le généraliste qu'il est, et le masque n'y change presque rien ;
+dedans, le masque en fait un spécialiste. Cela ne rend pas le masque
+extérieur inutile — il empêche un géranium de salon d'être proposé devant un
+massif —, mais il ne faut pas lui attribuer un gain qu'il ne produit pas.
+
+Deux choses restent à mesurer :
+
 - **`FallbackPolicy.contextMargin`**, posée à 0,15 sans mesure — c'est elle
   qui décide quand un candidat hors du lieu reprend la parole ;
 - **ce qu'on fait quand le lieu n'est pas renseigné.** Aujourd'hui on ne
