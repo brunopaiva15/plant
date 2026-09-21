@@ -471,3 +471,50 @@ Les lectures sont **résistantes** : deux mille requêtes par plage d'affilée,
 il y en a toujours une qui casse. La lecture est retentée, l'archive rouverte
 en dernier recours, et une image qui résiste est **sautée avec son compte** —
 un top-1 calculé sur moins d'images qu'annoncé serait un mensonge tranquille.
+
+## Le plancher : ce qu'un student garde de l'espace
+
+```bash
+pip install onnxruntime
+curl -L -o ~/plant-data/flora_student_fp32.onnx \
+  "https://huggingface.co/crazedcodernate/bioclip-2.5-mobile-fastvit/resolve/main/flora_student_fp32.onnx"
+
+python3 student.py --banc benchmark.csv --cache ~/plant-data/student
+python3 voisins.py --banc benchmark.csv --cache ~/plant-data/bioclip \
+  --embeddings ~/plant-data/student --iris ../../assets/model --avec-iris \
+  --masque indoor=../plant_dataset/masque_indoor.txt \
+  --masque outdoor=../plant_dataset/masque_outdoor.txt
+```
+
+La porte C est franchie avec le **teacher** — 630 M de paramètres, 1,3 Go.
+C'est le plafond. `student.py` mesure ce qu'un student de 11,6 M en garde,
+donc le plancher, et il le fait sur un student **déjà distillé par un tiers**
+avant qu'on en entraîne un : une heure contre des jours.
+
+**Il écrit un cache au format de `bioclip.py`**, si bien que `voisins.py
+--embeddings` lit les vecteurs du student là où il lisait ceux du teacher,
+**contre les mêmes références**. Rien d'autre ne change, donc rien d'autre
+ne peut expliquer un écart. C'est aussi le montage livré : le téléphone
+encode, les références restent pré-calculées hors app (§ 7 de `docs/14`).
+
+**Son prétraitement n'est pas celui du ResNet18 de PlantNet**, et les
+confondre rendrait faux sans planter :
+
+| | ce student |
+|---|---|
+| entrée | `[1, 3, 224, 224]` NCHW, `float32`, **valeurs 0-1** |
+| normalisation | **repliée dans le graphe** — ne pas l'appliquer |
+| sortie | `[1, 1024]`, **déjà unitaire** (vérifié : norme 1,0000) |
+
+Le **recadrage est une variable**, donc `--recadrage` la sépare : `carre`
+recadre au carré central comme le teacher, `etire` déforme comme
+l'implémentation de référence de la carte. Elle appartient à la signature du
+cache — deux recadrages sous la même clé donneraient des vecteurs
+incomparables.
+
+> **Une mise en garde, sur une seule image.** Sur la photo de la carte du
+> ResNet18 — un *Calendula officinalis* que celui-ci nommait à 0,95 — ce
+> student répond *Zinnia grandiflora*, alors que *Calendula officinalis* est
+> bien dans sa propre table de 4 271 taxons. Le voisinage reste cohérent (des
+> Astéracées jaunes) et `carre` s'en tire mieux qu'`etire`, mais une image ne
+> fait pas une mesure. C'est le banc qui tranche.

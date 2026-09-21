@@ -231,6 +231,11 @@ def main() -> int:  # pragma: no cover - demande le cache et le banc
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--banc', default='benchmark.csv')
     ap.add_argument('--cache', default='~/plant-data/bioclip')
+    ap.add_argument('--embeddings',
+                    help="lire les vecteurs d'images dans ce cache-ci plutôt que dans "
+                         '--cache, dont on garde les références. C\'est le montage '
+                         "livré : le téléphone encode, les références restent "
+                         'pré-calculées hors app (§ 7 de docs/14)')
     ap.add_argument('--iris', default='../../assets/model',
                     help="pour restreindre aux classes qu'Iris expose")
     ap.add_argument('--tranches', default='indoor,outdoor,ood_plante')
@@ -253,7 +258,18 @@ def main() -> int:  # pragma: no cover - demande le cache et le banc
     sig = lire_signature(cache)
     if sig is None:
         raise SystemExit(f"{cache} n'a pas de signature : lancer `bioclip.py cache` d'abord")
-    print(f"teacher {sig['teacher']}, signature {sig['empreinte']}\n")
+    print(f"références : {sig['teacher']}, signature {sig['empreinte']}")
+    source = Path(args.embeddings).expanduser() if args.embeddings else cache
+    if args.embeddings:
+        sigs = lire_signature(source)
+        if sigs is None:
+            raise SystemExit(f"{source} n'a pas de signature")
+        if int(sigs.get('dim', 0)) != int(sig.get('dim', 0)):
+            raise SystemExit(
+                f"dimensions incompatibles : références {sig.get('dim')}, "
+                f"vecteurs {sigs.get('dim')} — ils ne vivent pas dans le même espace")
+        print(f"vecteurs   : {sigs['teacher']}, signature {sigs['empreinte']}")
+    print()
 
     etiquettes = Path(args.iris).expanduser() / 'labels.txt'
     expose = {l.strip() for l in etiquettes.read_text(encoding='utf-8').splitlines() if l.strip()}
@@ -271,7 +287,7 @@ def main() -> int:  # pragma: no cover - demande le cache et le banc
         lignes = lire_banc(Path(args.banc).expanduser(), tranche)
         if not lignes:
             continue
-        gardes, embeddings = lire_embeddings(cache, [p for p, _ in lignes])
+        gardes, embeddings = lire_embeddings(source, [p for p, _ in lignes])
         if not gardes:
             print(f'\n— {tranche} — aucune image dans le cache, sautée')
             continue
