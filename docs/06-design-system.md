@@ -537,29 +537,58 @@ trahir, et il évite un `saveLayer` par-dessus un viseur de caméra. Les pages
 sans barre du bas s'en passent : leur contenu touche déjà le bord de l'écran.
 
 ## Les textes (`lib/l10n/*.arb`)
-Le ton est celui d'un outil, pas d'un assistant : sobre, factuel, court.
-- Une phrase dit une chose, à l'indicatif. Un titre est un nom, pas une
-  question : « Nom », « Emplacement », « Aperçu », et non « Comment
-  s'appelle-t-elle ? ». Seuls les questionnaires (le chercheur de plantes)
-  posent des questions, c'est leur rôle.
-- L'application ne parle pas d'elle-même et ne se prête pas d'intentions :
-  pas de « nos propositions », « Auxine regarde la pluie », « il sait dire
-  qu'il hésite ». On décrit ce qui se passe : « Propositions », « l'arrosage
-  est reporté les jours de pluie », « Doute signalé ».
-- On n'interpelle pas la personne : pas de « personne ne vous juge »,
-  « s'il vous plaît », « avec plaisir », « pas de panique », pas de point
-  d'exclamation. Pas de réassurance ni de justification qui ne change rien à
-  ce qu'elle va faire.
-- Notifications et erreurs sont des constats : « Monstera : arrosage prévu
-  aujourd'hui », « Code invalide, expiré ou déjà utilisé. », et non « a
-  probablement besoin d'eau », « ce code ne vaut plus rien ».
-- Les conseils d'entretien (`careTip…`) gardent le registre du jardinage :
+Le ton est celui d'un outil, pas d'un assistant : sobre, factuel, court. Sobre
+ne veut pas dire impersonnel — un mode d'emploi sans personne dedans devient
+une description, et une description ne dit pas quoi faire.
+
+- **On s'adresse à la personne.** Une consigne est à l'impératif, deuxième
+  personne : « Scannez la pièce », et non « Tourner lentement » ni « La pièce
+  se scanne ». Ce qui lui appartient se dit « votre » : vos plantes, votre
+  appareil. Un libellé de bouton reste à l'infinitif — « Ajouter une plante »,
+  « Supprimer le scan » —, c'est la forme française d'une commande.
+- **Chaque phrase a un sujet nommé.** Quand c'est le logiciel qui agit, on le
+  dit : « l'application calcule la lumière de chaque endroit ». Décrire un
+  traitement n'est pas se personnifier ; ce qui reste interdit, c'est de prêter
+  à l'application des intentions ou des états d'âme (« nos propositions »,
+  « Auxine regarde la pluie », « il sait dire qu'il hésite »).
+- **Une aide dit une chose.** Deux phrases et 140 signes au plus, 220 pour un
+  chapeau d'écran. Trois phrases sont réservées au consentement et à la
+  confidentialité, où chaque phrase porte une garantie distincte. Ce qui est
+  déjà dit ailleurs ne se répète pas : « rien ne quitte l'appareil » se dit une
+  fois, là où la question se pose.
+- **Un titre est un nom, pas une question** : « Nom », « Emplacement »,
+  « Aperçu », et non « Comment s'appelle-t-elle ? ». Seuls les questionnaires
+  (le chercheur de plantes) posent des questions, c'est leur rôle.
+- **On n'interpelle pas la personne pour ne rien dire** : pas de « personne ne
+  vous juge », « s'il vous plaît », « avec plaisir », « pas de panique », pas
+  de point d'exclamation. S'adresser à quelqu'un pour lui dire quoi faire, oui ;
+  le rassurer ou se justifier, non.
+- **Notifications et erreurs sont des constats**, suivis de ce qu'on peut y
+  faire : « Monstera : arrosage prévu aujourd'hui », « Ce code n'est plus
+  valable : il a déjà servi, a expiré, ou n'existe pas. », et non « a
+  probablement besoin d'eau ».
+- **Le mot courant l'emporte sur le mot juste** : un *endroit*, pas une
+  *place* ; un *scan*, pas un *relevé* ; *placer* une plante, pas la *poser*.
+  « Emplacement » reste réservé aux `Location` du jardin. Les termes de
+  botanique (nœud, keiki, sphaigne, cal) restent : c'est le vocabulaire du sujet.
+- **Les nombres s'écrivent en chiffres, les unités en abrégé** : « 5 à 8 cm »,
+  « 10 à 15 semaines », « 2 fois sur 3 ». Un texte d'interface se lit en
+  diagonale ; un chiffre s'y voit.
+- **Les conseils d'entretien (`careTip…`) gardent le registre du jardinage** :
   « elle pardonne les oublis » y est admis, nulle part ailleurs.
-- Les trois autres langues suivent le français, dans le même ton.
+- **Chaque langue s'écrit depuis l'intention, pas depuis le français.** On part
+  de ce que la chaîne doit faire comprendre et on l'écrit dans la langue ; une
+  tournure française sans équivalent idiomatique se perd, elle ne se transpose
+  pas. Registres : « vous » en français, *you* en anglais, *du* en allemand,
+  *tu* en italien — un seul par langue.
 
 `test/l10n/arb_tone_test.dart` verrouille la part mécanique : pas de point
-d'exclamation, pas de titre en forme de question, et une liste de tournures
-interdites par langue. Une tournure à bannir de plus s'ajoute là.
+d'exclamation, pas de titre en forme de question, une liste de tournures
+interdites par langue, et les mêmes marqueurs ICU d'une langue à l'autre. Une
+tournure à bannir de plus s'ajoute là. `tool/audit_textes.py` relève ce qui
+demande un œil : consigne à l'infinitif, pronominal impersonnel, passif sans
+agent, nombre en toutes lettres, phrase trop longue, registre mêlé. Le chantier
+de réécriture et ses lots sont dans `docs/18-clarte-des-textes.md`.
 
 ## Composants (`design_system/components/`)
 Button · IconButton · PressableScale · ClayBox · ClayLoader · Appear · Card · ActionTile · PlantCard · CareCard · PaperSheet · ActionChip · Pill · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · Slider (natif) · StepDots · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · IrisMark · PhotoGrid · PhotoViewer · QuantityStepper · DatePicker (natif) · PlantPicker · PhotoPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader · ScrollFade · WhatsNewWindow

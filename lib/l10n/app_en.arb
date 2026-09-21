@@ -1988,14 +1988,14 @@
   "moderationRestore": "Restore",
   "confirmRestoreTip": "Restore this tip? Its reports are cleared.",
   "roomScan": "Home scan",
-  "roomScanHint": "A room surveyed with the camera and the LiDAR gives its walls, windows and doors. The light at each spot follows from them, to tell where to put a plant. The survey stays on the device.",
+  "roomScanHint": "Scan a room with the camera and LiDAR: the app finds the walls, windows and doors, then works out how much light each spot gets, so you know where to put your plants. Everything stays on your device.",
   "roomScanStart": "Scan a room",
   "roomScanRooms": "Scanned rooms",
   "roomScanEmptyTitle": "No room scanned",
-  "roomScanEmptySubtitle": "A scan takes one to two minutes per room, walking slowly along the walls.",
-  "roomScanNoLidar": "This device has no LiDAR: scanning needs an iPhone Pro or an iPad Pro.",
+  "roomScanEmptySubtitle": "Allow 1 to 2 minutes per room.",
+  "roomScanNoLidar": "This device has no LiDAR. Scanning needs an iPhone Pro or an iPad Pro.",
   "roomScanBeforeTitle": "Before the scan",
-  "roomScanBeforeText": "The camera opens on the system's scanning view. Walk slowly along the walls until the room is drawn, then finish. Nothing leaves the device.",
+  "roomScanBeforeText": "The camera opens the iOS scanner. Walk slowly along the walls until the room is fully drawn, then tap Done.",
   "roomScanFailed": "The scan did not complete.",
   "roomScanDefaultName": "Room",
   "roomScanArea": "{area} m²",
@@ -2028,9 +2028,9 @@
   "roomScanWindowUnknown": "Unknown orientation",
   "roomScanWindowFromCompass": "From the compass",
   "roomScanWindowConfirmed": "Confirmed",
-  "roomScanOrientationHelp": "The compass is off by ten to fifteen degrees. Each window's orientation is corrected here.",
+  "roomScanOrientationHelp": "The compass is off by 10 to 15°. Correct each window's orientation here.",
   "roomScanDelete": "Delete the scan",
-  "roomScanDeleteConfirm": "The scan and its markers are removed from the device.",
+  "roomScanDeleteConfirm": "The scan and its markers will be deleted from your device.",
   "roomScanCapturedOn": "Scanned on {date}",
   "@roomScanCapturedOn": {
     "placeholders": {
@@ -2054,7 +2054,7 @@
   "directionWest": "west",
   "directionNorthWest": "north-west",
   "placementTitle": "Where to put it",
-  "placementHint": "Spots are ranked by the light they receive, compared with the light on the care sheet.",
+  "placementHint": "Spots are ranked by comparing the light they receive with the light the care sheet asks for.",
   "placementRoomsCount": "{count, plural, =1{one room scanned} other{{count} rooms scanned}}",
   "@placementRoomsCount": {
     "placeholders": {
@@ -2070,7 +2070,7 @@
   "placementShortfallTooBright": "Too much direct sun.",
   "placementShortfallDrafty": "Every spot is near a door: draughts.",
   "placementShortfallTooDry": "Wet room, humid air: the care sheet calls for dry air.",
-  "placementGeneric": "Generic care sheet: without a species, the light required is unknown.",
+  "placementGeneric": "Without a species, the light required is unknown: the care sheet stays generic.",
   "placementDistanceM": "{m} m",
   "@placementDistanceM": {
     "placeholders": {
@@ -2129,7 +2129,7 @@
     }
   },
   "roomScanHeaters": "Radiators",
-  "roomScanHeatersHelp": "The survey does not see radiators. Placed on the plan, a radiator counts as dry, hot air within 80 cm.",
+  "roomScanHeatersHelp": "The scan does not detect radiators. Place them on the plan: the air counts as dry and hot within 80 cm.",
   "roomScanAddHeater": "Place a radiator",
   "roomScanTapForHeater": "Tap the plan where the radiator is.",
   "roomScanHeatersCount": "{count, plural, =0{no radiator} =1{one radiator} other{{count} radiators}}",
@@ -2142,7 +2142,7 @@
   },
   "roomScanRemoveHeater": "Remove this radiator",
   "roomScanFillLocation": "Fill in the location",
-  "roomScanFillLocationDetail": "Orientation {orientation}, light {light}, from the survey. Fields already filled in do not change.",
+  "roomScanFillLocationDetail": "From the scan: orientation {orientation}, light {light}. Fields you have already filled in do not change.",
   "@roomScanFillLocationDetail": {
     "placeholders": {
       "orientation": {
@@ -2155,13 +2155,13 @@
   },
   "roomScanLocationFilled": "Location filled in",
   "roomScanWhoFitsHere": "The garden in this room",
-  "roomScanWhoFitsHint": "Each plant is rated on the room's light and its care sheet.",
+  "roomScanWhoFitsHint": "Each plant is rated by comparing the room's light with what its care sheet asks for.",
   "roomScanNoPlantsToRank": "No plant with a known species.",
-  "placementShortfallHeater": "Every spot is near a radiator: dry, hot air.",
+  "placementShortfallHeater": "Every spot is near a radiator: the air is dry and hot.",
   "placementHeaterNote": "Near a radiator: dry, hot air.",
   "placementAtHome": "Room sensor",
   "roomScanStartStructure": "Scan the whole home",
-  "roomScanStructureHint": "Scanning the whole home goes room by room: “Next room” between each, “Done” at the end. The rooms are placed relative to one another.",
+  "roomScanStructureHint": "Scan your rooms one after another: tap “Next room” after each one, “Done” at the end. The app assembles them into a single plan.",
   "roomScanNextRoom": "Next room",
   "roomScanRoomNumber": "Room {n}",
   "@roomScanRoomNumber": {
@@ -2172,7 +2172,7 @@
     }
   },
   "roomScanPlantsOnPlan": "Plants on the plan",
-  "roomScanPlantsHelp": "A plant placed on the plan is rated at its spot. The list flags a clearly better spot.",
+  "roomScanPlantsHelp": "Place your plants on the plan: each one gets a rating, and the list flags a clearly better spot.",
   "roomScanAddPlant": "Place a plant",
   "roomScanTapForPlant": "Tap the plan where {plant} is.",
   "@roomScanTapForPlant": {
@@ -2199,7 +2199,7 @@
       }
     }
   },
-  "roomScanPlantBetterAt": "Current spot {light} · better {place}",
+  "roomScanPlantBetterAt": "Here {light} · better {place}",
   "@roomScanPlantBetterAt": {
     "placeholders": {
       "light": {
@@ -2236,7 +2236,7 @@
   "roomScanCurtainNone": "No curtain",
   "roomScanCurtainSheer": "Sheer curtain",
   "roomScanCurtainDrawn": "Curtain often drawn",
-  "roomScanCurtainHelp": "The survey sees neither sheers nor curtains. A sheer curtain halves the light and removes direct sun; a curtain often drawn divides it by three.",
+  "roomScanCurtainHelp": "The scan does not detect curtains. A sheer curtain halves the light and removes direct sun; a curtain that is often drawn divides it by 3.",
   "roomScanPlace": "Place",
   "roomScanRoomsShort": "{count, plural, =0{None} =1{1 room} other{{count} rooms}}",
   "@roomScanRoomsShort": {
@@ -2246,8 +2246,8 @@
       }
     }
   },
-  "roomScanThisRoom": "Survey this room",
-  "roomScanThisRoomHint": "The room's plan gives the light at each spot, to choose where to put a plant.",
+  "roomScanThisRoom": "Scan this room",
+  "roomScanThisRoomHint": "The plan shows the light at each spot, to choose where to put a plant.",
   "roomScanRoomPlan": "Room plan",
   "roomScanPlantsOnPlanCount": "{count, plural, =0{no plant on the plan} =1{one plant on the plan} other{{count} plants on the plan}}",
   "@roomScanPlantsOnPlanCount": {

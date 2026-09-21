@@ -6205,7 +6205,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get roomScanHint =>
-      'A room surveyed with the camera and the LiDAR gives its walls, windows and doors. The light at each spot follows from them, to tell where to put a plant. The survey stays on the device.';
+      'Scan a room with the camera and LiDAR: the app finds the walls, windows and doors, then works out how much light each spot gets, so you know where to put your plants. Everything stays on your device.';
 
   @override
   String get roomScanStart => 'Scan a room';
@@ -6217,19 +6217,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get roomScanEmptyTitle => 'No room scanned';
 
   @override
-  String get roomScanEmptySubtitle =>
-      'A scan takes one to two minutes per room, walking slowly along the walls.';
+  String get roomScanEmptySubtitle => 'Allow 1 to 2 minutes per room.';
 
   @override
   String get roomScanNoLidar =>
-      'This device has no LiDAR: scanning needs an iPhone Pro or an iPad Pro.';
+      'This device has no LiDAR. Scanning needs an iPhone Pro or an iPad Pro.';
 
   @override
   String get roomScanBeforeTitle => 'Before the scan';
 
   @override
   String get roomScanBeforeText =>
-      'The camera opens on the system\'s scanning view. Walk slowly along the walls until the room is drawn, then finish. Nothing leaves the device.';
+      'The camera opens the iOS scanner. Walk slowly along the walls until the room is fully drawn, then tap Done.';
 
   @override
   String get roomScanFailed => 'The scan did not complete.';
@@ -6279,14 +6278,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get roomScanOrientationHelp =>
-      'The compass is off by ten to fifteen degrees. Each window\'s orientation is corrected here.';
+      'The compass is off by 10 to 15°. Correct each window\'s orientation here.';
 
   @override
   String get roomScanDelete => 'Delete the scan';
 
   @override
   String get roomScanDeleteConfirm =>
-      'The scan and its markers are removed from the device.';
+      'The scan and its markers will be deleted from your device.';
 
   @override
   String roomScanCapturedOn(String date) {
@@ -6340,7 +6339,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get placementHint =>
-      'Spots are ranked by the light they receive, compared with the light on the care sheet.';
+      'Spots are ranked by comparing the light they receive with the light the care sheet asks for.';
 
   @override
   String placementRoomsCount(int count) {
@@ -6378,7 +6377,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get placementGeneric =>
-      'Generic care sheet: without a species, the light required is unknown.';
+      'Without a species, the light required is unknown: the care sheet stays generic.';
 
   @override
   String placementDistanceM(String m) {
@@ -6433,7 +6432,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get roomScanHeatersHelp =>
-      'The survey does not see radiators. Placed on the plan, a radiator counts as dry, hot air within 80 cm.';
+      'The scan does not detect radiators. Place them on the plan: the air counts as dry and hot within 80 cm.';
 
   @override
   String get roomScanAddHeater => 'Place a radiator';
@@ -6461,7 +6460,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String roomScanFillLocationDetail(String orientation, String light) {
-    return 'Orientation $orientation, light $light, from the survey. Fields already filled in do not change.';
+    return 'From the scan: orientation $orientation, light $light. Fields you have already filled in do not change.';
   }
 
   @override
@@ -6472,14 +6471,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get roomScanWhoFitsHint =>
-      'Each plant is rated on the room\'s light and its care sheet.';
+      'Each plant is rated by comparing the room\'s light with what its care sheet asks for.';
 
   @override
   String get roomScanNoPlantsToRank => 'No plant with a known species.';
 
   @override
   String get placementShortfallHeater =>
-      'Every spot is near a radiator: dry, hot air.';
+      'Every spot is near a radiator: the air is dry and hot.';
 
   @override
   String get placementHeaterNote => 'Near a radiator: dry, hot air.';
@@ -6492,7 +6491,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get roomScanStructureHint =>
-      'Scanning the whole home goes room by room: “Next room” between each, “Done” at the end. The rooms are placed relative to one another.';
+      'Scan your rooms one after another: tap “Next room” after each one, “Done” at the end. The app assembles them into a single plan.';
 
   @override
   String get roomScanNextRoom => 'Next room';
@@ -6507,7 +6506,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get roomScanPlantsHelp =>
-      'A plant placed on the plan is rated at its spot. The list flags a clearly better spot.';
+      'Place your plants on the plan: each one gets a rating, and the list flags a clearly better spot.';
 
   @override
   String get roomScanAddPlant => 'Place a plant';
@@ -6532,7 +6531,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String roomScanPlantBetterAt(String light, String place) {
-    return 'Current spot $light · better $place';
+    return 'Here $light · better $place';
   }
 
   @override
@@ -6568,7 +6567,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get roomScanCurtainHelp =>
-      'The survey sees neither sheers nor curtains. A sheer curtain halves the light and removes direct sun; a curtain often drawn divides it by three.';
+      'The scan does not detect curtains. A sheer curtain halves the light and removes direct sun; a curtain that is often drawn divides it by 3.';
 
   @override
   String get roomScanPlace => 'Place';
@@ -6586,11 +6585,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get roomScanThisRoom => 'Survey this room';
+  String get roomScanThisRoom => 'Scan this room';
 
   @override
   String get roomScanThisRoomHint =>
-      'The room\'s plan gives the light at each spot, to choose where to put a plant.';
+      'The plan shows the light at each spot, to choose where to put a plant.';
 
   @override
   String get roomScanRoomPlan => 'Room plan';

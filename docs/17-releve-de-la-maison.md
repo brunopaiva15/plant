@@ -245,7 +245,7 @@ pièces et les plantes. Cinq entrées, une par question qu'on se pose :
   qui décrit cet emplacement — son plan avec les plantes posées, ses
   fenêtres, la date —, qui ouvre la feuille du relevé ; et « Renseigner
   l'emplacement » quand le relevé sait l'orientation ou la lumière que le
-  lieu ne dit pas encore. Sans relevé, « Relever cette pièce » lance le
+  lieu ne dit pas encore. Sans relevé, « Scanner cette pièce » lance le
   relevé et le lie d'emblée à l'emplacement. Sur un appareil sans LiDAR,
   la section n'existe pas.
 - **Fiche plante › carte « Sa place »** sous « Comment en prendre soin »
@@ -260,9 +260,9 @@ pièces et les plantes. Cinq entrées, une par question qu'on se pose :
   une pièce est relevée. Le diorama ne change pas : il montre l'idéal, le
   relevé montre le réel (docs/13, « Idéal et réel »). Pour une plante déjà
   posée, la ligne dit sa place.
-- **Profil › Réglages › Relevé de la maison** : la vue d'ensemble — la
+- **Profil › Réglages › Scan de la maison** : la vue d'ensemble — la
   liste des pièces relevées (nom, surface, emplacement lié, date),
-  « Relever une pièce », « Relever l'appartement », et pour chaque pièce :
+  « Scanner une pièce », « Scanner tout le logement », et pour chaque pièce :
   renommer, lier à un emplacement, corriger l'orientation des fenêtres,
   supprimer. Une pièce relevée d'ici se lie d'elle-même à l'emplacement
   qui porte son nom (« Salon » reconnu par RoomPlan, un emplacement
@@ -350,7 +350,7 @@ ne se lirait pas — ; et la pièce se relève une fois pour toutes les fiches
 (`RoomFitAdvisor.survey`, puis `placeIn` par fiche), parce que « Qui
 serait bien ici » juge tout le jardin sur la même grille.
 
-**Palier 3 — l'appartement entier.** « Relever l'appartement » enchaîne
+**Palier 3 — l'appartement entier.** « Scanner tout le logement » enchaîne
 les pièces dans le même repère (`stop(pauseARSession: false)`, puis
 `run` ; « Pièce suivante » entre chaque), `StructureBuilder` les assemble
 au « Terminer », et chaque pièce part dans son fichier sous un même

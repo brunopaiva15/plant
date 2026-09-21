@@ -4,8 +4,8 @@
 Lit les quatre ARB et signale, chaîne par chaîne, ce qui relève des défauts
 décrits dans `docs/18-clarte-des-textes.md` : la consigne à l'infinitif, le
 pronominal impersonnel, le passif descriptif, les nombres en toutes lettres,
-l'apostrophe droite, le vouvoiement mêlé au tutoiement (de, it), la phrase
-trop longue.
+l'apostrophe courbe, le registre de trop (le *Sie* allemand, le *voi*
+italien), la phrase trop longue.
 
     python3 tool/audit_textes.py             # compte par défaut
     python3 tool/audit_textes.py --liste     # une ligne par chaîne signalée
@@ -70,17 +70,17 @@ NOMBRES = {
         r'mesi?|ore?|minuti?|anni?|gradi?|per cento|%)', re.I),
 }
 
-# Le tutoiement et le vouvoiement, dans les langues où les deux se lisent.
-REGISTRE = {
-    'de': (re.compile(r'\b(du|dich|dir|dein\w*)\b'),
-           re.compile(r'\b(Sie|Ihnen|Ihre\w*|Ihr)\b')),
-    'it': (re.compile(r'\b(tuo|tua|tuoi|tue|puoi|devi|hai|scegli|tocca|aggiungi|correggi|'
-                      r'verifica|inserisci|attiva|premi|apri)\b', re.I),
-           re.compile(r'\b(vostr\w+|potete|dovete|avete|desiderate|scegliete|toccate|'
-                      r'aggiungete|verificate|inserite|attivate|premete|aprite)\b', re.I)),
+# Le registre est tranché (docs/06, « Les textes ») : « vous » en français,
+# *you* en anglais, *du* en allemand, *tu* en italien. Ne reste signalé que le
+# registre de trop.
+REGISTRE_DE_TROP = {
+    'de': re.compile(r'\b(Sie|Ihnen|Ihre\w*|Ihr)\b'),
+    'it': re.compile(r'\b(vostr\w+|potete|dovete|avete|desiderate|scegliete|toccate|'
+                     r'aggiungete|verificate|inserite|attivate|premete|aprite)\b', re.I),
 }
 
-LONGUEUR = 140          # une bulle d'aide tient en deçà
+LONGUEUR = 140          # une aide en ligne tient en deçà
+CHAPEAU = 220           # un chapeau d'écran a droit à davantage
 PHRASES = 2             # au-delà, l'aide devient un paragraphe
 
 
@@ -106,17 +106,15 @@ def defauts(locale: str, cle: str, texte: str) -> list[str]:
         trouves.append('apostrophe-courbe')
     if NOMBRES[locale].search(nu):
         trouves.append('nombre-en-lettres')
-    if len(nu) > LONGUEUR:
+    if len(nu) > CHAPEAU:
+        trouves.append('phrase-tres-longue')
+    elif len(nu) > LONGUEUR:
         trouves.append('phrase-longue')
     if len(re.findall(r'[.!?](?:\s|$)', nu)) > PHRASES:
         trouves.append('trop-de-phrases')
 
-    if locale in REGISTRE:
-        tu, vous = REGISTRE[locale]
-        if tu.search(nu):
-            trouves.append('registre-tutoiement')
-        if vous.search(nu):
-            trouves.append('registre-vouvoiement')
+    if locale in REGISTRE_DE_TROP and REGISTRE_DE_TROP[locale].search(nu):
+        trouves.append('registre-de-trop')
 
     if locale == 'fr' and not COURT.search(cle):
         # Un bouton s'intitule « Ajouter une plante » : l'infinitif n'y est

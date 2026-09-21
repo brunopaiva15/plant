@@ -1980,16 +1980,16 @@
   "moderationHide": "Nascondi",
   "moderationRestore": "Ripristina",
   "confirmRestoreTip": "Ripristinare questo consiglio? Le sue segnalazioni vengono cancellate.",
-  "roomScan": "Rilievo della casa",
-  "roomScanHint": "Una stanza rilevata con la fotocamera e il LiDAR restituisce muri, finestre e porte. Da questi si ricava la luce di ogni posto, per dire dove posare una pianta. Il rilievo resta sul dispositivo.",
-  "roomScanStart": "Rilevare una stanza",
-  "roomScanRooms": "Stanze rilevate",
-  "roomScanEmptyTitle": "Nessuna stanza rilevata",
-  "roomScanEmptySubtitle": "Il rilievo richiede uno o due minuti per stanza, girando lentamente lungo i muri.",
-  "roomScanNoLidar": "Questo dispositivo non ha il LiDAR: il rilievo richiede un iPhone Pro o un iPad Pro.",
-  "roomScanBeforeTitle": "Prima del rilievo",
-  "roomScanBeforeText": "La fotocamera si apre sulla schermata di rilievo del sistema. Girare lentamente lungo i muri finché la stanza non è disegnata, poi terminare. Nulla lascia il dispositivo.",
-  "roomScanFailed": "Il rilievo non è andato a buon fine.",
+  "roomScan": "Scansione della casa",
+  "roomScanHint": "Scansiona una stanza con la fotocamera e il LiDAR: l'app individua muri, finestre e porte, poi calcola quanta luce riceve ogni posto e ti dice dove mettere le piante. Tutto resta sul tuo dispositivo.",
+  "roomScanStart": "Scansiona una stanza",
+  "roomScanRooms": "Stanze scansionate",
+  "roomScanEmptyTitle": "Nessuna stanza scansionata",
+  "roomScanEmptySubtitle": "Conta 1 o 2 minuti per stanza.",
+  "roomScanNoLidar": "Questo dispositivo non ha il LiDAR. La scansione richiede un iPhone Pro o un iPad Pro.",
+  "roomScanBeforeTitle": "Prima della scansione",
+  "roomScanBeforeText": "La fotocamera apre lo scanner di iOS. Cammina lentamente lungo i muri finché la stanza non è disegnata del tutto, poi tocca Fine.",
+  "roomScanFailed": "La scansione non è riuscita.",
   "roomScanDefaultName": "Stanza",
   "roomScanArea": "{area} m²",
   "@roomScanArea": {
@@ -2021,10 +2021,10 @@
   "roomScanWindowUnknown": "Orientamento sconosciuto",
   "roomScanWindowFromCompass": "Secondo la bussola",
   "roomScanWindowConfirmed": "Confermato",
-  "roomScanOrientationHelp": "La bussola sbaglia di dieci o quindici gradi. L'orientamento di ogni finestra si corregge qui.",
-  "roomScanDelete": "Elimina il rilievo",
-  "roomScanDeleteConfirm": "Il rilievo e i suoi riferimenti scompaiono dal dispositivo.",
-  "roomScanCapturedOn": "Rilevata il {date}",
+  "roomScanOrientationHelp": "La bussola sbaglia di 10-15°. Correggi qui l'orientamento di ogni finestra.",
+  "roomScanDelete": "Elimina la scansione",
+  "roomScanDeleteConfirm": "La scansione e i suoi riferimenti saranno eliminati dal tuo dispositivo.",
+  "roomScanCapturedOn": "Scansionata il {date}",
   "@roomScanCapturedOn": {
     "placeholders": {
       "date": {
@@ -2047,8 +2047,8 @@
   "directionWest": "ovest",
   "directionNorthWest": "nord-ovest",
   "placementTitle": "Dove metterla",
-  "placementHint": "I posti sono ordinati per la luce che ricevono, confrontata con quella della scheda.",
-  "placementRoomsCount": "{count, plural, =1{una stanza rilevata} other{{count} stanze rilevate}}",
+  "placementHint": "I posti sono ordinati confrontando la luce che ricevono con quella richiesta dalla scheda.",
+  "placementRoomsCount": "{count, plural, =1{una stanza scansionata} other{{count} stanze scansionate}}",
   "@placementRoomsCount": {
     "placeholders": {
       "count": {
@@ -2063,7 +2063,7 @@
   "placementShortfallTooBright": "Troppo sole diretto.",
   "placementShortfallDrafty": "Ogni posto è vicino a una porta: correnti d'aria.",
   "placementShortfallTooDry": "Locale umido, aria umida: la scheda richiede aria secca.",
-  "placementGeneric": "Scheda generica: senza specie, la luce richiesta non è nota.",
+  "placementGeneric": "Senza specie, la luce richiesta è sconosciuta: la scheda resta generica.",
   "placementDistanceM": "{m} m",
   "@placementDistanceM": {
     "placeholders": {
@@ -2113,7 +2113,7 @@
   "placementDeepInRoom": "in fondo, lontano dalle finestre",
   "placementDraftyNote": "Vicino a una porta: corrente d'aria.",
   "placementHumidRoomNote": "Locale umido: aria più umida.",
-  "placementPlanSemantics": "Pianta della stanza vista dall'alto, {count} posti selezionati.",
+  "placementPlanSemantics": "Planimetria della stanza vista dall'alto, {count} posti selezionati.",
   "@placementPlanSemantics": {
     "placeholders": {
       "count": {
@@ -2122,9 +2122,9 @@
     }
   },
   "roomScanHeaters": "Termosifoni",
-  "roomScanHeatersHelp": "Il rilievo non vede i termosifoni. Posato sulla planimetria, un termosifone conta come aria secca e calda entro 80 cm.",
-  "roomScanAddHeater": "Posare un termosifone",
-  "roomScanTapForHeater": "Toccare la pianta dove si trova il termosifone.",
+  "roomScanHeatersHelp": "La scansione non rileva i termosifoni. Mettili sulla planimetria: entro 80 cm l'aria conta come secca e calda.",
+  "roomScanAddHeater": "Aggiungi un termosifone",
+  "roomScanTapForHeater": "Tocca la planimetria dove si trova il termosifone.",
   "roomScanHeatersCount": "{count, plural, =0{nessun termosifone} =1{un termosifone} other{{count} termosifoni}}",
   "@roomScanHeatersCount": {
     "placeholders": {
@@ -2133,9 +2133,9 @@
       }
     }
   },
-  "roomScanRemoveHeater": "Rimuovere questo termosifone",
-  "roomScanFillLocation": "Compilare la posizione",
-  "roomScanFillLocationDetail": "Orientamento {orientation}, luce {light}, secondo il rilievo. I campi già compilati non cambiano.",
+  "roomScanRemoveHeater": "Rimuovi questo termosifone",
+  "roomScanFillLocation": "Compila la posizione",
+  "roomScanFillLocationDetail": "Secondo la scansione: orientamento {orientation}, luce {light}. I campi già compilati non cambiano.",
   "@roomScanFillLocationDetail": {
     "placeholders": {
       "orientation": {
@@ -2148,13 +2148,13 @@
   },
   "roomScanLocationFilled": "Posizione compilata",
   "roomScanWhoFitsHere": "Il giardino in questa stanza",
-  "roomScanWhoFitsHint": "Ogni pianta è valutata in base alla luce della stanza e alla sua scheda.",
+  "roomScanWhoFitsHint": "Ogni pianta è valutata confrontando la luce della stanza con quella richiesta dalla sua scheda.",
   "roomScanNoPlantsToRank": "Nessuna pianta con una specie nota.",
-  "placementShortfallHeater": "Ogni posto è vicino a un termosifone: aria secca e calda.",
+  "placementShortfallHeater": "Ogni posto è vicino a un termosifone: l'aria è secca e calda.",
   "placementHeaterNote": "Vicino a un termosifone: aria secca e calda.",
   "placementAtHome": "Sensore della stanza",
-  "roomScanStartStructure": "Rilevare tutta la casa",
-  "roomScanStructureHint": "Rilevare tutta la casa procede stanza per stanza: «Stanza successiva» tra una e l'altra, «Fine» alla fine. Le stanze si collocano l'una rispetto all'altra.",
+  "roomScanStartStructure": "Scansiona tutta la casa",
+  "roomScanStructureHint": "Scansiona le stanze una dopo l'altra: tocca «Stanza successiva» dopo ognuna e «Fine» alla fine. L'app le unisce in un'unica planimetria.",
   "roomScanNextRoom": "Stanza successiva",
   "roomScanRoomNumber": "Stanza {n}",
   "@roomScanRoomNumber": {
@@ -2164,10 +2164,10 @@
       }
     }
   },
-  "roomScanPlantsOnPlan": "Piante sulla pianta",
-  "roomScanPlantsHelp": "Una pianta posata sulla planimetria è valutata al suo posto. L'elenco segnala un posto nettamente migliore.",
-  "roomScanAddPlant": "Posare una pianta",
-  "roomScanTapForPlant": "Toccare la pianta dove si trova {plant}.",
+  "roomScanPlantsOnPlan": "Piante sulla planimetria",
+  "roomScanPlantsHelp": "Metti le tue piante sulla planimetria: ognuna riceve una valutazione e l'elenco segnala un posto nettamente migliore.",
+  "roomScanAddPlant": "Aggiungi una pianta",
+  "roomScanTapForPlant": "Tocca la planimetria dove si trova {plant}.",
   "@roomScanTapForPlant": {
     "placeholders": {
       "plant": {
@@ -2175,7 +2175,7 @@
       }
     }
   },
-  "roomScanRemovePlant": "Rimuovere {plant} dalla pianta",
+  "roomScanRemovePlant": "Rimuovi {plant} dalla planimetria",
   "@roomScanRemovePlant": {
     "placeholders": {
       "plant": {
@@ -2183,7 +2183,7 @@
       }
     }
   },
-  "roomScanNoPlantToPlace": "Nessuna pianta da posare.",
+  "roomScanNoPlantToPlace": "Nessuna pianta da mettere.",
   "roomScanPlantWellPlaced": "Posto adatto · {light}",
   "@roomScanPlantWellPlaced": {
     "placeholders": {
@@ -2192,7 +2192,7 @@
       }
     }
   },
-  "roomScanPlantBetterAt": "Posto attuale {light} · meglio {place}",
+  "roomScanPlantBetterAt": "Qui {light} · meglio {place}",
   "@roomScanPlantBetterAt": {
     "placeholders": {
       "light": {
@@ -2204,8 +2204,8 @@
     }
   },
   "placementAllRooms": "Tutte le stanze",
-  "placementChoose": "Posare qui",
-  "placementChosen": "Posata {place}",
+  "placementChoose": "Metti qui",
+  "placementChosen": "Messa {place}",
   "@placementChosen": {
     "placeholders": {
       "place": {
@@ -2229,8 +2229,8 @@
   "roomScanCurtainNone": "Senza tenda",
   "roomScanCurtainSheer": "Tenda leggera",
   "roomScanCurtainDrawn": "Tenda spesso tirata",
-  "roomScanCurtainHelp": "Il rilievo non vede né le tende leggere né le tende. Una tenda leggera dimezza la luce e toglie il sole diretto; una tenda spesso tirata la divide per tre.",
-  "roomScanPlace": "Posare",
+  "roomScanCurtainHelp": "La scansione non rileva le tende. Una tenda leggera dimezza la luce e toglie il sole diretto; una tenda spesso tirata la divide per 3.",
+  "roomScanPlace": "Metti",
   "roomScanRoomsShort": "{count, plural, =0{Nessuna} =1{1 stanza} other{{count} stanze}}",
   "@roomScanRoomsShort": {
     "placeholders": {
@@ -2239,9 +2239,9 @@
       }
     }
   },
-  "roomScanThisRoom": "Rilevare questa stanza",
-  "roomScanThisRoomHint": "La planimetria della stanza dà la luce di ogni posto, per scegliere dove posare una pianta.",
-  "roomScanRoomPlan": "Pianta della stanza",
+  "roomScanThisRoom": "Scansiona questa stanza",
+  "roomScanThisRoomHint": "La planimetria mostra la luce di ogni posto, per scegliere dove mettere una pianta.",
+  "roomScanRoomPlan": "Planimetria della stanza",
   "roomScanPlantsOnPlanCount": "{count, plural, =0{nessuna pianta sulla planimetria} =1{una pianta sulla planimetria} other{{count} piante sulla planimetria}}",
   "@roomScanPlantsOnPlanCount": {
     "placeholders": {

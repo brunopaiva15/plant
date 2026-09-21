@@ -84,8 +84,8 @@ abstract final class AppConfig {
   /// Le relevé de la maison au LiDAR (docs/17) : relever une pièce avec
   /// RoomPlan, puis dire pour une plante où elle serait le mieux.
   ///
-  /// Livré. La ligne « Relevé de la maison » de Profil et le bouton « Où la
-  /// poser » de la fiche d'entretien n'existent que sur un iPhone ou un
+  /// Livré. La ligne « Scan de la maison » de Profil et le bouton « Où la
+  /// placer » de la fiche d'entretien n'existent que sur un iPhone ou un
   /// iPad à LiDAR — le canal le dit, l'écran s'y fie. Ce que le drapeau ne
   /// règle pas : le nord vient de la boussole, à dix degrés près, et
   /// l'orientation de chaque fenêtre se confirme à la main ; le modèle de

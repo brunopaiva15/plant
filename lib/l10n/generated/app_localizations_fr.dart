@@ -6244,38 +6244,37 @@ class AppLocalizationsFr extends AppLocalizations {
       'Rétablir ce conseil ? Ses signalements sont effacés.';
 
   @override
-  String get roomScan => 'Relevé de la maison';
+  String get roomScan => 'Scan de la maison';
 
   @override
   String get roomScanHint =>
-      'Une pièce relevée avec l\'appareil photo et le LiDAR donne ses murs, ses fenêtres et ses portes. La lumière de chaque place s\'en déduit, pour dire où poser une plante. Le relevé reste sur l\'appareil.';
+      'Scannez une pièce avec l\'appareil photo et le LiDAR : l\'application repère les murs, fenêtres et portes, puis calcule la lumière de chaque endroit pour vous dire où placer vos plantes. Tout reste sur votre appareil.';
 
   @override
-  String get roomScanStart => 'Relever une pièce';
+  String get roomScanStart => 'Scanner une pièce';
 
   @override
-  String get roomScanRooms => 'Pièces relevées';
+  String get roomScanRooms => 'Pièces scannées';
 
   @override
-  String get roomScanEmptyTitle => 'Aucune pièce relevée';
+  String get roomScanEmptyTitle => 'Aucune pièce scannée';
 
   @override
-  String get roomScanEmptySubtitle =>
-      'Le relevé prend une à deux minutes par pièce, en tournant lentement le long des murs.';
+  String get roomScanEmptySubtitle => 'Comptez 1 à 2 minutes par pièce.';
 
   @override
   String get roomScanNoLidar =>
-      'Cet appareil n\'a pas de LiDAR : le relevé demande un iPhone Pro ou un iPad Pro.';
+      'Cet appareil n\'a pas de LiDAR. Le scan demande un iPhone Pro ou un iPad Pro.';
 
   @override
-  String get roomScanBeforeTitle => 'Avant le relevé';
+  String get roomScanBeforeTitle => 'Avant le scan';
 
   @override
   String get roomScanBeforeText =>
-      'L\'appareil photo s\'ouvre sur le relevé du système. Tourner lentement le long des murs jusqu\'à ce que la pièce soit dessinée, puis terminer. Rien ne quitte l\'appareil.';
+      'L\'appareil photo s\'ouvre sur le scanner d\'iOS. Avancez lentement le long des murs jusqu\'à ce que la pièce soit entièrement dessinée, puis touchez Terminé.';
 
   @override
-  String get roomScanFailed => 'Le relevé n\'a pas abouti.';
+  String get roomScanFailed => 'Le scan n\'a pas abouti.';
 
   @override
   String get roomScanDefaultName => 'Pièce';
@@ -6322,18 +6321,18 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get roomScanOrientationHelp =>
-      'La boussole a dix à quinze degrés d\'erreur. L\'orientation de chaque fenêtre se corrige ici.';
+      'La boussole se trompe de 10 à 15°. Corrigez ici l\'orientation de chaque fenêtre.';
 
   @override
-  String get roomScanDelete => 'Supprimer le relevé';
+  String get roomScanDelete => 'Supprimer le scan';
 
   @override
   String get roomScanDeleteConfirm =>
-      'Le relevé et ses repères disparaissent de l\'appareil.';
+      'Le scan et ses repères seront supprimés de votre appareil.';
 
   @override
   String roomScanCapturedOn(String date) {
-    return 'Relevée le $date';
+    return 'Scannée le $date';
   }
 
   @override
@@ -6379,19 +6378,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get directionNorthWest => 'nord-ouest';
 
   @override
-  String get placementTitle => 'Où la poser';
+  String get placementTitle => 'Où la placer';
 
   @override
   String get placementHint =>
-      'Les places sont classées d\'après la lumière qu\'elles reçoivent, comparée à celle de la fiche.';
+      'Les endroits sont classés en comparant la lumière qu\'ils reçoivent à celle que demande la fiche.';
 
   @override
   String placementRoomsCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count pièces relevées',
-      one: 'une pièce relevée',
+      other: '$count pièces scannées',
+      one: 'une pièce scannée',
     );
     return '$_temp0';
   }
@@ -6401,7 +6400,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get placementVerdictAcceptable =>
-      'Pièce acceptable, sans place idéale.';
+      'Pièce acceptable, sans endroit idéal.';
 
   @override
   String get placementVerdictUnsuitable => 'Pièce inadaptée.';
@@ -6415,7 +6414,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get placementShortfallDrafty =>
-      'Chaque place est près d\'une porte : courants d\'air.';
+      'Tous les endroits sont près d\'une porte : courants d\'air.';
 
   @override
   String get placementShortfallTooDry =>
@@ -6423,7 +6422,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get placementGeneric =>
-      'Fiche générique : sans espèce, la lumière demandée n\'est pas connue.';
+      'Sans espèce renseignée, la lumière demandée est inconnue : la fiche reste générique.';
 
   @override
   String placementDistanceM(String m) {
@@ -6470,7 +6469,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String placementPlanSemantics(int count) {
-    return 'Plan de la pièce vu de dessus, $count places retenues.';
+    return 'Plan de la pièce vu de dessus, $count endroits retenus.';
   }
 
   @override
@@ -6478,14 +6477,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get roomScanHeatersHelp =>
-      'Le relevé ne voit pas les radiateurs. Posé sur le plan, un radiateur compte comme air sec et chaud à moins de 80 cm.';
+      'Le scan ne détecte pas les radiateurs. Placez-les sur le plan : l\'air compte comme sec et chaud à moins de 80 cm.';
 
   @override
-  String get roomScanAddHeater => 'Poser un radiateur';
+  String get roomScanAddHeater => 'Placer un radiateur';
 
   @override
   String get roomScanTapForHeater =>
-      'Toucher le plan là où se trouve le radiateur.';
+      'Touchez le plan à l\'endroit du radiateur.';
 
   @override
   String roomScanHeatersCount(int count) {
@@ -6507,7 +6506,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String roomScanFillLocationDetail(String orientation, String light) {
-    return 'Orientation $orientation, lumière $light, d\'après le relevé. Les champs déjà remplis ne changent pas.';
+    return 'D\'après le scan : orientation $orientation, lumière $light. Vos champs déjà remplis ne changent pas.';
   }
 
   @override
@@ -6518,14 +6517,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get roomScanWhoFitsHint =>
-      'Chaque plante est notée d\'après la lumière de la pièce et sa fiche.';
+      'Chaque plante est notée en comparant la lumière de la pièce à celle que demande sa fiche.';
 
   @override
   String get roomScanNoPlantsToRank => 'Aucune plante avec une espèce connue.';
 
   @override
   String get placementShortfallHeater =>
-      'Chaque place est près d\'un radiateur : air sec et chaud.';
+      'Tous les endroits sont près d\'un radiateur : l\'air y est sec et chaud.';
 
   @override
   String get placementHeaterNote => 'Près d\'un radiateur : air sec et chaud.';
@@ -6534,11 +6533,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get placementAtHome => 'Capteur de la pièce';
 
   @override
-  String get roomScanStartStructure => 'Relever l\'appartement';
+  String get roomScanStartStructure => 'Scanner tout le logement';
 
   @override
   String get roomScanStructureHint =>
-      'Relever l\'appartement enchaîne les pièces : « Pièce suivante » entre chaque, « Terminé » à la fin. Les pièces se placent les unes par rapport aux autres.';
+      'Scannez vos pièces à la suite : touchez « Pièce suivante » après chacune, « Terminé » à la fin. L\'application les assemble en un seul plan.';
 
   @override
   String get roomScanNextRoom => 'Pièce suivante';
@@ -6553,14 +6552,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get roomScanPlantsHelp =>
-      'Une plante posée sur le plan est notée à sa place. La liste signale une place nettement meilleure.';
+      'Placez vos plantes sur le plan : chacune reçoit une note, et la liste signale un endroit nettement meilleur.';
 
   @override
-  String get roomScanAddPlant => 'Poser une plante';
+  String get roomScanAddPlant => 'Placer une plante';
 
   @override
   String roomScanTapForPlant(String plant) {
-    return 'Toucher le plan là où se trouve $plant.';
+    return 'Touchez le plan à l\'endroit où se trouve $plant.';
   }
 
   @override
@@ -6569,32 +6568,32 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get roomScanNoPlantToPlace => 'Aucune plante à poser.';
+  String get roomScanNoPlantToPlace => 'Aucune plante à placer.';
 
   @override
   String roomScanPlantWellPlaced(String light) {
-    return 'Place adaptée · $light';
+    return 'Endroit adapté · $light';
   }
 
   @override
   String roomScanPlantBetterAt(String light, String place) {
-    return 'Place actuelle $light · mieux $place';
+    return 'Ici $light · mieux $place';
   }
 
   @override
   String get placementAllRooms => 'Toutes les pièces';
 
   @override
-  String get placementChoose => 'Poser ici';
+  String get placementChoose => 'Placer ici';
 
   @override
   String placementChosen(String place) {
-    return 'Posée $place';
+    return 'Placée $place';
   }
 
   @override
   String placementCurrent(String place, String light) {
-    return 'Place actuelle : $place · $light';
+    return 'Endroit actuel : $place · $light';
   }
 
   @override
@@ -6614,10 +6613,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get roomScanCurtainHelp =>
-      'Le relevé ne voit ni les voilages ni les rideaux. Un voilage divise la lumière par deux et ôte le soleil direct ; un rideau souvent tiré la divise par trois.';
+      'Le scan ne détecte pas les rideaux. Un voilage divise la lumière par 2 et ôte le soleil direct ; un rideau souvent tiré la divise par 3.';
 
   @override
-  String get roomScanPlace => 'Poser';
+  String get roomScanPlace => 'Placer';
 
   @override
   String roomScanRoomsShort(int count) {
@@ -6632,11 +6631,11 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get roomScanThisRoom => 'Relever cette pièce';
+  String get roomScanThisRoom => 'Scanner cette pièce';
 
   @override
   String get roomScanThisRoomHint =>
-      'Le plan de la pièce donne la lumière de chaque place, pour choisir où poser une plante.';
+      'Le plan indique la lumière de chaque endroit, pour choisir où placer une plante.';
 
   @override
   String get roomScanRoomPlan => 'Plan de la pièce';

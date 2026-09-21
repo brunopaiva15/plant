@@ -3054,16 +3054,16 @@
   "moderationHide": "Masquer",
   "moderationRestore": "Rétablir",
   "confirmRestoreTip": "Rétablir ce conseil ? Ses signalements sont effacés.",
-  "roomScan": "Relevé de la maison",
-  "roomScanHint": "Une pièce relevée avec l'appareil photo et le LiDAR donne ses murs, ses fenêtres et ses portes. La lumière de chaque place s'en déduit, pour dire où poser une plante. Le relevé reste sur l'appareil.",
-  "roomScanStart": "Relever une pièce",
-  "roomScanRooms": "Pièces relevées",
-  "roomScanEmptyTitle": "Aucune pièce relevée",
-  "roomScanEmptySubtitle": "Le relevé prend une à deux minutes par pièce, en tournant lentement le long des murs.",
-  "roomScanNoLidar": "Cet appareil n'a pas de LiDAR : le relevé demande un iPhone Pro ou un iPad Pro.",
-  "roomScanBeforeTitle": "Avant le relevé",
-  "roomScanBeforeText": "L'appareil photo s'ouvre sur le relevé du système. Tourner lentement le long des murs jusqu'à ce que la pièce soit dessinée, puis terminer. Rien ne quitte l'appareil.",
-  "roomScanFailed": "Le relevé n'a pas abouti.",
+  "roomScan": "Scan de la maison",
+  "roomScanHint": "Scannez une pièce avec l'appareil photo et le LiDAR : l'application repère les murs, fenêtres et portes, puis calcule la lumière de chaque endroit pour vous dire où placer vos plantes. Tout reste sur votre appareil.",
+  "roomScanStart": "Scanner une pièce",
+  "roomScanRooms": "Pièces scannées",
+  "roomScanEmptyTitle": "Aucune pièce scannée",
+  "roomScanEmptySubtitle": "Comptez 1 à 2 minutes par pièce.",
+  "roomScanNoLidar": "Cet appareil n'a pas de LiDAR. Le scan demande un iPhone Pro ou un iPad Pro.",
+  "roomScanBeforeTitle": "Avant le scan",
+  "roomScanBeforeText": "L'appareil photo s'ouvre sur le scanner d'iOS. Avancez lentement le long des murs jusqu'à ce que la pièce soit entièrement dessinée, puis touchez Terminé.",
+  "roomScanFailed": "Le scan n'a pas abouti.",
   "roomScanDefaultName": "Pièce",
   "roomScanArea": "{area} m²",
   "@roomScanArea": {
@@ -3095,10 +3095,10 @@
   "roomScanWindowUnknown": "Orientation inconnue",
   "roomScanWindowFromCompass": "D'après la boussole",
   "roomScanWindowConfirmed": "Confirmée",
-  "roomScanOrientationHelp": "La boussole a dix à quinze degrés d'erreur. L'orientation de chaque fenêtre se corrige ici.",
-  "roomScanDelete": "Supprimer le relevé",
-  "roomScanDeleteConfirm": "Le relevé et ses repères disparaissent de l'appareil.",
-  "roomScanCapturedOn": "Relevée le {date}",
+  "roomScanOrientationHelp": "La boussole se trompe de 10 à 15°. Corrigez ici l'orientation de chaque fenêtre.",
+  "roomScanDelete": "Supprimer le scan",
+  "roomScanDeleteConfirm": "Le scan et ses repères seront supprimés de votre appareil.",
+  "roomScanCapturedOn": "Scannée le {date}",
   "@roomScanCapturedOn": {
     "placeholders": {
       "date": {
@@ -3120,9 +3120,9 @@
   "directionSouthWest": "sud-ouest",
   "directionWest": "ouest",
   "directionNorthWest": "nord-ouest",
-  "placementTitle": "Où la poser",
-  "placementHint": "Les places sont classées d'après la lumière qu'elles reçoivent, comparée à celle de la fiche.",
-  "placementRoomsCount": "{count, plural, =1{une pièce relevée} other{{count} pièces relevées}}",
+  "placementTitle": "Où la placer",
+  "placementHint": "Les endroits sont classés en comparant la lumière qu'ils reçoivent à celle que demande la fiche.",
+  "placementRoomsCount": "{count, plural, =1{une pièce scannée} other{{count} pièces scannées}}",
   "@placementRoomsCount": {
     "placeholders": {
       "count": {
@@ -3131,13 +3131,13 @@
     }
   },
   "placementVerdictGood": "Pièce adaptée.",
-  "placementVerdictAcceptable": "Pièce acceptable, sans place idéale.",
+  "placementVerdictAcceptable": "Pièce acceptable, sans endroit idéal.",
   "placementVerdictUnsuitable": "Pièce inadaptée.",
   "placementShortfallTooDark": "Trop sombre pour la lumière demandée.",
   "placementShortfallTooBright": "Trop de soleil direct.",
-  "placementShortfallDrafty": "Chaque place est près d'une porte : courants d'air.",
+  "placementShortfallDrafty": "Tous les endroits sont près d'une porte : courants d'air.",
   "placementShortfallTooDry": "Pièce d'eau, air humide : la fiche demande l'air sec.",
-  "placementGeneric": "Fiche générique : sans espèce, la lumière demandée n'est pas connue.",
+  "placementGeneric": "Sans espèce renseignée, la lumière demandée est inconnue : la fiche reste générique.",
   "placementDistanceM": "{m} m",
   "@placementDistanceM": {
     "placeholders": {
@@ -3187,7 +3187,7 @@
   "placementDeepInRoom": "au fond, loin des fenêtres",
   "placementDraftyNote": "Près d'une porte : courant d'air.",
   "placementHumidRoomNote": "Pièce d'eau : air plus humide.",
-  "placementPlanSemantics": "Plan de la pièce vu de dessus, {count} places retenues.",
+  "placementPlanSemantics": "Plan de la pièce vu de dessus, {count} endroits retenus.",
   "@placementPlanSemantics": {
     "placeholders": {
       "count": {
@@ -3196,9 +3196,9 @@
     }
   },
   "roomScanHeaters": "Radiateurs",
-  "roomScanHeatersHelp": "Le relevé ne voit pas les radiateurs. Posé sur le plan, un radiateur compte comme air sec et chaud à moins de 80 cm.",
-  "roomScanAddHeater": "Poser un radiateur",
-  "roomScanTapForHeater": "Toucher le plan là où se trouve le radiateur.",
+  "roomScanHeatersHelp": "Le scan ne détecte pas les radiateurs. Placez-les sur le plan : l'air compte comme sec et chaud à moins de 80 cm.",
+  "roomScanAddHeater": "Placer un radiateur",
+  "roomScanTapForHeater": "Touchez le plan à l'endroit du radiateur.",
   "roomScanHeatersCount": "{count, plural, =0{aucun radiateur} =1{un radiateur} other{{count} radiateurs}}",
   "@roomScanHeatersCount": {
     "placeholders": {
@@ -3209,7 +3209,7 @@
   },
   "roomScanRemoveHeater": "Retirer ce radiateur",
   "roomScanFillLocation": "Renseigner l'emplacement",
-  "roomScanFillLocationDetail": "Orientation {orientation}, lumière {light}, d'après le relevé. Les champs déjà remplis ne changent pas.",
+  "roomScanFillLocationDetail": "D'après le scan : orientation {orientation}, lumière {light}. Vos champs déjà remplis ne changent pas.",
   "@roomScanFillLocationDetail": {
     "placeholders": {
       "orientation": {
@@ -3222,13 +3222,13 @@
   },
   "roomScanLocationFilled": "Emplacement renseigné",
   "roomScanWhoFitsHere": "Le jardin dans cette pièce",
-  "roomScanWhoFitsHint": "Chaque plante est notée d'après la lumière de la pièce et sa fiche.",
+  "roomScanWhoFitsHint": "Chaque plante est notée en comparant la lumière de la pièce à celle que demande sa fiche.",
   "roomScanNoPlantsToRank": "Aucune plante avec une espèce connue.",
-  "placementShortfallHeater": "Chaque place est près d'un radiateur : air sec et chaud.",
+  "placementShortfallHeater": "Tous les endroits sont près d'un radiateur : l'air y est sec et chaud.",
   "placementHeaterNote": "Près d'un radiateur : air sec et chaud.",
   "placementAtHome": "Capteur de la pièce",
-  "roomScanStartStructure": "Relever l'appartement",
-  "roomScanStructureHint": "Relever l'appartement enchaîne les pièces : « Pièce suivante » entre chaque, « Terminé » à la fin. Les pièces se placent les unes par rapport aux autres.",
+  "roomScanStartStructure": "Scanner tout le logement",
+  "roomScanStructureHint": "Scannez vos pièces à la suite : touchez « Pièce suivante » après chacune, « Terminé » à la fin. L'application les assemble en un seul plan.",
   "roomScanNextRoom": "Pièce suivante",
   "roomScanRoomNumber": "Pièce {n}",
   "@roomScanRoomNumber": {
@@ -3239,9 +3239,9 @@
     }
   },
   "roomScanPlantsOnPlan": "Plantes sur le plan",
-  "roomScanPlantsHelp": "Une plante posée sur le plan est notée à sa place. La liste signale une place nettement meilleure.",
-  "roomScanAddPlant": "Poser une plante",
-  "roomScanTapForPlant": "Toucher le plan là où se trouve {plant}.",
+  "roomScanPlantsHelp": "Placez vos plantes sur le plan : chacune reçoit une note, et la liste signale un endroit nettement meilleur.",
+  "roomScanAddPlant": "Placer une plante",
+  "roomScanTapForPlant": "Touchez le plan à l'endroit où se trouve {plant}.",
   "@roomScanTapForPlant": {
     "placeholders": {
       "plant": {
@@ -3257,8 +3257,8 @@
       }
     }
   },
-  "roomScanNoPlantToPlace": "Aucune plante à poser.",
-  "roomScanPlantWellPlaced": "Place adaptée · {light}",
+  "roomScanNoPlantToPlace": "Aucune plante à placer.",
+  "roomScanPlantWellPlaced": "Endroit adapté · {light}",
   "@roomScanPlantWellPlaced": {
     "placeholders": {
       "light": {
@@ -3266,7 +3266,7 @@
       }
     }
   },
-  "roomScanPlantBetterAt": "Place actuelle {light} · mieux {place}",
+  "roomScanPlantBetterAt": "Ici {light} · mieux {place}",
   "@roomScanPlantBetterAt": {
     "placeholders": {
       "light": {
@@ -3278,8 +3278,8 @@
     }
   },
   "placementAllRooms": "Toutes les pièces",
-  "placementChoose": "Poser ici",
-  "placementChosen": "Posée {place}",
+  "placementChoose": "Placer ici",
+  "placementChosen": "Placée {place}",
   "@placementChosen": {
     "placeholders": {
       "place": {
@@ -3287,7 +3287,7 @@
       }
     }
   },
-  "placementCurrent": "Place actuelle : {place} · {light}",
+  "placementCurrent": "Endroit actuel : {place} · {light}",
   "@placementCurrent": {
     "placeholders": {
       "place": {
@@ -3303,8 +3303,8 @@
   "roomScanCurtainNone": "Sans rideau",
   "roomScanCurtainSheer": "Voilage",
   "roomScanCurtainDrawn": "Rideau souvent tiré",
-  "roomScanCurtainHelp": "Le relevé ne voit ni les voilages ni les rideaux. Un voilage divise la lumière par deux et ôte le soleil direct ; un rideau souvent tiré la divise par trois.",
-  "roomScanPlace": "Poser",
+  "roomScanCurtainHelp": "Le scan ne détecte pas les rideaux. Un voilage divise la lumière par 2 et ôte le soleil direct ; un rideau souvent tiré la divise par 3.",
+  "roomScanPlace": "Placer",
   "roomScanRoomsShort": "{count, plural, =0{Aucune} =1{1 pièce} other{{count} pièces}}",
   "@roomScanRoomsShort": {
     "placeholders": {
@@ -3313,8 +3313,8 @@
       }
     }
   },
-  "roomScanThisRoom": "Relever cette pièce",
-  "roomScanThisRoomHint": "Le plan de la pièce donne la lumière de chaque place, pour choisir où poser une plante.",
+  "roomScanThisRoom": "Scanner cette pièce",
+  "roomScanThisRoomHint": "Le plan indique la lumière de chaque endroit, pour choisir où placer une plante.",
   "roomScanRoomPlan": "Plan de la pièce",
   "roomScanPlantsOnPlanCount": "{count, plural, =0{aucune plante sur le plan} =1{une plante sur le plan} other{{count} plantes sur le plan}}",
   "@roomScanPlantsOnPlanCount": {

@@ -60,6 +60,20 @@ void main() {
     };
   }
 
+  /// Les marqueurs déclarés par le modèle français, clé par clé :
+  /// `@plantCount.placeholders` donne `{count}`. Les 195 clés à marqueur en
+  /// ont toutes un.
+  Map<String, Set<String>> marqueursDuModele() {
+    final json = jsonDecode(File('lib/l10n/app_fr.arb').readAsStringSync()) as Map<String, dynamic>;
+    final declares = <String, Set<String>>{};
+    for (final e in json.entries) {
+      if (!e.key.startsWith('@') || e.value is! Map) continue;
+      final ph = (e.value as Map)['placeholders'];
+      if (ph is Map) declares[e.key.substring(1)] = ph.keys.cast<String>().toSet();
+    }
+    return declares;
+  }
+
   for (final locale in locales) {
     group(locale, () {
       final all = strings(locale);
@@ -77,6 +91,23 @@ void main() {
             if (e.key.endsWith('Title') && e.value.trim().endsWith('?')) e.key,
         ];
         expect(fautifs, isEmpty, reason: 'titres en forme de question : $fautifs');
+      });
+
+      test('aucun marqueur ICU perdu', () {
+        // Une réécriture qui laisse tomber « {count} » ne casse qu'à
+        // l'exécution. Le modèle français déclare les marqueurs ; chaque
+        // langue doit les porter tous, sous la forme `{nom}` ou `{nom, …}`.
+        final fautifs = <String>[];
+        marqueursDuModele().forEach((cle, attendus) {
+          final texte = all[cle];
+          if (texte == null) return;
+          for (final nom in attendus) {
+            if (!RegExp(r'\{\s*' + nom + r'\s*[,}]').hasMatch(texte)) {
+              fautifs.add('$cle ($nom)');
+            }
+          }
+        });
+        expect(fautifs, isEmpty, reason: 'marqueur ICU absent : $fautifs');
       });
 
       test('aucune tournure bannie', () {

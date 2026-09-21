@@ -1980,16 +1980,16 @@
   "moderationHide": "Ausblenden",
   "moderationRestore": "Wiederherstellen",
   "confirmRestoreTip": "Diesen Tipp wiederherstellen? Seine Meldungen werden gelöscht.",
-  "roomScan": "Raumscan",
-  "roomScanHint": "Ein mit Kamera und LiDAR erfasster Raum liefert seine Wände, Fenster und Türen. Daraus ergibt sich das Licht an jedem Platz, und damit, wo eine Pflanze stehen kann. Die Erfassung bleibt auf dem Gerät.",
+  "roomScan": "Scan der Wohnung",
+  "roomScanHint": "Scanne einen Raum mit Kamera und LiDAR: Die App erkennt Wände, Fenster und Türen und berechnet, wie viel Licht jeder Platz bekommt – damit du weißt, wohin deine Pflanzen gehören. Alles bleibt auf deinem Gerät.",
   "roomScanStart": "Raum scannen",
   "roomScanRooms": "Gescannte Räume",
   "roomScanEmptyTitle": "Kein Raum gescannt",
-  "roomScanEmptySubtitle": "Der Scan dauert ein bis zwei Minuten pro Raum, langsam an den Wänden entlang.",
-  "roomScanNoLidar": "Dieses Gerät hat kein LiDAR: Der Scan braucht ein iPhone Pro oder ein iPad Pro.",
+  "roomScanEmptySubtitle": "Rechne mit 1 bis 2 Minuten pro Raum.",
+  "roomScanNoLidar": "Dieses Gerät hat kein LiDAR. Zum Scannen brauchst du ein iPhone Pro oder ein iPad Pro.",
   "roomScanBeforeTitle": "Vor dem Scan",
-  "roomScanBeforeText": "Die Kamera öffnet sich in der Scanansicht des Systems. Langsam an den Wänden entlanggehen, bis der Raum gezeichnet ist, dann abschließen. Nichts verlässt das Gerät.",
-  "roomScanFailed": "Der Scan ist nicht zustande gekommen.",
+  "roomScanBeforeText": "Die Kamera öffnet den Scanner von iOS. Geh langsam an den Wänden entlang, bis der Raum vollständig gezeichnet ist, und tippe dann auf Fertig.",
+  "roomScanFailed": "Der Scan ist fehlgeschlagen.",
   "roomScanDefaultName": "Raum",
   "roomScanArea": "{area} m²",
   "@roomScanArea": {
@@ -2021,9 +2021,9 @@
   "roomScanWindowUnknown": "Ausrichtung unbekannt",
   "roomScanWindowFromCompass": "Laut Kompass",
   "roomScanWindowConfirmed": "Bestätigt",
-  "roomScanOrientationHelp": "Der Kompass irrt um zehn bis fünfzehn Grad. Die Ausrichtung jedes Fensters wird hier korrigiert.",
+  "roomScanOrientationHelp": "Der Kompass weicht um 10 bis 15° ab. Korrigiere hier die Ausrichtung jedes Fensters.",
   "roomScanDelete": "Scan löschen",
-  "roomScanDeleteConfirm": "Der Scan und seine Markierungen verschwinden vom Gerät.",
+  "roomScanDeleteConfirm": "Der Scan und seine Markierungen werden von deinem Gerät gelöscht.",
   "roomScanCapturedOn": "Gescannt am {date}",
   "@roomScanCapturedOn": {
     "placeholders": {
@@ -2047,7 +2047,7 @@
   "directionWest": "Westen",
   "directionNorthWest": "Nordwesten",
   "placementTitle": "Wohin damit",
-  "placementHint": "Die Plätze sind nach ihrem Licht geordnet, verglichen mit dem Licht der Pflegekarte.",
+  "placementHint": "Die Plätze sind danach geordnet, wie gut ihr Licht zu dem passt, das die Pflegekarte verlangt.",
   "placementRoomsCount": "{count, plural, =1{ein gescannter Raum} other{{count} gescannte Räume}}",
   "@placementRoomsCount": {
     "placeholders": {
@@ -2063,7 +2063,7 @@
   "placementShortfallTooBright": "Zu viel direkte Sonne.",
   "placementShortfallDrafty": "Jeder Platz liegt nahe einer Tür: Durchzug.",
   "placementShortfallTooDry": "Feuchtraum, feuchte Luft: Die Pflegekarte verlangt trockene Luft.",
-  "placementGeneric": "Allgemeine Pflegekarte: Ohne Art ist das geforderte Licht unbekannt.",
+  "placementGeneric": "Ohne Art ist das geforderte Licht unbekannt: Die Pflegekarte bleibt allgemein.",
   "placementDistanceM": "{m} m",
   "@placementDistanceM": {
     "placeholders": {
@@ -2122,9 +2122,9 @@
     }
   },
   "roomScanHeaters": "Heizkörper",
-  "roomScanHeatersHelp": "Die Erfassung sieht keine Heizkörper. Auf dem Grundriss gesetzt, zählt ein Heizkörper im Umkreis von 80 cm als trockene, warme Luft.",
+  "roomScanHeatersHelp": "Der Scan erkennt keine Heizkörper. Setze sie auf den Grundriss: Im Umkreis von 80 cm gilt die Luft als trocken und warm.",
   "roomScanAddHeater": "Heizkörper setzen",
-  "roomScanTapForHeater": "Auf dem Grundriss dort tippen, wo der Heizkörper steht.",
+  "roomScanTapForHeater": "Tippe auf dem Grundriss dorthin, wo der Heizkörper steht.",
   "roomScanHeatersCount": "{count, plural, =0{kein Heizkörper} =1{ein Heizkörper} other{{count} Heizkörper}}",
   "@roomScanHeatersCount": {
     "placeholders": {
@@ -2135,7 +2135,7 @@
   },
   "roomScanRemoveHeater": "Diesen Heizkörper entfernen",
   "roomScanFillLocation": "Ort ausfüllen",
-  "roomScanFillLocationDetail": "Ausrichtung {orientation}, Licht {light}, laut Erfassung. Schon ausgefüllte Felder bleiben unverändert.",
+  "roomScanFillLocationDetail": "Laut Scan: Ausrichtung {orientation}, Licht {light}. Schon ausgefüllte Felder bleiben unverändert.",
   "@roomScanFillLocationDetail": {
     "placeholders": {
       "orientation": {
@@ -2148,13 +2148,13 @@
   },
   "roomScanLocationFilled": "Ort ausgefüllt",
   "roomScanWhoFitsHere": "Der Garten in diesem Raum",
-  "roomScanWhoFitsHint": "Jede Pflanze wird nach dem Licht des Raums und ihrer Pflegekarte bewertet.",
+  "roomScanWhoFitsHint": "Jede Pflanze wird bewertet, indem das Licht des Raums mit dem ihrer Pflegekarte verglichen wird.",
   "roomScanNoPlantsToRank": "Keine Pflanze mit bekannter Art.",
-  "placementShortfallHeater": "Jeder Platz liegt nahe einem Heizkörper: trockene, warme Luft.",
+  "placementShortfallHeater": "Jeder Platz liegt nahe einem Heizkörper: Die Luft ist trocken und warm.",
   "placementHeaterNote": "Nahe einem Heizkörper: trockene, warme Luft.",
   "placementAtHome": "Sensor des Raums",
-  "roomScanStartStructure": "Die ganze Wohnung scannen",
-  "roomScanStructureHint": "Die ganze Wohnung scannen geht Raum für Raum: „Nächster Raum“ dazwischen, „Fertig“ am Ende. Die Räume werden zueinander gesetzt.",
+  "roomScanStartStructure": "Ganze Wohnung scannen",
+  "roomScanStructureHint": "Scanne deine Räume nacheinander: nach jedem „Nächster Raum“, am Ende „Fertig“. Die App fügt sie zu einem Grundriss zusammen.",
   "roomScanNextRoom": "Nächster Raum",
   "roomScanRoomNumber": "Raum {n}",
   "@roomScanRoomNumber": {
@@ -2165,9 +2165,9 @@
     }
   },
   "roomScanPlantsOnPlan": "Pflanzen auf dem Grundriss",
-  "roomScanPlantsHelp": "Eine Pflanze auf dem Grundriss wird an ihrem Platz bewertet. Die Liste zeigt einen deutlich besseren Platz an.",
+  "roomScanPlantsHelp": "Setze deine Pflanzen auf den Grundriss: Jede bekommt eine Bewertung, und die Liste zeigt einen deutlich besseren Platz.",
   "roomScanAddPlant": "Pflanze setzen",
-  "roomScanTapForPlant": "Auf dem Grundriss dort tippen, wo {plant} steht.",
+  "roomScanTapForPlant": "Tippe auf dem Grundriss dorthin, wo {plant} steht.",
   "@roomScanTapForPlant": {
     "placeholders": {
       "plant": {
@@ -2192,7 +2192,7 @@
       }
     }
   },
-  "roomScanPlantBetterAt": "Aktueller Platz {light} · besser {place}",
+  "roomScanPlantBetterAt": "Hier {light} · besser {place}",
   "@roomScanPlantBetterAt": {
     "placeholders": {
       "light": {
@@ -2229,7 +2229,7 @@
   "roomScanCurtainNone": "Kein Vorhang",
   "roomScanCurtainSheer": "Gardine",
   "roomScanCurtainDrawn": "Vorhang meist zugezogen",
-  "roomScanCurtainHelp": "Die Erfassung sieht weder Gardinen noch Vorhänge. Eine Gardine halbiert das Licht und nimmt die direkte Sonne; ein meist zugezogener Vorhang teilt es durch drei.",
+  "roomScanCurtainHelp": "Der Scan erkennt keine Vorhänge. Eine Gardine halbiert das Licht und nimmt direkte Sonne; ein meist zugezogener Vorhang teilt es durch 3.",
   "roomScanPlace": "Setzen",
   "roomScanRoomsShort": "{count, plural, =0{Keiner} =1{1 Raum} other{{count} Räume}}",
   "@roomScanRoomsShort": {
@@ -2239,8 +2239,8 @@
       }
     }
   },
-  "roomScanThisRoom": "Diesen Raum erfassen",
-  "roomScanThisRoomHint": "Der Grundriss des Raums liefert das Licht an jedem Platz, um zu wählen, wo eine Pflanze steht.",
+  "roomScanThisRoom": "Diesen Raum scannen",
+  "roomScanThisRoomHint": "Der Grundriss zeigt das Licht an jedem Platz – so wählst du, wo eine Pflanze steht.",
   "roomScanRoomPlan": "Grundriss des Raums",
   "roomScanPlantsOnPlanCount": "{count, plural, =0{keine Pflanze auf dem Grundriss} =1{eine Pflanze auf dem Grundriss} other{{count} Pflanzen auf dem Grundriss}}",
   "@roomScanPlantsOnPlanCount": {

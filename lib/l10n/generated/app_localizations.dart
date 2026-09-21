@@ -10587,61 +10587,61 @@ abstract class AppLocalizations {
   /// No description provided for @roomScan.
   ///
   /// In fr, this message translates to:
-  /// **'Relevé de la maison'**
+  /// **'Scan de la maison'**
   String get roomScan;
 
   /// No description provided for @roomScanHint.
   ///
   /// In fr, this message translates to:
-  /// **'Une pièce relevée avec l\'appareil photo et le LiDAR donne ses murs, ses fenêtres et ses portes. La lumière de chaque place s\'en déduit, pour dire où poser une plante. Le relevé reste sur l\'appareil.'**
+  /// **'Scannez une pièce avec l\'appareil photo et le LiDAR : l\'application repère les murs, fenêtres et portes, puis calcule la lumière de chaque endroit pour vous dire où placer vos plantes. Tout reste sur votre appareil.'**
   String get roomScanHint;
 
   /// No description provided for @roomScanStart.
   ///
   /// In fr, this message translates to:
-  /// **'Relever une pièce'**
+  /// **'Scanner une pièce'**
   String get roomScanStart;
 
   /// No description provided for @roomScanRooms.
   ///
   /// In fr, this message translates to:
-  /// **'Pièces relevées'**
+  /// **'Pièces scannées'**
   String get roomScanRooms;
 
   /// No description provided for @roomScanEmptyTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Aucune pièce relevée'**
+  /// **'Aucune pièce scannée'**
   String get roomScanEmptyTitle;
 
   /// No description provided for @roomScanEmptySubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Le relevé prend une à deux minutes par pièce, en tournant lentement le long des murs.'**
+  /// **'Comptez 1 à 2 minutes par pièce.'**
   String get roomScanEmptySubtitle;
 
   /// No description provided for @roomScanNoLidar.
   ///
   /// In fr, this message translates to:
-  /// **'Cet appareil n\'a pas de LiDAR : le relevé demande un iPhone Pro ou un iPad Pro.'**
+  /// **'Cet appareil n\'a pas de LiDAR. Le scan demande un iPhone Pro ou un iPad Pro.'**
   String get roomScanNoLidar;
 
   /// No description provided for @roomScanBeforeTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Avant le relevé'**
+  /// **'Avant le scan'**
   String get roomScanBeforeTitle;
 
   /// No description provided for @roomScanBeforeText.
   ///
   /// In fr, this message translates to:
-  /// **'L\'appareil photo s\'ouvre sur le relevé du système. Tourner lentement le long des murs jusqu\'à ce que la pièce soit dessinée, puis terminer. Rien ne quitte l\'appareil.'**
+  /// **'L\'appareil photo s\'ouvre sur le scanner d\'iOS. Avancez lentement le long des murs jusqu\'à ce que la pièce soit entièrement dessinée, puis touchez Terminé.'**
   String get roomScanBeforeText;
 
   /// No description provided for @roomScanFailed.
   ///
   /// In fr, this message translates to:
-  /// **'Le relevé n\'a pas abouti.'**
+  /// **'Le scan n\'a pas abouti.'**
   String get roomScanFailed;
 
   /// No description provided for @roomScanDefaultName.
@@ -10707,25 +10707,25 @@ abstract class AppLocalizations {
   /// No description provided for @roomScanOrientationHelp.
   ///
   /// In fr, this message translates to:
-  /// **'La boussole a dix à quinze degrés d\'erreur. L\'orientation de chaque fenêtre se corrige ici.'**
+  /// **'La boussole se trompe de 10 à 15°. Corrigez ici l\'orientation de chaque fenêtre.'**
   String get roomScanOrientationHelp;
 
   /// No description provided for @roomScanDelete.
   ///
   /// In fr, this message translates to:
-  /// **'Supprimer le relevé'**
+  /// **'Supprimer le scan'**
   String get roomScanDelete;
 
   /// No description provided for @roomScanDeleteConfirm.
   ///
   /// In fr, this message translates to:
-  /// **'Le relevé et ses repères disparaissent de l\'appareil.'**
+  /// **'Le scan et ses repères seront supprimés de votre appareil.'**
   String get roomScanDeleteConfirm;
 
   /// No description provided for @roomScanCapturedOn.
   ///
   /// In fr, this message translates to:
-  /// **'Relevée le {date}'**
+  /// **'Scannée le {date}'**
   String roomScanCapturedOn(String date);
 
   /// No description provided for @roomSectionBathroom.
@@ -10815,19 +10815,19 @@ abstract class AppLocalizations {
   /// No description provided for @placementTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Où la poser'**
+  /// **'Où la placer'**
   String get placementTitle;
 
   /// No description provided for @placementHint.
   ///
   /// In fr, this message translates to:
-  /// **'Les places sont classées d\'après la lumière qu\'elles reçoivent, comparée à celle de la fiche.'**
+  /// **'Les endroits sont classés en comparant la lumière qu\'ils reçoivent à celle que demande la fiche.'**
   String get placementHint;
 
   /// No description provided for @placementRoomsCount.
   ///
   /// In fr, this message translates to:
-  /// **'{count, plural, =1{une pièce relevée} other{{count} pièces relevées}}'**
+  /// **'{count, plural, =1{une pièce scannée} other{{count} pièces scannées}}'**
   String placementRoomsCount(int count);
 
   /// No description provided for @placementVerdictGood.
@@ -10839,7 +10839,7 @@ abstract class AppLocalizations {
   /// No description provided for @placementVerdictAcceptable.
   ///
   /// In fr, this message translates to:
-  /// **'Pièce acceptable, sans place idéale.'**
+  /// **'Pièce acceptable, sans endroit idéal.'**
   String get placementVerdictAcceptable;
 
   /// No description provided for @placementVerdictUnsuitable.
@@ -10863,7 +10863,7 @@ abstract class AppLocalizations {
   /// No description provided for @placementShortfallDrafty.
   ///
   /// In fr, this message translates to:
-  /// **'Chaque place est près d\'une porte : courants d\'air.'**
+  /// **'Tous les endroits sont près d\'une porte : courants d\'air.'**
   String get placementShortfallDrafty;
 
   /// No description provided for @placementShortfallTooDry.
@@ -10875,7 +10875,7 @@ abstract class AppLocalizations {
   /// No description provided for @placementGeneric.
   ///
   /// In fr, this message translates to:
-  /// **'Fiche générique : sans espèce, la lumière demandée n\'est pas connue.'**
+  /// **'Sans espèce renseignée, la lumière demandée est inconnue : la fiche reste générique.'**
   String get placementGeneric;
 
   /// No description provided for @placementDistanceM.
@@ -10947,7 +10947,7 @@ abstract class AppLocalizations {
   /// No description provided for @placementPlanSemantics.
   ///
   /// In fr, this message translates to:
-  /// **'Plan de la pièce vu de dessus, {count} places retenues.'**
+  /// **'Plan de la pièce vu de dessus, {count} endroits retenus.'**
   String placementPlanSemantics(int count);
 
   /// No description provided for @roomScanHeaters.
@@ -10959,19 +10959,19 @@ abstract class AppLocalizations {
   /// No description provided for @roomScanHeatersHelp.
   ///
   /// In fr, this message translates to:
-  /// **'Le relevé ne voit pas les radiateurs. Posé sur le plan, un radiateur compte comme air sec et chaud à moins de 80 cm.'**
+  /// **'Le scan ne détecte pas les radiateurs. Placez-les sur le plan : l\'air compte comme sec et chaud à moins de 80 cm.'**
   String get roomScanHeatersHelp;
 
   /// No description provided for @roomScanAddHeater.
   ///
   /// In fr, this message translates to:
-  /// **'Poser un radiateur'**
+  /// **'Placer un radiateur'**
   String get roomScanAddHeater;
 
   /// No description provided for @roomScanTapForHeater.
   ///
   /// In fr, this message translates to:
-  /// **'Toucher le plan là où se trouve le radiateur.'**
+  /// **'Touchez le plan à l\'endroit du radiateur.'**
   String get roomScanTapForHeater;
 
   /// No description provided for @roomScanHeatersCount.
@@ -10995,7 +10995,7 @@ abstract class AppLocalizations {
   /// No description provided for @roomScanFillLocationDetail.
   ///
   /// In fr, this message translates to:
-  /// **'Orientation {orientation}, lumière {light}, d\'après le relevé. Les champs déjà remplis ne changent pas.'**
+  /// **'D\'après le scan : orientation {orientation}, lumière {light}. Vos champs déjà remplis ne changent pas.'**
   String roomScanFillLocationDetail(String orientation, String light);
 
   /// No description provided for @roomScanLocationFilled.
@@ -11013,7 +11013,7 @@ abstract class AppLocalizations {
   /// No description provided for @roomScanWhoFitsHint.
   ///
   /// In fr, this message translates to:
-  /// **'Chaque plante est notée d\'après la lumière de la pièce et sa fiche.'**
+  /// **'Chaque plante est notée en comparant la lumière de la pièce à celle que demande sa fiche.'**
   String get roomScanWhoFitsHint;
 
   /// No description provided for @roomScanNoPlantsToRank.
@@ -11025,7 +11025,7 @@ abstract class AppLocalizations {
   /// No description provided for @placementShortfallHeater.
   ///
   /// In fr, this message translates to:
-  /// **'Chaque place est près d\'un radiateur : air sec et chaud.'**
+  /// **'Tous les endroits sont près d\'un radiateur : l\'air y est sec et chaud.'**
   String get placementShortfallHeater;
 
   /// No description provided for @placementHeaterNote.
@@ -11043,13 +11043,13 @@ abstract class AppLocalizations {
   /// No description provided for @roomScanStartStructure.
   ///
   /// In fr, this message translates to:
-  /// **'Relever l\'appartement'**
+  /// **'Scanner tout le logement'**
   String get roomScanStartStructure;
 
   /// No description provided for @roomScanStructureHint.
   ///
   /// In fr, this message translates to:
-  /// **'Relever l\'appartement enchaîne les pièces : « Pièce suivante » entre chaque, « Terminé » à la fin. Les pièces se placent les unes par rapport aux autres.'**
+  /// **'Scannez vos pièces à la suite : touchez « Pièce suivante » après chacune, « Terminé » à la fin. L\'application les assemble en un seul plan.'**
   String get roomScanStructureHint;
 
   /// No description provided for @roomScanNextRoom.
@@ -11073,19 +11073,19 @@ abstract class AppLocalizations {
   /// No description provided for @roomScanPlantsHelp.
   ///
   /// In fr, this message translates to:
-  /// **'Une plante posée sur le plan est notée à sa place. La liste signale une place nettement meilleure.'**
+  /// **'Placez vos plantes sur le plan : chacune reçoit une note, et la liste signale un endroit nettement meilleur.'**
   String get roomScanPlantsHelp;
 
   /// No description provided for @roomScanAddPlant.
   ///
   /// In fr, this message translates to:
-  /// **'Poser une plante'**
+  /// **'Placer une plante'**
   String get roomScanAddPlant;
 
   /// No description provided for @roomScanTapForPlant.
   ///
   /// In fr, this message translates to:
-  /// **'Toucher le plan là où se trouve {plant}.'**
+  /// **'Touchez le plan à l\'endroit où se trouve {plant}.'**
   String roomScanTapForPlant(String plant);
 
   /// No description provided for @roomScanRemovePlant.
@@ -11097,19 +11097,19 @@ abstract class AppLocalizations {
   /// No description provided for @roomScanNoPlantToPlace.
   ///
   /// In fr, this message translates to:
-  /// **'Aucune plante à poser.'**
+  /// **'Aucune plante à placer.'**
   String get roomScanNoPlantToPlace;
 
   /// No description provided for @roomScanPlantWellPlaced.
   ///
   /// In fr, this message translates to:
-  /// **'Place adaptée · {light}'**
+  /// **'Endroit adapté · {light}'**
   String roomScanPlantWellPlaced(String light);
 
   /// No description provided for @roomScanPlantBetterAt.
   ///
   /// In fr, this message translates to:
-  /// **'Place actuelle {light} · mieux {place}'**
+  /// **'Ici {light} · mieux {place}'**
   String roomScanPlantBetterAt(String light, String place);
 
   /// No description provided for @placementAllRooms.
@@ -11121,19 +11121,19 @@ abstract class AppLocalizations {
   /// No description provided for @placementChoose.
   ///
   /// In fr, this message translates to:
-  /// **'Poser ici'**
+  /// **'Placer ici'**
   String get placementChoose;
 
   /// No description provided for @placementChosen.
   ///
   /// In fr, this message translates to:
-  /// **'Posée {place}'**
+  /// **'Placée {place}'**
   String placementChosen(String place);
 
   /// No description provided for @placementCurrent.
   ///
   /// In fr, this message translates to:
-  /// **'Place actuelle : {place} · {light}'**
+  /// **'Endroit actuel : {place} · {light}'**
   String placementCurrent(String place, String light);
 
   /// No description provided for @sectionRooms.
@@ -11169,13 +11169,13 @@ abstract class AppLocalizations {
   /// No description provided for @roomScanCurtainHelp.
   ///
   /// In fr, this message translates to:
-  /// **'Le relevé ne voit ni les voilages ni les rideaux. Un voilage divise la lumière par deux et ôte le soleil direct ; un rideau souvent tiré la divise par trois.'**
+  /// **'Le scan ne détecte pas les rideaux. Un voilage divise la lumière par 2 et ôte le soleil direct ; un rideau souvent tiré la divise par 3.'**
   String get roomScanCurtainHelp;
 
   /// No description provided for @roomScanPlace.
   ///
   /// In fr, this message translates to:
-  /// **'Poser'**
+  /// **'Placer'**
   String get roomScanPlace;
 
   /// No description provided for @roomScanRoomsShort.
@@ -11187,13 +11187,13 @@ abstract class AppLocalizations {
   /// No description provided for @roomScanThisRoom.
   ///
   /// In fr, this message translates to:
-  /// **'Relever cette pièce'**
+  /// **'Scanner cette pièce'**
   String get roomScanThisRoom;
 
   /// No description provided for @roomScanThisRoomHint.
   ///
   /// In fr, this message translates to:
-  /// **'Le plan de la pièce donne la lumière de chaque place, pour choisir où poser une plante.'**
+  /// **'Le plan indique la lumière de chaque endroit, pour choisir où placer une plante.'**
   String get roomScanThisRoomHint;
 
   /// No description provided for @roomScanRoomPlan.

@@ -6237,38 +6237,37 @@ class AppLocalizationsIt extends AppLocalizations {
       'Ripristinare questo consiglio? Le sue segnalazioni vengono cancellate.';
 
   @override
-  String get roomScan => 'Rilievo della casa';
+  String get roomScan => 'Scansione della casa';
 
   @override
   String get roomScanHint =>
-      'Una stanza rilevata con la fotocamera e il LiDAR restituisce muri, finestre e porte. Da questi si ricava la luce di ogni posto, per dire dove posare una pianta. Il rilievo resta sul dispositivo.';
+      'Scansiona una stanza con la fotocamera e il LiDAR: l\'app individua muri, finestre e porte, poi calcola quanta luce riceve ogni posto e ti dice dove mettere le piante. Tutto resta sul tuo dispositivo.';
 
   @override
-  String get roomScanStart => 'Rilevare una stanza';
+  String get roomScanStart => 'Scansiona una stanza';
 
   @override
-  String get roomScanRooms => 'Stanze rilevate';
+  String get roomScanRooms => 'Stanze scansionate';
 
   @override
-  String get roomScanEmptyTitle => 'Nessuna stanza rilevata';
+  String get roomScanEmptyTitle => 'Nessuna stanza scansionata';
 
   @override
-  String get roomScanEmptySubtitle =>
-      'Il rilievo richiede uno o due minuti per stanza, girando lentamente lungo i muri.';
+  String get roomScanEmptySubtitle => 'Conta 1 o 2 minuti per stanza.';
 
   @override
   String get roomScanNoLidar =>
-      'Questo dispositivo non ha il LiDAR: il rilievo richiede un iPhone Pro o un iPad Pro.';
+      'Questo dispositivo non ha il LiDAR. La scansione richiede un iPhone Pro o un iPad Pro.';
 
   @override
-  String get roomScanBeforeTitle => 'Prima del rilievo';
+  String get roomScanBeforeTitle => 'Prima della scansione';
 
   @override
   String get roomScanBeforeText =>
-      'La fotocamera si apre sulla schermata di rilievo del sistema. Girare lentamente lungo i muri finché la stanza non è disegnata, poi terminare. Nulla lascia il dispositivo.';
+      'La fotocamera apre lo scanner di iOS. Cammina lentamente lungo i muri finché la stanza non è disegnata del tutto, poi tocca Fine.';
 
   @override
-  String get roomScanFailed => 'Il rilievo non è andato a buon fine.';
+  String get roomScanFailed => 'La scansione non è riuscita.';
 
   @override
   String get roomScanDefaultName => 'Stanza';
@@ -6315,18 +6314,18 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get roomScanOrientationHelp =>
-      'La bussola sbaglia di dieci o quindici gradi. L\'orientamento di ogni finestra si corregge qui.';
+      'La bussola sbaglia di 10-15°. Correggi qui l\'orientamento di ogni finestra.';
 
   @override
-  String get roomScanDelete => 'Elimina il rilievo';
+  String get roomScanDelete => 'Elimina la scansione';
 
   @override
   String get roomScanDeleteConfirm =>
-      'Il rilievo e i suoi riferimenti scompaiono dal dispositivo.';
+      'La scansione e i suoi riferimenti saranno eliminati dal tuo dispositivo.';
 
   @override
   String roomScanCapturedOn(String date) {
-    return 'Rilevata il $date';
+    return 'Scansionata il $date';
   }
 
   @override
@@ -6376,15 +6375,15 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get placementHint =>
-      'I posti sono ordinati per la luce che ricevono, confrontata con quella della scheda.';
+      'I posti sono ordinati confrontando la luce che ricevono con quella richiesta dalla scheda.';
 
   @override
   String placementRoomsCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count stanze rilevate',
-      one: 'una stanza rilevata',
+      other: '$count stanze scansionate',
+      one: 'una stanza scansionata',
     );
     return '$_temp0';
   }
@@ -6415,7 +6414,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get placementGeneric =>
-      'Scheda generica: senza specie, la luce richiesta non è nota.';
+      'Senza specie, la luce richiesta è sconosciuta: la scheda resta generica.';
 
   @override
   String placementDistanceM(String m) {
@@ -6462,7 +6461,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String placementPlanSemantics(int count) {
-    return 'Pianta della stanza vista dall\'alto, $count posti selezionati.';
+    return 'Planimetria della stanza vista dall\'alto, $count posti selezionati.';
   }
 
   @override
@@ -6470,14 +6469,14 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get roomScanHeatersHelp =>
-      'Il rilievo non vede i termosifoni. Posato sulla planimetria, un termosifone conta come aria secca e calda entro 80 cm.';
+      'La scansione non rileva i termosifoni. Mettili sulla planimetria: entro 80 cm l\'aria conta come secca e calda.';
 
   @override
-  String get roomScanAddHeater => 'Posare un termosifone';
+  String get roomScanAddHeater => 'Aggiungi un termosifone';
 
   @override
   String get roomScanTapForHeater =>
-      'Toccare la pianta dove si trova il termosifone.';
+      'Tocca la planimetria dove si trova il termosifone.';
 
   @override
   String roomScanHeatersCount(int count) {
@@ -6492,14 +6491,14 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get roomScanRemoveHeater => 'Rimuovere questo termosifone';
+  String get roomScanRemoveHeater => 'Rimuovi questo termosifone';
 
   @override
-  String get roomScanFillLocation => 'Compilare la posizione';
+  String get roomScanFillLocation => 'Compila la posizione';
 
   @override
   String roomScanFillLocationDetail(String orientation, String light) {
-    return 'Orientamento $orientation, luce $light, secondo il rilievo. I campi già compilati non cambiano.';
+    return 'Secondo la scansione: orientamento $orientation, luce $light. I campi già compilati non cambiano.';
   }
 
   @override
@@ -6510,14 +6509,14 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get roomScanWhoFitsHint =>
-      'Ogni pianta è valutata in base alla luce della stanza e alla sua scheda.';
+      'Ogni pianta è valutata confrontando la luce della stanza con quella richiesta dalla sua scheda.';
 
   @override
   String get roomScanNoPlantsToRank => 'Nessuna pianta con una specie nota.';
 
   @override
   String get placementShortfallHeater =>
-      'Ogni posto è vicino a un termosifone: aria secca e calda.';
+      'Ogni posto è vicino a un termosifone: l\'aria è secca e calda.';
 
   @override
   String get placementHeaterNote =>
@@ -6527,11 +6526,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String get placementAtHome => 'Sensore della stanza';
 
   @override
-  String get roomScanStartStructure => 'Rilevare tutta la casa';
+  String get roomScanStartStructure => 'Scansiona tutta la casa';
 
   @override
   String get roomScanStructureHint =>
-      'Rilevare tutta la casa procede stanza per stanza: «Stanza successiva» tra una e l\'altra, «Fine» alla fine. Le stanze si collocano l\'una rispetto all\'altra.';
+      'Scansiona le stanze una dopo l\'altra: tocca «Stanza successiva» dopo ognuna e «Fine» alla fine. L\'app le unisce in un\'unica planimetria.';
 
   @override
   String get roomScanNextRoom => 'Stanza successiva';
@@ -6542,27 +6541,27 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get roomScanPlantsOnPlan => 'Piante sulla pianta';
+  String get roomScanPlantsOnPlan => 'Piante sulla planimetria';
 
   @override
   String get roomScanPlantsHelp =>
-      'Una pianta posata sulla planimetria è valutata al suo posto. L\'elenco segnala un posto nettamente migliore.';
+      'Metti le tue piante sulla planimetria: ognuna riceve una valutazione e l\'elenco segnala un posto nettamente migliore.';
 
   @override
-  String get roomScanAddPlant => 'Posare una pianta';
+  String get roomScanAddPlant => 'Aggiungi una pianta';
 
   @override
   String roomScanTapForPlant(String plant) {
-    return 'Toccare la pianta dove si trova $plant.';
+    return 'Tocca la planimetria dove si trova $plant.';
   }
 
   @override
   String roomScanRemovePlant(String plant) {
-    return 'Rimuovere $plant dalla pianta';
+    return 'Rimuovi $plant dalla planimetria';
   }
 
   @override
-  String get roomScanNoPlantToPlace => 'Nessuna pianta da posare.';
+  String get roomScanNoPlantToPlace => 'Nessuna pianta da mettere.';
 
   @override
   String roomScanPlantWellPlaced(String light) {
@@ -6571,18 +6570,18 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String roomScanPlantBetterAt(String light, String place) {
-    return 'Posto attuale $light · meglio $place';
+    return 'Qui $light · meglio $place';
   }
 
   @override
   String get placementAllRooms => 'Tutte le stanze';
 
   @override
-  String get placementChoose => 'Posare qui';
+  String get placementChoose => 'Metti qui';
 
   @override
   String placementChosen(String place) {
-    return 'Posata $place';
+    return 'Messa $place';
   }
 
   @override
@@ -6607,10 +6606,10 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get roomScanCurtainHelp =>
-      'Il rilievo non vede né le tende leggere né le tende. Una tenda leggera dimezza la luce e toglie il sole diretto; una tenda spesso tirata la divide per tre.';
+      'La scansione non rileva le tende. Una tenda leggera dimezza la luce e toglie il sole diretto; una tenda spesso tirata la divide per 3.';
 
   @override
-  String get roomScanPlace => 'Posare';
+  String get roomScanPlace => 'Metti';
 
   @override
   String roomScanRoomsShort(int count) {
@@ -6625,14 +6624,14 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get roomScanThisRoom => 'Rilevare questa stanza';
+  String get roomScanThisRoom => 'Scansiona questa stanza';
 
   @override
   String get roomScanThisRoomHint =>
-      'La planimetria della stanza dà la luce di ogni posto, per scegliere dove posare una pianta.';
+      'La planimetria mostra la luce di ogni posto, per scegliere dove mettere una pianta.';
 
   @override
-  String get roomScanRoomPlan => 'Pianta della stanza';
+  String get roomScanRoomPlan => 'Planimetria della stanza';
 
   @override
   String roomScanPlantsOnPlanCount(int count) {

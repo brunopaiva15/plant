@@ -6226,11 +6226,11 @@ class AppLocalizationsDe extends AppLocalizations {
       'Diesen Tipp wiederherstellen? Seine Meldungen werden gelöscht.';
 
   @override
-  String get roomScan => 'Raumscan';
+  String get roomScan => 'Scan der Wohnung';
 
   @override
   String get roomScanHint =>
-      'Ein mit Kamera und LiDAR erfasster Raum liefert seine Wände, Fenster und Türen. Daraus ergibt sich das Licht an jedem Platz, und damit, wo eine Pflanze stehen kann. Die Erfassung bleibt auf dem Gerät.';
+      'Scanne einen Raum mit Kamera und LiDAR: Die App erkennt Wände, Fenster und Türen und berechnet, wie viel Licht jeder Platz bekommt – damit du weißt, wohin deine Pflanzen gehören. Alles bleibt auf deinem Gerät.';
 
   @override
   String get roomScanStart => 'Raum scannen';
@@ -6242,22 +6242,21 @@ class AppLocalizationsDe extends AppLocalizations {
   String get roomScanEmptyTitle => 'Kein Raum gescannt';
 
   @override
-  String get roomScanEmptySubtitle =>
-      'Der Scan dauert ein bis zwei Minuten pro Raum, langsam an den Wänden entlang.';
+  String get roomScanEmptySubtitle => 'Rechne mit 1 bis 2 Minuten pro Raum.';
 
   @override
   String get roomScanNoLidar =>
-      'Dieses Gerät hat kein LiDAR: Der Scan braucht ein iPhone Pro oder ein iPad Pro.';
+      'Dieses Gerät hat kein LiDAR. Zum Scannen brauchst du ein iPhone Pro oder ein iPad Pro.';
 
   @override
   String get roomScanBeforeTitle => 'Vor dem Scan';
 
   @override
   String get roomScanBeforeText =>
-      'Die Kamera öffnet sich in der Scanansicht des Systems. Langsam an den Wänden entlanggehen, bis der Raum gezeichnet ist, dann abschließen. Nichts verlässt das Gerät.';
+      'Die Kamera öffnet den Scanner von iOS. Geh langsam an den Wänden entlang, bis der Raum vollständig gezeichnet ist, und tippe dann auf Fertig.';
 
   @override
-  String get roomScanFailed => 'Der Scan ist nicht zustande gekommen.';
+  String get roomScanFailed => 'Der Scan ist fehlgeschlagen.';
 
   @override
   String get roomScanDefaultName => 'Raum';
@@ -6304,14 +6303,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get roomScanOrientationHelp =>
-      'Der Kompass irrt um zehn bis fünfzehn Grad. Die Ausrichtung jedes Fensters wird hier korrigiert.';
+      'Der Kompass weicht um 10 bis 15° ab. Korrigiere hier die Ausrichtung jedes Fensters.';
 
   @override
   String get roomScanDelete => 'Scan löschen';
 
   @override
   String get roomScanDeleteConfirm =>
-      'Der Scan und seine Markierungen verschwinden vom Gerät.';
+      'Der Scan und seine Markierungen werden von deinem Gerät gelöscht.';
 
   @override
   String roomScanCapturedOn(String date) {
@@ -6365,7 +6364,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get placementHint =>
-      'Die Plätze sind nach ihrem Licht geordnet, verglichen mit dem Licht der Pflegekarte.';
+      'Die Plätze sind danach geordnet, wie gut ihr Licht zu dem passt, das die Pflegekarte verlangt.';
 
   @override
   String placementRoomsCount(int count) {
@@ -6404,7 +6403,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get placementGeneric =>
-      'Allgemeine Pflegekarte: Ohne Art ist das geforderte Licht unbekannt.';
+      'Ohne Art ist das geforderte Licht unbekannt: Die Pflegekarte bleibt allgemein.';
 
   @override
   String placementDistanceM(String m) {
@@ -6459,14 +6458,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get roomScanHeatersHelp =>
-      'Die Erfassung sieht keine Heizkörper. Auf dem Grundriss gesetzt, zählt ein Heizkörper im Umkreis von 80 cm als trockene, warme Luft.';
+      'Der Scan erkennt keine Heizkörper. Setze sie auf den Grundriss: Im Umkreis von 80 cm gilt die Luft als trocken und warm.';
 
   @override
   String get roomScanAddHeater => 'Heizkörper setzen';
 
   @override
   String get roomScanTapForHeater =>
-      'Auf dem Grundriss dort tippen, wo der Heizkörper steht.';
+      'Tippe auf dem Grundriss dorthin, wo der Heizkörper steht.';
 
   @override
   String roomScanHeatersCount(int count) {
@@ -6488,7 +6487,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String roomScanFillLocationDetail(String orientation, String light) {
-    return 'Ausrichtung $orientation, Licht $light, laut Erfassung. Schon ausgefüllte Felder bleiben unverändert.';
+    return 'Laut Scan: Ausrichtung $orientation, Licht $light. Schon ausgefüllte Felder bleiben unverändert.';
   }
 
   @override
@@ -6499,14 +6498,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get roomScanWhoFitsHint =>
-      'Jede Pflanze wird nach dem Licht des Raums und ihrer Pflegekarte bewertet.';
+      'Jede Pflanze wird bewertet, indem das Licht des Raums mit dem ihrer Pflegekarte verglichen wird.';
 
   @override
   String get roomScanNoPlantsToRank => 'Keine Pflanze mit bekannter Art.';
 
   @override
   String get placementShortfallHeater =>
-      'Jeder Platz liegt nahe einem Heizkörper: trockene, warme Luft.';
+      'Jeder Platz liegt nahe einem Heizkörper: Die Luft ist trocken und warm.';
 
   @override
   String get placementHeaterNote =>
@@ -6516,11 +6515,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get placementAtHome => 'Sensor des Raums';
 
   @override
-  String get roomScanStartStructure => 'Die ganze Wohnung scannen';
+  String get roomScanStartStructure => 'Ganze Wohnung scannen';
 
   @override
   String get roomScanStructureHint =>
-      'Die ganze Wohnung scannen geht Raum für Raum: „Nächster Raum“ dazwischen, „Fertig“ am Ende. Die Räume werden zueinander gesetzt.';
+      'Scanne deine Räume nacheinander: nach jedem „Nächster Raum“, am Ende „Fertig“. Die App fügt sie zu einem Grundriss zusammen.';
 
   @override
   String get roomScanNextRoom => 'Nächster Raum';
@@ -6535,14 +6534,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get roomScanPlantsHelp =>
-      'Eine Pflanze auf dem Grundriss wird an ihrem Platz bewertet. Die Liste zeigt einen deutlich besseren Platz an.';
+      'Setze deine Pflanzen auf den Grundriss: Jede bekommt eine Bewertung, und die Liste zeigt einen deutlich besseren Platz.';
 
   @override
   String get roomScanAddPlant => 'Pflanze setzen';
 
   @override
   String roomScanTapForPlant(String plant) {
-    return 'Auf dem Grundriss dort tippen, wo $plant steht.';
+    return 'Tippe auf dem Grundriss dorthin, wo $plant steht.';
   }
 
   @override
@@ -6560,7 +6559,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String roomScanPlantBetterAt(String light, String place) {
-    return 'Aktueller Platz $light · besser $place';
+    return 'Hier $light · besser $place';
   }
 
   @override
@@ -6596,7 +6595,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get roomScanCurtainHelp =>
-      'Die Erfassung sieht weder Gardinen noch Vorhänge. Eine Gardine halbiert das Licht und nimmt die direkte Sonne; ein meist zugezogener Vorhang teilt es durch drei.';
+      'Der Scan erkennt keine Vorhänge. Eine Gardine halbiert das Licht und nimmt direkte Sonne; ein meist zugezogener Vorhang teilt es durch 3.';
 
   @override
   String get roomScanPlace => 'Setzen';
@@ -6614,11 +6613,11 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get roomScanThisRoom => 'Diesen Raum erfassen';
+  String get roomScanThisRoom => 'Diesen Raum scannen';
 
   @override
   String get roomScanThisRoomHint =>
-      'Der Grundriss des Raums liefert das Licht an jedem Platz, um zu wählen, wo eine Pflanze steht.';
+      'Der Grundriss zeigt das Licht an jedem Platz – so wählst du, wo eine Pflanze steht.';
 
   @override
   String get roomScanRoomPlan => 'Grundriss des Raums';

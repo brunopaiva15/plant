@@ -240,7 +240,7 @@ version — la vraie livraison d'Iris 8 en prendra donc un autre.
 
 ## 10. Relever une pièce, puis poser une plante (iPhone et iPad à LiDAR)
 ```
-Jardin ─[tap Salon]⟶ Fiche emplacement ─[tap « Relever cette pièce »]⟶ une phrase
+Jardin ─[tap Salon]⟶ Fiche emplacement ─[tap « Scanner cette pièce »]⟶ une phrase
   (ce qui va se passer, rien ne quitte l'appareil)
     ⟶ le relevé du système (RoomPlan, coaching) ─[Terminer]⟶ feuille du relevé,
       déjà liée au Salon : plan vu de dessus, nom (proposé d'après le type de
@@ -249,8 +249,8 @@ Jardin ─[tap Salon]⟶ Fiche emplacement ─[tap « Relever cette pièce »]�
       Salon n'a ni orientation ni lumière
   ⟶ la fiche du Salon montre son plan, ses fenêtres, les plantes posées ;
     [tap] rouvre la feuille du relevé
-Profil ─[tap « Relevé de la maison »]⟶ la même chose pour toutes les pièces,
-  et « Relever l'appartement » ; une pièce reconnue (« Salon ») se lie d'elle-même
+Profil ─[tap « Scan de la maison »]⟶ la même chose pour toutes les pièces,
+  et « Scanner tout le logement » ; une pièce reconnue (« Salon ») se lie d'elle-même
   à l'emplacement qui porte ce nom
 Fiche plante ─ carte « Où la poser · Salon · à 1 m de la fenêtre sud » sous
   « Comment en prendre soin », dès que son emplacement est relevé ─[tap]⟶ Où la poser

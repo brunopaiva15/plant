@@ -1,8 +1,9 @@
 # La clarté des textes (`lib/l10n/*.arb`)
 
-> Statut : plan d'exécution. Rien n'est encore réécrit ; le relevé mécanique
-> (`tool/audit_textes.py`) est livré, la charte du § 3 attend d'être reportée
-> dans `docs/06-design-system.md`.
+> Statut : **lot 1 livré**, lots 2 à 11 à faire. La charte du § 3 est reportée
+> dans `docs/06-design-system.md`, le relevé mécanique (`tool/audit_textes.py`)
+> et le test de parité ICU sont en place. Le registre allemand est tranché :
+> *du*.
 
 Ce document tient le chantier de réécriture des textes de l'interface : ce qui
 cloche, la règle qui change, les lots, et ce qui vérifie le résultat. Il
@@ -129,20 +130,19 @@ du paragraphe actuel.
 |---|---|---|
 | fr | vouvoiement, impératif | cohérent (54 chaînes avec « vous ») |
 | en | *you* | cohérent (60 chaînes) |
-| de | **à trancher** | 48 chaînes en *Sie*, 18 en *du* |
-| it | **tu** | 55 chaînes en *tu*, 18 en *voi* |
+| de | **du** (tranché) | 48 chaînes en *Sie* à convertir, lot 11 |
+| it | **tu** (tranché) | 18 chaînes en *voi* à convertir, lot 11 |
 
 L'italien se tranche seul : le *tu* est déjà majoritaire, c'est la convention
 d'iOS en italien, et les 18 chaînes en *voi* (`supportOffer`, `onbWelcomeBody`,
 `emptyPlantsSubtitle`…) passent au *tu*.
 
-L'allemand est la seule décision à prendre avant d'ouvrir les lots. Le *Sie*
-est majoritaire dans l'app (48 contre 18) ; le *du* est la convention d'Apple
-en allemand depuis 2021, et s'accorde mieux avec un sujet domestique et avec
-le *tu* italien. **Recommandation : passer tout l'allemand au *du***, soit 48
-chaînes à convertir. Le choix inverse coûte 18 chaînes et fait de l'allemand
-la seule langue distante des trois autres. Quel que soit le choix, il se fige
-dans un test (§ 7) au moment où le premier lot part.
+L'allemand passe au ***du***, malgré le *Sie* majoritaire à l'ouverture du
+chantier (48 contre 18) : c'est la convention d'Apple en allemand depuis 2021,
+elle s'accorde avec le sujet domestique et avec le *tu* italien. Les 48
+chaînes en *Sie* se convertissent au lot 11 ; d'ici là, `tool/audit_textes.py`
+les signale sous `registre-de-trop`. Tout texte allemand écrit à partir du lot
+1 est au *du*.
 
 Aucune des deux langues ne mélange les guillemets : l'allemand tient son
 `„ … “`, le français ses `« … »`. Seules deux chaînes italiennes
@@ -174,15 +174,38 @@ la règle 7.
 Préfixes `roomScan…`, `roomSection…`, `placement…`. C'est l'écran qui a ouvert
 le chantier ; il concentre les trois échappatoires à la fois.
 
-**Décision de vocabulaire** : *relevé* devient *scan*, *place* devient
-*emplacement*, *poser* devient *placer*. Cela touche le titre d'écran et les
-boutons. `docs/17-releve-de-la-maison.md` garde son nom de fichier ; une ligne
-y note que le terme d'interface est « scan ».
+> **Livré.** Les 125 chaînes ci-dessous sont dans les quatre ARB, `flutter
+> gen-l10n` est passé, la suite `test/l10n/` est verte (16 tests, dont la
+> parité ICU) et `flutter analyze` ne dit rien. Le relevé du lot tombe de 9
+> clés signalées à 4, toutes dans les bornes de la charte.
+
+**Décision de vocabulaire** : *relevé* devient *scan*, *poser* devient
+*placer*, et *place* devient **endroit** — non pas *emplacement* comme annoncé
+d'abord : « Emplacement » désigne déjà les `Location` du jardin
+(`roomScanLinkedLocation`, `roomScanFillLocation`), et les confondre aurait
+rendu « Renseigner l'emplacement » ambigu sur un écran qui parle des deux. Le
+mot est celui de la charte, règle 5 ; il vaut pour toute l'application. Les
+trois autres langues n'avaient pas la collision et gardent *spot*, *Platz*,
+*posto*.
+
+Trois corrections de vocabulaire s'y ajoutent, trouvées en relisant les quatre
+langues ensemble :
+
+- **it** : `pianta` désignait à la fois la plante et le plan de la pièce —
+  « Tocca la pianta dove si trova {plant} » se lisait « touche la plante ». Le
+  plan devient `planimetria` partout.
+- **en** : *survey* et *scan* se partageaient l'écran ; tout passe à *scan*.
+- **it** : les boutons à l'infinitif (`Rilevare una stanza`, `Posare una
+  pianta`) passent à l'impératif, comme le veut le registre *tu*.
+
+Les libellés cités dans `docs/02`, `docs/03`, `docs/17`, `docs/00`,
+`app_config.dart` et `room_scan_settings_screen.dart` suivent le lot.
+`docs/17-releve-de-la-maison.md` garde son nom de fichier.
 
 | Clé | Avant | Après |
 |---|---|---|
 | `roomScan` | Relevé de la maison | Scan de la maison |
-| `roomScanHint` | Une pièce relevée avec l'appareil photo et le LiDAR donne ses murs, ses fenêtres et ses portes. La lumière de chaque place s'en déduit, pour dire où poser une plante. Le relevé reste sur l'appareil. | Scannez une pièce avec l'appareil photo et le LiDAR : l'application y repère les murs, les fenêtres et les portes, puis calcule la lumière de chaque emplacement pour vous dire où placer vos plantes. Tout reste sur votre appareil. |
+| `roomScanHint` | Une pièce relevée avec l'appareil photo et le LiDAR donne ses murs, ses fenêtres et ses portes. La lumière de chaque place s'en déduit, pour dire où poser une plante. Le relevé reste sur l'appareil. | Scannez une pièce avec l'appareil photo et le LiDAR : l'application repère les murs, fenêtres et portes, puis calcule la lumière de chaque endroit pour vous dire où placer vos plantes. Tout reste sur votre appareil. |
 | `roomScanStart` | Relever une pièce | Scanner une pièce |
 | `roomScanStartStructure` | Relever l'appartement | Scanner tout le logement |
 | `roomScanRooms` | Pièces relevées | Pièces scannées |
@@ -198,22 +221,22 @@ y note que le terme d'interface est « scan ».
 | `roomScanHeatersHelp` | Le relevé ne voit pas les radiateurs. Posé sur le plan, un radiateur compte comme air sec et chaud à moins de 80 cm. | Le scan ne détecte pas les radiateurs. Placez-les sur le plan : l'air compte comme sec et chaud à moins de 80 cm. |
 | `roomScanAddHeater` | Poser un radiateur | Placer un radiateur |
 | `roomScanTapForHeater` | Toucher le plan là où se trouve le radiateur. | Touchez le plan à l'endroit du radiateur. |
-| `roomScanCurtainHelp` | Le relevé ne voit ni les voilages ni les rideaux. Un voilage divise la lumière par deux et ôte le soleil direct ; un rideau souvent tiré la divise par trois. | Le scan ne détecte pas les rideaux. Un voilage divise la lumière par 2 et supprime le soleil direct ; un rideau souvent tiré la divise par 3. |
+| `roomScanCurtainHelp` | Le relevé ne voit ni les voilages ni les rideaux. Un voilage divise la lumière par deux et ôte le soleil direct ; un rideau souvent tiré la divise par trois. | Le scan ne détecte pas les rideaux. Un voilage divise la lumière par 2 et ôte le soleil direct ; un rideau souvent tiré la divise par 3. |
 | `roomScanStructureHint` | Relever l'appartement enchaîne les pièces : « Pièce suivante » entre chaque, « Terminé » à la fin. Les pièces se placent les unes par rapport aux autres. | Scannez vos pièces à la suite : touchez « Pièce suivante » après chacune, « Terminé » à la fin. L'application les assemble en un seul plan. |
-| `roomScanPlantsHelp` | Une plante posée sur le plan est notée à sa place. La liste signale une place nettement meilleure. | Placez vos plantes sur le plan : chacune reçoit une note, et la liste signale un emplacement nettement meilleur. |
+| `roomScanPlantsHelp` | Une plante posée sur le plan est notée à sa place. La liste signale une place nettement meilleure. | Placez vos plantes sur le plan : chacune reçoit une note, et la liste signale un endroit nettement meilleur. |
 | `roomScanAddPlant` | Poser une plante | Placer une plante |
 | `roomScanTapForPlant` | Toucher le plan là où se trouve {plant}. | Touchez le plan à l'endroit où se trouve {plant}. |
 | `roomScanNoPlantToPlace` | Aucune plante à poser. | Aucune plante à placer. |
-| `roomScanPlantWellPlaced` | Place adaptée · {light} | Emplacement adapté · {light} |
-| `roomScanPlantBetterAt` | Place actuelle {light} · mieux {place} | Ici {light} · mieux à {place} |
+| `roomScanPlantWellPlaced` | Place adaptée · {light} | Endroit adapté · {light} |
+| `roomScanPlantBetterAt` | Place actuelle {light} · mieux {place} | Ici {light} · mieux {place} |
 | `roomScanWhoFitsHint` | Chaque plante est notée d'après la lumière de la pièce et sa fiche. | Chaque plante est notée en comparant la lumière de la pièce à celle que demande sa fiche. |
-| `roomScanThisRoomHint` | Le plan de la pièce donne la lumière de chaque place, pour choisir où poser une plante. | Le plan indique la lumière de chaque emplacement, pour choisir où placer une plante. |
+| `roomScanThisRoomHint` | Le plan de la pièce donne la lumière de chaque place, pour choisir où poser une plante. | Le plan indique la lumière de chaque endroit, pour choisir où placer une plante. |
 | `roomScanFillLocationDetail` | Orientation {orientation}, lumière {light}, d'après le relevé. Les champs déjà remplis ne changent pas. | D'après le scan : orientation {orientation}, lumière {light}. Vos champs déjà remplis ne changent pas. |
 | `roomScanPlace` | Poser | Placer |
-| `placementHint` | Les places sont classées d'après la lumière qu'elles reçoivent, comparée à celle de la fiche. | Les emplacements sont classés en comparant la lumière qu'ils reçoivent à celle que demande la fiche. |
-| `placementRoomsCount` | {count} pièces relevées | {count} pièces scannées |
+| `placementHint` | Les places sont classées d'après la lumière qu'elles reçoivent, comparée à celle de la fiche. | Les endroits sont classés en comparant la lumière qu'ils reçoivent à celle que demande la fiche. |
+| `placementRoomsCount` | {count} pièces relevées | {count} pièces scannées *(les deux branches du pluriel)* |
 | `placementGeneric` | Fiche générique : sans espèce, la lumière demandée n'est pas connue. | Sans espèce renseignée, la lumière demandée est inconnue : la fiche reste générique. |
-| `placementShortfallHeater` | Chaque place est près d'un radiateur : air sec et chaud. | Tous les emplacements sont près d'un radiateur : l'air y est sec et chaud. |
+| `placementShortfallHeater` | Chaque place est près d'un radiateur : air sec et chaud. | Tous les endroits sont près d'un radiateur : l'air y est sec et chaud. |
 
 Les quatre langues, sur la chaîne d'ouverture :
 
@@ -221,9 +244,8 @@ Les quatre langues, sur la chaîne d'ouverture :
   windows and doors, then works out how much light each spot gets, so you know
   where to put your plants. Everything stays on your device.
 - **de** (*du*) — Scanne einen Raum mit Kamera und LiDAR: Die App erkennt
-  Wände, Fenster und Türen und berechnet daraus, wie viel Licht jeder Platz
-  bekommt – damit du weißt, wohin deine Pflanzen gehören. Alles bleibt auf
-  deinem Gerät.
+  Wände, Fenster und Türen und berechnet, wie viel Licht jeder Platz bekommt –
+  damit du weißt, wohin deine Pflanzen gehören. Alles bleibt auf deinem Gerät.
 - **it** — Scansiona una stanza con la fotocamera e il LiDAR: l'app individua
   muri, finestre e porte, poi calcola quanta luce riceve ogni punto e ti dice
   dove mettere le piante. Tutto resta sul tuo dispositivo.
@@ -473,10 +495,10 @@ concerné est vert, sinon la suite casse dès le premier commit :
 
 | Test | Verrouille | Entre après |
 |---|---|---|
-| longueur maximale | 140 signes pour une aide, 220 pour une clé `…Hint` de chapeau, la liste des exceptions de consentement étant écrite dans le test | lot 10 |
+| longueur maximale | 140 signes pour une aide, 220 pour un chapeau, la liste des exceptions de consentement étant écrite dans le test | lot 10 |
 | apostrophe unique | aucune `’` dans les quatre ARB | lot 11 |
 | registre unique | aucun *Sie* en allemand (ou aucun *du*), aucun *voi* en italien | lot 11 |
-| parité ICU | mêmes marqueurs `{…}` pour une clé dans les quatre langues (vrai aujourd'hui, à ne pas perdre) | lot 1 |
+| parité ICU ✓ | chaque marqueur déclaré par `@clé.placeholders` du modèle français se retrouve dans les quatre langues | **en place** |
 
 ## 8. Le déroulé d'un lot
 
@@ -514,7 +536,7 @@ concerné est vert, sinon la suite casse dès le premier commit :
 
 | Ordre | Lot | Clés | Explicatives | Pourquoi là |
 |---:|---|---:|---:|---|
-| 1 | Relevé de la maison | 95 | 27 | l'écran qui a ouvert le chantier ; sert de patron aux autres |
+| 1 ✓ | Relevé de la maison | 95 | 27 | **livré** — l'écran qui a ouvert le chantier ; sert de patron aux autres |
 | 2 | Guides de multiplication | 133 | 62 | le plus atteint, et le plus lu quand on s'en sert |
 | 3 | Écran du matin, météo | 132 | 35 | vu tous les jours |
 | 4 | Identification, Iris | 84 | 21 | porte trois consentements |
