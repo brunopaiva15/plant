@@ -663,14 +663,77 @@ Comparer strictement :
 B n'est retenu que s'il améliore les détails fins sans dégrader le retrieval et
 l'alignement BioCLIP. Sinon DINOv3 sort de la recette.
 
-### Porte C — embedding contre softmax
+### Porte C — embedding contre softmax ✅ franchie le 21 septembre 2026
 
-Comparer, sur exactement le même jeu :
+`voisins.py --avec-iris`, sur le manifeste figé du banc, les mêmes images et
+les mêmes vérités pour tous. **Iris 9 tourne sous son masque de lieu**,
+c'est-à-dire tel que l'application le livre (§ 14 de `docs/09`) : sans lui,
+on le comparerait amputé.
 
-- Iris 9 softmax ;
-- Iris Core + embeddings d'espèces ;
-- Iris Core + prototypes visuels ;
-- combinaison texte + prototypes.
+| top-1 | Iris 9 masqué | références texte | centroïdes |
+|---|---|---|---|
+| **indoor** — 1 127 images, 258 espèces | 0,8119 | 0,8119 | **0,8456** |
+| **outdoor** — 2 000 images, 925 espèces | 0,7615 | **0,9095** | **0,9145** |
+| **ood_plante** — 2 000 images, 1 493 espèces | **0,0** | 0,7820 | **0,8405** |
+
+Les deux premières lignes sont à armes égales — références restreintes aux
+1 569 classes qu'Iris expose. La troisième ne peut pas l'être : Iris est à
+zéro par construction, et c'est tout l'objet de la mesure.
+
+**Trois lectures, dans l'ordre de ce qu'elles coûtent à admettre.**
+
+**Dedans, l'espace égale neuf versions de travail dirigé.** 0,8119 contre
+0,8119, au dix-millième — et les références textuelles n'ont **jamais vu une
+photo**. Elles sont faites de trois phrases par espèce, encodées par un
+modèle qui ne connaît ni notre catalogue ni nos étiquettes. Les centroïdes
+ajoutent 3,4 points, mais ils sont bâtis sur nos images d'entraînement et
+jouent donc un peu à domicile ; le chiffre qui emporte la décision est
+celui du texte, précisément parce qu'il ne doit rien à notre corpus.
+
+**Dehors, l'écart n'est plus discutable : quinze points.** 0,7615 contre
+0,9145. Le masque extérieur ne sauve pas Iris — il ne retire que 145 classes
+et vaut 0,3 point, ce que le § 14.6 avait déjà mesuré.
+
+**Sur ce qu'Iris ne peut pas nommer, zéro contre 0,84.** Deux mille plantes
+hors de son répertoire, nommées correctement huit fois sur dix. À comparer
+aux **4,85 %** que PlantNet-300K rattrapait en second avis — et c'était de la
+couverture, pas de la justesse.
+
+#### Ce que la largeur coûte ici, et pourquoi c'est le vrai résultat
+
+La v8 avait mesuré qu'exposer 5 259 classes au lieu de 1 444 coûtait
+**10,2 points** de top-1 (§ 6.7 bis). Dans l'espace, exposer **5 813**
+espèces au lieu des 1 569 d'Iris coûte :
+
+| répertoire entier | texte | centroïdes | contre Iris masqué |
+|---|---|---|---|
+| indoor | 0,7551 | 0,7720 | −4,0 |
+| outdoor | 0,8865 | 0,8695 | **+10,8** |
+
+Dehors, l'espace nomme **3,7 fois plus d'espèces** et reste onze points
+au-dessus d'Iris. Dedans il paie quatre points pour la même étendue, là où le
+softmax en payait dix.
+
+> **« La largeur se paie dans les sorties » était une propriété du softmax,
+> pas du problème.** C'est l'acquis de cette mesure, et il justifie le
+> changement de paradigme mieux qu'aucun gain de top-1 : une référence de
+> plus ne dispute pas la masse de probabilité des autres, elle occupe une
+> direction. Le § 13.2 posait « entraîner large, exposer étroit » ; l'espace
+> permet d'exposer large.
+
+#### Ce que cette mesure ne dit pas
+
+- **Ce sont les chiffres du teacher**, ViT-H/14, 630 M de paramètres, 1,3 Go,
+  79 img/s sur une RTX 2070 Super. C'est le **plafond** de la distillation,
+  pas ce qu'un téléphone rendra. Le student public annonce 71,7 % d'accord
+  avec son teacher (§ 5) : la marche à descendre est réelle ;
+- **aucun seuil, donc aucune autonomie.** Un cosinus n'est pas une
+  probabilité, et le 0,70 d'Iris a été réglé sur ses sorties (§ 3.1 de
+  `docs/09`). Ce que l'application accepte et avec quelle justesse reste
+  entier — c'est la calibration, et elle attend que la géométrie soit figée ;
+- **rien sur le refus.** `ood_autre` est toujours vide faute de photos hors
+  sujet, et un espace qui nomme bien ne dit pas encore « ce n'est pas une
+  plante » (§ 16).
 
 ### Porte D — Indoor / Outdoor collaborent-ils vraiment ?
 
@@ -696,7 +759,9 @@ une architecture.
    textuelles/taxonomiques — outil écrit (`tools/plant_model/bioclip.py`), la
    passe reste à lancer sur la machine.
 5. Implémenter une première distillation **BioCLIP-only** vers FastViT et
-   MobileNetV4 Hybrid.
+   MobileNetV4 Hybrid — **la porte C est franchie** (§ 19), donc cette étape
+   n'est plus un pari : on sait ce que l'espace vaut, il reste à savoir ce
+   qu'un student en garde.
 6. Choisir le student au benchmark réel.
 7. Établir la baseline A complète : BioCLIP + supervision taxonomique +
    contrastive + hard negatives.
