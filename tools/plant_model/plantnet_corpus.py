@@ -324,7 +324,16 @@ def main() -> int:  # pragma: no cover - réseau et disque
     print(f'{len(tout)} images sous licence sur les splits {splits}, '
           f'{connues} d\'espèces du catalogue, {len(afaire)} à tirer')
     if not afaire:
-        print('tout est déjà là')
+        # Rien à tirer veut dire que tous les fichiers sont là : le manifeste
+        # se réécrit et on sort, sans ouvrir d'archive. Continuer ferait
+        # échouer la passe sur une archive dont elle n'a plus besoin.
+        ecrites = ecrire_splits(tout, rattachements, sortie)
+        print(f'tout est déjà là — {ecrites} images dans {sortie}/splits.csv')
+        if ecrites and not (sortie / 'images').is_dir():
+            print(f"ATTENTION : {sortie}/images n'est pas un dossier alors que "
+                  f'{ecrites} destinations existent. Vérifier ce que contient '
+                  f'{sortie} avant de s\'en servir comme corpus.')
+        return 0
 
     source = (args.archive if str(args.archive).startswith('http')
               else str(Path(args.archive).expanduser()))
@@ -333,6 +342,15 @@ def main() -> int:  # pragma: no cover - réseau et disque
         print("lecture à distance — si Zenodo coupe (429), télécharger "
               "l'archive une fois et la passer à --archive\n", flush=True)
     dossier = Path(source).expanduser() if not str(source).startswith('http') else None
+    if dossier is not None and not dossier.exists():
+        # Sans ce garde-fou, un chemin local absent tombe dans `RemoteZip`, qui
+        # se plaint d'une URL sans schéma — un message qui envoie chercher au
+        # mauvais endroit.
+        raise SystemExit(
+            f'{dossier} : ni fichier ni dossier.\n'
+            f'--archive attend le zip Zenodo, ou le dossier où il a été '
+            f'décompressé (celui qui contient `plantnet_300K/` ou `images/`).\n'
+            f'`ls ~/plant-data` pour retrouver son nom exact.')
     if dossier is not None and dossier.is_dir():
         print(f'archive décompressée : {dossier}\n', flush=True)
         premier = lecteur_dossier(dossier)
