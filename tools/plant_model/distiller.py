@@ -219,10 +219,21 @@ def largeur_de_sortie(dorsal, entree: int = 224) -> int:  # pragma: no cover - d
 
     Une passe à vide sur une image coûte quelques millisecondes et ne peut pas
     se tromper, quel que soit le dorsal qu'on essaiera ensuite.
+
+    **En mode évaluation, et le mode est rendu comme il était.** Une
+    `BatchNorm` refuse un lot d'une seule image à l'entraînement — « expected
+    more than 1 value per channel » — et `timm` rend ses modèles en mode
+    entraînement. Mesurer la sortie ne doit pas non plus laisser le dorsal
+    dans un état que l'appelant n'a pas demandé.
     """
     import torch
-    with torch.no_grad():
-        return int(dorsal(torch.zeros(1, 3, entree, entree)).shape[-1])
+    entrainait = dorsal.training
+    dorsal.eval()
+    try:
+        with torch.no_grad():
+            return int(dorsal(torch.zeros(1, 3, entree, entree)).shape[-1])
+    finally:
+        dorsal.train(entrainait)
 
 
 def construire(nom: str, dim: int = DIM):  # pragma: no cover - demande timm
