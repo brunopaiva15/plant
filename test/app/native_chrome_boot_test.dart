@@ -53,7 +53,6 @@ void main() {
     await skipLater(tester);
     await tester.enterText(find.byType(EditableText), 'Bruno');
     await skipLater(tester);
-    await tester.tap(find.text('Non merci'));
     await settle(tester);
 
     expect(container.read(preferencesProvider).onboardingDone, isTrue);

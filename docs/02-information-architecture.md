@@ -14,7 +14,7 @@ Tab bar
 ## Hiérarchie des écrans
 ```
 Root
-├── Ouverture (clin d'œil du pot, docs/06) → Onboarding (5 écrans + lieu + prénom + compte [iOS, backend] + soutien) → Shell
+├── Ouverture (clin d'œil du pot, docs/06) → Onboarding (5 écrans + lieu + prénom + compte [iOS, backend]) → Shell
 └── Shell (tabs)
     ├── Aujourd'hui
     │   ├── [Plante] → Fiche plante

@@ -20,7 +20,6 @@ import '../../home_climate/application/home_climate_providers.dart';
 import '../../home_climate/presentation/home_climate_widgets.dart';
 import '../../home_climate/presentation/home_sensor_picker_sheet.dart';
 import '../../plants/presentation/create_plant_flow.dart';
-import '../../support/presentation/support_screen.dart';
 import 'clay_illustration.dart';
 import 'onboarding_stage.dart';
 import 'plant_cluster.dart';
@@ -67,8 +66,7 @@ Color _placeTint(FloraColors c) => c.water;
 Color _homeTint(FloraColors c) => c.sun;
 
 /// Présentation animée, le lieu de la météo, la maison (là où Apple Maison
-/// existe), le prénom, le compte (là où Sign in with Apple existe), puis le
-/// soutien facultatif au développeur.
+/// existe), le prénom, puis le compte (là où Sign in with Apple existe).
 ///
 /// Les écrans ne se remplacent pas l'un l'autre comme des diapositives : le
 /// fond change de teinte, les objets du jardin tournent autour de la place
@@ -145,8 +143,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
   /// changement.
   bool get _hasAccount => signInAvailable(ref.read(authRepositoryProvider));
   int get _accountIndex => _nameIndex + 1;
-  int get _supportIndex => _nameIndex + (_hasAccount ? 2 : 1);
-  int get _pageCount => _nameIndex + (_hasAccount ? 3 : 2);
+  int get _pageCount => _nameIndex + (_hasAccount ? 2 : 1);
 
   /// Nombre d'objets sur la scène : un par présentation, plus celui du lieu,
   /// plus la maison là où il y en a une à lire.
@@ -320,10 +317,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
     return _revealed.contains(i) ? 1 : 0;
   }
 
-  /// Après le prénom : le compte s'il peut être proposé, sinon le soutien.
+  /// Après le prénom : le compte s'il peut être proposé, sinon l'app.
   void _afterName({required bool addPlant}) {
     _addPlant = addPlant;
-    _goTo(_hasAccount ? _accountIndex : _supportIndex);
+    if (_hasAccount) {
+      _goTo(_accountIndex);
+    } else {
+      _finish();
+    }
   }
 
   Future<void> _finish() async {
@@ -427,8 +428,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
                       _PlacePage(onDone: () => _goTo(_hasHome ? _homeIndex : _nameIndex)),
                       if (_hasHome) _HomePage(onDone: () => _goTo(_nameIndex)),
                       _NamePage(controller: _name, onSubmit: () => _afterName(addPlant: true), onSkip: () => _afterName(addPlant: false)),
-                      if (_hasAccount) _AccountPage(onDone: () => _goTo(_supportIndex)),
-                      _SupportPage(onDone: _finish),
+                      if (_hasAccount) _AccountPage(onDone: _finish),
                     ],
                   ),
                 ),
@@ -951,53 +951,6 @@ class _AccountPageState extends ConsumerState<_AccountPage> {
           ),
         ),
       ),
-    );
-  }
-}
-
-/// La toute fin : l'app est gratuite, et on peut soutenir son développeur.
-/// Rien n'y oblige — le bouton du bas passe outre en un geste.
-class _SupportPage extends ConsumerWidget {
-  const _SupportPage({required this.onDone});
-
-  final VoidCallback onDone;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = context.l10n;
-    final supported = ref.watch(preferencesProvider.select((p) => p.hasSupported));
-    // La sortie ne défile pas : elle est posée sous la proposition, et c'est
-    // la proposition qui défile s'il le faut. Sur l'écran extérieur d'un
-    // pliable — 678 points de haut — la pièce et ses deux boutons ne tenaient
-    // plus, et « Non merci » passait sous le pli, dans une page qui n'avait
-    // l'air de rien cacher : les points d'étape en bas la faisaient paraître
-    // complète. Une étape dont on ne voit pas la sortie est une impasse.
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
-            physics: floraScrollPhysics,
-            padding: const EdgeInsets.fromLTRB(Space.page, 0, Space.page, Space.md),
-            child: SupportPitch(onDone: onDone, compact: true),
-          ),
-        ),
-        // Le geste qui passe outre appartient à l'étape, pas à la
-        // proposition : il prend donc le bouton discret de l'onboarding,
-        // celui de « Plus tard », et non le vert du design system. Sous
-        // « Restaurer mon soutien », qui est vert, deux fantômes de la même
-        // couleur ne disaient plus lequel était la sortie.
-        Padding(
-          padding: const EdgeInsets.fromLTRB(Space.page, Space.xs, Space.page, Space.md),
-          child: Center(
-            child: OnboardingButton(
-              label: supported ? l10n.continueLabel : l10n.supportNoThanks,
-              filled: false,
-              onPressed: onDone,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

@@ -49,5 +49,5 @@ Les **routines** (ce qui doit se passer) sont strictement séparées des **actio
   non consommable `ch.vergasta.plant.support`). Là où le magasin n'existe pas —
   le web, un appareil sans achat intégré — l'écran le dit au lieu d'afficher un
   bouton mort.
-- Deux points d'entrée, tous deux évitables d'un geste : la dernière page de
-  l'onboarding, et une ligne dans Profil.
+- Un point d'entrée, évitable d'un geste : une ligne dans Profil.
+  L'onboarding ne le propose plus.

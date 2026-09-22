@@ -977,9 +977,8 @@ ci-dessous demande « ressemble-t-il à un template ? » ; la question se repose
 **Ce que l'App Store demande** (règles 3.1.1 et 3.2.2(iv)) :
 
 - l'achat est un **non consommable**, donc restaurable : « Restaurer mon
-  soutien » est offert **partout où l'achat l'est**, onboarding compris.
-  C'est là qu'il sert le plus — quelqu'un qui change de téléphone repasse par
-  l'onboarding avant de voir les réglages ;
+  soutien » est offert **partout où l'achat l'est**, c'est-à-dire dans
+  Profil — l'onboarding ne le propose plus ;
 - le prix vient du magasin, déjà mis en forme dans la monnaie de la personne
   (`SupportOffer.price`), et se lit en entier avant le bouton ;
 - rien ne laisse croire à une contrepartie, et ce sont les phrases du haut
@@ -990,12 +989,10 @@ ci-dessous demande « ressemble-t-il à un template ? » ; la question se repose
   doivent pas se confondre ;
 - là où le magasin n'existe pas, une phrase remplace le bouton.
 
-**Dans l'onboarding**, `SupportPitch` se rend en version courte (`compact`) :
-seule la scène rapetisse, la page y partageant sa hauteur avec les points de
-progression. « Non merci » n'appartient pas à la proposition mais à
-l'étape, qui le dessine elle-même avec le bouton discret de l'onboarding,
-celui de « Plus tard » : sous « Restaurer mon soutien », qui est vert, deux
-fantômes de la même couleur ne disaient plus lequel était la sortie.
+**L'onboarding ne propose plus le soutien** : l'application ne sera pas
+gratuite, et une page « Auxine est gratuite » à la fin de l'introduction
+aurait été fausse. Elle se termine sur le prénom, ou sur le compte là où il
+est proposé.
 
 Les pièces se posent l'une après l'autre (`Appear`).
 `test/features/support_screen_test.dart` tient l'ordre — ce qui est ouvert
