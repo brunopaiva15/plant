@@ -202,3 +202,29 @@ def test_la_ligne_du_corpus_ne_se_prend_pas_pour_celle_du_cache():
     ligne = ['  4000/243567  33.0 img/s  5 sautées  reste 120 min\n']
     assert etat_cache(ligne) is None
     assert etat_corpus(ligne)['faites'] == 4000
+
+
+# --------------------------------------------------------------------------
+# Plusieurs passes sur la même page
+# --------------------------------------------------------------------------
+
+def test_un_nom_de_passe_suffit():
+    """Sortie et journal suivent la même convention pour toutes les passes."""
+    from suivi import passes_suivies
+    assert passes_suivies(['iris10-mnv4', 'iris10-cosinus'], 'x', 'y') == [
+        ('iris10-mnv4', '~/plant-data/iris10-mnv4', '~/plant-data/iris10-mnv4.log'),
+        ('iris10-cosinus', '~/plant-data/iris10-cosinus', '~/plant-data/iris10-cosinus.log')]
+
+
+def test_sans_passe_les_anciennes_commandes_marchent_encore():
+    from suivi import passes_suivies
+    assert passes_suivies([], '~/plant-data/iris10-complet', '~/plant-data/iris10-complet.log') == [
+        ('iris10-complet', '~/plant-data/iris10-complet', '~/plant-data/iris10-complet.log')]
+
+
+def test_un_corpus_fini_ne_reste_pas_a_999():
+    """Le compteur s'arrête au dernier multiple de 500 ; c'est le bilan
+    écrit après la boucle qui dit la fin."""
+    c = etat_corpus(TIRE + ['\n/x/plantnet-300k — 243567 images, 0 sautées cette passe\n'])
+    assert c['finie'] and c['part'] == 1.0
+    assert not etat_corpus(TIRE)['finie']

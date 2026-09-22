@@ -71,12 +71,20 @@ def etat_entrainement(lignes: list[str]) -> dict | None:
 
 
 def etat_corpus(lignes: list[str]) -> dict | None:
+    """L'avancée de `plantnet_corpus.py`, et si elle est finie.
+
+    Comme pour le cache, la fin ne se lit pas sur le compteur — il s'arrête
+    au dernier multiple de 500, à 99,9 % pour toujours. C'est le bilan écrit
+    après la boucle qui la dit.
+    """
+    finie = any('sautées cette passe' in l for l in lignes)
     m = derniere(lignes, CORPUS)
     if not m:
         return None
     faites, total = int(m[1]), int(m[2])
     return {'faites': faites, 'total': total, 'vitesse': float(m[3]),
-            'sautees': int(m[4]), 'part': faites / total if total else 0.0}
+            'sautees': int(m[4]), 'finie': finie,
+            'part': 1.0 if finie else (faites / total if total else 0.0)}
 
 
 def etat_cache(lignes: list[str]) -> dict | None:
@@ -94,6 +102,23 @@ def etat_cache(lignes: list[str]) -> dict | None:
     return {'fait': fait, 'total': total, 'finie': finie,
             'vitesse': float(m[3]) if m else 0.0,
             'part': 1.0 if finie else (fait / total if total else 0.0)}
+
+
+def passes_suivies(noms: list[str], sortie: str, log: str,
+                   racine: str = '~/plant-data') -> list[tuple[str, str, str]]:
+    """(nom, dossier de sortie, journal) pour chaque passe à afficher.
+
+    Toutes les passes de ce dépôt suivent la même convention : sortie dans
+    `~/plant-data/<nom>`, journal dans `~/plant-data/<nom>.log`. Donner le nom
+    suffit donc, et deux passes enchaînées — l'une qui finit, l'autre qui
+    attend son tour — tiennent sur la même page.
+
+    Sans `--passe`, on garde `--sortie` et `--log` tels quels, pour que les
+    commandes déjà écrites dans le README continuent de marcher.
+    """
+    if not noms:
+        return [(Path(sortie).name, sortie, log)]
+    return [(n, f'{racine}/{n}', f'{racine}/{n}.log') for n in noms]
 
 
 def reste(fait: int, total: int, vitesse: float, par_pas: int = 1) -> float:
@@ -192,7 +217,7 @@ def silence(chemin: Path, maintenant: float | None = None) -> str:
     intervention, la première un `tmux`.
     """
     if not chemin.exists():
-        return f'{chemin} absent — la passe n\'a pas été lancée'
+        return f'{chemin} absent — la passe n\'a pas encore commencé'
     ecoule = (maintenant or time.time()) - chemin.stat().st_mtime
     return f'journal muet depuis {duree(ecoule)}' if ecoule > 90 else \
         'démarrage, première ligne dans quelques secondes'
@@ -215,14 +240,22 @@ def gpu() -> str:  # pragma: no cover - demande nvidia-smi
 _precedent: dict[str, tuple[int, float]] = {}
 
 
-def tableau(args) -> str:  # pragma: no cover - assemble des lectures disque
-    sortie = Path(args.sortie).expanduser()
-    out = [f"── {time.strftime('%H:%M:%S')} ─────────────────────────────────"]
-
-    e = etat_entrainement(lignes(Path(args.log).expanduser()))
-    out.append('\nDISTILLATION')
+def panneau(nom: str, dossier: str, journal: str, args) -> list[str]:  # pragma: no cover
+    """Une passe de distillation : où elle en est, et ce qu'on peut en lire."""
+    sortie = Path(dossier).expanduser()
+    out = [f'\nDISTILLATION — {nom}']
+    etat = sortie / 'etat.json'
+    if etat.exists():
+        try:
+            s = json.loads(etat.read_text())
+            out.append(f"  {s.get('student')}, contrastive {s.get('contrastive')}, "
+                       f"taux {s.get('calendrier', 'constant')}, "
+                       f"{s.get('epoque')} époque(s) bouclée(s)")
+        except Exception:
+            pass
+    e = etat_entrainement(lignes(Path(journal).expanduser()))
     if e is None:
-        out.append(f'  {silence(Path(args.log).expanduser())}')
+        out.append(f'  {silence(Path(journal).expanduser())}')
     else:
         epoques = args.epoques
         fait = e['epoque'] * e['pas_total'] + e['pas']
@@ -242,7 +275,15 @@ def tableau(args) -> str:  # pragma: no cover - assemble des lectures disque
     out.append(f"  points de contrôle : {', '.join(f'e{n}' for n in faites) or 'aucun'}")
     if faites:
         out.append(f"  → python3 voisins.py --banc benchmark.csv --cache {args.cache} "
-                   f"--embeddings {args.sortie}/banc-e{faites[-1]}")
+                   f"--embeddings {dossier}/banc-e{faites[-1]}")
+    return out
+
+
+def tableau(args) -> str:  # pragma: no cover - assemble des lectures disque
+    out = [f"── {time.strftime('%H:%M:%S')} ─────────────────────────────────"]
+    for nom, dossier, journal in passes_suivies(args.passe, args.sortie, args.log):
+        out += panneau(nom, dossier, journal, args)
+    sortie = Path(args.sortie).expanduser()
 
     archive = Path(args.archive).expanduser()
     if archive.exists() and not (sortie.parent / 'plantnet-300k' / 'splits.csv').exists():
@@ -278,6 +319,8 @@ def tableau(args) -> str:  # pragma: no cover - assemble des lectures disque
     out.append('\nCORPUS PL@NTNET')
     if c is None:
         out.append(f'  {silence(Path(args.log_corpus).expanduser())}')
+    elif c['finie']:
+        out.append(f"  {barre(1.0)} terminé — {c['sautees']} sautées")
     else:
         out.append(f"  {barre(c['part'])} {c['part'] * 100:4.1f} %   "
                    f"{c['faites']}/{c['total']}   {c['vitesse']:.1f} img/s")
@@ -293,6 +336,8 @@ def tableau(args) -> str:  # pragma: no cover - assemble des lectures disque
 def main() -> int:  # pragma: no cover - boucle d'affichage
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument('--passe', action='append', default=[], metavar='NOM',
+                    help='répétable : suit ~/plant-data/NOM et ~/plant-data/NOM.log')
     ap.add_argument('--sortie', default='~/plant-data/iris10-complet')
     ap.add_argument('--log', default='~/plant-data/iris10-complet.log')
     ap.add_argument('--log-corpus', default='~/plant-data/plantnet-corpus.log')
@@ -308,14 +353,6 @@ def main() -> int:  # pragma: no cover - boucle d'affichage
                     help='rafraîchir indéfiniment au lieu d\'afficher une fois')
     args = ap.parse_args()
 
-    etat = Path(args.sortie).expanduser() / 'etat.json'
-    if etat.exists():
-        try:
-            e = json.loads(etat.read_text())
-            print(f"student {e.get('student')}, contrastive {e.get('contrastive')}, "
-                  f"{e.get('epoque')} époque(s) bouclée(s)\n")
-        except Exception:
-            pass
 
     if not args.boucle:
         print(tableau(args))
