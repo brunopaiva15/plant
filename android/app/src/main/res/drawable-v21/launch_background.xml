@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Écran de lancement jusqu'à Android 11 : le logo de 128 dp au centre, sur
-     le canvas. Le premier cadre de Flutter (LaunchSplash) reprend exactement
-     cette image avant de l'animer. Android 12 et au-delà passent par
-     values-v31/styles.xml. -->
+<!-- Écran de lancement jusqu'à Android 11 : le pot de 200 dp au centre, sur
+     le sauge de l'icône. Le premier cadre de Flutter (LaunchSplash) reprend
+     exactement cette image avant de l'animer. Android 12 et au-delà passent
+     par values-v31/styles.xml. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@color/splash_background" />
     <item>

@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- Le canvas sombre : fond de l'écran de lancement en mode sombre. -->
-    <color name="splash_background">#221A15</color>
-</resources>

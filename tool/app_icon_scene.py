@@ -12,7 +12,7 @@
 # graine fixe.
 #
 # Variables d'environnement, décrites plus bas : YEUX, CLIN, FOND, OBJETS,
-# CADRE, et YEUX_Z, YEUX_X, YEUX_R pour placer les yeux.
+# CADRE, CIBLE_Z, SOL, et YEUX_Z, YEUX_X, YEUX_R pour placer les yeux.
 # ============================================================
 import bpy, bmesh, math, sys, os
 # YEUX=1 pose deux yeux sur le pot
@@ -23,6 +23,10 @@ CLIN=float(os.environ.get('CLIN','0'))
 FOND=os.environ.get('FOND','1')=='1'; OBJETS=os.environ.get('OBJETS','1')=='1'
 # CADRE : 1 pour l'icône ; 2/3 élargit le champ pour l'avant-plan adaptatif d'Android
 CADRE=float(os.environ.get('CADRE','1'))
+# CIBLE_Z : hauteur visée par la caméra (1,22 cadre la pousse ; plus bas, le pot entier)
+CIBLE_Z=float(os.environ.get('CIBLE_Z','1.22'))
+# SOL=1 pose sous le pot un sol qui ne garde que son ombre (fond transparent)
+SOL=os.environ.get('SOL')=='1'
 from mathutils import Vector
 argv=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
 SAMPLES=int(argv[0]) if argv else 64; OUT=argv[1] if len(argv)>1 else '/tmp/r.png'
@@ -194,11 +198,13 @@ area('remplissage',(5,-4,1),5,200,'#DCD2FF')
 area('contre',(3,4,5),5,350,'#FFFFFF')
 
 cam=bpy.data.cameras.new('cam');cam.lens=132*CADRE;co=obj('cam',cam);sc.camera=co
-co.location=(0,-11.5,3.2);d=Vector((0,0,1.22))-co.location;co.rotation_euler=d.to_track_quat('-Z','Y').to_euler()
+co.location=(0,-11.5,3.2);d=Vector((0,0,CIBLE_Z))-co.location;co.rotation_euler=d.to_track_quat('-Z','Y').to_euler()
 
 sc.render.engine='CYCLES';sc.cycles.device='CPU';sc.cycles.samples=SAMPLES;sc.cycles.use_denoising=True
 sc.render.resolution_x=sc.render.resolution_y=1024;sc.view_settings.view_transform='Standard';sc.view_settings.look='None'
 sc.render.film_transparent=not FOND
+if SOL:
+    bpy.ops.mesh.primitive_plane_add(size=30,location=(0,0,-1.6));bpy.context.object.is_shadow_catcher=True
 if not OBJETS:
     for o in sc.objects:
         if o.type in ('MESH','CURVE'): o.hide_render=True

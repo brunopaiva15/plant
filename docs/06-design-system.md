@@ -1033,8 +1033,10 @@ La scène entière est décrite par `tool/app_icon_scene.py`, sans fichier
   ils reprennent ainsi le cadrage de l'icône, et le pot continue sous le
   masque au lieu de s'arrêter net. Pas de retrait dans `ic_launcher.xml`.
 - `fond.png` : le dégradé seul, fond de l'icône adaptative.
-- `clin_50`, `clin_85`, `clin_100` : l'œil de droite qui se ferme, découpé
-  dans la zone `OEIL` (voir *L'ouverture*).
+- `lancement.png` : le pot entier, caméra baissée sur son milieu, fond
+  transparent. C'est lui qu'on voit à l'ouverture (voir *L'ouverture*).
+- `lancement_clin_50`, `_85`, `_100` : au même cadrage, l'œil de droite
+  qui se ferme, découpé dans la zone `OEIL`.
 
 Les rendus sont reproductibles : même graine pour Cycles et pour le grain,
 si bien qu'une image du clin d'œil se pose sur l'icône sans raccord.
@@ -1046,7 +1048,7 @@ python3 tool/build_app_icon.py
 Le script écrit les sources de `assets/icon/`, les déclinaisons d'iOS,
 d'Android et du web, le logo des écrans de lancement et les images de
 l'ouverture. Refaire les rendus, seulement pour changer le dessin (deux
-minutes par calque sur quatre cœurs) :
+minutes par calque sur quatre cœurs ; `--seulement` en choisit quelques-uns) :
 ```
 python3 tool/render_app_icon.py --blender /chemin/vers/blender
 ```
@@ -1057,33 +1059,40 @@ python3 tool/render_app_icon.py --blender /chemin/vers/blender
 reste là : la page web de partage la montre encore.
 
 ## L'ouverture (`app/launch_splash.dart`)
-À l'ouverture à froid, le logo cligne de l'œil, prend son élan et grossit
-jusqu'à laisser voir l'application. 1,4 seconde en tout :
+À l'ouverture à froid, le pot cligne de l'œil, prend son élan et grossit
+jusqu'à laisser voir l'application. 1,4 seconde en tout.
+
+**Tout l'écran est au sauge de l'icône** (#459765, le milieu de son
+dégradé), en clair comme en sombre, et le pot y est posé entier, sur une
+ombre de contact : il ne se détache d'aucun cadre. L'icône elle-même ne
+convenait pas — son dégradé et son pot coupé par le bas auraient laissé voir
+un carré au milieu de l'écran. L'ombre est dessinée à la composition et non
+par Blender : la lampe principale l'allonge hors du cadre, et une ombre
+coupée au bord de l'image se verrait sur le fond uni.
 
 | Temps | Ce qui se passe |
 |---|---|
-| 0–250 ms | le logo tel que l'a laissé l'écran natif |
+| 0–250 ms | le pot tel que l'a laissé l'écran natif |
 | 250–690 ms | le clin d'œil : trois images en 40 ms, l'œil fermé en arc tenu 160 ms, les mêmes à rebours |
-| 690–880 ms | l'élan : le logo se ramasse à 88 % |
-| 880–1380 ms | le zoom jusqu'à 16 fois sa taille ; le fond s'efface en 300 ms, le logo dans les 250 dernières |
+| 690–880 ms | l'élan : le pot se ramasse à 88 % |
+| 880–1380 ms | le zoom jusqu'à 16 fois sa taille ; le fond s'efface en 300 ms, le pot dans les 250 dernières |
 
 **Le premier cadre est l'écran natif.** iOS (`LaunchScreen.storyboard`) et
 Android (`launch_background.xml`, puis `values-v31` à partir d'Android 12)
-montrent le même logo de 128 points au centre, sur `canvas` clair ou sombre
-selon le système. `LaunchSplash` reprend exactement cette image : on ne voit
-pas la relève. Pour ce faire, il retient le premier cadre
-(`deferFirstFrame`) le temps de décoder ses images — une seconde au plus —,
-sinon le fond paraîtrait seul un instant. Le fond suit le mode sombre du
-système et non le thème choisi dans l'application, que l'écran natif ne
-connaît pas. Et l'ouverture passe au-dessus du grain de l'application :
-l'écran natif n'en a pas.
+montrent le même pot de 200 points au centre, sur le même sauge.
+`LaunchSplash` reprend exactement cette image : on ne voit pas la relève.
+Pour ce faire, il retient le premier cadre (`deferFirstFrame`) le temps de
+décoder ses images — une seconde au plus —, sinon le fond paraîtrait seul un
+instant. Android 12 ne montre qu'un disque de 192 dp au centre de l'icône de
+lancement : le pot, feuilles comprises, y tient à 200 dp. Et l'ouverture
+passe au-dessus du grain de l'application : l'écran natif n'en a pas.
 
 **Le clin d'œil** ne rejoue pas la 3D : ce sont trois vignettes de l'œil de
-droite, rendues dans la même scène et posées sur le logo, pleines au centre
+droite, rendues dans la même scène et posées sur le pot, pleines au centre
 et fondues sur les bords.
 
 - **Un toucher** passe directement au zoom.
-- **Réduire les animations** : ni clin d'œil ni zoom. Le logo reste 300 ms,
+- **Réduire les animations** : ni clin d'œil ni zoom. Le pot reste 300 ms,
   puis s'efface en 250.
 - Seul `main` la demande (`FloraApp(splash: true)`) : les tests construisent
   l'application sans elle. `test/app/launch_splash_test.dart` tient la

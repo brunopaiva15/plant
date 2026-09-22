@@ -5,32 +5,38 @@ import '../design_system/design_system.dart';
 /// L'ouverture d'Auxine : le logo cligne de l'œil, prend son élan, puis
 /// grossit jusqu'à disparaître et laisse voir l'application.
 ///
-/// Le premier cadre reprend exactement l'écran de lancement natif — le logo
-/// de 128 points au centre, sur le `canvas` clair ou sombre du système —, si
-/// bien qu'on ne voit pas la relève entre le système et Flutter. Pour que ce
+/// Le premier cadre reprend exactement l'écran de lancement natif — le pot de
+/// 200 points au centre, sur le sauge du fond de l'icône —, si bien qu'on ne
+/// voit pas la relève entre le système et Flutter. Pour que ce
 /// premier cadre porte déjà le logo, il est retenu (`deferFirstFrame`) le
 /// temps de décoder les images : sinon le fond apparaîtrait seul un instant.
 ///
-/// Avec « réduire les animations », ni clin d'œil ni zoom : le logo reste un
+/// Avec « réduire les animations », ni clin d'œil ni zoom : le pot reste un
 /// instant, puis s'efface. Un toucher passe directement au zoom.
 ///
-/// Les images viennent de `tool/build_app_icon.py` : `logo.webp` est l'icône
-/// détourée en squircle, `clin_*.webp` l'œil de droite à trois moments de sa
-/// fermeture, découpé dans le même rendu et fondu sur les bords.
+/// Les images viennent de `tool/build_app_icon.py` : `logo.webp` est le pot
+/// entier sur son ombre, fond transparent, `clin_*.webp` l'œil de droite à
+/// trois moments de sa fermeture, découpé dans le même cadrage et fondu sur
+/// les bords.
 class LaunchSplash extends StatefulWidget {
   const LaunchSplash({super.key, required this.child});
 
   /// L'application, qui se construit dessous dès le premier cadre.
   final Widget child;
 
-  /// Côté du logo, en points : le même que celui des écrans natifs
+  /// Côté de l'image du pot, en points : le même que celui des écrans natifs
   /// (`LaunchScreen.storyboard`, `launch_background.xml`, et l'icône
   /// d'Android 12, posée au même côté dans son cadre de 288 dp).
-  static const double logoSize = 128;
+  static const double logoSize = 200;
 
-  /// La zone de l'œil dans l'icône de 1024 px, là où se posent les images du
-  /// clin d'œil. Même valeur que `OEIL` dans `tool/build_app_icon.py`.
-  static const Rect eyeRect = Rect.fromLTWH(488, 760, 224, 224);
+  /// Le fond : le sauge de l'icône, pris au milieu de son dégradé, en clair
+  /// comme en sombre. Sur ce fond uni, le pot ne se détache d'aucun cadre.
+  /// Même valeur que `SAUGE` dans `tool/build_app_icon.py`.
+  static const Color background = Color(0xFF459765);
+
+  /// La zone de l'œil dans l'image du pot, de 1024 px, là où se posent les
+  /// images du clin d'œil. Même valeur que `OEIL` dans `tool/build_app_icon.py`.
+  static const Rect eyeRect = Rect.fromLTWH(497, 486, 144, 144);
 
   static const _logo = AssetImage('assets/splash/logo.webp');
   static const _wink = [
@@ -45,15 +51,15 @@ class LaunchSplash extends StatefulWidget {
 
 class _LaunchSplashState extends State<LaunchSplash> with SingleTickerProviderStateMixin {
   /// La chronologie entière, en millisecondes :
-  ///   0–250     le logo tel que l'a laissé l'écran natif ;
+  ///   0–250     le pot tel que l'a laissé l'écran natif ;
   ///   250–690   le clin d'œil ;
-  ///   690–880   l'élan : le logo se ramasse ;
-  ///   880–1380  le zoom, pendant que le fond puis le logo s'effacent.
+  ///   690–880   l'élan : le pot se ramasse ;
+  ///   880–1380  le zoom, pendant que le fond puis le pot s'effacent.
   static const _total = 1380.0;
   static const _zoomStart = 880.0;
 
   /// Les images du clin d'œil, pas à pas : un pas dure 40 ms, sauf l'œil
-  /// fermé, tenu 160 ms. `null`, c'est l'œil ouvert du logo.
+  /// fermé, tenu 160 ms. `null`, c'est l'œil ouvert de l'image du pot.
   static const _winkSteps = <(double, int?)>[
     (250, 0), (290, 1), (330, 2), (490, 1), (530, 0), (570, null),
   ];
@@ -145,8 +151,8 @@ class _LaunchSplashState extends State<LaunchSplash> with SingleTickerProviderSt
     for (final (at, image) in _winkSteps) {
       if (ms >= at) frame = image;
     }
-    // L'élan ramasse le logo à 88 %, puis le zoom l'emporte à 16 fois sa
-    // taille : assez pour que ses bords sortent de l'écran le plus large.
+    // L'élan ramasse le pot à 88 %, puis le zoom l'emporte à 16 fois sa
+    // taille : assez pour qu'il déborde de l'écran le plus large.
     final gather = _phase(ms, 690, _zoomStart, Motion.easeInOut);
     final zoom = _phase(ms, _zoomStart, _total, Curves.easeInCubic);
     final scale = (1 - 0.12 * gather) + 15.12 * zoom;
@@ -162,14 +168,7 @@ class _LaunchSplashState extends State<LaunchSplash> with SingleTickerProviderSt
     return Stack(
       fit: StackFit.expand,
       children: [
-        // Le fond suit le système et non le thème choisi dans l'application :
-        // c'est ce que fait l'écran natif, qui ne connaît pas ce réglage.
-        Opacity(
-          opacity: backdrop,
-          child: ColoredBox(
-            color: MediaQuery.platformBrightnessOf(context) == Brightness.dark ? FloraColors.dark.canvas : FloraColors.light.canvas,
-          ),
-        ),
+        Opacity(opacity: backdrop, child: const ColoredBox(color: LaunchSplash.background)),
         Center(
           child: Opacity(
             opacity: logo,

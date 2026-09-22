@@ -13,8 +13,11 @@
 #   avant_plan_adaptatif.png  le pot seul, champ élargi d'un tiers pour
 #                             l'avant-plan adaptatif d'Android ;
 #   fond.png                  le dégradé sauge seul ;
-#   clin_50/85/100.png        l'œil de droite à mi-fermeture, presque fermé,
-#                             fermé en arc — découpé dans la zone OEIL.
+#   lancement.png             le pot entier, fond transparent : le logo de
+#                             l'écran de lancement et de l'ouverture ;
+#   lancement_clin_50/85/100  l'œil de droite à mi-fermeture, presque fermé,
+#                             fermé en arc, au cadrage du lancement —
+#                             découpé dans la zone OEIL.
 #
 # Ensuite, tool/build_app_icon.py en tire toutes les déclinaisons. Blender
 # n'est donc nécessaire que pour changer le dessin, pas pour régénérer les
@@ -45,10 +48,13 @@ CALQUES = {
     # l'avant-plan : un champ élargi d'autant les fait coïncider avec l'icône.
     "avant_plan_adaptatif": {"FOND": "0", "CADRE": str(2 / 3)},
     "fond": {"OBJETS": "0"},
-    "clin_50": {"CLIN": "0.5"},
-    "clin_85": {"CLIN": "0.85"},
-    "clin_100": {"CLIN": "1"},
 }
+# Le pot entier, pour l'écran de lancement : champ élargi, caméra baissée
+# sur le milieu du pot.
+LANCEMENT = {"FOND": "0", "CADRE": "0.65", "CIBLE_Z": "0.3"}
+CALQUES["lancement"] = LANCEMENT
+for clin in ("50", "85", "100"):
+    CALQUES[f"lancement_clin_{clin}"] = {**LANCEMENT, "CLIN": str(int(clin) / 100)}
 
 
 def rendre(blender, echantillons, nom, variables, dossier):
@@ -65,13 +71,16 @@ def main():
     parser = argparse.ArgumentParser(description="Rend les calques de l'icône dans Blender.")
     parser.add_argument("--blender", default=shutil.which("blender") or "blender")
     parser.add_argument("--echantillons", type=int, default=256)
+    parser.add_argument("--seulement", nargs="+", choices=CALQUES, help="ne rendre que ces calques")
     args = parser.parse_args()
     RENDUS.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory() as tmp:
         for nom, variables in CALQUES.items():
+            if args.seulement and nom not in args.seulement:
+                continue
             print(f"Rendu de {nom}…", flush=True)
             image = rendre(args.blender, args.echantillons, nom, variables, Path(tmp))
-            if nom.startswith("clin_"):
+            if "_clin_" in nom:
                 # Seul l'œil change : on n'en garde que la zone.
                 Image.open(image).crop(OEIL).save(RENDUS / f"{nom}.png")
             else:

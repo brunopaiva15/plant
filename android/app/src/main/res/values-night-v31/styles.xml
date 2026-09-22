@@ -2,8 +2,9 @@
 <resources>
     <!-- Android 12 et au-delà (mode sombre) : l'écran de lancement est celui du
          système. Son icône tient dans un cadre de 288 dp dont seul un disque de
-         192 dp se voit ; splash_android12 y pose le logo à 128 dp, le côté que
-         reprend le premier cadre de Flutter (LaunchSplash). -->
+         192 dp se voit ; splash_android12 y pose le pot à 200 dp, le côté que
+         reprend le premier cadre de Flutter (LaunchSplash), et il tient dans le
+         disque. -->
     <style name="LaunchTheme" parent="@android:style/Theme.Black.NoTitleBar">
         <item name="android:windowSplashScreenBackground">@color/splash_background</item>
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_android12</item>

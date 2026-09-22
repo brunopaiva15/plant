@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Le papier d'Auxine (canvas) : fond de l'écran de lancement. -->
-    <color name="splash_background">#F6EFE4</color>
+    <!-- Le sauge du fond de l'icône, pris au milieu de son dégradé : fond de
+         l'écran de lancement, en clair comme en sombre. Même valeur que
+         SAUGE (tool/build_app_icon.py) et LaunchSplash.background. -->
+    <color name="splash_background">#459765</color>
 </resources>

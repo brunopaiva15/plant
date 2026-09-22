@@ -9,7 +9,7 @@
 # un fond sauge. Tout le reste en dérive — les sources de `assets/icon/`,
 # les déclinaisons d'iOS, d'Android et du web (ce que produit
 # `dart run flutter_launcher_icons`, reproduit ici pour que l'icône se
-# régénère sans chaîne Flutter installée), le logo des écrans de lancement
+# régénère sans chaîne Flutter installée), le pot des écrans de lancement
 # natifs et les images de l'animation d'ouverture (`LaunchSplash`).
 #
 # Ce que le script ne touche pas : les manifestes (Contents.json,
@@ -17,10 +17,9 @@
 # pas du dessin.
 # ============================================================
 import json
-import math
 from pathlib import Path
 
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter
 
 RACINE = Path(__file__).resolve().parent.parent
 ICONES = RACINE / "assets" / "icon"
@@ -28,19 +27,23 @@ RENDUS = ICONES / "rendu"
 SPLASH = RACINE / "assets" / "splash"
 COTE = 1024
 
-# La zone de l'œil de droite dans l'icône de 1024 px (gauche, haut, droite,
-# bas) : les images du clin d'œil y sont découpées, et `LaunchSplash` les y
-# repose. Même valeur que `LaunchSplash.eyeRect`.
-OEIL = (488, 760, 712, 984)
+# La zone de l'œil de droite dans le rendu du lancement, de 1024 px (gauche,
+# haut, droite, bas) : les images du clin d'œil y sont découpées, et
+# `LaunchSplash` les y repose. Même valeur que `LaunchSplash.eyeRect`.
+OEIL = (497, 486, 641, 630)
 # Dans cette zone, l'image du clin d'œil est pleine jusqu'à ce rayon, puis
 # se fond dans le logo jusqu'au bord : le raccord ne se voit pas.
-OEIL_PLEIN = 76
+OEIL_PLEIN = 46
 
-# Côté du logo sur l'écran de lancement, en points (iOS) ou en dp (Android).
-# Même valeur que `LaunchSplash.logoSize`.
-LOGO = 128
+# L'écran de lancement : le pot entier au centre, sur un sauge uni pris au
+# milieu du dégradé de l'icône. Même valeurs que `LaunchSplash.logoSize` et
+# `LaunchSplash.background`, et que les couleurs `splash_background`
+# d'Android et `LaunchBackground` d'iOS.
+LOGO = 200
+SAUGE = "#459765"
 # Android 12 pose l'icône de lancement dans un cadre de 288 dp dont seul un
-# disque de 192 dp se voit. Le squircle de 128 dp y tient entier.
+# disque de 192 dp se voit. Le pot, feuilles comprises, tient à 94 % du
+# demi-côté de son image : à 200 dp, il reste dans ce disque.
 CADRE_ANDROID_12 = 288
 
 APPICONSET = RACINE / "ios/Runner/Assets.xcassets/AppIcon.appiconset"
@@ -69,25 +72,24 @@ def rendu(nom):
     return Image.open(RENDUS / f"{nom}.png").convert("RGBA")
 
 
-def masque_squircle(cote):
-    """La forme des icônes d'iOS, une superellipse d'exposant 5, adoucie."""
-    grand = cote * 4
-    r = grand / 2
-    points = []
-    for i in range(720):
-        t = i / 720 * 2 * math.pi
-        c, s = math.cos(t), math.sin(t)
-        points.append((r + r * math.copysign(abs(c) ** 0.4, c), r + r * math.copysign(abs(s) ** 0.4, s)))
-    masque = Image.new("L", (grand, grand), 0)
-    ImageDraw.Draw(masque).polygon(points, fill=255)
-    return masque.resize((cote, cote), Image.LANCZOS)
+def ombrer(pot):
+    """Le pot posé sur une ombre de contact douce, sous sa base.
 
-
-def detourer(image):
-    """L'icône découpée en squircle, coins transparents : le logo de lancement."""
-    logo = image.copy()
-    logo.putalpha(masque_squircle(image.width))
-    return logo
+    Blender en rendrait une vraie, mais la lampe principale l'allonge hors du
+    cadre, et une ombre coupée au bord de l'image se verrait sur le fond uni.
+    """
+    alpha = pot.getchannel("A").point(lambda v: 255 if v > 128 else 0)
+    gauche, _, droite, bas = alpha.getbbox()
+    # Largeur de la base : l'étendue opaque juste au-dessus du bas.
+    ligne = alpha.crop((0, bas - 12, pot.width, bas - 11)).getbbox()
+    base = (ligne[2] - ligne[0]) if ligne else (droite - gauche)
+    centre = (ligne[0] + ligne[2]) / 2 if ligne else (gauche + droite) / 2
+    ombre = Image.new("RGBA", pot.size, TRANSPARENT)
+    rx, ry = base * 0.62, base * 0.07
+    ImageDraw.Draw(ombre).ellipse((centre - rx, bas - ry * 1.2, centre + rx, bas + ry * 0.8), fill=(18, 60, 36, 120))
+    ombre = ombre.filter(ImageFilter.GaussianBlur(base * 0.05))
+    ombre.alpha_composite(pot)
+    return ombre
 
 
 def plumer(image):
@@ -180,7 +182,7 @@ def android(pleine, avant_plan, fond, logo):
         ecrire(avant_plan, dossier / "ic_launcher_foreground.png", cote, False)
         ecrire(fond, dossier / "ic_launcher_background.png", cote, True)
         ecrire(silhouette(avant_plan), dossier / "ic_launcher_monochrome.png", cote, False)
-        # L'écran de lancement : le logo seul jusqu'à Android 11, posé dans
+        # L'écran de lancement : le pot seul jusqu'à Android 11, posé dans
         # son cadre de 288 dp à partir d'Android 12.
         ecrire(logo, dossier / "splash_logo.png", round(LOGO * echelle), False)
         cadre = centrer(logo, round(LOGO * echelle), round(CADRE_ANDROID_12 * echelle))
@@ -197,7 +199,7 @@ def web(pleine):
 
 
 def splash(logo):
-    """Les images de `LaunchSplash` : le logo, puis l'œil qui se ferme.
+    """Les images de `LaunchSplash` : le pot, puis l'œil qui se ferme.
 
     En WebP : le grain rend le PNG du logo presque deux fois plus lourd que
     tout le reste de l'ouverture. À cette qualité, l'écart avec l'écran natif
@@ -207,8 +209,8 @@ def splash(logo):
     for ancien in SPLASH.glob("*.png"):
         ancien.unlink()
     logo.save(SPLASH / "logo.webp", quality=WEBP, method=6)
-    for nom in ("clin_50", "clin_85", "clin_100"):
-        plumer(rendu(nom)).save(SPLASH / f"{nom}.webp", quality=WEBP, method=6)
+    for clin in ("50", "85", "100"):
+        plumer(rendu(f"lancement_clin_{clin}")).save(SPLASH / f"clin_{clin}.webp", quality=WEBP, method=6)
 
 
 def main():
@@ -216,7 +218,7 @@ def main():
     for nom, (image, opaque) in images.items():
         image.convert("RGB" if opaque else "RGBA").save(ICONES / nom)
     pleine = images["icon.png"][0]
-    logo = detourer(pleine)
+    logo = ombrer(rendu("lancement"))
     ios(pleine, images["icon_ios_foreground.png"][0], logo)
     android(pleine, images["icon_foreground.png"][0], images["icon_background.png"][0], logo)
     web(pleine)
