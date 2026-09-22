@@ -877,9 +877,43 @@ références textuelles.
   plafond du teacher est à 0,8119 et Iris 9 masqué aussi ; on est à la moitié
   du chemin, avec un vingtième du budget prévu.
 
-**La suite est donc un balayage du poids**, avec un critère clair : viser le
-cône du teacher, pas le plus bas. Puis la passe complète, sur le poids
-retenu.
+#### Le balayage, et les deux lectures qui se contredisent
+
+Quatre bras, mêmes 150 000 images, trois époques, seul le poids change :
+
+| poids | cône | texte, armes égales | **texte, répertoire entier** | centroïde, rép. entier |
+|---|---|---|---|---|
+| 0 | 0,5096 | 0,3718 | 0,3310 | 0,3753 |
+| **0,2** | **0,3114** | 0,4082 | **0,3469** | **0,3762** |
+| 0,5 | 0,2073 | 0,4250 | 0,3345 | 0,3744 |
+| 1,0 | 0,1243 | **0,4295** | 0,3123 | 0,3478 |
+| *teacher* | *0,2806* | *0,8119* | *0,7551* | *0,7720* |
+
+**À armes égales, le top-1 monte avec le poids ; sur le répertoire entier, il
+redescend.** Les deux lectures ne désignent pas le même gagnant, et c'est la
+seconde qui décrit le produit : l'application compare à 5 813 références, pas
+à 1 569.
+
+> **Sur-étaler l'espace aide quand peu de références se disputent le rang, et
+> nuit dès qu'il y en a beaucoup.** À poids 1,0 le cône tombe à 0,1243, bien
+> sous les 0,2806 du teacher : les vecteurs occupent plus de place que la
+> géométrie qu'on copie, et les 4 244 références supplémentaires en profitent
+> pour s'intercaler. C'est le § 6.7 bis — la largeur se paie dans les
+> sorties — reparu sous une autre forme.
+
+**Le critère du cône désigne le même poids que la lecture produit** : 0,2
+rend 0,3114 contre 0,2806 pour le teacher, à un cheveu. Viser la géométrie
+du teacher plutôt que l'étalement maximal était donc le bon a priori, et il
+se vérifie sur la seule lecture qui compte.
+
+**Poids retenu : 0,2.** Entre 0,2 et 0,5 l'écart ne vaut que quelques images
+sur 1 127 ; c'est un plateau. Seul 1,0 est clairement moins bon, et il l'est
+de 35 images.
+
+> **Réserve.** Tout ceci à trois époques sur 150 000 images, soit un
+> vingtième du budget prévu. Le poids optimal peut se déplacer sur une passe
+> longue — ce qui se vérifiera au premier point de contrôle de la passe
+> complète, puisqu'elle en écrit un par époque.
 
 ### Porte D — Indoor / Outdoor collaborent-ils vraiment ?
 
