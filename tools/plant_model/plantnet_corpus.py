@@ -181,6 +181,24 @@ def ecrire_splits(lignes: list[tuple[str, str, str, str]],
     return len(ecrites)
 
 
+def verrou_vivant(verrou: Path, maintenant: float | None = None,
+                  patience: float = 120.0) -> bool:
+    """Une autre passe écrit-elle déjà dans ce dossier ?
+
+    Deux extractions sur la même sortie tirent les mêmes images deux fois :
+    rien n'est corrompu — l'écriture passe par un renommage — mais le réseau
+    est le facteur limitant, et on le divise par deux sans le savoir. Le cas
+    arrive tout seul : `tmux new` refuse une session qui existe déjà, et les
+    lignes suivantes s'exécutent alors dans le terminal, hors de tmux.
+
+    Le verrou est un battement de cœur, pas un drapeau : une passe tuée ne
+    laisse pas son dossier bloqué, il suffit d'attendre `patience`.
+    """
+    if not verrou.exists():
+        return False
+    return (maintenant or time.time()) - verrou.stat().st_mtime < patience
+
+
 def par_fil(ouvrir):
     """Un lecteur par fil d'exécution, ouvert à la première lecture.
 
@@ -215,12 +233,21 @@ def main() -> int:  # pragma: no cover - réseau et disque
     ap.add_argument('--splits', default='train',
                     help="splits de Pl@ntNet à tirer ; `test` est refusé")
     ap.add_argument('--taille', type=int, default=TAILLE)
+    ap.add_argument('--forcer', action='store_true',
+                    help="écrire malgré une autre passe en cours")
     ap.add_argument('--fils', type=int, default=8,
                     help='lectures en parallèle ; au-delà de 16 Zenodo ferme')
     args = ap.parse_args()
 
     sortie = Path(args.sortie).expanduser()
     sortie.mkdir(parents=True, exist_ok=True)
+    verrou = sortie / '.passe-en-cours'
+    if verrou_vivant(verrou) and not args.forcer:
+        raise SystemExit(
+            f'une autre passe écrit déjà dans {sortie} '
+            f'(battement il y a moins de deux minutes). `tmux ls` pour la '
+            f'retrouver ; --forcer pour passer outre.')
+    verrou.touch()
     cache = Path(args.cache).expanduser()
 
     meta = json.loads(telecharger(METADONNEES, cache).read_text())
@@ -261,6 +288,7 @@ def main() -> int:  # pragma: no cover - réseau et disque
             # au lieu d'une minute, et le tableau de `suivi.py` sait
             # tout de suite si la passe est vivante.
             if faites % 500 == 0:
+                verrou.touch()
                 vitesse = faites / (time.perf_counter() - debut)
                 reste = (len(afaire) - faites) / max(vitesse, 1e-6) / 60
                 print(f'  {faites}/{len(afaire)}  {vitesse:.1f} img/s  '

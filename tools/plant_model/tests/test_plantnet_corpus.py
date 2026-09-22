@@ -188,3 +188,31 @@ def test_un_fil_nouvre_larchive_quune_fois():
     for _ in range(5):
         assert lire('a') == b'x'
     assert len(compte) == 1
+
+
+# --------------------------------------------------------------------------
+# Deux passes sur le même dossier
+# --------------------------------------------------------------------------
+
+def test_une_passe_vivante_bloque_la_suivante(tmp_path):
+    """`tmux new` refuse une session existante, et les lignes suivantes
+    partent alors dans le terminal : deux extractions tirent les mêmes
+    images et divisent le débit par deux sans rien signaler."""
+    from plantnet_corpus import verrou_vivant
+    v = tmp_path / '.passe-en-cours'
+    v.touch()
+    assert verrou_vivant(v, maintenant=v.stat().st_mtime + 10)
+
+
+def test_une_passe_tuee_ne_bloque_pas_le_dossier(tmp_path):
+    """Le verrou est un battement de cœur : sans quoi un Ctrl-C laisserait
+    le dossier inutilisable jusqu'à ce qu'on pense à le nettoyer."""
+    from plantnet_corpus import verrou_vivant
+    v = tmp_path / '.passe-en-cours'
+    v.touch()
+    assert not verrou_vivant(v, maintenant=v.stat().st_mtime + 300)
+
+
+def test_un_dossier_neuf_nest_pas_verrouille(tmp_path):
+    from plantnet_corpus import verrou_vivant
+    assert not verrou_vivant(tmp_path / '.passe-en-cours')
