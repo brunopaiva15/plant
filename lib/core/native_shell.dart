@@ -136,6 +136,7 @@ abstract final class NativeShell {
     overlay.value = 0;
     _barreDemandee = false;
     _voilee = false;
+    _ouverture = false;
     _coquilleDeclaree = false;
   }
 
@@ -220,6 +221,7 @@ abstract final class NativeShell {
   static int _profondeur = 0;
   static bool _barreDemandee = false;
   static bool _voilee = false;
+  static bool _ouverture = false;
   /// La coquille a-t-elle dit ses onglets ?
   ///
   /// Au premier lancement, l'accueil s'ouvre sans elle : sans ce verrou, le
@@ -245,6 +247,20 @@ abstract final class NativeShell {
       // À chaque changement d'étage, la barre est à reconquérir.
       _barreDemandee = false;
     }
+    _appliquerChrome();
+  }
+
+  /// L'animation d'ouverture (`LaunchSplash`) couvre l'écran : la chrome se
+  /// voile le temps qu'elle dure.
+  ///
+  /// Les barres natives sont posées par-dessus Flutter, et rien de ce que
+  /// Flutter dessine ne les cache : sans cela, la barre d'onglets et celle du
+  /// haut paraissaient sur l'écran de lancement dès que la coquille se
+  /// déclarait. Voiler, et non effacer : la page garde leur place, et ne
+  /// saute pas quand elles reviennent.
+  static void setLaunching(bool value) {
+    if (_ouverture == value) return;
+    _ouverture = value;
     _appliquerChrome();
   }
 
@@ -284,7 +300,7 @@ abstract final class NativeShell {
       'tabs': _coquilleDeclaree && _profondeur == 0,
       // Voiler plutôt qu'effacer : une barre retirée rend sa place au
       // contenu, et la page glisse sous le menu qui vient de s'ouvrir.
-      'veil': _voilee,
+      'veil': _voilee || _ouverture,
     };
     final empreinte = charge.toString();
     if (empreinte == _derniereChrome) return;

@@ -970,25 +970,33 @@ python3 tool/render_app_icon.py --blender /chemin/vers/blender
 reste là : la page web de partage la montre encore.
 
 ## L'ouverture (`app/launch_splash.dart`)
-À l'ouverture à froid, le pot cligne de l'œil, prend son élan et grossit
-jusqu'à laisser voir l'application. 1,4 seconde en tout.
+À l'ouverture à froid, le pot cligne de l'œil, prend son élan, puis sa
+silhouette s'ouvre sur l'application comme une fenêtre qui s'agrandit — le
+geste de l'ouverture de X. 1,4 seconde en tout.
 
 **Tout l'écran est au sauge de l'icône** (#459765, le milieu de son
 dégradé), en clair comme en sombre, et le pot y est posé entier, sur une
 ombre de contact : il ne se détache d'aucun cadre. Ce pot est raccourci : à
 peine plus long que ce qu'en montre l'icône, il en garde la silhouette
-trapue, là où le pot de l'icône montré en entier paraissait un gobelet. L'icône elle-même ne
-convenait pas — son dégradé et son pot coupé par le bas auraient laissé voir
+trapue, là où le pot de l'icône montré en entier paraissait un gobelet.
+L'icône elle-même ne convenait pas — son dégradé et son pot coupé par le bas auraient laissé voir
 un carré au milieu de l'écran. L'ombre est dessinée à la composition et non
 par Blender : la lampe principale l'allonge hors du cadre, et une ombre
 coupée au bord de l'image se verrait sur le fond uni.
 
 | Temps | Ce qui se passe |
 |---|---|
-| 0–250 ms | le pot tel que l'a laissé l'écran natif |
-| 250–690 ms | le clin d'œil : trois images en 40 ms, l'œil fermé en arc tenu 160 ms, les mêmes à rebours |
-| 690–880 ms | l'élan : le pot se ramasse à 88 % |
-| 880–1380 ms | le zoom jusqu'à 16 fois sa taille ; le fond s'efface en 300 ms, le pot dans les 250 dernières |
+| 0–200 ms | le pot tel que l'a laissé l'écran natif |
+| 200–640 ms | le clin d'œil : trois images en 40 ms, l'œil fermé en arc tenu 160 ms, les mêmes à rebours ; le pot s'écrase sur sa base en fermant l'œil et se relève d'un rebond élastique |
+| 640–960 ms | l'élan : une inspiration (106 %), puis le pot se ramasse (84 %) |
+| 960–1400 ms | la fenêtre : le pot s'efface en 160 ms et sa silhouette, découpée dans le fond, s'agrandit en accélérant jusqu'à trente fois sa taille ; l'application, à 107 %, se pose dessous en dépassant d'un cheveu |
+
+**Rien n'y est linéaire**, et c'est ce qui la rend fluide : une première
+version faisait grossir le pot en fondu pendant que tout le fond s'effaçait
+d'un bloc, et l'ensemble paraissait raide. La fenêtre est découpée dans le
+fond par un peintre (`BlendMode.dstOut`) ; l'ombre au pied du pot, à demi
+transparente, n'y ouvre rien — une matrice de couleur ne garde du masque que
+ce qui est franchement opaque.
 
 **Le premier cadre est l'écran natif.** iOS (`LaunchScreen.storyboard`) et
 Android (`launch_background.xml`, puis `values-v31` à partir d'Android 12)
@@ -997,19 +1005,34 @@ montrent le même pot de 160 points au centre, sur le même sauge.
 Pour ce faire, il retient le premier cadre (`deferFirstFrame`) le temps de
 décoder ses images — une seconde au plus —, sinon le fond paraîtrait seul un
 instant. Android 12 ne montre qu'un disque de 192 dp au centre de l'icône de
-lancement : le pot, feuilles comprises, y tient largement à 160 dp. Et l'ouverture
-passe au-dessus du grain de l'application : l'écran natif n'en a pas.
+lancement : le pot, feuilles comprises, y tient largement à 160 dp. Et
+l'ouverture passe au-dessus du grain de l'application : l'écran natif n'en a
+pas.
+
+**Les barres natives d'iOS sont voilées tant qu'elle dure**
+(`NativeShell.setLaunching`). Elles sont posées par-dessus Flutter, et rien
+de ce que Flutter dessine ne les couvre : la barre d'onglets et celle du
+haut paraissaient sur l'écran vert dès que la coquille se déclarait. Voiler
+et non effacer, pour que la page garde leur place. Mais au lancement elles
+n'ont encore jamais paru, et leur place ne se mesurait pas : le natif les
+pose donc un instant, transparentes, le temps d'une mise en page, pour la
+mesurer (`mesurerLaChrome`), avant de les cacher.
+
+**L'application garde sa place dans l'arbre** du premier au dernier cadre.
+La première version la sortait de la pile une fois l'ouverture finie, et
+l'application entière se reconstruisait.
 
 **Le clin d'œil** ne rejoue pas la 3D : ce sont trois vignettes de l'œil de
 droite, rendues dans la même scène et posées sur le pot, pleines au centre
 et fondues sur les bords.
 
-- **Un toucher** passe directement au zoom.
+- **Un toucher** passe directement à l'élan.
 - **Réduire les animations** : ni clin d'œil ni zoom. Le pot reste 300 ms,
   puis s'efface en 250.
 - Seul `main` la demande (`FloraApp(splash: true)`) : les tests construisent
   l'application sans elle. `test/app/launch_splash_test.dart` tient la
-  chronologie, le toucher et le mouvement réduit.
+  chronologie, le toucher, le mouvement réduit, le voile des barres natives
+  et l'application qui ne se reconstruit pas.
 
 ## La page web de partage (`supabase/functions/share/`)
 Un lien d'invitation ou de plante ouvre une page dans un navigateur, souvent
