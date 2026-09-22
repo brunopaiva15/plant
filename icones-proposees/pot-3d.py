@@ -2,6 +2,8 @@ import bpy, bmesh, math, sys
 from mathutils import Vector
 argv=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
 SAMPLES=int(argv[0]) if argv else 64; OUT=argv[1] if len(argv)>1 else '/tmp/r.png'
+# fond : deux teintes du dégradé et teinte de la lumière d'ambiance
+BG0,BG1,AMB=(argv[2:5] if len(argv)>=5 else ['#8A6DFF','#C9A8FF','#E4DAFF'])
 bpy.ops.wm.read_factory_settings(use_empty=True)
 sc=bpy.context.scene
 def hexc(h,a=1):
@@ -104,8 +106,8 @@ w=bpy.data.worlds.new('w');sc.world=w;w.use_nodes=True;nt=w.node_tree;N=nt.nodes
 bg=N['Background'];tc=N.new('ShaderNodeTexCoord');se=N.new('ShaderNodeSeparateXYZ');L.new(tc.outputs['Window'],se.inputs[0])
 ma=N.new('ShaderNodeMath');ma.operation='ADD';L.new(se.outputs['X'],ma.inputs[0]);mb=N.new('ShaderNodeMath');mb.operation='SUBTRACT';mb.inputs[0].default_value=1;L.new(se.outputs['Y'],mb.inputs[1]);L.new(mb.outputs[0],ma.inputs[1])
 mm=N.new('ShaderNodeMath');mm.operation='MULTIPLY';mm.inputs[1].default_value=.5;L.new(ma.outputs[0],mm.inputs[0])
-ramp=N.new('ShaderNodeValToRGB');e=ramp.color_ramp.elements;e[0].color=hexc('#8A6DFF');e[1].color=hexc('#C9A8FF');L.new(mm.outputs[0],ramp.inputs[0])
-amb=N.new('ShaderNodeBackground');amb.inputs[0].default_value=hexc('#E4DAFF');amb.inputs[1].default_value=.4
+ramp=N.new('ShaderNodeValToRGB');e=ramp.color_ramp.elements;e[0].color=hexc(BG0);e[1].color=hexc(BG1);L.new(mm.outputs[0],ramp.inputs[0])
+amb=N.new('ShaderNodeBackground');amb.inputs[0].default_value=hexc(AMB);amb.inputs[1].default_value=.4
 lp=N.new('ShaderNodeLightPath');mix=N.new('ShaderNodeMixShader');bg.inputs[1].default_value=1
 L.new(ramp.outputs[0],bg.inputs[0]);L.new(lp.outputs['Is Camera Ray'],mix.inputs[0]);L.new(amb.outputs[0],mix.inputs[1]);L.new(bg.outputs[0],mix.inputs[2])
 L.new(mix.outputs[0],N['World Output'].inputs[0])
