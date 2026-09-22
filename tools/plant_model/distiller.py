@@ -188,6 +188,43 @@ def etat_du_lot(sortie, cible) -> dict:  # pragma: no cover - demande PyTorch
 # Le student
 # --------------------------------------------------------------------------
 
+def desaccord_de_reprise(etat: dict, student: str, contrastive: float) -> str:
+    """Ce qui a changé entre la passe écrite et celle qu'on relance, s'il y a.
+
+    **Une reprise ne renégocie pas la recette.** Un dorsal différent ferait
+    échouer le chargement des poids, donc bruyamment ; un poids contrastif
+    différent, lui, passerait sans un mot et la passe finirait sous une
+    recette que personne n'a décidée. Le § 13.6 de `docs/09` raconte ce que
+    coûte une variable changée sans décision : trois points inexplicables et
+    une nuit.
+    """
+    ecarts = []
+    if etat.get('student') not in (None, student):
+        ecarts.append(f"dorsal {etat['student']} → {student}")
+    ancien = etat.get('contrastive')
+    if ancien is not None and float(ancien) != float(contrastive):
+        ecarts.append(f'contrastive {ancien} → {contrastive}')
+    return ' ; '.join(ecarts)
+
+
+def largeur_de_sortie(dorsal, entree: int = 224) -> int:  # pragma: no cover - demande torch
+    """Ce que le dorsal rend vraiment, mesuré plutôt que déduit.
+
+    **`num_features` n'est pas la sortie de tous les dorsaux.** Chez
+    `fastvit_sa12` les deux coïncident à 1 024 ; chez `mobilenetv4_conv_large`
+    `num_features` vaut 960 quand `num_classes=0` en rend 1 280, parce que sa
+    tête garde une couche avant le classifieur. Le projecteur était donc bâti
+    à la mauvaise dimension, et la passe mourait au premier lot — après avoir
+    téléchargé les poids.
+
+    Une passe à vide sur une image coûte quelques millisecondes et ne peut pas
+    se tromper, quel que soit le dorsal qu'on essaiera ensuite.
+    """
+    import torch
+    with torch.no_grad():
+        return int(dorsal(torch.zeros(1, 3, entree, entree)).shape[-1])
+
+
 def construire(nom: str, dim: int = DIM):  # pragma: no cover - demande timm
     """Le dorsal `timm` et son projecteur vers l'espace du teacher.
 
@@ -202,7 +239,11 @@ def construire(nom: str, dim: int = DIM):  # pragma: no cover - demande timm
     except ImportError as e:
         raise SystemExit(f'{e}. pip install timm') from e
     dorsal = timm.create_model(nom, pretrained=True, num_classes=0)
-    return nn.Sequential(dorsal, nn.Linear(dorsal.num_features, dim, bias=False))
+    largeur = largeur_de_sortie(dorsal)
+    if largeur != getattr(dorsal, 'num_features', largeur):
+        print(f'{nom} : sortie {largeur} et non {dorsal.num_features} '
+              f'(tête conservée), projecteur {largeur}→{dim}')
+    return nn.Sequential(dorsal, nn.Linear(largeur, dim, bias=False))
 
 
 def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
@@ -337,6 +378,12 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
     depart = 0
     if etat.exists():
         e = json.loads(etat.read_text())
+        ecart = desaccord_de_reprise(e, args.student, args.contrastive)
+        if ecart:
+            raise SystemExit(
+                f'{sortie} a été écrit sous une autre recette : {ecart}.\n'
+                f'Reprendre changerait une variable en cours de route. '
+                f'Choisir un autre --sortie pour le nouveau bras.')
         point = torch.load(sortie / 'poids.pt', map_location=appareil, weights_only=True)
         modele.load_state_dict(point['modele'])
         optimiseur.load_state_dict(point['optimiseur'])

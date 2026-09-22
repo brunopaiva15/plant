@@ -117,3 +117,35 @@ def test_le_meme_jeu_deux_fois_ne_double_pas_lepoque(tmp_path):
     d = jeu(tmp_path / 'd', [('img/a.jpg', 'train', 'x')])
     c = cache(tmp_path / 'c', [str(d / 'img/a.jpg')], np.eye(1, 1024))
     assert len(corpus([d, d], c)) == 1
+
+
+# --------------------------------------------------------------------------
+# Une reprise ne renégocie pas la recette
+# --------------------------------------------------------------------------
+
+def test_un_poids_contrastif_different_arrete_la_reprise():
+    """Un dorsal différent ferait échouer le chargement des poids, donc
+    bruyamment. Le poids contrastif passerait sans un mot, et la passe
+    finirait sous une recette que personne n'a décidée."""
+    from distiller import desaccord_de_reprise
+    assert 'contrastive' in desaccord_de_reprise(
+        {'student': 'fastvit_sa12', 'contrastive': 0.2}, 'fastvit_sa12', 0.5)
+
+
+def test_un_dorsal_different_arrete_la_reprise():
+    from distiller import desaccord_de_reprise
+    assert 'dorsal' in desaccord_de_reprise(
+        {'student': 'fastvit_sa12', 'contrastive': 0.2}, 'mobilenetv4_conv_large', 0.2)
+
+
+def test_la_meme_recette_reprend_sans_rien_dire():
+    from distiller import desaccord_de_reprise
+    assert desaccord_de_reprise(
+        {'student': 'fastvit_sa12', 'contrastive': 0.2}, 'fastvit_sa12', 0.2) == ''
+
+
+def test_un_etat_ancien_sans_recette_ne_bloque_pas():
+    """Les points de contrôle écrits avant que l'état porte la recette se
+    reprennent encore : on ne casse pas une passe en cours pour un champ."""
+    from distiller import desaccord_de_reprise
+    assert desaccord_de_reprise({'epoque': 3}, 'fastvit_sa12', 0.2) == ''
