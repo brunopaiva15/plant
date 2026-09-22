@@ -3,7 +3,7 @@
     "short_name": "Auxine",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#FFFFFF",
+    "background_color": "#F6EFE4",
     "theme_color": "#2F7F53",
     "description": "Carnet de plantes : journal, soins, identification.",
     "orientation": "portrait-primary",
