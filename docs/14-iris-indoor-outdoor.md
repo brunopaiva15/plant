@@ -1302,10 +1302,28 @@ changerait.
    baseline qu'il faut pour juger MobileNetV4 Hybrid **à recette figée**
    (§ 13.6 de `docs/09`). L'interrompre pour changer de dorsal, c'est se
    retrouver sans point de comparaison ;
-2. **le dorsal passe devant le corpus.** Une asymptote à 11,6 M de paramètres
-   ne se déplace pas en ajoutant des images. Le § 20 ter reste juste sur le
-   fond — ces images-là sont le bon monde — mais il n'est plus la dépense
-   prioritaire ;
+2. **le dorsal passe devant le corpus, mais pas pour la raison écrite
+   d'abord.** « Une asymptote à 11,6 M de paramètres ne se déplace pas en
+   ajoutant des images » traite Pl@ntNet-300K comme *plus d'images*. Ce n'en
+   est pas : c'est **d'autres images**, d'un monde où notre corpus est mince,
+   et les deux questions sont distinctes.
+
+   | question | ce que l'époque 2 en dit |
+   |---|---|
+   | **plus** de données de notre monde aide-t-il ? | non, la pente s'écrase |
+   | des données d'**un autre** monde aident-elles ? | **rien du tout** |
+
+   Sous contrainte de capacité, ajouter 30 % d'images d'un autre domaine ne
+   fait pas que « donner plus à apprendre » : ça **redistribue** une capacité
+   fixe. Le gain attendu est en outdoor — 0,5435 contre 0,9095 pour le
+   teacher, notre point le plus faible, et précisément le domaine de
+   Pl@ntNet — et le risque est une perte en indoor. C'est un arbitrage, pas
+   un supplément, et il se mesure : même dorsal, même recette, un bras avec
+   et un bras sans.
+
+   L'ordre reste celui-là — dorsal d'abord, parce qu'un dorsal plus large
+   relève l'asymptote pour les deux domaines à la fois, et corpus ensuite à
+   dorsal figé (§ 13.6 de `docs/09`) ;
 3. **l'époque 4 vérifie la courbure.** Si la pente se divise encore par deux
    (~0,589 attendu à é4), l'asymptote est confirmée. Si elle se stabilise
    à 0,0586 (~0,617), c'est le budget qui manque encore et le corpus
