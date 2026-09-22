@@ -1,4 +1,6 @@
-import bpy, bmesh, math, sys
+import bpy, bmesh, math, sys, os
+# YEUX=1 pose deux yeux sur le pot
+YEUX=os.environ.get('YEUX')=='1'
 from mathutils import Vector
 argv=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
 SAMPLES=int(argv[0]) if argv else 64; OUT=argv[1] if len(argv)>1 else '/tmp/r.png'
@@ -36,11 +38,11 @@ bs=N['Principled BSDF'];bs.inputs['Roughness'].default_value=.62;bs.inputs['Coat
 tc=N.new('ShaderNodeTexCoord');base=N.new('ShaderNodeRGB');base.outputs[0].default_value=hexc('#FF7B45')
 cur=base.outputs[0]
 for x in ():
-    d=N.new('ShaderNodeVectorMath');d.operation='DISTANCE';d.inputs[1].default_value=(x*1.02,-0.8,-0.22)
+    d=N.new('ShaderNodeVectorMath');d.operation='DISTANCE';d.inputs[1].default_value=(x,-0.72,0.17)
     L.new(tc.outputs['Object'],d.inputs[0])
     mr=N.new('ShaderNodeMapRange');mr.inputs[1].default_value=0.05;mr.inputs[2].default_value=0.24;mr.inputs[3].default_value=.75;mr.inputs[4].default_value=0
     L.new(d.outputs['Value'],mr.inputs[0])
-    mx=N.new('ShaderNodeMix');mx.data_type='RGBA';mx.inputs['B'].default_value=hexc('#FF6F86')
+    mx=N.new('ShaderNodeMix');mx.data_type='RGBA';mx.inputs['B'].default_value=hexc('#FF7E95')
     L.new(mr.outputs[0],mx.inputs['Factor']);L.new(cur,mx.inputs['A']);cur=mx.outputs['Result']
 # assombrir la terre cuite vers le bas
 sep=N.new('ShaderNodeSeparateXYZ');L.new(tc.outputs['Object'],sep.inputs[0])
@@ -58,6 +60,11 @@ soil=bpy.context.object;soil.data.materials.append(mat('terreau','#5E3A2A',rough
 dm=soil.modifiers.new('d','DISPLACE');tx=bpy.data.textures.new('n','CLOUDS');tx.noise_scale=.08;dm.texture=tx;dm.strength=.035
 bpy.ops.object.shade_smooth()
 
+if YEUX:
+    eyem=mat('oeil','#14121C',rough=.12,coat=1)
+    for x,r in ((-0.27,0.12),(0.28,0.13)):
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=48,ring_count=24,radius=r,location=(x,-0.84,0.33))
+        e=bpy.context.object;e.scale=(1,.55,1.12);e.data.materials.append(eyem);bpy.ops.object.shade_smooth()
 green=mat('tige','#1FB05A',rough=.6,coat=0,sss=.1)
 # ---- tige
 cu=bpy.data.curves.new('tige','CURVE');cu.dimensions='3D';cu.bevel_depth=.07;cu.bevel_resolution=6;cu.use_fill_caps=True
