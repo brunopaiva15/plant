@@ -123,51 +123,57 @@ class _PlacerBodyState extends State<_PlacerBody> {
           // a que la hauteur de l'écran, et la colonne débordait par le bas.
           // Le bouton « Poser » se retrouvait hors de l'écran, sans rien pour
           // défiler jusqu'à lui.
-          Center(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.42),
-              child: FloraCard(
-                padding: EdgeInsets.zero,
-                clip: true,
-                child: AspectRatio(
-                  aspectRatio: 1.1,
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      final size = Size(constraints.maxWidth, constraints.maxHeight);
-                      // Le cadre reste celui de la pièce : une fenêtre de plus
-                      // ne déplace pas ses murs, et le plan ne saute pas sous
-                      // le doigt.
-                      final geometry = RoomPlanGeometry(room: widget.room, size: size);
-                      return RawGestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        gestures: {
-                          TapGestureRecognizer: GestureRecognizerFactoryWithHandlers<TapGestureRecognizer>(
-                            TapGestureRecognizer.new,
-                            (r) {
-                              r.onTapUp = (d) => _tap(geometry.toRoom(d.localPosition));
-                            },
+          //
+          // Il cède aussi la hauteur que prend la consigne : celle d'une
+          // fenêtre tient une ligne de plus que celle d'un radiateur, et la
+          // colonne débordait de treize points sur un téléphone.
+          Flexible(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.42),
+                child: FloraCard(
+                  padding: EdgeInsets.zero,
+                  clip: true,
+                  child: AspectRatio(
+                    aspectRatio: 1.1,
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final size = Size(constraints.maxWidth, constraints.maxHeight);
+                        // Le cadre reste celui de la pièce : une fenêtre de plus
+                        // ne déplace pas ses murs, et le plan ne saute pas sous
+                        // le doigt.
+                        final geometry = RoomPlanGeometry(room: widget.room, size: size);
+                        return RawGestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          gestures: {
+                            TapGestureRecognizer: GestureRecognizerFactoryWithHandlers<TapGestureRecognizer>(
+                              TapGestureRecognizer.new,
+                              (r) {
+                                r.onTapUp = (d) => _tap(geometry.toRoom(d.localPosition));
+                              },
+                            ),
+                            _GlissementDuPlan: GestureRecognizerFactoryWithHandlers<_GlissementDuPlan>(
+                              _GlissementDuPlan.new,
+                              (r) {
+                                r.onStart = (d) => _tap(geometry.toRoom(d.localPosition));
+                                r.onUpdate = (d) => _tap(geometry.toRoom(d.localPosition));
+                              },
+                            ),
+                          },
+                          child: CustomPaint(
+                            size: size,
+                            painter: RoomPlanPainter(
+                              room: window == null ? widget.room : widget.room.withWindows([window]),
+                              heaters: [...heaterPoints(widget.markers), if (heater && _pending != null) _pending!],
+                              plants: plantPoints(widget.markers).values.toList(),
+                              current: widget.kind == RoomMarkerPlacement.plant ? _pending : null,
+                              colors: c,
+                              numberStyle: context.text.caption,
+                            ),
                           ),
-                          _GlissementDuPlan: GestureRecognizerFactoryWithHandlers<_GlissementDuPlan>(
-                            _GlissementDuPlan.new,
-                            (r) {
-                              r.onStart = (d) => _tap(geometry.toRoom(d.localPosition));
-                              r.onUpdate = (d) => _tap(geometry.toRoom(d.localPosition));
-                            },
-                          ),
-                        },
-                        child: CustomPaint(
-                          size: size,
-                          painter: RoomPlanPainter(
-                            room: window == null ? widget.room : widget.room.withWindows([window]),
-                            heaters: [...heaterPoints(widget.markers), if (heater && _pending != null) _pending!],
-                            plants: plantPoints(widget.markers).values.toList(),
-                            current: widget.kind == RoomMarkerPlacement.plant ? _pending : null,
-                            colors: c,
-                            numberStyle: context.text.caption,
-                          ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),

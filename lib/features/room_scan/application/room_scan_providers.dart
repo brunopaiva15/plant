@@ -297,13 +297,15 @@ class RoomScanController extends Notifier<bool> {
       final relative = store.relativeOf(result.path!);
       final json = await store.read(relative);
       final room = json == null ? null : RoomPlanParser.parse(json, northOffsetDeg: result.northOffsetDeg);
-      // La pièce s'appelle comme l'emplacement qu'elle décrit — « Cuisine »
-      // relevée depuis la Cuisine est la Cuisine ; le type reconnu par
-      // RoomPlan ne sert de nom qu'à une pièce qui ne décrit rien.
+      // La pièce s'appelle comme l'emplacement depuis lequel on la relève —
+      // « Cuisine » relevée depuis la Cuisine est la Cuisine ; le type reconnu
+      // par RoomPlan ne sert de nom qu'à une pièce relevée de nulle part. Un
+      // emplacement retrouvé par son nom, lui, ne renomme rien : le
+      // rapprochement tolère la casse, il ne l'impose pas.
       final proposed = nameFor(room?.section);
       final linked = locationId ?? _locationNamed(proposed);
       final scan = await ref.read(roomScanRepositoryProvider).create(
-            name: _locationName(linked) ?? proposed,
+            name: _locationName(locationId) ?? proposed,
             filePath: relative,
             capturedAt: DateTime.now(),
             northOffsetDeg: result.northOffsetDeg,

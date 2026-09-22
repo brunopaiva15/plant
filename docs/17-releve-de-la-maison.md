@@ -298,10 +298,11 @@ pièces et les plantes. Cinq entrées, une par question qu'on se pose :
 - **Fiche de la pièce relevée › « Le jardin dans cette pièce »** (palier 2) : les
   plantes du jardin classées par leur score dans cette pièce.
 
-La pièce porte le nom de l'emplacement qu'elle décrit : relevée depuis la
-fiche de la Cuisine, elle s'appelle Cuisine ; liée à un emplacement depuis
-sa feuille, elle en prend le nom. Le type reconnu par RoomPlan ne nomme
-qu'une pièce qui ne décrit aucun emplacement.
+La pièce porte le nom de l'emplacement depuis lequel on la relève : relevée
+depuis la fiche de la Cuisine, elle s'appelle Cuisine ; liée à un emplacement
+depuis sa feuille, elle en prend le nom. L'emplacement retrouvé par son nom,
+lui, ne la renomme pas : le rapprochement tolère la casse, il ne l'impose
+pas. Le type reconnu par RoomPlan nomme la pièce relevée de nulle part.
 
 Le flux du relevé est le même d'où qu'on parte (`room_scan_flow.dart`) ;
 seul change l'emplacement auquel la pièce se lie.
