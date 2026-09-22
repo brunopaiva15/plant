@@ -61,10 +61,26 @@ dm=soil.modifiers.new('d','DISPLACE');tx=bpy.data.textures.new('n','CLOUDS');tx.
 bpy.ops.object.shade_smooth()
 
 if YEUX:
-    eyem=mat('oeil','#14121C',rough=.12,coat=1)
-    for x,r in ((-0.27,0.12),(0.28,0.13)):
-        bpy.ops.mesh.primitive_uv_sphere_add(segments=48,ring_count=24,radius=r,location=(x,-0.84,0.33))
+    # Deux yeux identiques et symétriques. Leurs reflets ne viennent pas des
+    # lampes : ce sont des pastilles blanches posées au même endroit sur
+    # chaque œil, vues de la seule caméra. Les deux ont donc exactement le
+    # même éclat.
+    EZ=float(os.environ.get('YEUX_Z','0.33')); EX=float(os.environ.get('YEUX_X','0.27')); ER=float(os.environ.get('YEUX_R','0.125'))
+    eyem=mat('oeil','#14121C',rough=.45,coat=0);eyem.node_tree.nodes['Principled BSDF'].inputs['Specular IOR Level'].default_value=.15
+    em=bpy.data.materials.new('eclat');em.use_nodes=True;en=em.node_tree.nodes
+    en.remove(en['Principled BSDF']);es=en.new('ShaderNodeEmission');es.inputs[1].default_value=1.0
+    em.node_tree.links.new(es.outputs[0],en['Material Output'].inputs[0])
+    # rayon du pot à cette hauteur : le rebord au-dessus de 0,63, la paroi en dessous
+    rz=1.165 if EZ>0.63 else 0.72+0.21*(EZ+1.55)/2.05
+    for x in (-EX,EX):
+        ys=-math.sqrt(rz*rz-x*x)+0.021
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=48,ring_count=24,radius=ER,location=(x,ys,EZ))
         e=bpy.context.object;e.scale=(1,.55,1.12);e.data.materials.append(eyem);bpy.ops.object.shade_smooth()
+        for dx,dz,sx,sz,rot in ((-0.34,0.40,0.30,0.20,-35),(0.30,-0.42,0.10,0.08,0)):
+            bpy.ops.mesh.primitive_uv_sphere_add(segments=24,ring_count=12,radius=1,location=(x+dx*ER,ys-0.62*ER,EZ+dz*ER))
+            c=bpy.context.object;c.scale=(sx*ER,0.004,sz*ER);c.rotation_euler=(0,math.radians(rot),0)
+            c.data.materials.append(em);bpy.ops.object.shade_smooth()
+            c.visible_shadow=c.visible_diffuse=c.visible_glossy=c.visible_transmission=c.visible_volume_scatter=False
 green=mat('tige','#1FB05A',rough=.6,coat=0,sss=.1)
 # ---- tige
 cu=bpy.data.curves.new('tige','CURVE');cu.dimensions='3D';cu.bevel_depth=.07;cu.bevel_resolution=6;cu.use_fill_caps=True
