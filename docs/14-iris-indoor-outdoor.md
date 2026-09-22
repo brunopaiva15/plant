@@ -1566,6 +1566,52 @@ question posée — *est-ce la capacité qui limite la pente ?*
 > une couche avant le classifieur. `distiller.py` mesure désormais la sortie
 > par une passe à vide en mode évaluation plutôt que de la déduire.
 
+### 19 decies. MobileNetV4 : 2,7 fois la capacité, une pente plus faible — 22 septembre 2026
+
+Même recette, même corpus, même lot, même taux constant ; seul le dorsal
+change.
+
+| textes, armes égales | é3 | é6 | é7 | é10 |
+|---|---|---|---|---|
+| indoor, `fastvit_sa12` | 0,5909 | 0,6451 | — | 0,6513 |
+| indoor, **MobileNetV4** | 0,5883 | **0,6149** | 0,6167 | — |
+| outdoor, `fastvit_sa12` | 0,6070 | 0,6615 | — | 0,7050 |
+| outdoor, **MobileNetV4** | 0,5800 | **0,6245** | 0,6430 | — |
+
+| pente é3 → é6, une octave | `fastvit_sa12` | **MobileNetV4** |
+|---|---|---|
+| indoor | +0,0542 | **+0,0266** |
+| outdoor | +0,0545 | **+0,0445** |
+| hors répertoire, textes | +0,068 | **+0,048** |
+
+**Même départ, pente plus faible partout.** À é3 les deux sont à trois
+images l'un de l'autre en indoor ; à é6 MobileNetV4 est 34 images derrière,
+et il plafonne déjà entre é6 et é7. Aucun point de contrôle ne lui donne
+l'avantage — é10 ne renversera pas l'ordre.
+
+> **L'hypothèse « capacité » du § 19 nonies est éliminée, sous la forme où
+> elle a été testée.** Plus de paramètres dans un réseau convolutif n'a pas
+> relevé la pente ; il l'a abaissée.
+
+#### Pourquoi plus gros fait moins bien — deux candidats, pas encore départagés
+
+| hypothèse | pour | ce qui la départagerait |
+|---|---|---|
+| **un taux de 1e-3 constant convient encore moins à un dorsal plus gros** | c'est le cas classique : plus de paramètres, pas trop grand plus tôt ; et le plafond indoor de fastvit pointait déjà le calendrier | `fastvit_sa12` + cosinus |
+| **un student convolutif copie mal la géométrie d'un teacher ViT** | `fastvit_sa12` a de l'attention dans ses derniers étages, MobileNetV4 conv aucune ; l'affinité d'architecture aide la distillation | MobileNetV4 *hybrid*, mais ses seuls poids sont à 384 px |
+
+Le premier se teste à une seule variable près de la baseline, sur une nuit,
+et `distiller.py --calendrier cosinus` existe désormais pour ça. Le second
+demanderait un dorsal qui n'existe pas à la bonne résolution. L'ordre
+s'impose.
+
+> **Et ce que la matinée aurait dû faire avant de lancer un dorsal.** Le
+> § 19 nonies avait déjà relevé le taux constant comme défaut de recette.
+> Le bras MobileNetV4 est parti « à recette identique » pour ne tester qu'une
+> variable — c'était juste — mais la variable la moins chère à tester était
+> le calendrier, pas le dorsal. Une nuit plus tard, on sait au moins que ce
+> n'était pas la capacité.
+
 ## 20 ter. Pl@ntNet-300K comme corpus, pas comme avis — 22 septembre 2026
 
 Le § 5 l'avait rejeté comme **second avis** : 4,85 % de couverture, et aucun

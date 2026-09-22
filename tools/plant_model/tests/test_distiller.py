@@ -8,6 +8,7 @@ petit qu'annoncé.
 import csv
 
 import numpy as np
+import pytest
 
 from distiller import cibles, melanger, paires
 
@@ -149,3 +150,54 @@ def test_un_etat_ancien_sans_recette_ne_bloque_pas():
     reprennent encore : on ne casse pas une passe en cours pour un champ."""
     from distiller import desaccord_de_reprise
     assert desaccord_de_reprise({'epoque': 3}, 'fastvit_sa12', 0.2) == ''
+
+
+# --------------------------------------------------------------------------
+# Le calendrier de taux
+# --------------------------------------------------------------------------
+
+def test_le_calendrier_constant_reproduit_les_passes_du_22():
+    """Sans quoi une reprise d'`iris10-complet` changerait de recette."""
+    from distiller import taux_du_pas
+    assert all(taux_du_pas(p, 100, 1e-3) == 1e-3 for p in (0, 50, 99, 100))
+
+
+def test_le_cosinus_part_de_la_base_et_finit_a_zero():
+    from distiller import taux_du_pas
+    assert taux_du_pas(0, 100, 1e-3, 'cosinus') == pytest.approx(1e-3)
+    assert taux_du_pas(50, 100, 1e-3, 'cosinus') == pytest.approx(5e-4)
+    assert taux_du_pas(100, 100, 1e-3, 'cosinus') == pytest.approx(0.0, abs=1e-12)
+
+
+def test_le_cosinus_ne_remonte_jamais():
+    """Un taux qui remonte en fin de passe défait ce que la descente a
+    gagné, et c'est précisément la fin de passe qu'on veut soigner."""
+    from distiller import taux_du_pas
+    taux = [taux_du_pas(p, 1000, 1e-3, 'cosinus') for p in range(1001)]
+    assert all(a >= b for a, b in zip(taux, taux[1:]))
+
+
+def test_un_pas_hors_passe_ne_sort_pas_des_bornes():
+    from distiller import taux_du_pas
+    assert taux_du_pas(-5, 100, 1e-3, 'cosinus') == pytest.approx(1e-3)
+    assert taux_du_pas(150, 100, 1e-3, 'cosinus') == pytest.approx(0.0, abs=1e-12)
+
+
+def test_un_calendrier_inconnu_ne_passe_pas_en_silence():
+    from distiller import taux_du_pas
+    with pytest.raises(ValueError):
+        taux_du_pas(0, 100, 1e-3, 'lineaire')
+
+
+def test_un_calendrier_different_arrete_la_reprise():
+    from distiller import desaccord_de_reprise
+    assert 'calendrier' in desaccord_de_reprise(
+        {'student': 'fastvit_sa12', 'contrastive': 0.2}, 'fastvit_sa12', 0.2, 'cosinus')
+
+
+def test_un_etat_sans_calendrier_a_tourne_a_taux_constant():
+    """Les passes du 22 septembre n'écrivaient pas leur calendrier : elles se
+    reprennent en constant sans objection, et refusent le cosinus."""
+    from distiller import desaccord_de_reprise
+    etat = {'student': 'fastvit_sa12', 'contrastive': 0.2}
+    assert desaccord_de_reprise(etat, 'fastvit_sa12', 0.2, 'constant') == ''

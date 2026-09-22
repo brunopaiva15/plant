@@ -45,6 +45,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import math
 import time
 from pathlib import Path
 
@@ -188,7 +189,33 @@ def etat_du_lot(sortie, cible) -> dict:  # pragma: no cover - demande PyTorch
 # Le student
 # --------------------------------------------------------------------------
 
-def desaccord_de_reprise(etat: dict, student: str, contrastive: float) -> str:
+def taux_du_pas(pas: int, total: int, base: float, calendrier: str = 'constant') -> float:
+    """Le taux d'apprentissage au pas global `pas` sur `total`.
+
+    **`constant` est la recette des deux premières passes, et c'est un défaut
+    qui n'a jamais été décidé.** Le § 19 nonies de `docs/14` le relève : le top-1
+    indoor plafonne en fin de passe pendant que l'outdoor progresse encore, et
+    un pas trop grand empêche de gagner les écarts fins là où il ne reste
+    qu'eux. Le bras MobileNetV4 l'a confirmé à sa façon : 2,7 fois la capacité,
+    une pente plus faible (§ 19 decies).
+
+    `cosinus` descend de `base` à zéro en demi-période, sans échauffement :
+    ajouter un échauffement serait une seconde variable, et la passe constante
+    n'en avait pas.
+
+    Le pas est **global** — époque × pas par époque + pas — pour qu'une reprise
+    retombe exactement au même endroit de la courbe.
+    """
+    if calendrier == 'constant' or total <= 0:
+        return base
+    if calendrier != 'cosinus':
+        raise ValueError(f'calendrier inconnu : {calendrier}')
+    avance = min(max(pas / total, 0.0), 1.0)
+    return base * 0.5 * (1.0 + math.cos(math.pi * avance))
+
+
+def desaccord_de_reprise(etat: dict, student: str, contrastive: float,
+                         calendrier: str = 'constant') -> str:
     """Ce qui a changé entre la passe écrite et celle qu'on relance, s'il y a.
 
     **Une reprise ne renégocie pas la recette.** Un dorsal différent ferait
@@ -204,6 +231,9 @@ def desaccord_de_reprise(etat: dict, student: str, contrastive: float) -> str:
     ancien = etat.get('contrastive')
     if ancien is not None and float(ancien) != float(contrastive):
         ecarts.append(f'contrastive {ancien} → {contrastive}')
+    # Un état écrit avant que le calendrier existe a tourné à taux constant.
+    if etat.get('calendrier', 'constant') != calendrier:
+        ecarts.append(f"calendrier {etat.get('calendrier', 'constant')} → {calendrier}")
     return ' ; '.join(ecarts)
 
 
@@ -272,6 +302,9 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
     ap.add_argument('--batch', type=int, default=64, help='8 Go de VRAM')
     ap.add_argument('--epoques', type=int, default=10)
     ap.add_argument('--taux', type=float, default=1e-3)
+    ap.add_argument('--calendrier', choices=['constant', 'cosinus'], default='constant',
+                    help='constant reproduit les passes du 22 septembre ; '
+                         'cosinus descend à zéro sur la passe (§ 19 decies de docs/14)')
     ap.add_argument('--contrastive', type=float, default=1.0,
                     help='poids du terme qui écarte ; 0 reproduit la recette publique')
     ap.add_argument('--demi', action='store_true',
@@ -389,7 +422,7 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
     depart = 0
     if etat.exists():
         e = json.loads(etat.read_text())
-        ecart = desaccord_de_reprise(e, args.student, args.contrastive)
+        ecart = desaccord_de_reprise(e, args.student, args.contrastive, args.calendrier)
         if ecart:
             raise SystemExit(
                 f'{sortie} a été écrit sous une autre recette : {ecart}.\n'
@@ -430,6 +463,10 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
             if args.demi:
                 x = x.to(memory_format=torch.channels_last)
             y = torch.from_numpy(cibles(cache, lot, memo)).to(appareil)
+            taux = taux_du_pas(epoque * len(lots) + pas, args.epoques * len(lots),
+                               args.taux, args.calendrier)
+            for groupe in optimiseur.param_groups:
+                groupe['lr'] = taux
             optimiseur.zero_grad()
             with torch.autocast('cuda', dtype=torch.float16, enabled=args.demi):
                 s = modele(x)
@@ -451,14 +488,15 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
                 vitesse = (pas + 1) * args.batch / (time.perf_counter() - debut)
                 print(f'  é{epoque} pas {pas}/{len(lots)}  perte {float(perte.detach()):.4f}  '
                       f"accord {lu['accord']:.4f}  cône {lu['cone']:.4f}  "
-                      f'{vitesse:.0f} img/s', flush=True)
+                      f'{vitesse:.0f} img/s  taux {taux:.1e}', flush=True)
 
         torch.save({'modele': modele.state_dict(),
                     'optimiseur': optimiseur.state_dict(),
                     'echelle': echelle.state_dict() if echelle else None},
                    sortie / 'poids.pt')
         etat.write_text(json.dumps({'epoque': epoque + 1, 'student': args.student,
-                                    'contrastive': args.contrastive}))
+                                    'contrastive': args.contrastive,
+                                    'calendrier': args.calendrier}))
 
         # Le point de contrôle qui décide : un cache du banc, lisible tel quel
         # par `voisins.py --embeddings`. On arrête sur le top-1 par référence,
