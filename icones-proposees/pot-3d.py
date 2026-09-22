@@ -61,26 +61,42 @@ dm=soil.modifiers.new('d','DISPLACE');tx=bpy.data.textures.new('n','CLOUDS');tx.
 bpy.ops.object.shade_smooth()
 
 if YEUX:
-    # Deux yeux identiques et symétriques. Leurs reflets ne viennent pas des
-    # lampes : ce sont des pastilles blanches posées au même endroit sur
-    # chaque œil, vues de la seule caméra. Les deux ont donc exactement le
-    # même éclat.
-    EZ=float(os.environ.get('YEUX_Z','0.33')); EX=float(os.environ.get('YEUX_X','0.27')); ER=float(os.environ.get('YEUX_R','0.125'))
-    eyem=mat('oeil','#14121C',rough=.45,coat=0);eyem.node_tree.nodes['Principled BSDF'].inputs['Specular IOR Level'].default_value=.15
-    em=bpy.data.materials.new('eclat');em.use_nodes=True;en=em.node_tree.nodes
-    en.remove(en['Principled BSDF']);es=en.new('ShaderNodeEmission');es.inputs[1].default_value=1.0
-    em.node_tree.links.new(es.outputs[0],en['Material Output'].inputs[0])
-    # rayon du pot à cette hauteur : le rebord au-dessus de 0,63, la paroi en dessous
+    # Deux yeux strictement identiques. Chaque œil est un seul maillage (la
+    # bille et ses deux reflets) tourné face à la caméra : vus chacun dans
+    # leur axe, ils ont la même silhouette et les reflets au même endroit.
+    # Le noir ne réagit pas aux lampes (émission seule, modelé par les
+    # coordonnées locales de l'objet), donc la lumière ne les distingue pas.
+    EZ=float(os.environ.get('YEUX_Z','0.30')); EX=float(os.environ.get('YEUX_X','0.27')); ER=float(os.environ.get('YEUX_R','0.125'))
+    CAM=Vector((0,-11.5,3.2))
+    eyem=bpy.data.materials.new('oeil');eyem.use_nodes=True;nt=eyem.node_tree;N=nt.nodes;L=nt.links
+    N.remove(N['Principled BSDF']);em_=N.new('ShaderNodeEmission');L.new(em_.outputs[0],N['Material Output'].inputs[0])
+    tc=N.new('ShaderNodeTexCoord');se=N.new('ShaderNodeSeparateXYZ');L.new(tc.outputs['Object'],se.inputs[0])
+    # un peu plus clair vers le bas à droite, comme une bille qui renvoie le pot
+    ad=N.new('ShaderNodeMath');ad.operation='SUBTRACT';L.new(se.outputs['X'],ad.inputs[0]);L.new(se.outputs['Z'],ad.inputs[1])
+    mr=N.new('ShaderNodeMapRange');mr.inputs[1].default_value=.2;mr.inputs[2].default_value=1.3;L.new(ad.outputs[0],mr.inputs[0])
+    ramp=N.new('ShaderNodeValToRGB');ramp.color_ramp.elements[0].color=hexc('#121019');ramp.color_ramp.elements[1].color=hexc('#4A3A44')
+    L.new(mr.outputs[0],ramp.inputs[0]);L.new(ramp.outputs[0],em_.inputs[0])
+    clm=bpy.data.materials.new('eclat');clm.use_nodes=True;n2=clm.node_tree.nodes;n2.remove(n2['Principled BSDF'])
+    ce=n2.new('ShaderNodeEmission');ce.inputs[1].default_value=1.0;clm.node_tree.links.new(ce.outputs[0],n2['Material Output'].inputs[0])
     rz=1.165 if EZ>0.63 else 0.72+0.21*(EZ+1.55)/2.05
     for x in (-EX,EX):
-        ys=-math.sqrt(rz*rz-x*x)+0.021
-        bpy.ops.mesh.primitive_uv_sphere_add(segments=48,ring_count=24,radius=ER,location=(x,ys,EZ))
-        e=bpy.context.object;e.scale=(1,.55,1.12);e.data.materials.append(eyem);bpy.ops.object.shade_smooth()
+        me=bpy.data.meshes.new('oeil');bm=bmesh.new()
+        bmesh.ops.create_uvsphere(bm,u_segments=48,v_segments=24,radius=1)
+        for f in bm.faces: f.material_index=0; f.smooth=True
         for dx,dz,sx,sz,rot in ((-0.34,0.40,0.30,0.20,-35),(0.30,-0.42,0.10,0.08,0)):
-            bpy.ops.mesh.primitive_uv_sphere_add(segments=24,ring_count=12,radius=1,location=(x+dx*ER,ys-0.62*ER,EZ+dz*ER))
-            c=bpy.context.object;c.scale=(sx*ER,0.004,sz*ER);c.rotation_euler=(0,math.radians(rot),0)
-            c.data.materials.append(em);bpy.ops.object.shade_smooth()
-            c.visible_shadow=c.visible_diffuse=c.visible_glossy=c.visible_transmission=c.visible_volume_scatter=False
+            r=bmesh.ops.create_uvsphere(bm,u_segments=24,v_segments=12,radius=1)
+            vs=r['verts'];dy=-math.sqrt(max(0,1-dx*dx-dz*dz))-0.03
+            c,sn=math.cos(math.radians(rot)),math.sin(math.radians(rot))
+            for v in vs:
+                X,Y,Z=v.co.x*sx,v.co.y*0.01,v.co.z*sz
+                v.co=(X*c+Z*sn+dx,Y+dy,-X*sn+Z*c+dz)
+            for f in {f for v in vs for f in v.link_faces}: f.material_index=1; f.smooth=True
+        bm.to_mesh(me);bm.free()
+        # le plan médian de la bille passe devant la paroi : le pot ne la rogne pas
+        ys=-math.sqrt(rz*rz-x*x)-0.045
+        e=obj('oeil',me);e.data.materials.append(eyem);e.data.materials.append(clm)
+        e.location=(x,ys,EZ);e.scale=(ER,.42*ER,1.12*ER)
+        e.rotation_euler=(CAM-e.location).to_track_quat('-Y','Z').to_euler()
 green=mat('tige','#1FB05A',rough=.6,coat=0,sss=.1)
 # ---- tige
 cu=bpy.data.curves.new('tige','CURVE');cu.dimensions='3D';cu.bevel_depth=.07;cu.bevel_resolution=6;cu.use_fill_caps=True
