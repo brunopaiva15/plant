@@ -332,7 +332,10 @@ class ScannedRoom {
     if (wall == null) return null;
     final width = math.min(size.width, wall.width);
     final half = width / 2;
-    final t = (p - wall.start).dot(wall.along).clamp(half, math.max(half, wall.width - half));
+    // `clamp` ne rend un double que si ses deux bornes en sont statiquement :
+    // `toDouble` le garantit, sinon `scale` reçoit un num et la compilation
+    // échoue.
+    final t = (p - wall.start).dot(wall.along).clamp(half, math.max(half, wall.width - half)).toDouble();
     return RoomSurface(
       kind: RoomSurfaceKind.window,
       center: wall.start + wall.along.scale(t),
