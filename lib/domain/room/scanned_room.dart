@@ -133,6 +133,23 @@ class RoomSurface {
   double get area => width * height;
   RoomPoint get start => center - along.scale(width / 2);
   RoomPoint get end => center + along.scale(width / 2);
+
+  /// Le même découpage lu comme une fenêtre : la géométrie ne change pas,
+  /// le genre si. C'est par là qu'un vide éclaire — celui que RoomPlan n'a
+  /// pas reconnu comme fenêtre, celui d'un balcon, celui que la main
+  /// désigne.
+  RoomSurface asWindow({bool byHand = false}) => RoomSurface(
+        kind: RoomSurfaceKind.window,
+        center: center,
+        along: along,
+        normal: normal,
+        width: width,
+        height: height,
+        bottomY: bottomY,
+        parentId: parentId,
+        id: id,
+        byHand: byHand,
+      );
 }
 
 /// Un objet reconnu : son empreinte au sol et sa hauteur.
@@ -280,11 +297,7 @@ class ScannedRoom {
   /// partout, et une porte n'y change rien.
   ScannedRoom asOutdoor() => ScannedRoom(
         walls: walls,
-        windows: [
-          ...windows,
-          for (final o in openings)
-            RoomSurface(kind: RoomSurfaceKind.window, center: o.center, along: o.along, normal: o.normal, width: o.width, height: o.height, bottomY: o.bottomY, parentId: o.parentId, id: o.id),
-        ],
+        windows: [...windows, for (final o in openings) o.asWindow()],
         doors: const [],
         openings: const [],
         objects: objects,
@@ -298,7 +311,7 @@ class ScannedRoom {
   RoomPoint snapToWall(RoomPoint p, {double within = 0.5}) {
     final wall = nearestWall(p);
     if (wall == null) return p;
-    final onWall = _onWall(wall, p);
+    final onWall = _onSurface(wall, p);
     return (p - onWall).length < within ? onWall : p;
   }
 
@@ -308,7 +321,7 @@ class ScannedRoom {
     RoomSurface? best;
     var bestD = double.infinity;
     for (final w in walls) {
-      final dist = (p - _onWall(w, p)).length;
+      final dist = (p - _onSurface(w, p)).length;
       if (dist < bestD) {
         bestD = dist;
         best = w;
@@ -317,17 +330,49 @@ class ScannedRoom {
     return best;
   }
 
-  /// Le point d'un mur le plus proche d'un point, sans sortir du segment.
-  static RoomPoint _onWall(RoomSurface wall, RoomPoint p) {
-    final t = (p - wall.start).dot(wall.along).clamp(0.0, wall.width);
-    return wall.start + wall.along.scale(t);
+  /// Le point d'une surface le plus proche d'un point, sans sortir de son
+  /// segment : un mur, ou ce qui s'y découpe.
+  static RoomPoint _onSurface(RoomSurface surface, RoomPoint p) {
+    final t = (p - surface.start).dot(surface.along).clamp(0.0, surface.width);
+    return surface.start + surface.along.scale(t);
+  }
+
+  /// De combien un vide l'emporte sur le mur qui le porte, quand le doigt
+  /// vise les deux : un trou est dans le plan de son mur, et RoomPlan les
+  /// ajuste séparément — dix centimètres les séparent au pire.
+  static const double openingMargin = 0.1;
+
+  /// Le vide que le doigt vise : celui dont le segment est au moins aussi
+  /// proche que le mur le plus proche. Un vide est dans le plan de son
+  /// mur : viser l'un, c'est viser l'autre, et le vide l'emporte là où il
+  /// perce. `null` quand le doigt vise le mur plein.
+  RoomSurface? openingAt(RoomPoint p) {
+    final wall = nearestWall(p);
+    final wallD = wall == null ? double.infinity : (p - _onSurface(wall, p)).length;
+    RoomSurface? best;
+    var bestD = double.infinity;
+    for (final o in openings) {
+      final dist = (p - _onSurface(o, p)).length;
+      if (dist < bestD) {
+        bestD = dist;
+        best = o;
+      }
+    }
+    return best != null && bestD <= wallD + openingMargin ? best : null;
   }
 
   /// La fenêtre que la main pose au plus près d'un point : elle se couche
   /// sur le mur le plus proche — c'est lui qui lui donne son orientation —,
   /// sans déborder de ses bords, et prend les dimensions de sa taille.
   /// `null` quand la pièce n'a pas de mur pour la porter.
+  ///
+  /// Sauf sur un vide du relevé : RoomPlan range dans les ouvertures la
+  /// fenêtre qu'il n'a pas reconnue, et ce trou-là, lui, est mesuré. La
+  /// fenêtre en prend la place et les dimensions plutôt que celles de sa
+  /// taille, et le vide lui cède la sienne ([withWindows]).
   RoomSurface? handWindowAt(RoomPoint p, HandWindow size) {
+    final opening = openingAt(p);
+    if (opening != null) return opening.asWindow(byHand: true);
     final wall = nearestWall(p);
     if (wall == null) return null;
     final width = math.min(size.width, wall.width);
@@ -352,18 +397,63 @@ class ScannedRoom {
   /// La même pièce avec des fenêtres de plus, à la suite des siennes : les
   /// rangs des fenêtres du relevé ne bougent pas, et les ouvertures d'un
   /// balcon ([asOutdoor]) viennent encore après.
+  ///
+  /// Un vide qu'une de ces fenêtres recouvre n'en est plus un : il ne fait
+  /// plus courant d'air, et dehors il n'éclaire pas une seconde fois.
   ScannedRoom withWindows(List<RoomSurface> extra) => extra.isEmpty
       ? this
       : ScannedRoom(
           walls: walls,
           windows: [...windows, ...extra],
           doors: doors,
-          openings: openings,
+          openings: [
+            for (final o in openings)
+              if (!extra.any((w) => _covers(w, o))) o,
+          ],
           objects: objects,
           floorPolygon: floorPolygon,
           section: section,
           northOffsetDeg: northOffsetDeg,
         );
+
+  /// Une fenêtre recouvre-t-elle ce vide ? Par son identifiant quand le
+  /// relevé en donne un, par sa place sinon.
+  static bool _covers(RoomSurface window, RoomSurface opening) => window.id != null && opening.id != null
+      ? window.id == opening.id
+      : window.center.distanceTo(opening.center) < 0.05;
+
+  /// Le vide dont l'appui est au moins à cette hauteur du sol ne se
+  /// traverse pas : c'est une fenêtre.
+  static const double windowSillMin = 0.4;
+
+  /// La même pièce, les vides qui ne se traversent pas lus comme des
+  /// fenêtres. RoomPlan range dans les ouvertures ce qu'il n'a pas reconnu
+  /// comme fenêtre — un vitrage derrière un rideau, une baie, un jour de
+  /// travers —, et un trou dont l'appui est à quarante centimètres du sol
+  /// n'est pas un passage. Elles viennent à la suite des fenêtres du
+  /// relevé : les rangs tiennent, et l'orientation comme le rideau
+  /// continuent de s'indexer par le rang.
+  ScannedRoom withRaisedOpeningsAsWindows() {
+    bool raised(RoomSurface o) => o.bottomY - floorY >= windowSillMin;
+    if (!openings.any(raised)) return this;
+    return ScannedRoom(
+      walls: walls,
+      windows: [
+        ...windows,
+        for (final o in openings)
+          if (raised(o)) o.asWindow(),
+      ],
+      doors: doors,
+      openings: [
+        for (final o in openings)
+          if (!raised(o)) o,
+      ],
+      objects: objects,
+      floorPolygon: floorPolygon,
+      section: section,
+      northOffsetDeg: northOffsetDeg,
+    );
+  }
 
   /// Le point est-il dans la pièce ? Par le contour du sol s'il existe, par
   /// la boîte des murs sinon.

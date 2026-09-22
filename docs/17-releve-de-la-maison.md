@@ -72,6 +72,20 @@ Ce que RoomPlan ne donne pas, et qu'il faut obtenir autrement :
   avant d'être posée. Elle se range à la suite des fenêtres du relevé, pour
   que leurs rangs tiennent ; la retirer fait descendre d'un cran les rangs
   au-dessus, avec ce qui s'y accroche (orientation, rideau).
+- **Les fenêtres qu'il prend pour des vides.** RoomPlan range dans les
+  ouvertures ce qu'il n'a pas reconnu comme fenêtre — un vitrage derrière un
+  rideau, une baie, un jour de travers. Deux réponses. Un vide dont l'appui
+  est à quarante centimètres du sol ou plus ne se traverse pas : la lecture
+  du JSON en fait une fenêtre, à la suite de celles du relevé
+  (`ScannedRoom.windowSillMin`). Un vide qui part du sol, lui, est une baie
+  ou un passage, et c'est la main qui tranche : le doigt qui le vise dans la
+  feuille « Ajouter une fenêtre » y couche la fenêtre — un vide est dans le
+  plan de son mur, viser l'un c'est viser l'autre, et le vide l'emporte là où
+  il perce (`ScannedRoom.openingAt`). Elle en prend les mesures, que le
+  relevé connaît, plutôt que celles de la taille demandée, et le vide lui
+  cède la place : il ne fait plus courant d'air, et dehors il n'éclaire pas
+  une seconde fois. Le plan, enfin, dessine les fenêtres après les vides —
+  sans quoi le trou recouvrait la fenêtre qu'on venait d'y poser.
 - **La lumière réelle.** ARKit donne une estimation d'éclairement
   (`ARFrame.lightEstimate.ambientIntensity`) qui dépend de l'heure et du
   temps qu'il fait : inutilisable seule pour dire ce qu'une place reçoit à
@@ -400,7 +414,8 @@ n'est pas tranchée ici.
 **Palier 4 — affiner et garder.** Ce que RoomPlan ne voit pas et que la
 main peut dire : une fenêtre manquée, à sa taille (`windowSmall`,
 `windowStandard`, `windowWide`), couchée sur le mur le plus proche du
-doigt et rangée à la suite des fenêtres du relevé ; un voilage ou un rideau
+doigt — ou sur le vide qu'il vise, dont elle prend alors les mesures — et
+rangée à la suite des fenêtres du relevé ; un voilage ou un rideau
 souvent tiré, par fenêtre (`windowSheer`, `windowDrawn` dans `room_markers`) — le voilage divise
 l'apport par deux et ne laisse du soleil que le bord, le rideau tiré le
 divise par trois et n'en laisse rien. Le balcon : un relevé lié à un
@@ -422,6 +437,17 @@ existe. **Livré dans ce dépôt.**
 - **Les vitrages.** RoomPlan ne les distingue pas, et le plan ne les
   demande pas : un double vitrage teinté ou un verre dépoli passent pour
   une vitre claire. Les rideaux, eux, se disent depuis le palier 4.
+- **La porte vitrée.** Une porte-fenêtre sort du relevé comme une porte, et
+  une porte n'éclaire pas : la main pose une fenêtre sur un vide, pas encore
+  sur une porte. Le jour où elle le pourra, la porte devra rester un courant
+  d'air tout en éclairant.
+- **Le vide relu comme fenêtre.** Un passage surélevé — un passe-plat vers la
+  cuisine — est lu comme une fenêtre, et éclaire alors une pièce qu'il
+  n'éclaire pas vraiment. Le cas est rare devant celui qu'il répare, et il se
+  corrige par le rideau tiré, faute de pouvoir retirer une fenêtre du relevé.
+  Un relevé qui gagne ainsi une fenêtre décale par ailleurs les rangs des
+  fenêtres ajoutées à la main : leur orientation confirmée et leur rideau
+  tiennent au rang, pas à la fenêtre.
 - **Les étages et les balcons.** Un balcon relevé est une pièce sans mur
   d'un côté ; le modèle le traite comme une fenêtre de la largeur de
   l'ouverture, et la fiche décide du gel comme aujourd'hui. À vérifier au

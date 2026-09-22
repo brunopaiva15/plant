@@ -6641,7 +6641,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get roomScanAddWindowHelp =>
-      'Le scan ne voit pas une fenêtre derrière un rideau tiré. Ajoutez-la ici, à sa taille.';
+      'Le scan manque une fenêtre derrière un rideau tiré, ou la prend pour un vide. Ajoutez-la ici, à sa taille.';
 
   @override
   String get roomScanTapForWindow =>

@@ -2237,7 +2237,7 @@
   "roomScanCurtainHelp": "La scansione non rileva le tende. Una tenda leggera dimezza la luce e toglie il sole diretto; una tenda spesso tirata la divide per 3.",
   "roomScanPlace": "Metti",
   "roomScanAddWindow": "Aggiungi una finestra",
-  "roomScanAddWindowHelp": "La scansione non vede una finestra dietro una tenda tirata. Aggiungila qui, con la sua misura.",
+  "roomScanAddWindowHelp": "La scansione non vede una finestra dietro una tenda tirata, oppure la scambia per un'apertura. Aggiungila qui, con la sua misura.",
   "roomScanTapForWindow": "Tocca la planimetria vicino alla parete che regge la finestra.",
   "roomScanWindowSmall": "Finestra piccola · 0,6 m",
   "roomScanWindowStandard": "Finestra · 1,2 m",

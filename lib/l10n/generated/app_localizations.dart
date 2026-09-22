@@ -11217,7 +11217,7 @@ abstract class AppLocalizations {
   /// No description provided for @roomScanAddWindowHelp.
   ///
   /// In fr, this message translates to:
-  /// **'Le scan ne voit pas une fenêtre derrière un rideau tiré. Ajoutez-la ici, à sa taille.'**
+  /// **'Le scan manque une fenêtre derrière un rideau tiré, ou la prend pour un vide. Ajoutez-la ici, à sa taille.'**
   String get roomScanAddWindowHelp;
 
   /// No description provided for @roomScanTapForWindow.

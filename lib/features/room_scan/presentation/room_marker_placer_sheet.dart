@@ -34,8 +34,9 @@ class _GlissementDuPlan extends PanGestureRecognizer {
 /// « Poser ». Rend le point choisi, ou rien.
 ///
 /// Un radiateur se colle au mur le plus proche du doigt ; une fenêtre se
-/// couche sur ce mur, à la taille demandée, et se voit sur le plan avant
-/// d'être posée ; une plante reste là où on l'a posée.
+/// couche sur ce mur, à la taille demandée — ou sur le vide qu'on vise,
+/// dont elle prend les mesures —, et se voit sur le plan avant d'être
+/// posée ; une plante reste là où on l'a posée.
 Future<RoomPoint?> showRoomMarkerPlacer(
   BuildContext context, {
   required ScannedRoom room,
@@ -77,9 +78,10 @@ class _PlacerBodyState extends State<_PlacerBody> {
 
   void _tap(RoomPoint at) {
     // Une fenêtre va au mur le plus proche, d'où qu'on touche : viser un mur
-    // du doigt, c'est souvent viser juste à côté de la pièce.
+    // du doigt, c'est souvent viser juste à côté de la pièce. Un vide que le
+    // relevé a pris pour un trou la porte aussi, et à ses mesures.
     if (widget.kind == RoomMarkerPlacement.window) {
-      if (widget.room.walls.isEmpty) return;
+      if (widget.room.walls.isEmpty && widget.room.openings.isEmpty) return;
       Haptics.light();
       setState(() => _pending = at);
       return;

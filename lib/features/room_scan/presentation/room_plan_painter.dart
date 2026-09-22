@@ -134,26 +134,14 @@ class RoomPlanPainter extends CustomPainter {
       canvas.drawPath(path, outline);
     }
 
-    // Les murs, puis ce qui s'y découpe : une fenêtre est un trait clair
-    // dans le mur, une porte un trait fin.
+    // Les murs, puis ce qui s'y découpe : une porte est un trait fin, une
+    // fenêtre un trait clair dans le mur.
     final wall = Paint()
       ..color = colors.ink
       ..strokeWidth = math.max(scale * 0.12, 3)
       ..strokeCap = StrokeCap.square;
     for (final s in room.walls) {
       canvas.drawLine(at(s.start), at(s.end), wall);
-    }
-    final window = Paint()
-      ..color = colors.sunSoft
-      ..strokeWidth = wall.strokeWidth
-      ..strokeCap = StrokeCap.butt;
-    final windowEdge = Paint()
-      ..color = colors.sun
-      ..strokeWidth = math.max(wall.strokeWidth * 0.35, 1.5)
-      ..strokeCap = StrokeCap.butt;
-    for (final s in room.windows) {
-      canvas.drawLine(at(s.start), at(s.end), window);
-      canvas.drawLine(at(s.start), at(s.end), windowEdge);
     }
     final door = Paint()
       ..color = colors.surface
@@ -173,6 +161,20 @@ class RoomPlanPainter extends CustomPainter {
         final sweep = (inward.x * s.along.z - inward.z * s.along.x) >= 0 ? -math.pi / 2 : math.pi / 2;
         canvas.drawArc(Rect.fromCircle(center: hinge, radius: r), a0, sweep, false, doorArc);
       }
+    }
+    // Les fenêtres après les vides : une fenêtre posée sur un vide que le
+    // relevé a pris pour un trou se voit, là où le trou la recouvrait.
+    final window = Paint()
+      ..color = colors.sunSoft
+      ..strokeWidth = wall.strokeWidth
+      ..strokeCap = StrokeCap.butt;
+    final windowEdge = Paint()
+      ..color = colors.sun
+      ..strokeWidth = math.max(wall.strokeWidth * 0.35, 1.5)
+      ..strokeCap = StrokeCap.butt;
+    for (final s in room.windows) {
+      canvas.drawLine(at(s.start), at(s.end), window);
+      canvas.drawLine(at(s.start), at(s.end), windowEdge);
     }
 
     // Les radiateurs : une barre rose contre le mur, et trois ailettes.

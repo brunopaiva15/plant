@@ -151,6 +151,60 @@ void main() {
     expect(RoomLightModel.lightAt(fixed, slots[LightNeed.shade]!).index, greaterThan(LightNeed.shade.index));
   });
 
+  test("une fenêtre posée sur un vide en prend les mesures, et le vide lui cède la place", () {
+    // Le relevé a pris la baie du mur −x pour un vide : au ras du sol, il
+    // n'est pas relu comme une fenêtre, et c'est la main qui le dit. Le
+    // doigt vise le vide, la fenêtre s'y couche à ses mesures — pas à
+    // celles de la taille demandée —, et le trou cesse d'être un trou.
+    const bay = RoomSurface(
+      kind: RoomSurfaceKind.opening,
+      center: RoomPoint(-2.1, 0.3),
+      along: RoomPoint(0, 1),
+      normal: RoomPoint(1, 0),
+      width: 2.4,
+      height: 2.2,
+      bottomY: 0,
+      id: 'BAY',
+      parentId: 'WALL_LEFT',
+    );
+    final missed = ScannedRoom(walls: room.walls, windows: const [], doors: const [], openings: const [bay], objects: const [], northOffsetDeg: 90);
+    expect(RoomLightModel.isDrafty(missed, const RoomPoint(-1.5, 0.3)), isTrue);
+    final added = missed.handWindowAt(const RoomPoint(-2.0, 0.3), HandWindow.standard);
+    expect(added, isNotNull);
+    expect(added!.width, 2.4);
+    expect(added.height, 2.2);
+    expect(added.bottomY, 0);
+    expect(added.byHand, isTrue);
+    final fixed = missed.withWindows([added]);
+    expect(fixed.windows.single.id, 'BAY');
+    expect(fixed.openings, isEmpty);
+    expect(RoomLightModel.isDrafty(fixed, const RoomPoint(-1.5, 0.3)), isFalse);
+    expect(RoomLightModel.lightAt(fixed, slots[LightNeed.fullSun]!), LightNeed.fullSun);
+    // Dehors, le vide n'éclaire pas une seconde fois.
+    expect(fixed.asOutdoor().windows, hasLength(1));
+  });
+
+  test("le doigt qui vise le mur plein pose une fenêtre à sa taille", () {
+    const bay = RoomSurface(
+      kind: RoomSurfaceKind.opening,
+      center: RoomPoint(-2.1, 1.2),
+      along: RoomPoint(0, 1),
+      normal: RoomPoint(1, 0),
+      width: 0.9,
+      height: 2.2,
+      bottomY: 0,
+      id: 'BAY',
+    );
+    final missed = ScannedRoom(walls: room.walls, windows: const [], doors: const [], openings: const [bay], objects: const [], northOffsetDeg: 90);
+    // Le même mur, mais à un mètre et demi du vide : c'est le mur qui porte.
+    final added = missed.handWindowAt(const RoomPoint(-2.0, -0.6), HandWindow.small);
+    expect(added, isNotNull);
+    expect(added!.width, HandWindow.small.width);
+    expect(added.center.z, closeTo(-0.6, 1e-9));
+    expect(added.bottomY, closeTo(HandWindow.small.sill, 1e-9));
+    expect(missed.withWindows([added]).openings, hasLength(1));
+  });
+
   test("les fenêtres de la main viennent après celles du relevé", () {
     final now = DateTime(2026);
     RoomMarker window(String id, RoomMarkerKind kind, double x) =>

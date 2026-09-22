@@ -20,6 +20,9 @@ abstract final class RoomPlanParser {
     final openings = _surfaces(json['openings'], RoomSurfaceKind.opening);
     final objects = _objects(json['objects']);
     final floor = _floorPolygon(json['floors']);
+    // Un vide dont l'appui est au-dessus du sol ne se traverse pas : c'est
+    // une fenêtre que RoomPlan n'a pas reconnue, et la pièce la lit comme
+    // telle ([ScannedRoom.withRaisedOpeningsAsWindows]).
     return ScannedRoom(
       walls: walls,
       windows: windows,
@@ -29,7 +32,7 @@ abstract final class RoomPlanParser {
       floorPolygon: floor,
       section: _section(json['sections'], walls),
       northOffsetDeg: northOffsetDeg,
-    );
+    ).withRaisedOpeningsAsWindows();
   }
 
   static List<RoomSurface> _surfaces(Object? raw, RoomSurfaceKind kind) {
