@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import '../../core/config/jev_config.dart';
 import '../../domain/identification/identification_metrics.dart';
 import '../../domain/identification/identification_policy.dart';
 import '../../domain/identification/plant_identifier.dart';
@@ -78,7 +77,7 @@ class JevIdentificationPolicy {
   bool _pickCounted = false;
   bool _searchCounted = false;
 
-  bool get _isConfigured => _configuredOverride ?? JevConfig.isConfigured;
+  bool get _isConfigured => _configuredOverride ?? _service.isConfigured;
 
   final _evaluationCache = <String, Future<JevPipelineEvaluation>>{};
 

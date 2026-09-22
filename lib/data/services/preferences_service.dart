@@ -79,6 +79,14 @@ class PreferencesService {
   String? get cuttingGuides => _prefs.getString('cutting_guides');
   Future<void> setCuttingGuides(String json) => _prefs.setString('cutting_guides', json);
 
+  /// L'identifiant de la clé attestée auprès d'Apple, gardé d'un lancement à
+  /// l'autre. Pas un secret — c'est le condensé d'une clé publique — mais il
+  /// doit durer : Apple refuse d'attester deux fois la même clé, et en
+  /// refaire une à chaque lancement butera sur ses limites.
+  String? get appAttestKeyId => _prefs.getString('app_attest_key_id');
+  Future<void> setAppAttestKeyId(String? value) =>
+      value == null ? _prefs.remove('app_attest_key_id') : _prefs.setString('app_attest_key_id', value);
+
   /// Compteurs de la cascade d'identification, en JSON.
   String? get identificationMetrics => _prefs.getString('identification_metrics');
   Future<void> setIdentificationMetrics(String json) => _prefs.setString('identification_metrics', json);

@@ -2,9 +2,7 @@ import 'dart:async';
 
 import 'package:http/http.dart' as http;
 
-import '../config/diagnosis_config.dart';
-import '../config/identification_config.dart';
-import '../config/jev_config.dart';
+import '../config/relay_config.dart';
 import '../config/supabase_config.dart';
 
 enum ExternalServiceState {
@@ -75,24 +73,15 @@ class ExternalServiceStatusService {
           ),
           configured: SupabaseConfig.isConfigured,
         ),
+        // Pl@ntNet, les AI Services d'Infomaniak et OpenRouter ne sont plus
+        // joignables d'ici : leurs clés sont dans le relais, et c'est lui
+        // qu'on interroge. Sa route `health` dit du même coup lesquels des
+        // trois il peut servir — un secret manquant s'y voit, au lieu
+        // d'attendre un échec d'amont trois écrans plus loin.
         _Probe(
-          name: 'OpenRouter · Jev',
-          uri: Uri.parse(JevConfig.endpoint),
-          configured: JevConfig.isConfigured,
-        ),
-        _Probe(
-          name: 'Pl@ntNet',
-          uri: Uri.parse('https://my-api.plantnet.org/v2/identify/all'),
-          configured: IdentificationConfig.isConfigured,
-        ),
-        _Probe(
-          name: 'Infomaniak AI',
-          uri: Uri.parse(
-            DiagnosisConfig.isConfigured
-                ? 'https://api.infomaniak.com/2/ai/${DiagnosisConfig.productId}/openai/v1/chat/completions'
-                : 'https://api.infomaniak.com',
-          ),
-          configured: DiagnosisConfig.isConfigured,
+          name: 'Relais Auxine',
+          uri: Uri.parse(RelayConfig.isConfigured ? '${RelayConfig.baseUrl}/health' : 'https://supabase.com'),
+          configured: RelayConfig.isConfigured,
         ),
         _Probe(
           name: 'Open-Meteo · Prévisions',

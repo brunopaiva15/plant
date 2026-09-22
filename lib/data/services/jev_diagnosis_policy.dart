@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import '../../core/config/jev_config.dart';
 import '../../domain/diagnosis/diagnosis_observations.dart';
 import '../../domain/diagnosis/diagnosis_policy.dart';
 import '../../domain/diagnosis/plant_diagnoser.dart';
@@ -38,7 +37,7 @@ class JevDiagnosisPolicy {
   static const _retryCooldown = Duration(seconds: 20);
   static const _maxCacheEntries = 12;
 
-  bool get _isConfigured => _configuredOverride ?? JevConfig.isConfigured;
+  bool get _isConfigured => _configuredOverride ?? _service.isConfigured;
 
   final _cache = <String, Future<DiagnosisNextStep>>{};
   final _incidents = <String, DateTime>{};

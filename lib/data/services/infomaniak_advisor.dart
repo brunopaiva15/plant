@@ -2,40 +2,41 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../../core/config/relay_config.dart';
 import '../../domain/species/plant_advisor.dart';
 import '../../domain/species/plant_finder.dart';
 
 /// Propositions d'espèces par les AI Services d'Infomaniak, via leur route
-/// compatible OpenAI. Même clé et même produit que le diagnostic.
+/// compatible OpenAI. Même route de relais que le diagnostic.
 ///
 /// Requête de texte seul, donc quelques centaines de jetons : c'est le second
 /// tour, quand le catalogue intégré n'a rien de convaincant, et il n'a lieu
 /// que si l'utilisateur le demande.
 class InfomaniakAdvisor implements PlantAdvisor {
-  InfomaniakAdvisor({required this.apiKey, required this.productId, required this.model, http.Client? client})
-      : _client = client ?? http.Client();
+  InfomaniakAdvisor({Uri? endpoint, http.Client? client})
+      : endpoint = endpoint ?? RelayConfig.route('ai'),
+        _client = client ?? http.Client();
 
-  final String apiKey;
-  final String productId;
-  final String model;
+  /// Le relais, qui tient la clé et choisit le modèle. Les quatre appels aux
+  /// AI Services passent par la même route : même amont, même corps.
+  final Uri endpoint;
   final http.Client _client;
 
   static const maxSuggestions = 3;
 
-  Uri get endpoint => Uri.parse('https://api.infomaniak.com/2/ai/$productId/openai/v1/chat/completions');
 
   @override
-  bool get isConfigured => apiKey.trim().isNotEmpty && productId.trim().isNotEmpty;
+  bool get isConfigured => endpoint.hasAuthority;
 
   @override
   Future<List<AdvisorSuggestion>> suggest({required FinderCriteria criteria, required String language, List<String> exclude = const []}) async {
     if (!isConfigured) throw const AdvisorException('unconfigured');
-    var response = await _post(buildRequest(model: model, criteria: criteria, language: language, exclude: exclude, constrainJson: true));
+    var response = await _post(buildRequest(criteria: criteria, language: language, exclude: exclude, constrainJson: true));
     // Le format JSON contraint n'est pas garanti par tous les modèles : s'il
     // est refusé, la même demande repart sans lui — la consigne le réclame
     // déjà et le lecteur est tolérant.
     if (response.statusCode == 400) {
-      response = await _post(buildRequest(model: model, criteria: criteria, language: language, exclude: exclude, constrainJson: false));
+      response = await _post(buildRequest(criteria: criteria, language: language, exclude: exclude, constrainJson: false));
     }
     if (response.statusCode == 401 || response.statusCode == 403) throw const AdvisorException('unauthorized');
     if (response.statusCode == 429) throw const AdvisorException('quota');
@@ -44,19 +45,17 @@ class InfomaniakAdvisor implements PlantAdvisor {
   }
 
   Future<http.Response> _post(Map<String, Object?> body) => _client
-      .post(endpoint, headers: {'content-type': 'application/json', 'authorization': 'Bearer ${apiKey.trim()}'}, body: jsonEncode(body))
+      .post(endpoint, headers: const {'content-type': 'application/json'}, body: jsonEncode(body))
       .timeout(const Duration(seconds: 60));
 
   /// Corps de requête, au format OpenAI (exposé pour les tests).
   static Map<String, Object?> buildRequest({
-    required String model,
     required FinderCriteria criteria,
     required String language,
     required List<String> exclude,
     required bool constrainJson,
   }) =>
       {
-        'model': model,
         'max_tokens': 700,
         'temperature': 0.4,
         if (constrainJson) 'response_format': {'type': 'json_object'},

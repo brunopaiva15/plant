@@ -44,6 +44,18 @@ void main() {
       ExternalServiceState.operational,
     );
 
+    // Les trois services payants ne sont plus joignables depuis l'appareil :
+    // leurs clés sont dans le relais, et c'est lui que la sonde interroge
+    // (docs/19). Les viser d'ici signalerait que quelque chose les rappelle.
+    expect(
+      seen.map((request) => request.url.host),
+      isNot(anyElement(anyOf(
+        'my-api.plantnet.org',
+        'api.infomaniak.com',
+        'openrouter.ai',
+      ))),
+    );
+
     // Le diagnostic n'envoie jamais de corps, de photo ou de données plante.
     expect(seen, isNotEmpty);
     expect(seen.every((request) => request.method == 'HEAD'), isTrue);

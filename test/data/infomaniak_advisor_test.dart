@@ -27,8 +27,7 @@ const _criteria = FinderCriteria(
   note: 'salle de bain sans fenêtre',
 );
 
-InfomaniakAdvisor _advisor(http.Client client) =>
-    InfomaniakAdvisor(apiKey: 'tok', productId: '12345', model: 'Qwen/Qwen3.5-397B-A17B-FP8', client: client);
+InfomaniakAdvisor _advisor(http.Client client) => InfomaniakAdvisor(endpoint: Uri.parse('https://relais.test/ai'), client: client);
 
 void main() {
   group('la lecture de la réponse', () {
@@ -90,8 +89,9 @@ void main() {
 
       final results = await _advisor(client).suggest(criteria: _criteria, language: 'fr', exclude: ['Zamioculcas zamiifolia']);
       expect(results, hasLength(1));
-      expect(captured.url.toString(), 'https://api.infomaniak.com/2/ai/12345/openai/v1/chat/completions');
-      expect(captured.headers['authorization'], 'Bearer tok');
+      expect(captured.url.toString(), 'https://relais.test/ai');
+      // La clé n'est plus dans le binaire : c'est le relais qui la pose.
+      expect(captured.headers.containsKey('authorization'), isFalse);
       final body = jsonDecode(captured.body) as Map<String, dynamic>;
       expect(body['response_format'], {'type': 'json_object'});
       final messages = body['messages'] as List;
@@ -129,9 +129,9 @@ void main() {
       }
     });
 
-    test('sans clé ou sans produit, ne part pas', () {
-      expect(InfomaniakAdvisor(apiKey: '', productId: '1', model: 'm').isConfigured, isFalse);
-      expect(InfomaniakAdvisor(apiKey: 'k', productId: '', model: 'm').isConfigured, isFalse);
+    test('sans relais, ne part pas', () {
+      expect(InfomaniakAdvisor(endpoint: Uri.parse('')).isConfigured, isFalse);
+      expect(InfomaniakAdvisor(endpoint: Uri.parse('https://relais.test/ai')).isConfigured, isTrue);
       expect(const UnconfiguredAdvisor().isConfigured, isFalse);
     });
   });

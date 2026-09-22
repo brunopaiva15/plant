@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import '../../core/config/jev_config.dart';
+import '../../core/config/relay_config.dart';
 
 class JevDecisionException implements Exception {
   const JevDecisionException(this.message);
@@ -13,18 +13,26 @@ class JevDecisionException implements Exception {
   String toString() => 'JevDecisionException: $message';
 }
 
-/// Client minimal de l'endpoint OpenRouter Decisions utilisé par Jev.
+/// Client minimal de l'endpoint OpenRouter Decisions utilisé par Jev, par le
+/// relais.
 ///
 /// Jev ne génère pas de texte : il reçoit un état structuré et des questions
 /// typées, puis rend leurs probabilités. Le workflow reste entièrement dans
 /// Auxine.
+///
+/// La clé OpenRouter ne part pas d'ici : elle est dans la fonction Edge
+/// `relay`, qui choisit aussi le modèle (`docs/19-relais-des-cles.md`).
 class JevDecisionService {
-  JevDecisionService({http.Client? client})
-      : _client = client ?? http.Client(),
+  JevDecisionService({Uri? endpoint, http.Client? client})
+      : endpoint = endpoint ?? RelayConfig.route('decide'),
+        _client = client ?? http.Client(),
         _ownsClient = client == null;
 
+  final Uri endpoint;
   final http.Client _client;
   final bool _ownsClient;
+
+  bool get isConfigured => endpoint.hasAuthority;
 
   /// Le budget vient de l'appelant : c'est lui qui sait combien de temps
   /// l'interface peut attendre, et deux durées pour un même appel finissent
@@ -34,22 +42,17 @@ class JevDecisionService {
     required Map<String, dynamic> questions,
     required Duration timeout,
   }) async {
-    if (!JevConfig.isConfigured) {
-      throw const JevDecisionException('OPENROUTER_API_KEY manquante');
+    if (!isConfigured) {
+      throw const JevDecisionException('relais non configuré');
     }
 
     final response = await _client
         .post(
-          Uri.parse(JevConfig.endpoint),
-          headers: {
-            'Authorization': 'Bearer ${JevConfig.apiKey.trim()}',
-            'Content-Type': 'application/json',
-          },
-          body: jsonEncode({
-            'model': JevConfig.model,
-            'state': state,
-            'questions': questions,
-          }),
+          endpoint,
+          headers: const {'Content-Type': 'application/json'},
+          // Le modèle est choisi par le relais : il décide du prix, et en
+          // changer ne doit pas demander de repasser par l'App Store.
+          body: jsonEncode({'state': state, 'questions': questions}),
         )
         .timeout(
           timeout,
@@ -58,7 +61,7 @@ class JevDecisionService {
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw JevDecisionException(
-        'OpenRouter HTTP ${response.statusCode}: ${response.body}',
+        'relais HTTP ${response.statusCode}: ${response.body}',
       );
     }
 

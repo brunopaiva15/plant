@@ -48,8 +48,8 @@ void main() {
     expect(r.map((c) => c.scientificName).length, 5);
   });
 
-  test('unconfigured key is reported', () {
-    expect(PlantNetIdentifier('').isConfigured, isFalse);
-    expect(PlantNetIdentifier(' abc ').isConfigured, isTrue);
+  test('sans relais, le repli en ligne est inactif', () {
+    expect(PlantNetIdentifier(endpoint: Uri.parse('')).isConfigured, isFalse);
+    expect(PlantNetIdentifier(endpoint: Uri.parse('https://relais.test/identify')).isConfigured, isTrue);
   });
 }

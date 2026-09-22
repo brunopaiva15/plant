@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart' show compute;
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
 
+import '../../core/config/relay_config.dart';
 import '../../core/network/network_failure.dart';
 import '../../core/utils/search_text.dart';
 import '../../domain/diagnosis/diagnosis_observations.dart';
@@ -23,16 +24,15 @@ import '../../domain/problems/plant_problem.dart';
 /// le prix. Rien n'est stocké côté service au-delà de la requête.
 class InfomaniakDiagnoser implements PlantDiagnoser {
   InfomaniakDiagnoser({
-    required this.apiKey,
-    required this.productId,
-    required this.model,
+    Uri? endpoint,
     http.Client? client,
     this.retryPause = const Duration(seconds: 2),
-  }) : _client = client ?? http.Client();
+  })  : endpoint = endpoint ?? RelayConfig.route('ai'),
+        _client = client ?? http.Client();
 
-  final String apiKey;
-  final String productId;
-  final String model;
+  /// Le relais, qui tient la clé et choisit le modèle. Les quatre appels aux
+  /// AI Services passent par la même route : même amont, même corps.
+  final Uri endpoint;
   final http.Client _client;
 
   /// Ce qu'on laisse passer avant de renvoyer la même demande. Multiplié par
@@ -86,10 +86,8 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
   static const _answerTokens = 5000;
   static const _wideTokens = 9000;
 
-  Uri get endpoint => Uri.parse('https://api.infomaniak.com/2/ai/$productId/openai/v1/chat/completions');
-
   @override
-  bool get isConfigured => apiKey.trim().isNotEmpty && productId.trim().isNotEmpty;
+  bool get isConfigured => endpoint.hasAuthority;
 
   @override
   Future<Diagnosis> diagnose({
@@ -138,7 +136,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       },
     ];
     Future<http.Response> ask({required bool constrainJson, int maxTokens = _answerTokens}) =>
-        _send(buildRequest(model: model, parts: parts, language: language, constrainJson: constrainJson, maxTokens: maxTokens));
+        _send(buildRequest(parts: parts, language: language, constrainJson: constrainJson, maxTokens: maxTokens));
 
     // Le format JSON contraint n'est pas garanti par tous les modèles : si
     // le service le refuse, on renvoie la même demande sans lui — la consigne
@@ -217,7 +215,6 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
   }) async {
     try {
       final body = buildFallbackRequest(
-        model: model,
         language: language,
         plantName: plantName,
         species: species,
@@ -260,7 +257,6 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
 
   /// Corps de la passe de repli (exposé pour les tests).
   static Map<String, Object?> buildFallbackRequest({
-    required String model,
     required String language,
     String? plantName,
     String? species,
@@ -272,7 +268,6 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     List<DiagnosisAnswer> answers = const [],
   }) =>
       {
-        'model': model,
         // Le modèle réfléchit avant d'écrire, et sa réflexion se paie sur
         // ce budget ([_answerTokens]) : neuf cents jetons n'y suffisaient pas.
         'max_tokens': 3000,
@@ -326,7 +321,6 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     if (orphelines.isEmpty) return diagnosis;
     try {
       final body = buildMappingRequest(
-        model: model,
         candidates: candidates,
         causes: [for (final i in orphelines) diagnosis.causes[i]],
         language: language,
@@ -365,13 +359,11 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
 
   /// Corps de la deuxième passe (exposé pour les tests).
   static Map<String, Object?> buildMappingRequest({
-    required String model,
     required List<PlantProblem> candidates,
     required List<DiagnosisCause> causes,
     required String language,
   }) =>
       {
-        'model': model,
         // Trois cents jetons suffisaient à la réponse, pas à la réflexion
         // qui la précède ([_answerTokens]) : la passe échouait en silence.
         'max_tokens': 1500,
@@ -468,7 +460,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       );
 
   Future<http.Response> _post(Map<String, Object?> body, {Duration timeout = const Duration(minutes: 2)}) => _client
-      .post(endpoint, headers: {'content-type': 'application/json', 'authorization': 'Bearer ${apiKey.trim()}'}, body: jsonEncode(body))
+      .post(endpoint, headers: const {'content-type': 'application/json'}, body: jsonEncode(body))
       .timeout(timeout);
 
   /// La photo telle qu'elle part : JPEG, grand côté à [maxSide] au plus.
@@ -493,14 +485,12 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
 
   /// Corps de requête, au format OpenAI (exposé pour les tests).
   static Map<String, Object?> buildRequest({
-    required String model,
     required List<Map<String, Object?>> parts,
     required String language,
     required bool constrainJson,
     int maxTokens = _answerTokens,
   }) =>
       {
-        'model': model,
         'max_tokens': maxTokens,
         'temperature': 0.2,
         if (constrainJson) 'response_format': {'type': 'json_object'},

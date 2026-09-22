@@ -36,14 +36,13 @@ const _six = [
   'En pot dès trois centimètres de racines, dans un terreau aéré.',
 ];
 
-InfomaniakPropagationRefiner _refiner(http.Client client) => InfomaniakPropagationRefiner(
-    apiKey: 'tok', productId: '12345', model: 'Qwen/Qwen3.5-397B-A17B-FP8', client: client);
+InfomaniakPropagationRefiner _refiner(http.Client client) =>
+    InfomaniakPropagationRefiner(endpoint: Uri.parse('https://relais.test/ai'), client: client);
 
 void main() {
   group('la requête', () {
     test("emporte l'espèce, la méthode, le geste et ses étapes, et rien d'autre", () {
-      final body = InfomaniakPropagationRefiner.buildRequest(
-          model: 'm', scientificName: 'Epipremnum aureum', language: 'fr', kind: _vine, stepIds: _vineSteps, constrainJson: true);
+      final body = InfomaniakPropagationRefiner.buildRequest( scientificName: 'Epipremnum aureum', language: 'fr', kind: _vine, stepIds: _vineSteps, constrainJson: true);
       final messages = body['messages'] as List;
       final brief = jsonDecode((messages.last as Map)['content'] as String) as Map<String, dynamic>;
       expect(brief, {
@@ -61,8 +60,7 @@ void main() {
     });
 
     test('une division dit la division, pas la bouture', () {
-      final body = InfomaniakPropagationRefiner.buildRequest(
-          model: 'm', scientificName: 'Spathiphyllum wallisii', language: 'en', kind: _division, stepIds: _divisionSteps, constrainJson: false);
+      final body = InfomaniakPropagationRefiner.buildRequest( scientificName: 'Spathiphyllum wallisii', language: 'en', kind: _division, stepIds: _divisionSteps, constrainJson: false);
       final brief = jsonDecode(((body['messages'] as List).last as Map)['content'] as String) as Map<String, dynamic>;
       expect(brief['method'], 'division');
       expect(brief['guideKind'], 'division');
@@ -80,8 +78,8 @@ void main() {
       }
     });
 
-    test('sans clé, rien ne part', () {
-      final refiner = InfomaniakPropagationRefiner(apiKey: '', productId: '1', model: 'm');
+    test('sans relais, rien ne part', () {
+      final refiner = InfomaniakPropagationRefiner(endpoint: Uri.parse(''));
       expect(refiner.isConfigured, isFalse);
       expect(() => refiner.refine(scientificName: 'Monstera deliciosa', language: 'fr', kind: _vine, stepIds: _vineSteps),
           throwsA(isA<PropagationGuideException>()));
