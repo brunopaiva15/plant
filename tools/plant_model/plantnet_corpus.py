@@ -44,6 +44,7 @@ import argparse
 import csv
 import io
 import json
+import threading
 import time
 from pathlib import Path
 
@@ -180,6 +181,28 @@ def ecrire_splits(lignes: list[tuple[str, str, str, str]],
     return len(ecrites)
 
 
+def par_fil(ouvrir):
+    """Un lecteur par fil d'exécution, ouvert à la première lecture.
+
+    **`zipfile` et `RemoteZip` ne sont pas réentrants.** Les deux partagent un
+    seul objet fichier et se déplacent dedans ; huit fils sur la même archive
+    ne lèvent pas d'erreur, ils se volent leur position et rendent des octets
+    d'une autre image. Le désastre serait silencieux : des JPEG valides, au
+    mauvais endroit, encodés sans broncher par le teacher.
+
+    L'ouverture est paresseuse parce qu'elle coûte : à distance, chaque fil
+    relit le répertoire central de l'archive, trente mégaoctets.
+    """
+    local = threading.local()
+
+    def lire(chemin):
+        if not hasattr(local, 'lire'):
+            local.lire = ouvrir()
+        return local.lire(chemin)
+
+    return lire
+
+
 def main() -> int:  # pragma: no cover - réseau et disque
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -213,8 +236,9 @@ def main() -> int:  # pragma: no cover - réseau et disque
     if not afaire:
         print('tout est déjà là')
 
-    lire = lecteur(str(Path(args.archive).expanduser())
-                   if not str(args.archive).startswith('http') else args.archive)
+    source = (args.archive if str(args.archive).startswith('http')
+              else str(Path(args.archive).expanduser()))
+    lire = par_fil(lambda: lecteur(source)[0])
     debut, faites, sautees = time.perf_counter(), 0, 0
 
     def tirer(ligne):

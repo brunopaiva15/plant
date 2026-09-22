@@ -150,3 +150,41 @@ def test_la_sortie_est_un_jpeg_rgb():
     from PIL import Image
     im = Image.open(io.BytesIO(reduire(image((400, 400)), 320)))
     assert im.format == 'JPEG' and im.mode == 'RGB'
+
+
+# --------------------------------------------------------------------------
+# Un lecteur par fil
+# --------------------------------------------------------------------------
+
+def test_chaque_fil_ouvre_sa_propre_archive():
+    """`zipfile` et `RemoteZip` partagent un objet fichier et s'y déplacent :
+    huit fils sur la même archive se volent leur position et rendent les
+    octets d'une autre image, sans lever d'erreur."""
+    import threading
+    from concurrent.futures import ThreadPoolExecutor
+
+    from plantnet_corpus import par_fil
+
+    ouvertures = []
+    verrou = threading.Lock()
+
+    def ouvrir():
+        with verrou:
+            ouvertures.append(threading.current_thread().name)
+        return lambda chemin: threading.current_thread().name.encode()
+
+    lire = par_fil(ouvrir)
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        rendus = set(pool.map(lambda _: lire('x'), range(200)))
+    assert len(ouvertures) == len(set(ouvertures)) == len(rendus)
+
+
+def test_un_fil_nouvre_larchive_quune_fois():
+    """À distance, l'ouverture relit trente mégaoctets de répertoire
+    central : la payer à chaque image coûterait plus que les images."""
+    from plantnet_corpus import par_fil
+    compte = []
+    lire = par_fil(lambda: (compte.append(1), lambda c: b'x')[1])
+    for _ in range(5):
+        assert lire('a') == b'x'
+    assert len(compte) == 1
