@@ -43,16 +43,26 @@ ni île ni antenne — un œil de caméra au milieu du bord haut, l'heure, le
 wifi, la batterie. Sur sa fiche d'ouverture, les trois soins passent côte à
 côte : en colonne, ils laisseraient la moitié droite vide.
 
-Le sixième montre l'identification sur l'appareil : sur le simulateur,
-c'est la feuille « Espèce » de l'app, le modèle ayant regardé la photo du
-Ficus lyrata de la démo. Sur le web, où le modèle ne tourne pas,
-`compose.py` la redessine sur la fiche du Ficus assombrie — celle-là même
-qu'elle recouvre dans l'app —, avec des résultats vrais : la photo est une observation iNaturalist en CC0
-(`ident/ficus-lyrata.jpg`, observation 359128431, photo 655212161), absente
-du jeu d'entraînement, et les trois propositions avec leur cran de
-confiance sont la réponse du modèle livré, obtenue par `ident/score.py`,
-lue avec les seuils de l'app. Après chaque nouveau modèle : relancer
-`score.py`, reporter ses résultats dans `IDENT_RESULTS`, régénérer.
+Le sixième montre l'identification là où elle commence : l'étape photo de
+la création, la photo prise, les trois premiers noms qu'Iris pose dessus —
+nom courant en gras, nom scientifique dessous, la première proposition
+cernée de sauge. Le modèle tourne vraiment, sur la photo du Ficus lyrata de
+la démo. Le simulateur n'a pas de caméra : c'est « Choisir une photo » qui
+sert de prise de vue, et le magasin de photos de la démo
+(`lib/core/demo/demo_photo_storage.dart`) rend ce Ficus au lieu d'ouvrir
+une photothèque vide. Rien d'autre n'est simulé — l'écran, le modèle et les
+noms sont ceux de l'app.
+
+Sur le web, où il n'y a ni caméra ni modèle, cette étape ne se capture pas :
+`compose.py` montre alors l'autre façon d'identifier, la feuille « Espèce »
+redessinée sur la fiche du Ficus assombrie — celle-là même qu'elle recouvre
+dans l'app —, avec des résultats vrais : la photo est une observation
+iNaturalist en CC0 (`ident/ficus-lyrata.jpg`, observation 359128431, photo
+655212161), absente du jeu d'entraînement, et les trois propositions avec
+leur cran de confiance sont la réponse du modèle livré, obtenue par
+`ident/score.py`, lue avec les seuils de l'app. Après chaque nouveau
+modèle : relancer `score.py`, reporter ses résultats dans `IDENT_RESULTS`,
+régénérer.
 
 Sur la page d'une plante, la photo continue sous la barre d'état dessinée
 (en miroir, floue, assombrie), et les icônes passent en blanc.
@@ -112,12 +122,14 @@ lancement, le test règle les préférences d'un téléphone déjà en usage
 captures, que
 `test_driver/integration_test.dart` écrit dans `store/shots-<langue>/`
 (`store/shots-ipad-<langue>/` pour l'iPad).
-L'identification par Iris et le diagnostic rouvert depuis le journal sont
-ceux de l'app. Une scène qui échoue est signalée dans la sortie de
+Les noms posés sur la photo par Iris et le diagnostic rouvert depuis le
+journal sont ceux de l'app. Une scène qui échoue est signalée dans la sortie de
 `flutter drive` (avec ce qu'on lisait à l'écran, et une capture
 `<scène>-echec.png`), les autres se prennent quand même ; le visuel de la
 scène manquée reste tel quel. Pour rejouer quelques scènes seulement :
-`STORE_SCENES=identify,diagnosis LANGS=fr store/capture_ios.sh`.
+`STORE_SCENES=capture,diagnosis LANGS=fr store/capture_ios.sh`. Ce sont les
+noms des scènes du test, pas ceux des captures : la scène « garden » en
+prend quatre.
 
 Les captures d'appareil sont l'écran entier, avec la place de la barre
 d'état en haut (marqueur `.device` dans le dossier) : `compose.py` y
@@ -155,12 +167,14 @@ python3 store/compose.py store/shots-de store/de de
 python3 store/compose.py store/shots-it store/it it
 ```
 
-Sans capture `identify.png`, `compose.py` redessine la feuille « Espèce »
-sur `plant-ficus.png`, avec les résultats mesurés par `ident/score.py`.
+Sans capture `capture.png` — l'étape photo demande une photo, que le web ne
+sait pas fournir —, `compose.py` redessine la feuille « Espèce » sur
+`plant-ficus.png`, avec les résultats mesurés par `ident/score.py`. Le
+sixième visuel montre alors la feuille plutôt que l'étape photo : les deux
+disent la même chose de l'app, l'une après l'autre dans le parcours.
 
-L'étape Photo de la création n'est capturée nulle part : son viseur porte
-son déclencheur, et ni le web ni le simulateur n'ont de caméra — la capture
-ne montrerait que le repli sans viseur, deux boutons sur un cadre vide.
+Le viseur lui-même n'est capturé nulle part : ni le web ni le simulateur
+n'ont de caméra, et la capture ne montrerait qu'un cadre vide.
 
 `capture.mjs` demande Playwright (`npm i playwright`) ; la variable `CHROMIUM`
 peut pointer un binaire précis. Les emojis de l'app sont fournis par Flutter

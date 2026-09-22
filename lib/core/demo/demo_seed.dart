@@ -192,6 +192,28 @@ abstract final class DemoSeed {
     }
   }
 
+  /// Une photo du jeu de démo dans un fichier temporaire, ou `null` quand le
+  /// serveur qui les sert n'est pas là.
+  ///
+  /// [DemoPhotoStorage] s'en sert pour tenir lieu de photothèque : un
+  /// simulateur n'a pas de caméra et sa photothèque ne montre que les images
+  /// d'Apple, si bien que l'étape photo de la création n'aurait jamais de
+  /// plante à lire.
+  ///
+  /// [base] n'est là que pour les tests, qui servent les photos depuis un
+  /// port libre plutôt que depuis celui de `store/serve.py`.
+  static Future<File?> photoFile(String slug, {String? base}) async {
+    final client = HttpClient()..connectionTimeout = const Duration(seconds: 5);
+    try {
+      return await _fetch(client, '${base ?? photoBase}/$slug.jpg', slug).timeout(const Duration(seconds: 30));
+    } catch (e) {
+      debugPrint('photo de démo « $slug » non téléchargée ($e) : le picker ne rend rien');
+      return null;
+    } finally {
+      client.close(force: true);
+    }
+  }
+
   /// La photo, dans un fichier temporaire.
   static Future<File> _fetch(HttpClient client, String url, String slug) async {
     final response = await (await client.getUrl(Uri.parse(url))).close();

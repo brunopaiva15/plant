@@ -219,6 +219,30 @@ void main() {
       await shot('profile');
     });
 
+    // L'étape photo de la création, une fois la photo prise : Iris a posé ses
+    // trois premiers noms dessus, et ils y restent jusqu'à « Continuer ».
+    // C'est l'écran que vend le visuel « Quelle est cette plante ? ».
+    //
+    // Le simulateur n'a pas de caméra : l'étape montre donc ses deux boutons
+    // de repli, et « Choisir une photo » passe par le magasin de photos de la
+    // démo, qui rend le Ficus lyrata (core/demo/demo_photo_storage.dart).
+    await scene('capture', () async {
+      await go(Routes.plants);
+      await tapLabel(l10n.addPlant);
+      await tapText(l10n.choosePhoto);
+      // Le champ d'analyse tient deux secondes au minimum, le modèle prend le
+      // reste : les noms n'arrivent qu'après, un par un.
+      await wait(tester, 8000);
+      // Une photo sans noms ne vaut pas un visuel : c'est la scène qu'il faut
+      // réparer, pas le visuel qu'il faut livrer. Le chapeau de l'étape ne
+      // dit « Suggestions d'espèce » qu'une fois les noms posés — il dit
+      // « Analyse en cours… » tant que le modèle cherche, et « Aucune
+      // correspondance fiable » quand la photo n'a pas été servie.
+      if (find.text(l10n.identifyHint).evaluate().isEmpty) throw StateError('les noms d’Iris ne sont pas arrivés sur la photo');
+      await shot('capture');
+      await dismiss();
+    });
+
     // L'identification par Iris, sur la photo du Ficus lyrata : le modèle
     // tourne vraiment, la feuille « Espèce » est celle de l'app.
     await scene('identify', () async {
