@@ -32,6 +32,9 @@ ENTRAINEMENT = re.compile(
     r'c[ôo]ne ([\d.]+)\s+(\d+) img/s')
 # `  12000/243567  31.4 img/s  3 sautées  reste 123 min`
 CORPUS = re.compile(r'(\d+)/(\d+)\s+([\d.]+) img/s\s+(\d+) saut')
+# `  12800/243567  79.9 img/s  reste 0.8 h` — la passe du teacher. Elle ne
+# porte pas de « sautées » : le cache n'a pas le droit d'en perdre.
+CACHE = re.compile(r'(\d+)/(\d+)\s+([\d.]+) img/s\s+reste ([\d.]+) h')
 
 CONE_TEACHER = 0.2806  # § 19 ter de docs/14 — la géométrie qu'on copie
 # Ce qu'annonce Zenodo pour `plantnet_300K.zip`, au centième de Gio près. Le
@@ -74,6 +77,23 @@ def etat_corpus(lignes: list[str]) -> dict | None:
     faites, total = int(m[1]), int(m[2])
     return {'faites': faites, 'total': total, 'vitesse': float(m[3]),
             'sautees': int(m[4]), 'part': faites / total if total else 0.0}
+
+
+def etat_cache(lignes: list[str]) -> dict | None:
+    """L'avancée de `bioclip.py cache`, et si elle est finie.
+
+    La fin ne se lit pas sur le compteur : la dernière ligne de progression
+    s'écrit avant le dernier fragment. C'est la ligne de signature, écrite
+    après la boucle, qui dit que le cache est complet et lisible.
+    """
+    finie = any('— signature' in l for l in lignes)
+    m = derniere(lignes, CACHE)
+    if not m and not finie:
+        return None
+    fait, total = (int(m[1]), int(m[2])) if m else (0, 0)
+    return {'fait': fait, 'total': total, 'finie': finie,
+            'vitesse': float(m[3]) if m else 0.0,
+            'part': 1.0 if finie else (fait / total if total else 0.0)}
 
 
 def reste(fait: int, total: int, vitesse: float, par_pas: int = 1) -> float:
@@ -244,6 +264,16 @@ def tableau(args) -> str:  # pragma: no cover - assemble des lectures disque
             out.append('  vitesse inconnue — deuxième relevé au prochain '
                        'rafraîchissement')
 
+    k = etat_cache(lignes(Path(args.log_cache).expanduser()))
+    if k:
+        out.append('\nCACHE TEACHER')
+        if k['finie']:
+            out.append(f"  {barre(1.0)} terminé — {k['total']} vecteurs ajoutés")
+        else:
+            out.append(f"  {barre(k['part'])} {k['part'] * 100:4.1f} %   "
+                       f"{k['fait']}/{k['total']}   {k['vitesse']:.1f} img/s")
+            out.append(f"  reste {duree(reste(k['fait'], k['total'], k['vitesse']))}")
+
     c = etat_corpus(lignes(Path(args.log_corpus).expanduser()))
     out.append('\nCORPUS PL@NTNET')
     if c is None:
@@ -266,6 +296,8 @@ def main() -> int:  # pragma: no cover - boucle d'affichage
     ap.add_argument('--sortie', default='~/plant-data/iris10-complet')
     ap.add_argument('--log', default='~/plant-data/iris10-complet.log')
     ap.add_argument('--log-corpus', default='~/plant-data/plantnet-corpus.log')
+    ap.add_argument('--log-cache', default='~/plant-data/bioclip-plantnet.log',
+                    help="la passe du teacher sur un nouveau corpus")
     ap.add_argument('--cache', default='~/plant-data/bioclip')
     ap.add_argument('--archive', default='~/plant-data/plantnet_300K.zip',
                     help="le zip en cours de téléchargement")

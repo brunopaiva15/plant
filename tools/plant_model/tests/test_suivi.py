@@ -161,3 +161,44 @@ def test_un_fichier_qui_ne_grossit_plus_ne_divise_pas_par_zero():
     from suivi import avancement
     a = avancement(1024**3, 4.0, (1024**3, 1000.0), 1100.0)
     assert a['vitesse'] == 0.0 and a['reste'] == 0.0
+
+
+# --------------------------------------------------------------------------
+# La passe du teacher
+# --------------------------------------------------------------------------
+
+CACHE_EN_COURS = [
+    '981276 images, 0 déjà cachées, 243567 à faire (part 0/1)\n',
+    '  12800/243567  79.9 img/s  reste 0.8 h\n',
+    '  25600/243567  80.4 img/s  reste 0.8 h\n',
+]
+
+
+def test_lavancee_du_cache_se_lit():
+    from suivi import etat_cache
+    k = etat_cache(CACHE_EN_COURS)
+    assert (k['fait'], k['total'], k['vitesse']) == (25600, 243567, 80.4)
+    assert not k['finie']
+
+
+def test_la_fin_ne_se_lit_pas_sur_le_compteur():
+    """La dernière ligne de progression s'écrit avant le dernier fragment ;
+    c'est la ligne de signature, après la boucle, qui dit que le cache est
+    complet et lisible."""
+    from suivi import etat_cache
+    k = etat_cache(CACHE_EN_COURS + ['\n/home/x/bioclip — signature 5fcd9d9cc6fa\n'])
+    assert k['finie'] and k['part'] == 1.0
+
+
+def test_un_journal_de_cache_absent_ne_rend_rien():
+    from suivi import etat_cache
+    assert etat_cache([]) is None
+    assert etat_cache(['démarrage\n']) is None
+
+
+def test_la_ligne_du_corpus_ne_se_prend_pas_pour_celle_du_cache():
+    """Les deux se ressemblent ; seule celle du corpus porte « sautées »."""
+    from suivi import etat_cache, etat_corpus
+    ligne = ['  4000/243567  33.0 img/s  5 sautées  reste 120 min\n']
+    assert etat_cache(ligne) is None
+    assert etat_corpus(ligne)['faites'] == 4000
