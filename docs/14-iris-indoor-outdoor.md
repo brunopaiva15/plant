@@ -1529,11 +1529,21 @@ dorsal figé, sur une nuit à lui.
 | dorsal | 11,6 M | **31,3 M** |
 | avec projecteur | 12,7 M | **32,6 M** |
 | sortie du dorsal | 1 024 | **1 280** |
-| débit, lot 64, précision mixte | 266 img/s | **213 img/s** |
-| une époque | 49 min | **62 min** |
-| dix époques | 8,1 h | **10,4 h** |
+| débit, lot 64, précision mixte | 266 img/s | ~~213~~ **398 img/s** |
+| une époque | 49 min | ~~62~~ **33 min** |
+| dix époques | 8,1 h | ~~10,4~~ **5,6 h** |
 | VRAM, lot 64 | — | **2,75 Gio sur 8** |
 | fp16 livré | 23,8 Mo | ~63 Mo |
+
+> **Le débit barré a été mesuré carte partagée.** `distiller.py mesure` a
+> tourné pendant que la passe `fastvit_sa12` tenait le GPU : la VRAM mesurée
+> était concluante — ce qui passe à côté d'une autre passe passe seul — mais
+> le débit ne l'était pas, et seule la première réserve avait été écrite.
+> Seul sur la carte, MobileNetV4 tient **398 img/s, une fois et demie
+> fastvit** pour 2,7 fois ses paramètres : des convolutions pures en
+> `channels_last` et précision mixte vont plus vite sur GPU que les blocs de
+> FastViT. Ce qui ne dit rien de la latence sur téléphone — c'est la porte E,
+> et elle se mesure sur l'appareil.
 
 **Le lot reste à 64, et c'est la condition de l'expérience.** Avec l'InfoNCE,
 la taille du lot *est* la recette : les négatifs d'un lot de 64 ne sont pas
