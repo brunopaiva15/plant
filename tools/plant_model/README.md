@@ -554,3 +554,57 @@ Le mélange est **global**, pas par tampon : `splits.csv` est trié par espèce,
 et un lot monospécifique donnerait à la contrastive des négatifs de la même
 plante — elle apprendrait à séparer ce qu'il faut rapprocher. C'est le défaut
 du § 6.2, avec une conséquence nouvelle.
+
+### La passe complète
+
+Le balayage du § 19 ter de `docs/14` a tranché le poids : **0,2**. La passe
+qui en découle tient dans une commande, et dans un `tmux` parce qu'elle dure
+la nuit :
+
+```bash
+tmux new -s iris10-complet
+cd ~/plant/tools/plant_model
+~/venv-torch/bin/python3 -u distiller.py entrainer \
+  --dataset ~/plant-data/dataset-v8-indoor --cache ~/plant-data/bioclip \
+  --sortie ~/plant-data/iris10-complet --epoques 10 --demi --contrastive 0.2 \
+  2>&1 | tee -a ~/plant-data/iris10-complet.log
+```
+
+**Le `cd` fait partie de la commande.** `--banc` est relatif au répertoire
+courant ; lancé d'ailleurs, le banc est introuvable et aucune époque n'écrit
+son point de contrôle — huit heures pour un fichier de poids et rien à en
+dire. Le script le crie désormais au démarrage plutôt que de le taire.
+
+797 965 images, 273 img/s en précision mixte : **49 minutes par époque, huit
+heures en tout**. `--demi` n'est pas un raccourci de confort — sans lui le
+débit tombe à 134 img/s et la passe double.
+
+**Suivre sans attendre la fin.** Trois lectures, de la moins chère à la plus
+parlante :
+
+```bash
+# 1. où en est la passe
+tail -n 3 ~/plant-data/iris10-complet.log
+
+# 2. quelles époques ont déjà écrit leur banc
+ls -d ~/plant-data/iris10-complet/banc-e*
+
+# 3. ce que vaut l'époque N — la seule mesure qui décide
+cd ~/plant/tools/plant_model
+~/venv-torch/bin/python3 voisins.py --banc benchmark.csv \
+  --cache ~/plant-data/bioclip --embeddings ~/plant-data/iris10-complet/banc-e3
+
+# le même, à armes égales — 1 569 références au lieu de 5 813
+~/venv-torch/bin/python3 voisins.py --banc benchmark.csv \
+  --cache ~/plant-data/bioclip --embeddings ~/plant-data/iris10-complet/banc-e3 \
+  --masque indoor=../plant_dataset/masque_indoor.txt \
+  --masque outdoor=../plant_dataset/masque_outdoor.txt
+```
+
+La troisième se lit **sans toucher au GPU** : le banc est déjà encodé, elle ne
+fait que comparer des vecteurs. Elle tourne donc pendant l'entraînement, dans
+un second terminal, sans lui coûter une image par seconde.
+
+Ce qu'on y cherche, dans l'ordre : le **top-1 sur le répertoire entier** — la
+seule lecture qui décrive le produit — puis la **largeur du cône**, qui doit
+s'approcher des 0,2806 du teacher et non descendre en dessous.

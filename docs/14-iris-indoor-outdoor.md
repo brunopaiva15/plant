@@ -1098,10 +1098,32 @@ lit avant de lancer la nuit — pas celui qu'on espère.
 ### Étape 5 — la première distillation, et une seule variable
 
 Le student apprend à reproduire l'embedding du teacher : un projecteur de sa
-dimension de sortie vers 1 024, une perte cosinus sur le cache. Rien d'autre
-à ce stade — pas de supervision taxonomique, pas de contrastive, pas de
-hard negatives. Ce sont les étapes 7 et au-delà ; les mêler ici rendrait la
-porte A illisible.
+dimension de sortie vers 1 024, une perte cosinus sur le cache, **et un terme
+contrastif à 0,2**. Pas de supervision taxonomique, pas de *hard negatives* :
+ce sont les étapes 7 et au-delà.
+
+> **La contrastive a changé de camp en cours de route.** Elle était écrite ici
+> comme une étape 7, pour garder la porte A lisible. Le § 19 bis a montré
+> qu'une perte cosinus seule *fabrique* le cône refermé qui détruit la
+> recherche, et le § 19 ter l'a mesuré sur quatre bras. Ce n'est plus un
+> raffinement optionnel, c'est ce qui rend la baseline mesurable.
+
+**La passe complète**, telle qu'elle se lance :
+
+```bash
+tmux new -s iris10-complet
+cd ~/plant/tools/plant_model
+~/venv-torch/bin/python3 -u distiller.py entrainer \
+  --dataset ~/plant-data/dataset-v8-indoor --cache ~/plant-data/bioclip \
+  --sortie ~/plant-data/iris10-complet --epoques 10 --demi --contrastive 0.2 \
+  2>&1 | tee -a ~/plant-data/iris10-complet.log
+```
+
+797 965 images, dix époques, 273 img/s mesurés en précision mixte : **environ
+huit heures**. Chaque époque écrit `sortie/banc-eN/`, un cache d'embeddings du
+banc au format du teacher, que `voisins.py --embeddings` relit sans attendre
+la fin. C'est là que se vérifie la réserve du § 19 ter — si le poids optimal
+se déplace sur une passe longue, la courbe époque par époque le dira.
 
 FastViT contre MobileNetV4 Hybrid se compare **à recette identique** : même
 cache, même calendrier de taux, mêmes augmentations, même nombre d'époques.

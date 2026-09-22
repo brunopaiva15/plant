@@ -318,7 +318,15 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
         depart = int(e['epoque'])
         print(f'reprise à l\'époque {depart}')
 
-    banc = lire_banc(Path(args.banc).expanduser()) if Path(args.banc).expanduser().exists() else []
+    # Sans banc, la passe tourne huit heures et ne rend aucune mesure : le
+    # point de contrôle du § 19 bis est précisément ce qui décide. Le chemin
+    # est relatif au répertoire courant — le dire plutôt que le taire.
+    fichier_banc = Path(args.banc).expanduser()
+    banc = lire_banc(fichier_banc) if fichier_banc.exists() else []
+    if not banc:
+        print(f'ATTENTION : banc introuvable ({fichier_banc}) — aucune époque '
+              f'n\'écrira de point de contrôle. Lancer depuis tools/plant_model, '
+              f'ou passer --banc avec un chemin absolu.', flush=True)
     journal = open(sortie / 'journal.csv', 'a', newline='', encoding='utf-8')
     if journal.tell() == 0:
         csv.writer(journal).writerow(['epoque', 'pas', 'perte', 'accord', 'cone'])
