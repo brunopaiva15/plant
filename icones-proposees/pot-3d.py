@@ -31,7 +31,7 @@ bm.to_mesh(me);bm.free()
 potm=bpy.data.materials.new('terre');potm.use_nodes=True;nt=potm.node_tree;N=nt.nodes;L=nt.links
 bs=N['Principled BSDF'];bs.inputs['Roughness'].default_value=.62;bs.inputs['Coat Weight'].default_value=0;bs.inputs['Subsurface Weight'].default_value=.12;bs.inputs['Subsurface Radius'].default_value=(.3,.15,.1)
 # joues : deux taches roses en coordonnées objet
-tc=N.new('ShaderNodeTexCoord');base=N.new('ShaderNodeRGB');base.outputs[0].default_value=hexc('#FA8D62')
+tc=N.new('ShaderNodeTexCoord');base=N.new('ShaderNodeRGB');base.outputs[0].default_value=hexc('#FF7B45')
 cur=base.outputs[0]
 for x in ():
     d=N.new('ShaderNodeVectorMath');d.operation='DISTANCE';d.inputs[1].default_value=(x*1.02,-0.8,-0.22)
@@ -44,7 +44,7 @@ for x in ():
 sep=N.new('ShaderNodeSeparateXYZ');L.new(tc.outputs['Object'],sep.inputs[0])
 mr=N.new('ShaderNodeMapRange');mr.inputs[1].default_value=-1.5;mr.inputs[2].default_value=0.5;mr.inputs[3].default_value=.45;mr.inputs[4].default_value=0
 L.new(sep.outputs['Z'],mr.inputs[0])
-mx=N.new('ShaderNodeMix');mx.data_type='RGBA';mx.inputs['B'].default_value=hexc('#E0633C')
+mx=N.new('ShaderNodeMix');mx.data_type='RGBA';mx.inputs['B'].default_value=hexc('#EA4F1E')
 L.new(mr.outputs[0],mx.inputs['Factor']);L.new(cur,mx.inputs['A']);L.new(mx.outputs['Result'],bs.inputs['Base Color'])
 pot=obj('pot',me,potm)
 sw=pot.modifiers.new('tour','SCREW');sw.steps=96;sw.render_steps=96;sw.use_merge_vertices=True;sw.use_smooth_shade=True
@@ -56,7 +56,7 @@ soil=bpy.context.object;soil.data.materials.append(mat('terreau','#5E3A2A',rough
 dm=soil.modifiers.new('d','DISPLACE');tx=bpy.data.textures.new('n','CLOUDS');tx.noise_scale=.08;dm.texture=tx;dm.strength=.035
 bpy.ops.object.shade_smooth()
 
-green=mat('tige','#3DB26A',rough=.6,coat=0,sss=.1)
+green=mat('tige','#1FB05A',rough=.6,coat=0,sss=.1)
 # ---- tige
 cu=bpy.data.curves.new('tige','CURVE');cu.dimensions='3D';cu.bevel_depth=.07;cu.bevel_resolution=6;cu.use_fill_caps=True
 sp=cu.splines.new('BEZIER');sp.bezier_points.add(2)
@@ -91,21 +91,21 @@ def leaf(name,L_,W,fold,curl,loc,rot,col):
     # dégradé base → pointe
     ramp=N.new('ShaderNodeValToRGB');ramp.color_ramp.elements[0].color=hexc(col[0]);ramp.color_ramp.elements[1].color=hexc(col[1])
     Lk.new(se.outputs['X'],ramp.inputs[0])
-    mx=N.new('ShaderNodeMix');mx.data_type='RGBA';mx.inputs['B'].default_value=hexc('#A6EBA6')
+    mx=N.new('ShaderNodeMix');mx.data_type='RGBA';mx.inputs['B'].default_value=hexc('#9CF0A0')
     Lk.new(mr.outputs[0],mx.inputs['Factor']);Lk.new(ramp.outputs[0],mx.inputs['A']);Lk.new(mx.outputs['Result'],b.inputs['Base Color'])
     o=obj(name,me,m);o.location=loc;o.rotation_euler=[math.radians(a) for a in rot]
     s=o.modifiers.new('e','SOLIDIFY');s.thickness=.025;s.offset=0;subsurf(o,2)
     return o
-leaf('feuilleD',1.25,.40,.45,.10,(0.10,0.02,1.66),(70,-28,0),('#2FA863','#7EE08E'))
-leaf('feuilleG',0.95,.31,.45,.08,(0.0,0.0,1.44),(-70,-18,180),('#2FA863','#6FD683'))
+leaf('feuilleD',1.25,.40,.45,.10,(0.10,0.02,1.66),(70,-28,0),('#14A34F','#5FE67A'))
+leaf('feuilleG',0.95,.31,.45,.08,(0.0,0.0,1.44),(-70,-18,180),('#14A34F','#52DE70'))
 
 # ---- monde : fond lilas vu par la caméra, lumière douce ailleurs
 w=bpy.data.worlds.new('w');sc.world=w;w.use_nodes=True;nt=w.node_tree;N=nt.nodes;L=nt.links
 bg=N['Background'];tc=N.new('ShaderNodeTexCoord');se=N.new('ShaderNodeSeparateXYZ');L.new(tc.outputs['Window'],se.inputs[0])
 ma=N.new('ShaderNodeMath');ma.operation='ADD';L.new(se.outputs['X'],ma.inputs[0]);mb=N.new('ShaderNodeMath');mb.operation='SUBTRACT';mb.inputs[0].default_value=1;L.new(se.outputs['Y'],mb.inputs[1]);L.new(mb.outputs[0],ma.inputs[1])
 mm=N.new('ShaderNodeMath');mm.operation='MULTIPLY';mm.inputs[1].default_value=.5;L.new(ma.outputs[0],mm.inputs[0])
-ramp=N.new('ShaderNodeValToRGB');e=ramp.color_ramp.elements;e[0].color=hexc('#A08CFF');e[1].color=hexc('#D2BEFF');L.new(mm.outputs[0],ramp.inputs[0])
-amb=N.new('ShaderNodeBackground');amb.inputs[0].default_value=hexc('#E4DAFF');amb.inputs[1].default_value=.45
+ramp=N.new('ShaderNodeValToRGB');e=ramp.color_ramp.elements;e[0].color=hexc('#8A6DFF');e[1].color=hexc('#C9A8FF');L.new(mm.outputs[0],ramp.inputs[0])
+amb=N.new('ShaderNodeBackground');amb.inputs[0].default_value=hexc('#E4DAFF');amb.inputs[1].default_value=.4
 lp=N.new('ShaderNodeLightPath');mix=N.new('ShaderNodeMixShader');bg.inputs[1].default_value=1
 L.new(ramp.outputs[0],bg.inputs[0]);L.new(lp.outputs['Is Camera Ray'],mix.inputs[0]);L.new(amb.outputs[0],mix.inputs[1]);L.new(bg.outputs[0],mix.inputs[2])
 L.new(mix.outputs[0],N['World Output'].inputs[0])
@@ -126,5 +126,6 @@ sc.render.resolution_x=sc.render.resolution_y=1024;sc.view_settings.view_transfo
 sc.render.filepath=OUT;bpy.ops.render.render(write_still=True)
 import numpy as np
 im=bpy.data.images.load(OUT);px=np.array(im.pixels[:],dtype=np.float32).reshape(-1,4)
+lum=(px[:,:3]@np.array([.2126,.7152,.0722],dtype=np.float32))[:,None];px[:,:3]=np.clip(lum+(px[:,:3]-lum)*1.12,0,1)
 rng=np.random.default_rng(7);g=rng.normal(0,.018,(px.shape[0],1)).astype(np.float32)
 px[:,:3]=np.clip(px[:,:3]+g,0,1);im.pixels[:]=px.ravel();im.filepath_raw=OUT;im.file_format='PNG';im.save()
