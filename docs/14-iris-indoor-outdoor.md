@@ -1391,6 +1391,72 @@ montrent pas une tendance** — c'est la même leçon que la prédiction du
    celui qui progresse le plus vite et qui arrive au contact d'Iris 9 ;
 3. **les deux se mesurent séparément**, à recette figée, un bras à la fois.
 
+### 19 octies. Époque 6 : la pente tient, et elle ne suffit pas — 22 septembre 2026
+
+**Prédit 0,6454, mesuré 0,6451.** L'époque 6 tombe exactement une octave
+après l'époque 3, et la pente annoncée au § 19 sexies s'y vérifie à trois
+dix-millièmes près. Ce n'est plus une extrapolation qu'on prolonge avec
+réserve : c'est une loi mesurée sur deux octaves de budget.
+
+| indoor, textes, armes égales | é1 | é2 | é3 | **é6** | é10 projeté | Iris 9 |
+|---|---|---|---|---|---|---|
+| top-1 | 0,5004 | 0,5590 | 0,5909 | **0,6451** | **~0,685** | 0,8119 |
+
+#### Les trois domaines avancent à la même vitesse
+
+| pente é3 → é6, une octave pleine | |
+|---|---|
+| indoor, textes | **+0,0542** |
+| outdoor, textes | **+0,0545** |
+| hors répertoire, centroïdes | **+0,0555** |
+
+**Trois domaines très différents, la même pente au millième.** Le student ne
+rattrape pas un domaine plus vite qu'un autre : il monte uniformément en
+budget logarithmique. Rien ne sature — et c'est précisément ce qui rend le
+verdict clair.
+
+#### Ce que rend la passe complète, et ce qu'il manque
+
+| é10 projeté | student | Iris 9 masqué | teacher |
+|---|---|---|---|
+| indoor, textes, armes égales | ~0,685 | **0,8119** | 0,8119 |
+| indoor, centroïdes, armes égales | ~0,745 | — | 0,8456 |
+| outdoor, textes, armes égales | **~0,70** | **0,7615** | 0,9095 |
+| hors répertoire, centroïdes | ~0,595 | **0,0** | 0,8405 |
+
+> **Correction de la projection outdoor du § 19 sexies.** J'y annonçais
+> ~0,76, donc Iris 9 rattrapé. C'était faux : la pente outdoor y était
+> moyennée sur é1 → é3, et l'intervalle é2 → é3 était anormalement raide
+> (+0,1086 par octave contre +0,0545 mesuré depuis). L'octave pleine é3 → é6
+> donne ~0,70. **Outdoor ne rattrape pas Iris 9 à ce dorsal**, il s'en
+> approche à dix points.
+
+#### Et ce que coûterait de combler l'écart par le seul budget
+
+Douze points et demi à +0,054 par octave, c'est **2,35 octaves** — soit
+cinquante et une époques, **quarante-deux heures de carte**, et à condition
+qu'aucun plafond n'apparaisse sur un budget cinq fois plus grand. Ce n'est
+pas le bon pari : à capacité égale la pente est ce qu'elle est, et c'est la
+capacité qu'il faut changer. Le bras MobileNetV4 du § 19 septies passe donc
+de « à essayer » à **la seule voie mesurée qui reste**.
+
+#### L'alarme des centroïdes est levée
+
+| écart centroïdes − texte, indoor | é1 | é2 | é3 | **é6** | teacher |
+|---|---|---|---|---|---|
+| | +7,19 | +8,16 | +6,84 | **+6,03** | +3,4 |
+
+Il se resserre depuis é2, régulièrement, vers l'écart du teacher. La
+dépendance aux références bâties sur nos images diminue quand le student
+s'améliore — ce qui était l'hypothèse de départ, contredite par deux points,
+et rétablie par quatre.
+
+#### Et la dérive du cône ne disait rien
+
+Elle était à surveiller *si* le top-1 décevait. Il n'a pas déçu. Les 0,3266
+relevés sur un lot de 64 sont du bruit autour de 0,31, pas un cône qui se
+referme.
+
 ### 19 septies. Le bras MobileNetV4, chiffré avant d'être lancé
 
 | | `fastvit_sa12` | **`mobilenetv4_conv_large.e500_r256_in1k`** |
