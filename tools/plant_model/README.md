@@ -658,3 +658,37 @@ pour rien.
 
 **Pas pendant la passe en cours.** Une variable à la fois (§ 13.6 de
 `docs/09`) : ajouter le corpus au milieu rendrait l'écart inattribuable.
+
+## Suivre deux passes d'un coup d'œil
+
+```bash
+python3 suivi.py              # une fois
+python3 suivi.py --boucle 30  # se rafraîchit, Ctrl-C pour sortir
+```
+
+```
+DISTILLATION
+  époque 2/10   ███████████████············· 54.5 %   267 img/s
+  perte 0.4078   accord 0.6941   cône 0.3015  (teacher 0.2806)
+  reste époque 23 min   passe 7 h 01
+  cône sur 400 relevés : 0.3210 → 0.3015  (s'étale)
+  points de contrôle : e1, e2
+  → python3 voisins.py --banc benchmark.csv --cache ~/plant-data/bioclip …
+
+CORPUS PL@NTNET
+  ████························ 14.2 %   34600/243567   33.0 img/s
+  12 sautées   reste 1 h 45
+```
+
+**Il ne lit que des fichiers déjà écrits** — pas de GPU, pas de réseau, pas
+de modèle chargé. Il tourne donc en boucle sans rien coûter aux deux passes
+qu'il regarde.
+
+Deux points de lecture valent mieux qu'un : le **cône** est donné avec sa
+tendance, parce que c'est son sens qui est le signal d'alarme du § 19 bis de
+`docs/14`. Un cône qui se referme pendant que la perte descend annonce un
+student qui ne saura rien retrouver, et la courbe de perte ne le dira pas.
+
+**Le chiffre qui décide n'y est pas.** Il est dans `voisins.py --embeddings`,
+sur un `banc-eN` ; le tableau se contente de signaler ceux qui existent et
+d'écrire la commande à copier.
