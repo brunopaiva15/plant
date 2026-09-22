@@ -187,12 +187,6 @@ class ProfileScreen extends ConsumerWidget {
               const SizedBox(height: Space.lg),
               FloraGroup(
                 children: [
-                  FloraListRow(
-                    leading: Icon(CupertinoIcons.heart_fill, size: 20, color: c.rose),
-                    title: l10n.supportSettings,
-                    subtitle: prefs.hasSupported ? l10n.supportAlready : l10n.supportFreeForever,
-                    onTap: () => context.push(Routes.support),
-                  ),
                   // La fenêtre des nouveautés s'ouvre d'elle-même après une
                   // mise à jour, une seule fois, et jamais sur une
                   // installation neuve — qui découvre tout. Cette ligne

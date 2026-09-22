@@ -40,14 +40,14 @@ Les **routines** (ce qui doit se passer) sont strictement séparées des **actio
 | Fiche plante | photo, nom, prochains soins, actions rapides, timeline | informations, relations, fichiers, options avancées |
 | Action | type, « Enregistrer » | date, note, quantité |
 
-## Modèle économique : gratuit, avec un soutien facultatif
-- **Tout est gratuit et sans limite.** Aucune fonction réservée, aucune publicité,
-  aucun compte obligatoire, aucun plafond de plantes.
-- Un achat unique, facultatif, permet de remercier le développeur. Il ne
-  déverrouille rien : c'est un pourboire, pas une clé.
-- `SupportService` (domaine) + adaptateur magasin (`StoreSupportService`, produit
-  non consommable `ch.vergasta.plant.support`). Là où le magasin n'existe pas —
-  le web, un appareil sans achat intégré — l'écran le dit au lieu d'afficher un
-  bouton mort.
-- Un point d'entrée, évitable d'un geste : une ligne dans Profil.
-  L'onboarding ne le propose plus.
+## Modèle économique : un achat unique
+- **L'application se paie une fois, au téléchargement sur l'App Store.** Le
+  prix est celui que fixe App Store Connect ; l'application ne l'affiche
+  nulle part.
+- Une fois achetée, **tout est inclus et sans limite** : aucune fonction
+  réservée, aucun abonnement, aucune publicité, aucun compte obligatoire,
+  aucun plafond de plantes.
+- Aucun achat intégré : l'ancien soutien facultatif (un pourboire au
+  développeur, dans l'onboarding puis dans Profil) est retiré, avec son
+  service et le plugin `in_app_purchase`. Une application déjà payée ne
+  redemande rien.

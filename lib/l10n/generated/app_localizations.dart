@@ -288,12 +288,6 @@ abstract class AppLocalizations {
   /// **'La recherche en ligne demande une connexion ; la reconnaissance sur votre appareil, non.'**
   String get offlineIdentification;
 
-  /// No description provided for @offlineSupport.
-  ///
-  /// In fr, this message translates to:
-  /// **'L\'achat demande une connexion.'**
-  String get offlineSupport;
-
   /// No description provided for @tabToday.
   ///
   /// In fr, this message translates to:
@@ -8765,96 +8759,6 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'{count} espèces consultables hors ligne'**
   String aboutSpeciesCount(String count);
-
-  /// No description provided for @supportTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Auxine est gratuite'**
-  String get supportTitle;
-
-  /// No description provided for @supportBody.
-  ///
-  /// In fr, this message translates to:
-  /// **'Toutes les fonctions sont accessibles. Aucun abonnement, aucune publicité, aucun compte obligatoire.'**
-  String get supportBody;
-
-  /// No description provided for @supportOffer.
-  ///
-  /// In fr, this message translates to:
-  /// **'Pour aider le développeur, un achat unique suffit.'**
-  String get supportOffer;
-
-  /// No description provided for @supportOnce.
-  ///
-  /// In fr, this message translates to:
-  /// **'Une seule fois'**
-  String get supportOnce;
-
-  /// No description provided for @supportGive.
-  ///
-  /// In fr, this message translates to:
-  /// **'Soutenir · {price}'**
-  String supportGive(String price);
-
-  /// No description provided for @supportRestore.
-  ///
-  /// In fr, this message translates to:
-  /// **'Restaurer mon soutien'**
-  String get supportRestore;
-
-  /// No description provided for @supportThanksTitle.
-  ///
-  /// In fr, this message translates to:
-  /// **'Merci'**
-  String get supportThanksTitle;
-
-  /// No description provided for @supportThanksBody.
-  ///
-  /// In fr, this message translates to:
-  /// **'Votre soutien est enregistré.'**
-  String get supportThanksBody;
-
-  /// No description provided for @supportUnavailable.
-  ///
-  /// In fr, this message translates to:
-  /// **'L\'achat n\'est pas disponible sur cet appareil.'**
-  String get supportUnavailable;
-
-  /// No description provided for @supportFailed.
-  ///
-  /// In fr, this message translates to:
-  /// **'L\'achat n\'a pas abouti.'**
-  String get supportFailed;
-
-  /// No description provided for @supportNothingToRestore.
-  ///
-  /// In fr, this message translates to:
-  /// **'Aucun soutien à restaurer.'**
-  String get supportNothingToRestore;
-
-  /// No description provided for @supportSettings.
-  ///
-  /// In fr, this message translates to:
-  /// **'Soutenir le développeur'**
-  String get supportSettings;
-
-  /// No description provided for @supportFreeForever.
-  ///
-  /// In fr, this message translates to:
-  /// **'Gratuite, sans limite'**
-  String get supportFreeForever;
-
-  /// No description provided for @supportAlready.
-  ///
-  /// In fr, this message translates to:
-  /// **'Merci pour votre soutien'**
-  String get supportAlready;
-
-  /// No description provided for @supportNoThanks.
-  ///
-  /// In fr, this message translates to:
-  /// **'Non merci'**
-  String get supportNoThanks;
 
   /// No description provided for @emptyGardenSubtitle.
   ///

@@ -41,7 +41,7 @@ Règle : les widgets ne connaissent ni drift ni la plateforme ; ils consomment d
 ## État du réseau (`core/network/`)
 Le jardin, les soins et le journal vivent sur l'appareil et ne demandent rien à
 personne. Une poignée de fonctions, elles, n'existent que sur le réseau :
-liens de partage, collaboration, diagnostic, recherche GBIF, achat de soutien.
+liens de partage, collaboration, diagnostic, recherche GBIF.
 Sans connexion, leurs requêtes ne partaient pas *et ne revenaient pas* — un
 écran tournait indéfiniment plutôt que de dire ce qui manquait.
 

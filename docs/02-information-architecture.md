@@ -8,7 +8,7 @@ Tab bar
 ├── Aujourd'hui   (ce qui demande attention)
 ├── Plantes       (la collection)
 ├── Jardin        (emplacements, [inventaire P2], [calendrier P2])
-└── Profil        (apparence, notifications, archives, compte, soutien, à propos)
+└── Profil        (apparence, notifications, archives, compte, à propos)
 ```
 
 ## Hiérarchie des écrans

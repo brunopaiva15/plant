@@ -43,8 +43,6 @@ class PreferencesService {
 
   /// L'utilisateur a-t-il déjà soutenu le développeur ? Ne déverrouille rien :
   /// sert seulement à ne plus lui proposer, et à dire merci.
-  bool get hasSupported => _prefs.getBool('has_supported') ?? false;
-  Future<void> setSupported(bool value) => _prefs.setBool('has_supported', value);
 
   /// Repli vers Pl@ntNet quand le modèle local hésite. Coupé, tout reste
   /// sur l'appareil.
