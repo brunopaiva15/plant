@@ -12,7 +12,8 @@
 # graine fixe.
 #
 # Variables d'environnement, décrites plus bas : YEUX, CLIN, FOND, OBJETS,
-# CADRE, CIBLE_Z, SOL, et YEUX_Z, YEUX_X, YEUX_R pour placer les yeux.
+# CADRE, CIBLE_Z, SOL, POT_BAS, RES, et YEUX_Z, YEUX_X, YEUX_R pour placer
+# les yeux.
 # ============================================================
 import bpy, bmesh, math, sys, os
 # YEUX=1 pose deux yeux sur le pot
@@ -27,6 +28,11 @@ CADRE=float(os.environ.get('CADRE','1'))
 CIBLE_Z=float(os.environ.get('CIBLE_Z','1.22'))
 # SOL=1 pose sous le pot un sol qui ne garde que son ombre (fond transparent)
 SOL=os.environ.get('SOL')=='1'
+# POT_BAS : hauteur du fond du pot. -1,6 pour l'icône, où le cadre le coupe ;
+# plus haut, un pot trapu qu'on montre entier
+POT_BAS=float(os.environ.get('POT_BAS','-1.6'))
+# RES : côté de l'image, en pixels
+RES=int(os.environ.get('RES','1024'))
 from mathutils import Vector
 argv=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
 SAMPLES=int(argv[0]) if argv else 64; OUT=argv[1] if len(argv)>1 else '/tmp/r.png'
@@ -52,7 +58,9 @@ def subsurf(o,l=3):
     for p in o.data.polygons: p.use_smooth=True
 
 # ---- pot: profil tourné
-prof=[(0.0,-1.6),(0.70,-1.6),(0.72,-1.55),(0.93,0.50),(0.94,0.55),(0.97,0.57),(1.10,0.585),(1.15,0.63),(1.165,0.72),(1.165,0.86),
+# rayon de la paroi à la hauteur z : la même pente quel que soit le fond
+paroi=lambda z: 0.72+0.21*(z+1.55)/2.05
+prof=[(0.0,POT_BAS),(paroi(POT_BAS+0.05)-0.02,POT_BAS),(paroi(POT_BAS+0.05),POT_BAS+0.05),(0.93,0.50),(0.94,0.55),(0.97,0.57),(1.10,0.585),(1.15,0.63),(1.165,0.72),(1.165,0.86),
       (1.15,0.93),(1.10,0.955),(1.03,0.95),(0.99,0.92),(0.98,0.86),(0.0,0.86)]
 me=bpy.data.meshes.new('pot');bm=bmesh.new()
 vs=[bm.verts.new((r,0,z)) for r,z in prof]
@@ -201,7 +209,7 @@ cam=bpy.data.cameras.new('cam');cam.lens=132*CADRE;co=obj('cam',cam);sc.camera=c
 co.location=(0,-11.5,3.2);d=Vector((0,0,CIBLE_Z))-co.location;co.rotation_euler=d.to_track_quat('-Z','Y').to_euler()
 
 sc.render.engine='CYCLES';sc.cycles.device='CPU';sc.cycles.samples=SAMPLES;sc.cycles.use_denoising=True
-sc.render.resolution_x=sc.render.resolution_y=1024;sc.view_settings.view_transform='Standard';sc.view_settings.look='None'
+sc.render.resolution_x=sc.render.resolution_y=RES;sc.view_settings.view_transform='Standard';sc.view_settings.look='None'
 sc.render.film_transparent=not FOND
 if SOL:
     bpy.ops.mesh.primitive_plane_add(size=30,location=(0,0,-1.6));bpy.context.object.is_shadow_catcher=True

@@ -1033,7 +1033,8 @@ La scène entière est décrite par `tool/app_icon_scene.py`, sans fichier
   ils reprennent ainsi le cadrage de l'icône, et le pot continue sous le
   masque au lieu de s'arrêter net. Pas de retrait dans `ic_launcher.xml`.
 - `fond.png` : le dégradé seul, fond de l'icône adaptative.
-- `lancement.png` : le pot entier, caméra baissée sur son milieu, fond
+- `lancement.png` : le pot raccourci (`POT_BAS`), à peine plus long que ce
+  qu'en montre l'icône, entier, caméra baissée sur son milieu, fond
   transparent. C'est lui qu'on voit à l'ouverture (voir *L'ouverture*).
 - `lancement_clin_50`, `_85`, `_100` : au même cadrage, l'œil de droite
   qui se ferme, découpé dans la zone `OEIL`.
@@ -1064,7 +1065,9 @@ jusqu'à laisser voir l'application. 1,4 seconde en tout.
 
 **Tout l'écran est au sauge de l'icône** (#459765, le milieu de son
 dégradé), en clair comme en sombre, et le pot y est posé entier, sur une
-ombre de contact : il ne se détache d'aucun cadre. L'icône elle-même ne
+ombre de contact : il ne se détache d'aucun cadre. Ce pot est raccourci : à
+peine plus long que ce qu'en montre l'icône, il en garde la silhouette
+trapue, là où le pot de l'icône montré en entier paraissait un gobelet. L'icône elle-même ne
 convenait pas — son dégradé et son pot coupé par le bas auraient laissé voir
 un carré au milieu de l'écran. L'ombre est dessinée à la composition et non
 par Blender : la lampe principale l'allonge hors du cadre, et une ombre
@@ -1079,12 +1082,12 @@ coupée au bord de l'image se verrait sur le fond uni.
 
 **Le premier cadre est l'écran natif.** iOS (`LaunchScreen.storyboard`) et
 Android (`launch_background.xml`, puis `values-v31` à partir d'Android 12)
-montrent le même pot de 200 points au centre, sur le même sauge.
+montrent le même pot de 160 points au centre, sur le même sauge.
 `LaunchSplash` reprend exactement cette image : on ne voit pas la relève.
 Pour ce faire, il retient le premier cadre (`deferFirstFrame`) le temps de
 décoder ses images — une seconde au plus —, sinon le fond paraîtrait seul un
 instant. Android 12 ne montre qu'un disque de 192 dp au centre de l'icône de
-lancement : le pot, feuilles comprises, y tient à 200 dp. Et l'ouverture
+lancement : le pot, feuilles comprises, y tient largement à 160 dp. Et l'ouverture
 passe au-dessus du grain de l'application : l'écran natif n'en a pas.
 
 **Le clin d'œil** ne rejoue pas la 3D : ce sont trois vignettes de l'œil de

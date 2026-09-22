@@ -13,8 +13,9 @@
 #   avant_plan_adaptatif.png  le pot seul, champ élargi d'un tiers pour
 #                             l'avant-plan adaptatif d'Android ;
 #   fond.png                  le dégradé sauge seul ;
-#   lancement.png             le pot entier, fond transparent : le logo de
-#                             l'écran de lancement et de l'ouverture ;
+#   lancement.png             le pot raccourci, entier, fond transparent :
+#                             le logo de l'écran de lancement et de
+#                             l'ouverture ;
 #   lancement_clin_50/85/100  l'œil de droite à mi-fermeture, presque fermé,
 #                             fermé en arc, au cadrage du lancement —
 #                             découpé dans la zone OEIL.
@@ -49,9 +50,10 @@ CALQUES = {
     "avant_plan_adaptatif": {"FOND": "0", "CADRE": str(2 / 3)},
     "fond": {"OBJETS": "0"},
 }
-# Le pot entier, pour l'écran de lancement : champ élargi, caméra baissée
-# sur le milieu du pot.
-LANCEMENT = {"FOND": "0", "CADRE": "0.65", "CIBLE_Z": "0.3"}
+# Le pot de l'écran de lancement : raccourci pour qu'on le voie entier sans
+# qu'il paraisse plus long que sur l'icône, champ un peu élargi, caméra
+# baissée sur son milieu.
+LANCEMENT = {"FOND": "0", "POT_BAS": "-0.6", "CADRE": "0.84", "CIBLE_Z": "0.8"}
 CALQUES["lancement"] = LANCEMENT
 for clin in ("50", "85", "100"):
     CALQUES[f"lancement_clin_{clin}"] = {**LANCEMENT, "CLIN": str(int(clin) / 100)}

@@ -6,7 +6,7 @@ import '../design_system/design_system.dart';
 /// grossit jusqu'à disparaître et laisse voir l'application.
 ///
 /// Le premier cadre reprend exactement l'écran de lancement natif — le pot de
-/// 200 points au centre, sur le sauge du fond de l'icône —, si bien qu'on ne
+/// 160 points au centre, sur le sauge du fond de l'icône —, si bien qu'on ne
 /// voit pas la relève entre le système et Flutter. Pour que ce
 /// premier cadre porte déjà le logo, il est retenu (`deferFirstFrame`) le
 /// temps de décoder les images : sinon le fond apparaîtrait seul un instant.
@@ -14,8 +14,8 @@ import '../design_system/design_system.dart';
 /// Avec « réduire les animations », ni clin d'œil ni zoom : le pot reste un
 /// instant, puis s'efface. Un toucher passe directement au zoom.
 ///
-/// Les images viennent de `tool/build_app_icon.py` : `logo.webp` est le pot
-/// entier sur son ombre, fond transparent, `clin_*.webp` l'œil de droite à
+/// Les images viennent de `tool/build_app_icon.py` : `logo.webp` est le pot,
+/// raccourci pour se montrer entier, sur son ombre, fond transparent, `clin_*.webp` l'œil de droite à
 /// trois moments de sa fermeture, découpé dans le même cadrage et fondu sur
 /// les bords.
 class LaunchSplash extends StatefulWidget {
@@ -27,7 +27,7 @@ class LaunchSplash extends StatefulWidget {
   /// Côté de l'image du pot, en points : le même que celui des écrans natifs
   /// (`LaunchScreen.storyboard`, `launch_background.xml`, et l'icône
   /// d'Android 12, posée au même côté dans son cadre de 288 dp).
-  static const double logoSize = 200;
+  static const double logoSize = 160;
 
   /// Le fond : le sauge de l'icône, pris au milieu de son dégradé, en clair
   /// comme en sombre. Sur ce fond uni, le pot ne se détache d'aucun cadre.
@@ -36,7 +36,7 @@ class LaunchSplash extends StatefulWidget {
 
   /// La zone de l'œil dans l'image du pot, de 1024 px, là où se posent les
   /// images du clin d'œil. Même valeur que `OEIL` dans `tool/build_app_icon.py`.
-  static const Rect eyeRect = Rect.fromLTWH(497, 486, 144, 144);
+  static const Rect eyeRect = Rect.fromLTWH(497, 614, 176, 176);
 
   static const _logo = AssetImage('assets/splash/logo.webp');
   static const _wink = [

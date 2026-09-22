@@ -30,20 +30,20 @@ COTE = 1024
 # La zone de l'œil de droite dans le rendu du lancement, de 1024 px (gauche,
 # haut, droite, bas) : les images du clin d'œil y sont découpées, et
 # `LaunchSplash` les y repose. Même valeur que `LaunchSplash.eyeRect`.
-OEIL = (497, 486, 641, 630)
+OEIL = (497, 614, 673, 790)
 # Dans cette zone, l'image du clin d'œil est pleine jusqu'à ce rayon, puis
 # se fond dans le logo jusqu'au bord : le raccord ne se voit pas.
-OEIL_PLEIN = 46
+OEIL_PLEIN = 56
 
-# L'écran de lancement : le pot entier au centre, sur un sauge uni pris au
+# L'écran de lancement : le pot raccourci au centre, sur un sauge uni pris au
 # milieu du dégradé de l'icône. Même valeurs que `LaunchSplash.logoSize` et
 # `LaunchSplash.background`, et que les couleurs `splash_background`
 # d'Android et `LaunchBackground` d'iOS.
-LOGO = 200
+LOGO = 160
 SAUGE = "#459765"
 # Android 12 pose l'icône de lancement dans un cadre de 288 dp dont seul un
-# disque de 192 dp se voit. Le pot, feuilles comprises, tient à 94 % du
-# demi-côté de son image : à 200 dp, il reste dans ce disque.
+# disque de 192 dp se voit. Le pot, feuilles comprises, tient dans le cercle
+# inscrit de son image : à 160 dp, il reste loin du bord de ce disque.
 CADRE_ANDROID_12 = 288
 
 APPICONSET = RACINE / "ios/Runner/Assets.xcassets/AppIcon.appiconset"

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Écran de lancement jusqu'à Android 11 : le pot de 200 dp au centre, sur
+<!-- Écran de lancement jusqu'à Android 11 : le pot de 160 dp au centre, sur
      le sauge de l'icône. Le premier cadre de Flutter (LaunchSplash) reprend
      exactement cette image avant de l'animer. Android 12 et au-delà passent
      par values-v31/styles.xml. -->
