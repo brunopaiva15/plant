@@ -216,3 +216,22 @@ def test_une_passe_tuee_ne_bloque_pas_le_dossier(tmp_path):
 def test_un_dossier_neuf_nest_pas_verrouille(tmp_path):
     from plantnet_corpus import verrou_vivant
     assert not verrou_vivant(tmp_path / '.passe-en-cours')
+
+
+# --------------------------------------------------------------------------
+# Quand l'archive ne s'ouvre pas
+# --------------------------------------------------------------------------
+
+def test_un_429_dit_quoi_faire_pas_ou_ca_a_cassé():
+    """Une trace de dix cadres ne dit pas quoi faire. Ici il n'y a qu'une
+    chose à faire, et elle tient en deux commandes."""
+    from plantnet_corpus import diagnostic
+    m = diagnostic(RuntimeError('429 Client Error: TOO MANY REQUESTS for url: …'),
+                   '/data/plantnet_300K.zip', '/data/plantnet-300k')
+    assert 'curl' in m and '--archive /data/plantnet_300K.zip' in m
+
+
+def test_une_autre_erreur_nest_pas_deguisee_en_429():
+    from plantnet_corpus import diagnostic
+    m = diagnostic(FileNotFoundError('pas là'), '/z.zip', '/s')
+    assert 'curl' not in m and 'FileNotFoundError' in m

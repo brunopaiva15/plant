@@ -620,10 +620,25 @@ python3 plantnet_corpus.py --sortie ~/plant-data/plantnet-300k
 au format de `tools/plant_dataset`, que `bioclip.py` et `distiller.py` lisent
 sans une ligne de changement.
 
-Sans `--archive` local, l'archive Zenodo est lue **par plages** : rien n'est
-téléchargé en entier, mais chaque image coûte une requête. Avec le zip sur
-disque (29,5 Gio), c'est une lecture locale, plus rapide. Dans les deux cas
-la passe est **reprenable** — relancer la même commande ne retire que les
+**Télécharger l'archive d'abord.** La lecture à distance était l'idée de
+départ — rien à stocker, chaque image coûte une requête par plage — et
+**Zenodo la refuse** : chaque fil doit ouvrir sa propre archive, `RemoteZip`
+n'étant pas réentrant, et chaque ouverture relit trente mégaoctets de
+répertoire central. Huit d'un coup, puis 243 000 requêtes : `429 TOO MANY
+REQUESTS` avant la première image. Le script le diagnostique et donne les
+deux commandes plutôt qu'une trace.
+
+```bash
+curl -L -C - -o ~/plant-data/plantnet_300K.zip \
+  'https://zenodo.org/api/records/5645731/files/plantnet_300K.zip/content'
+
+python3 plantnet_corpus.py --sortie ~/plant-data/plantnet-300k \
+  --archive ~/plant-data/plantnet_300K.zip
+```
+
+29,5 Gio, une demi-heure sur une bonne ligne, et `-C -` reprend un
+téléchargement coupé. Ensuite tout est local : les huit fils lisent le
+fichier sans limite de débit. Dans les deux cas la passe est **reprenable** — relancer la même commande ne retire que les
 manquantes, et l'écriture passe par un fichier renommé, donc un fichier
 présent est un fichier entier.
 

@@ -181,6 +181,37 @@ def ecrire_splits(lignes: list[tuple[str, str, str, str]],
     return len(ecrites)
 
 
+AIDE_429 = """Zenodo limite les requêtes, et la lecture à distance n'y survit pas.
+
+Chaque fil ouvre sa propre archive — il le faut, `RemoteZip` n'est pas
+réentrant — et chaque ouverture relit les trente mégaoctets du répertoire
+central. Huit ouvertures d'un coup, puis 243 000 requêtes par plage : la
+limite tombe avant la première image.
+
+Télécharger l'archive une fois est donc le seul chemin praticable. C'est
+reprenable, et ça ne se paie qu'une fois :
+
+  curl -L -C - -o {zip} \\
+    'https://zenodo.org/api/records/5645731/files/plantnet_300K.zip/content'
+
+  python3 plantnet_corpus.py --sortie {sortie} --archive {zip}
+
+29,5 Gio, une demi-heure sur une bonne ligne. Ensuite tout est local : les
+huit fils lisent le fichier sans limite de débit, et les images se tirent en
+quelques minutes."""
+
+
+def diagnostic(erreur: Exception, zip_local: str, sortie: str) -> str:
+    """Le message qu'une erreur d'archive mérite, plutôt qu'une trace.
+
+    Un `429` au milieu d'une trace de dix cadres ne dit pas quoi faire. Ici
+    il n'y a qu'une chose à faire, et elle tient en deux commandes.
+    """
+    if '429' in str(erreur) or 'TOO MANY' in str(erreur).upper():
+        return AIDE_429.format(zip=zip_local, sortie=sortie)
+    return f'{type(erreur).__name__}: {erreur}'
+
+
 def verrou_vivant(verrou: Path, maintenant: float | None = None,
                   patience: float = 120.0) -> bool:
     """Une autre passe écrit-elle déjà dans ce dossier ?
@@ -265,7 +296,23 @@ def main() -> int:  # pragma: no cover - réseau et disque
 
     source = (args.archive if str(args.archive).startswith('http')
               else str(Path(args.archive).expanduser()))
-    lire = par_fil(lambda: lecteur(source)[0])
+    zip_local = str(Path(args.sortie).expanduser().parent / 'plantnet_300K.zip')
+    if str(source).startswith('http'):
+        print("lecture à distance — si Zenodo coupe (429), télécharger "
+              "l'archive une fois et la passer à --archive\n", flush=True)
+    try:
+        premier = lecteur(source)[0]
+    except Exception as e:
+        raise SystemExit(diagnostic(e, zip_local, args.sortie)) from e
+    etat_premier = {'libre': premier}
+
+    def ouvrir():
+        # Le premier lecteur est déjà ouvert : le rendre au premier fil qui
+        # le demande évite de payer deux fois le répertoire central.
+        libre = etat_premier.pop('libre', None)
+        return libre if libre is not None else lecteur(source)[0]
+
+    lire = par_fil(ouvrir)
     debut, faites, sautees = time.perf_counter(), 0, 0
 
     def tirer(ligne):
