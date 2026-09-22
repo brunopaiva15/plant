@@ -1146,6 +1146,73 @@ banc complet pour trancher entre les survivants. La porte E — le coût mobile
 — se lit au même moment, sur un téléphone réel et pas sur un ordinateur de
 bureau (§ 18).
 
+## 20 ter. Pl@ntNet-300K comme corpus, pas comme avis — 22 septembre 2026
+
+Le § 5 l'avait rejeté comme **second avis** : 4,85 % de couverture, et aucun
+des deux terrains n'est le nôtre. Il revient par une autre porte, et cette
+fois c'est le changement de paradigme qui la lui ouvre.
+
+**Un student distillé n'a pas besoin d'étiquettes.** Il apprend à reproduire
+le vecteur du teacher, pas à nommer. Ses images d'entraînement se ramassent
+donc sans catalogue : pas de mapping des 1 081 classes de Pl@ntNet sur nos
+1 569, pas de décision sur les espèces inconnues, pas de bruit d'annotation
+hérité. Ce qui aurait été un chantier pour Iris 9 est ici une copie de
+fichiers. `distiller.py --dataset` est répétable, et deux corpus se
+concatènent sans rien aligner.
+
+**Et c'est le bon corpus, parce qu'on a mesuré pourquoi.** La mesure
+symétrique du § 5 a montré que ce qui sépare Iris 9 de PlantNet-300K n'est
+pas le cadrage — restreint aux plantes entières, l'écart se resserre de 7,75
+à 4,8 points mais ne s'inverse pas — c'est la **provenance des images**.
+Notre corpus vient de GBIF et d'iNaturalist, le leur de photos d'utilisateurs
+en extérieur. Ces 243 000 images sont exactement le monde où notre corpus est
+le plus mince, et c'est le monde de l'application.
+
+> **Ce que ça ne fait pas.** Ça ne rend pas Iris 10 plus savant que BioCLIP :
+> le plafond reste le teacher, quoi qu'on ajoute. Ça rend la **copie plus
+> fidèle là où elle n'a jamais été testée** — ce qui est précisément le
+> problème, puisque le student est à la moitié du teacher.
+
+### Trois garde-fous, dont un non négociable
+
+1. **Le split `test` de Pl@ntNet ne rentre pas.** Il est le seul terrain de
+   mesure dont on dispose qui ne vienne pas de notre propre monde, et le § 5
+   s'en sert déjà. L'entraîner dessus le rendrait muet sans qu'un seul
+   chiffre le signale. `plantnet_corpus.py` le refuse plutôt que de le
+   documenter ;
+2. **une variable à la fois.** Le corpus s'ajoute *après* la passe en cours,
+   jamais pendant : sinon l'écart ne s'attribue plus. C'est le § 13.6 de
+   `docs/09`, déjà payé une nuit entière ;
+3. **le filtre de licence de la collecte** (§ 4.1). Entraîner sur des images
+   qu'on ne pourrait pas redistribuer laisserait une dette invisible dans les
+   poids, qu'aucune mesure ne révélerait.
+
+### Le coût, chiffré
+
+| | |
+|---|---|
+| extraction, réduite à 320 px | **sans GPU** — tourne pendant une distillation |
+| encodage par le teacher | ~1 h à 80 img/s, cache +627 Mo |
+| disque | ~7 Gio à 320 px, contre 29,5 Gio pour l'archive |
+| époque de distillation | 49 min → **~68 min**, donc dix époques à ~11 h |
+
+Les images restent sur disque pendant tout l'entraînement : le cache ne
+contient que les réponses du teacher, chaque époque relit les photos.
+
+### Ce que la passe en cours décide, avant qu'on dépense cette heure
+
+La courbe `banc-e1` … `banc-e10` tranche sans rien supposer :
+
+- **le top-1 monte encore à l'époque 10** → on est limité par les données, et
+  ce corpus est la bonne dépense suivante ;
+- **il plafonne dès l'époque 5** → on est limité par les 11,6 M de paramètres
+  du dorsal, et la bonne réponse est MobileNetV4 Hybrid, pas plus d'images.
+
+Le même raisonnement vaut pour iNaturalist, GBIF et `iris_feedback` (§ 15) :
+pour un student distillé, ce sont toutes des images **sans étiquette**, donc
+gratuites à intégrer. Ce qui les départage n'est plus leur annotation, c'est
+la **provenance** — quel monde elles apportent que le nôtre n'a pas.
+
 ## 21. Ce qui est décidé et ce qui reste ouvert
 
 ### Décidé

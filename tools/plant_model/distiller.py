@@ -82,6 +82,29 @@ def paires(dataset: Path, cache: Path, splits: tuple[str, ...] = ('train',)
     return sortie
 
 
+def corpus(datasets: list[Path], cache: Path,
+           splits: tuple[str, ...] = ('train',)) -> list[tuple[str, str, int]]:
+    """Plusieurs jeux dans un seul lot d'entraînement, sans doublon de chemin.
+
+    La distillation n'a pas besoin d'étiquettes : elle lit un chemin et le
+    vecteur que le teacher a rendu pour lui. Deux corpus se concatènent donc
+    sans aligner quoi que ce soit — c'est ce qui rend Pl@ntNet-300K utilisable
+    tel quel (§ 20 ter de `docs/14`), là où Iris 9 aurait demandé de mapper
+    1 081 classes sur 1 569.
+
+    Le garde-fou est le chemin absolu : deux jeux qui se recouvriraient
+    entraîneraient deux fois sur les mêmes images, et l'époque durerait plus
+    longtemps pour rien.
+    """
+    vus, sortie = set(), []
+    for d in datasets:
+        for ligne in paires(d, cache, splits):
+            if ligne[0] not in vus:
+                vus.add(ligne[0])
+                sortie.append(ligne)
+    return sortie
+
+
 def cibles(cache: Path, lot: list[tuple[str, str, int]],
            fragments: dict[str, np.ndarray] | None = None) -> np.ndarray:
     """Les vecteurs du teacher pour ce lot, dans l'ordre reçu.
@@ -186,7 +209,9 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('commande', choices=['mesure', 'entrainer'])
-    ap.add_argument('--dataset', default='~/plant-data/dataset-v8-indoor')
+    ap.add_argument('--dataset', action='append', default=[],
+                    help='répétable : plusieurs corpus se concatènent '
+                         '(§ 20 ter de docs/14)')
     ap.add_argument('--cache', default='~/plant-data/bioclip')
     ap.add_argument('--sortie', default='~/plant-data/iris10')
     ap.add_argument('--student', default='fastvit_sa12',
@@ -216,10 +241,12 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
     ap.add_argument('--graine', type=int, default=20260919)
     args = ap.parse_args()
 
-    dataset, cache = Path(args.dataset).expanduser(), Path(args.cache).expanduser()
-    lot_complet = paires(dataset, cache)
+    datasets = [Path(d).expanduser()
+                for d in (args.dataset or ['~/plant-data/dataset-v8-indoor'])]
+    cache = Path(args.cache).expanduser()
+    lot_complet = corpus(datasets, cache)
     if not lot_complet:
-        raise SystemExit(f'aucune image de {dataset} n\'a de vecteur dans {cache}')
+        raise SystemExit(f'aucune image de {datasets} n\'a de vecteur dans {cache}')
     print(f'{len(lot_complet)} images avec une cible cachée')
     if args.images and args.images < len(lot_complet):
         # Le tirage passe par le mélange, donc il reste réparti sur les espèces :

@@ -92,3 +92,28 @@ def test_le_melange_ne_garde_pas_lordre_des_especes():
 def test_le_melange_est_reproductible():
     assert np.array_equal(melanger(500, 7), melanger(500, 7))
     assert not np.array_equal(melanger(500, 7), melanger(500, 8))
+
+
+# --------------------------------------------------------------------------
+# Plusieurs corpus dans une même passe
+# --------------------------------------------------------------------------
+
+def test_deux_jeux_se_concatenent(tmp_path):
+    """La distillation ne lit pas d'étiquette : deux corpus s'additionnent
+    sans aligner un seul catalogue (§ 20 ter de docs/14)."""
+    from distiller import corpus
+    d1 = jeu(tmp_path / 'd1', [('img/a.jpg', 'train', 'x')])
+    d2 = jeu(tmp_path / 'd2', [('img/b.jpg', 'train', 'pn:9999')])
+    c = cache(tmp_path / 'c', [str(d1 / 'img/a.jpg'), str(d2 / 'img/b.jpg')],
+              np.eye(2, 1024))
+    assert {p[0] for p in corpus([d1, d2], c)} == {str(d1 / 'img/a.jpg'),
+                                                   str(d2 / 'img/b.jpg')}
+
+
+def test_le_meme_jeu_deux_fois_ne_double_pas_lepoque(tmp_path):
+    """Deux corpus qui se recouvrent entraîneraient deux fois sur les mêmes
+    images, et l'époque durerait plus longtemps pour rien."""
+    from distiller import corpus
+    d = jeu(tmp_path / 'd', [('img/a.jpg', 'train', 'x')])
+    c = cache(tmp_path / 'c', [str(d / 'img/a.jpg')], np.eye(1, 1024))
+    assert len(corpus([d, d], c)) == 1

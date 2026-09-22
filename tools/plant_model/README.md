@@ -608,3 +608,53 @@ un second terminal, sans lui coûter une image par seconde.
 Ce qu'on y cherche, dans l'ordre : le **top-1 sur le répertoire entier** — la
 seule lecture qui décrive le produit — puis la **largeur du cône**, qui doit
 s'approcher des 0,2806 du teacher et non descendre en dessous.
+
+## Pl@ntNet-300K comme corpus de distillation
+
+```bash
+python3 plantnet_corpus.py --sortie ~/plant-data/plantnet-300k
+```
+
+**Sans GPU** — il peut tourner pendant une distillation. Il tire le split
+`train` de Pl@ntNet-300K, réduit les images à 320 px et écrit un `splits.csv`
+au format de `tools/plant_dataset`, que `bioclip.py` et `distiller.py` lisent
+sans une ligne de changement.
+
+Sans `--archive` local, l'archive Zenodo est lue **par plages** : rien n'est
+téléchargé en entier, mais chaque image coûte une requête. Avec le zip sur
+disque (29,5 Gio), c'est une lecture locale, plus rapide. Dans les deux cas
+la passe est **reprenable** — relancer la même commande ne retire que les
+manquantes, et l'écriture passe par un fichier renommé, donc un fichier
+présent est un fichier entier.
+
+**Il n'y a pas d'étiquette à aligner.** Le student apprend à reproduire le
+vecteur du teacher, pas à nommer : les 1 081 classes de Pl@ntNet ne
+rencontrent jamais nos 1 569. La colonne `internal_plant_id` n'est remplie
+que pour ranger — notre identifiant quand l'espèce est au catalogue,
+`pn:<id>` sinon, comme dans `plantnet_avis.py`.
+
+**Le split `test` est refusé.** Il sert de second terrain de mesure (§ 5 de
+`docs/14`), le seul qui ne vienne pas de notre propre monde ; l'entraîner
+dessus le rendrait muet sans qu'un chiffre le dise.
+
+Ensuite, GPU libre :
+
+```bash
+# 1. le teacher encode le nouveau corpus dans le même cache
+python3 bioclip.py cache --dataset ~/plant-data/plantnet-300k \
+  --cache ~/plant-data/bioclip --batch 64
+
+# 2. la distillation lit les deux corpus — `--dataset` est répétable
+python3 -u distiller.py entrainer \
+  --dataset ~/plant-data/dataset-v8-indoor --dataset ~/plant-data/plantnet-300k \
+  --cache ~/plant-data/bioclip --sortie ~/plant-data/iris10-plantnet \
+  --epoques 10 --demi --contrastive 0.2
+```
+
+Le cache est incrémental et porte la même signature : le second `cache` ajoute
+ses fragments à côté des premiers, sans les relire. Et `corpus()` écarte les
+chemins en double — deux jeux qui se recouvriraient allongeraient l'époque
+pour rien.
+
+**Pas pendant la passe en cours.** Une variable à la fois (§ 13.6 de
+`docs/09`) : ajouter le corpus au milieu rendrait l'écart inattribuable.
