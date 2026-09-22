@@ -232,9 +232,17 @@ def tableau(args) -> str:  # pragma: no cover - assemble des lectures disque
         out.append('\nARCHIVE PL@NTNET (téléchargement)')
         out.append(f"  {barre(a['part'])} {a['part'] * 100:4.1f} %   "
                    f"{a['octets'] / 1024 ** 3:.2f}/{ARCHIVE_GIO} Gio")
-        out.append(f"  {a['vitesse'] / 1024 ** 2:.1f} Mo/s   reste {duree(a['reste'])}"
-                   if a['vitesse'] else '  vitesse inconnue — deuxième relevé au '
-                                        'prochain rafraîchissement')
+        if a['part'] >= 0.999:
+            # Un fichier complet ne grossit plus : annoncer « vitesse
+            # inconnue » là où il n'y a plus rien à attendre ferait croire à
+            # un téléchargement bloqué.
+            out.append('  complète — lancer `plantnet_corpus.py --archive`')
+        elif a['vitesse']:
+            out.append(f"  {a['vitesse'] / 1024 ** 2:.1f} Mo/s   "
+                       f"reste {duree(a['reste'])}")
+        else:
+            out.append('  vitesse inconnue — deuxième relevé au prochain '
+                       'rafraîchissement')
 
     c = etat_corpus(lignes(Path(args.log_corpus).expanduser()))
     out.append('\nCORPUS PL@NTNET')
