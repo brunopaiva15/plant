@@ -1329,6 +1329,68 @@ changerait.
    à 0,0586 (~0,617), c'est le budget qui manque encore et le corpus
    reprend son rang.
 
+### 19 sexies. Époque 3 : la pente ne s'écrase pas — 22 septembre 2026
+
+| indoor, textes, armes égales | é1 | é2 | **é3** |
+|---|---|---|---|
+| top-1 | 0,5004 | 0,5590 | **0,5909** |
+| pente depuis le point précédent | — | +0,0586 / octave | **+0,0545 / octave** |
+
+**La pente n'a pas été divisée par deux une seconde fois.** Elle a perdu 7 %,
+pas la moitié. Le § 19 quinquies concluait à une asymptote de capacité sur la
+foi d'une chute de 0,1116 à 0,0586 ; cette chute était un artefact.
+
+> **L'erreur, et elle est facile à refaire.** Le premier point venait du
+> **balayage** : 150 000 images vues trois fois, comptées 450 000 « images
+> vues ». Les suivants viennent de la passe complète : 797 965 images
+> distinctes par époque. À nombre de vues égal, un modèle qui voit
+> 150 000 photos trois fois apprend moins qu'un modèle qui en voit 450 000
+> une fois — le premier point est donc **déprimé**, et la pente qui en part
+> **gonflée**. J'ai comparé deux expériences comme si « images vues » était
+> la même monnaie des deux côtés. Seuls é1, é2 et é3 se comparent entre eux,
+> et entre eux la pente est plate.
+
+#### Les projections, refaites sur les trois points de la même passe
+
+Pente moyenne é1 → é3, prolongée sur les 1,74 octaves qui restent jusqu'à é10 :
+
+| é10, projeté | student | Iris 9 masqué | teacher |
+|---|---|---|---|
+| **indoor**, textes, armes égales | **~0,69** | 0,8119 | 0,8119 |
+| **outdoor**, textes, armes égales | **~0,76** | 0,7615 | 0,9095 |
+| **hors répertoire**, centroïdes | **~0,63** | **0,0** | 0,8405 |
+
+**Trois verdicts différents, et c'est le produit qui tranche, pas la
+moyenne :**
+
+- **en indoor il reste douze points**, et le budget prévu ne les donne pas.
+  C'est là que se joue la porte A, puisque c'est l'usage principal ;
+- **en outdoor il arrive au niveau d'Iris 9**, de justesse, en partant de
+  quinze points plus bas. C'est le domaine qui progresse le plus vite ;
+- **sur ce qu'Iris 9 ne nomme pas, c'est acquis** et ça continue de monter.
+
+#### Et l'alarme des centroïdes était prématurée
+
+| écart centroïdes − texte, indoor | é1 | é2 | **é3** | teacher |
+|---|---|---|---|---|
+| | +7,19 | +8,16 | **+6,84** | +3,4 |
+
+Le § 19 quinquies lisait un élargissement sur deux points. Le troisième le
+défait : la série n'est pas monotone, elle redescend. **Deux points ne
+montrent pas une tendance** — c'est la même leçon que la prédiction du
+§ 19 quater, dans l'autre sens, et deux fois en une matinée.
+
+#### Ce que ça change pour la suite
+
+1. **Le dorsal reste à essayer, mais pour une autre raison.** Non pas « le
+   modèle sature », mais « la pente est trop lente pour combler douze points
+   dans le budget restant ». Un dorsal plus large relève la pente, pas
+   seulement le plafond ;
+2. **le corpus Pl@ntNet redevient une bonne dépense.** Si rien ne sature, des
+   images supplémentaires comptent — et celles-là sont du domaine outdoor,
+   celui qui progresse le plus vite et qui arrive au contact d'Iris 9 ;
+3. **les deux se mesurent séparément**, à recette figée, un bras à la fois.
+
 ## 20 ter. Pl@ntNet-300K comme corpus, pas comme avis — 22 septembre 2026
 
 Le § 5 l'avait rejeté comme **second avis** : 4,85 % de couverture, et aucun
