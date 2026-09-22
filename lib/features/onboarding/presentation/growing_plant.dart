@@ -7,16 +7,16 @@ import 'package:flutter/services.dart';
 
 import 'clay_illustration.dart';
 
-/// La plante de l'icône, qui pousse.
+/// Le pot de l'icône, dont la pousse sort de terre.
 ///
-/// Le premier écran de l'onboarding ne montre pas le logo posé : la plante y
-/// sort de terre. Une feuille émerge en fuseau presque droit, s'allonge,
-/// s'écarte, s'élargit, puis se découpe — fentes d'abord, fenestrations
-/// ensuite, comme une vraie Monstera qui vieillit. Les cinq feuilles se
-/// suivent, la plus vieille en premier, et la dernière image est exactement
-/// l'icône de l'application.
+/// Le premier écran de l'onboarding ne montre pas le logo posé : la pousse y
+/// sort de terre. La tige monte, deux feuilles la suivent, étroites et
+/// repliées l'une contre l'autre, puis s'ouvrent et s'étalent. La dernière
+/// image est exactement le pot de l'ouverture (`LaunchSplash`), sans son
+/// ombre : c'est ce widget qui dessine la sienne.
 ///
-/// La séquence est rendue sous Blender (`tool/grow_monstera.py`) et rangée en
+/// La séquence est rendue sous Blender (`tool/render_app_icon.py --pousse`,
+/// même scène que l'icône) et rangée en
 /// une image animée. Elle est lue image par image plutôt que gardée d'un
 /// bloc : à cette définition, tenir les quarante images en mémoire coûterait
 /// cent fois le prix d'une seule. La lecture suit l'horloge des images de

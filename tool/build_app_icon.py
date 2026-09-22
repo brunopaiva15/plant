@@ -1,56 +1,56 @@
 # ============================================================
-# Les icônes de l'application, composées à partir du master détouré.
+# Les icônes de l'application et l'écran de lancement, composés à partir
+# des rendus 3D.
 #
 #   python3 tool/build_app_icon.py
 #
-# Le master est `assets/icon/plant.png` : la monstera en papier découpé dans
-# son pot, sur fond transparent, cadrée au plus juste. Tout le reste en
-# dérive — les sources de `assets/icon/`, puis les déclinaisons d'iOS,
-# d'Android et du web, c'est-à-dire ce que produit
+# Les masters sont les calques de assets/icon/rendu/, rendus par
+# tool/render_app_icon.py dans Blender : le pot d'argile et sa pousse, sur
+# un fond sauge. Tout le reste en dérive — les sources de `assets/icon/`,
+# les déclinaisons d'iOS, d'Android et du web (ce que produit
 # `dart run flutter_launcher_icons`, reproduit ici pour que l'icône se
-# régénère sans chaîne Flutter installée.
+# régénère sans chaîne Flutter installée), le pot des écrans de lancement
+# natifs et les images de l'animation d'ouverture (`LaunchSplash`).
 #
 # Ce que le script ne touche pas : les manifestes (Contents.json,
-# ic_launcher.xml, manifest.json). Ils ne dépendent pas du dessin.
+# ic_launcher.xml, manifest.json, LaunchScreen.storyboard). Ils ne dépendent
+# pas du dessin.
 # ============================================================
 import json
-import math
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFilter
 
 RACINE = Path(__file__).resolve().parent.parent
 ICONES = RACINE / "assets" / "icon"
-MASTER = ICONES / "plant.png"
+RENDUS = ICONES / "rendu"
+SPLASH = RACINE / "assets" / "splash"
 COTE = 1024
 
-# Largeur de la plante, en part du côté de l'icône. Le master étant plus
-# large que haut, c'est la largeur qui commande : la hauteur suit.
-#
-#   PLEINE — iOS, Android hérité, web. La plante remplit le carré comme sur
-#     les icônes système ; les pointes de feuilles s'arrêtent à 4 % des
-#     bords, bien à l'intérieur du squircle d'iOS, dont le rayon d'angle
-#     vaut 22 % du côté et n'entame que les coins.
-#   ADAPTATIVE — avant-plan adaptatif d'Android. Le lanceur rogne 16 % de
-#     chaque côté avant d'appliquer son masque, d'où la marge large.
-#   MASQUABLE — icônes web « maskable ». Leur zone de sûreté est un disque
-#     de 80 % du côté : tout ce qui déborde peut être rogné.
-LARGEUR_PLEINE = 0.92
-LARGEUR_ADAPTATIVE = 0.619
-LARGEUR_MASQUABLE = 0.72
+# La zone de l'œil de droite dans le rendu du lancement, de 1024 px (gauche,
+# haut, droite, bas) : les images du clin d'œil y sont découpées, et
+# `LaunchSplash` les y repose. Même valeur que `LaunchSplash.eyeRect`.
+OEIL = (497, 614, 673, 790)
+# Dans cette zone, l'image du clin d'œil est pleine jusqu'à ce rayon, puis
+# se fond dans le logo jusqu'au bord : le raccord ne se voit pas.
+OEIL_PLEIN = 56
 
-# Part du blanc vertical posée au-dessus de la plante. Un peu plus de la
-# moitié : le pot pose sur le bas, les feuilles respirent vers le haut.
-HAUT_PLEINE = 0.53
-HAUT_CENTRE = 0.5
-
-BLANC = (255, 255, 255, 255)
-TRANSPARENT = (0, 0, 0, 0)
+# L'écran de lancement : le pot raccourci au centre, sur un sauge uni pris au
+# milieu du dégradé de l'icône. Même valeurs que `LaunchSplash.logoSize` et
+# `LaunchSplash.background`, et que les couleurs `splash_background`
+# d'Android et `LaunchBackground` d'iOS.
+LOGO = 160
+SAUGE = "#459765"
+# Android 12 pose l'icône de lancement dans un cadre de 288 dp dont seul un
+# disque de 192 dp se voit. Le pot, feuilles comprises, tient dans le cercle
+# inscrit de son image : à 160 dp, il reste loin du bord de ce disque.
+CADRE_ANDROID_12 = 288
 
 APPICONSET = RACINE / "ios/Runner/Assets.xcassets/AppIcon.appiconset"
+LAUNCHIMAGE = RACINE / "ios/Runner/Assets.xcassets/LaunchImage.imageset"
 # Tailles absentes de Contents.json qu'Xcode ignore, mais que le générateur
 # Flutter écrit tout de même : on les tient à jour pour ne pas laisser
-# traîner une vieille plante dans le dépôt.
+# traîner une vieille icône dans le dépôt.
 IOS_HERITE = (20, 29, 40, 76)
 
 ANDROID_RES = RACINE / "android/app/src/main/res"
@@ -63,19 +63,49 @@ ANDROID_DENSITES = {
 }
 WEB = RACINE / "web"
 
+TRANSPARENT = (0, 0, 0, 0)
+# Qualité des images de l'ouverture.
+WEBP = 90
 
-def poser(largeur, part_haute, fond):
-    """La plante mise à l'échelle et posée sur une toile carrée."""
-    master = Image.open(MASTER).convert("RGBA")
-    large = round(COTE * largeur)
-    haut = round(large * master.height / master.width)
-    plante = master.resize((large, haut), Image.LANCZOS)
-    toile = Image.new("RGBA", (COTE, COTE), fond)
-    coin = ((COTE - large) // 2, math.floor((COTE - haut) * part_haute))
-    # Sur fond blanc il faut le masque alpha ; sur fond transparent la copie
-    # directe garde les couleurs du master sous les bords adoucis.
-    toile.paste(plante, coin, plante if fond[3] else None)
-    return toile
+
+def rendu(nom):
+    return Image.open(RENDUS / f"{nom}.png").convert("RGBA")
+
+
+def ombrer(pot):
+    """Le pot posé sur une ombre de contact douce, sous sa base.
+
+    Blender en rendrait une vraie, mais la lampe principale l'allonge hors du
+    cadre, et une ombre coupée au bord de l'image se verrait sur le fond uni.
+    """
+    alpha = pot.getchannel("A").point(lambda v: 255 if v > 128 else 0)
+    gauche, _, droite, bas = alpha.getbbox()
+    # Largeur de la base : l'étendue opaque juste au-dessus du bas.
+    ligne = alpha.crop((0, bas - 12, pot.width, bas - 11)).getbbox()
+    base = (ligne[2] - ligne[0]) if ligne else (droite - gauche)
+    centre = (ligne[0] + ligne[2]) / 2 if ligne else (gauche + droite) / 2
+    ombre = Image.new("RGBA", pot.size, TRANSPARENT)
+    rx, ry = base * 0.62, base * 0.07
+    ImageDraw.Draw(ombre).ellipse((centre - rx, bas - ry * 1.2, centre + rx, bas + ry * 0.8), fill=(18, 60, 36, 120))
+    ombre = ombre.filter(ImageFilter.GaussianBlur(base * 0.05))
+    ombre.alpha_composite(pot)
+    return ombre
+
+
+def plumer(image):
+    """Un disque plein de rayon OEIL_PLEIN, fondu jusqu'au bord de l'image."""
+    cote = image.width
+    masque = Image.new("L", (cote, cote), 0)
+    centre = cote / 2
+    pixels = masque.load()
+    for y in range(cote):
+        for x in range(cote):
+            d = ((x + 0.5 - centre) ** 2 + (y + 0.5 - centre) ** 2) ** 0.5
+            t = min(max((centre - d) / (centre - OEIL_PLEIN), 0), 1)
+            pixels[x, y] = round(255 * t * t * (3 - 2 * t))
+    plume = image.copy()
+    plume.putalpha(masque)
+    return plume
 
 
 def silhouette(source):
@@ -94,29 +124,39 @@ def gris(source):
 
 def ecrire(source, chemin, cote, opaque):
     chemin.parent.mkdir(parents=True, exist_ok=True)
-    image = source.resize((cote, cote), Image.LANCZOS)
+    image = source if source.width == cote else source.resize((cote, cote), Image.LANCZOS)
     image.convert("RGB" if opaque else "RGBA").save(chemin)
 
 
+def centrer(source, cote_logo, cote_toile):
+    """Le logo à `cote_logo`, au centre d'une toile transparente."""
+    toile = Image.new("RGBA", (cote_toile, cote_toile), TRANSPARENT)
+    logo = source.resize((cote_logo, cote_logo), Image.LANCZOS)
+    coin = (cote_toile - cote_logo) // 2
+    toile.paste(logo, (coin, coin))
+    return toile
+
+
 def sources():
-    """Les cinq images de `assets/icon/`, dont tout le reste dérive."""
-    pleine = poser(LARGEUR_PLEINE, HAUT_PLEINE, BLANC)
-    detouree = poser(LARGEUR_PLEINE, HAUT_PLEINE, TRANSPARENT)
-    adaptative = poser(LARGEUR_ADAPTATIVE, HAUT_CENTRE, TRANSPARENT)
+    """Les sources de `assets/icon/`, dont tout le reste dérive."""
+    icone = rendu("icone")
+    adaptative = rendu("avant_plan_adaptatif")
     return {
         # Sans alpha : l'App Store refuse une icône transparente.
-        "icon.png": (pleine, True),
-        "icon_dark.png": (pleine, True),
-        # Fond transparent à la taille d'iOS : le système pose lui-même le
+        "icon.png": (icone, True),
+        "icon_dark.png": (icone, True),
+        # Fond transparent au cadrage d'iOS : le système pose lui-même le
         # fond sombre du mode nuit et la teinte du mode teinté.
-        "icon_ios_foreground.png": (detouree, False),
+        "icon_ios_foreground.png": (rendu("avant_plan"), False),
+        # Les deux calques de l'icône adaptative d'Android, pleins.
         "icon_foreground.png": (adaptative, False),
+        "icon_background.png": (rendu("fond"), True),
         "icon_monochrome.png": (silhouette(adaptative), False),
     }
 
 
-def ios(pleine, detouree):
-    """Le jeu d'icônes d'iOS, piloté par Contents.json."""
+def ios(pleine, detouree, logo):
+    """Le jeu d'icônes d'iOS, piloté par Contents.json, et le logo de lancement."""
     teintee = gris(detouree)
     variantes = {"": (pleine, True), "Dark-": (detouree, False), "Tinted-": (teintee, False)}
     manifeste = json.loads((APPICONSET / "Contents.json").read_text())
@@ -130,22 +170,47 @@ def ios(pleine, detouree):
         ecrire(source, APPICONSET / nom, cote, opaque)
     for cote in IOS_HERITE:
         ecrire(pleine, APPICONSET / f"Icon-App-{cote}x{cote}@1x.png", cote, True)
+    for suffixe, echelle in (("", 1), ("@2x", 2), ("@3x", 3)):
+        ecrire(logo, LAUNCHIMAGE / f"LaunchImage{suffixe}.png", LOGO * echelle, False)
 
 
-def android(pleine, adaptative):
+def android(pleine, avant_plan, fond, logo):
     for suffixe, echelle in ANDROID_DENSITES.items():
         ecrire(pleine, ANDROID_RES / f"mipmap-{suffixe}/ic_launcher.png", round(48 * echelle), True)
         dossier = ANDROID_RES / f"drawable-{suffixe}"
-        ecrire(adaptative, dossier / "ic_launcher_foreground.png", round(108 * echelle), False)
-        ecrire(silhouette(adaptative), dossier / "ic_launcher_monochrome.png", round(108 * echelle), False)
+        cote = round(108 * echelle)
+        ecrire(avant_plan, dossier / "ic_launcher_foreground.png", cote, False)
+        ecrire(fond, dossier / "ic_launcher_background.png", cote, True)
+        ecrire(silhouette(avant_plan), dossier / "ic_launcher_monochrome.png", cote, False)
+        # L'écran de lancement : le pot seul jusqu'à Android 11, posé dans
+        # son cadre de 288 dp à partir d'Android 12.
+        ecrire(logo, dossier / "splash_logo.png", round(LOGO * echelle), False)
+        cadre = centrer(logo, round(LOGO * echelle), round(CADRE_ANDROID_12 * echelle))
+        ecrire(cadre, dossier / "splash_android12.png", cadre.width, False)
 
 
 def web(pleine):
-    masquable = poser(LARGEUR_MASQUABLE, HAUT_PLEINE, BLANC)
+    # L'icône est pleine jusqu'aux bords : elle sert telle quelle de
+    # « maskable », le pot et la pousse restant dans le disque de sûreté.
     for cote in (192, 512):
         ecrire(pleine, WEB / f"icons/Icon-{cote}.png", cote, True)
-        ecrire(masquable, WEB / f"icons/Icon-maskable-{cote}.png", cote, True)
+        ecrire(pleine, WEB / f"icons/Icon-maskable-{cote}.png", cote, True)
     ecrire(pleine, WEB / "favicon.png", 16, True)
+
+
+def splash(logo):
+    """Les images de `LaunchSplash` : le pot, puis l'œil qui se ferme.
+
+    En WebP : le grain rend le PNG du logo presque deux fois plus lourd que
+    tout le reste de l'ouverture. À cette qualité, l'écart avec l'écran natif
+    reste sous le grain lui-même.
+    """
+    SPLASH.mkdir(parents=True, exist_ok=True)
+    for ancien in SPLASH.glob("*.png"):
+        ancien.unlink()
+    logo.save(SPLASH / "logo.webp", quality=WEBP, method=6)
+    for clin in ("50", "85", "100"):
+        plumer(rendu(f"lancement_clin_{clin}")).save(SPLASH / f"clin_{clin}.webp", quality=WEBP, method=6)
 
 
 def main():
@@ -153,10 +218,12 @@ def main():
     for nom, (image, opaque) in images.items():
         image.convert("RGB" if opaque else "RGBA").save(ICONES / nom)
     pleine = images["icon.png"][0]
-    ios(pleine, images["icon_ios_foreground.png"][0])
-    android(pleine, images["icon_foreground.png"][0])
+    logo = ombrer(rendu("lancement"))
+    ios(pleine, images["icon_ios_foreground.png"][0], logo)
+    android(pleine, images["icon_foreground.png"][0], images["icon_background.png"][0], logo)
     web(pleine)
-    print(f"Icônes régénérées depuis {MASTER.relative_to(RACINE)}")
+    splash(logo)
+    print(f"Icônes régénérées depuis {RENDUS.relative_to(RACINE)}")
 
 
 if __name__ == "__main__":

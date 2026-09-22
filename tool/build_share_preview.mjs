@@ -37,11 +37,13 @@ body { width:1200px; height:630px; background:${CANVAS}; overflow:hidden;
 body::after { content:''; position:fixed; inset:0; pointer-events:none;
               background:url('${dataUri('assets/textures/grain.png', 'image/png')}') repeat;
               background-size:128px 128px; opacity:0.07; }
-img { height:340px; filter:drop-shadow(10px 14px 18px ${OMBRE}); }
+/* L'image du pot a des marges transparentes autour de lui : à 440 px, le pot
+   lui-même mesure environ 340 px, la hauteur de l'ancienne monstera. */
+img { height:440px; margin:0 -40px; filter:drop-shadow(10px 14px 18px ${OMBRE}); }
 h1 { font-family:'ShantellSans'; font-weight:700; font-size:132px; line-height:1;
      letter-spacing:-2px; color:${INK}; }
 </style>
-<img src="${dataUri('assets/icon/plant.png', 'image/png')}" alt="">
+<img src="${dataUri('assets/icon/rendu/lancement.png', 'image/png')}" alt="">
 <h1>Auxine</h1>`;
 
 const navigateur = await chromium.launch({ executablePath: process.env.CHROMIUM || undefined, args: ['--no-sandbox'] });

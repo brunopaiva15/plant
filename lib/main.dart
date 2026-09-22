@@ -129,5 +129,5 @@ Future<void> main() async {
   }, fireImmediately: true);
   AppLifecycleListener(onResume: () => container.invalidate(todayWidgetSnapshotProvider));
 
-  runApp(UncontrolledProviderScope(container: container, child: const FloraApp()));
+  runApp(UncontrolledProviderScope(container: container, child: const FloraApp(splash: true)));
 }
