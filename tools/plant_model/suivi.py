@@ -140,6 +140,20 @@ def lignes(chemin: Path, combien: int = 4000) -> list[str]:
         return f.readlines()[-combien:]
 
 
+def silence(chemin: Path, maintenant: float | None = None) -> str:
+    """Pourquoi un journal ne dit rien : absent, ou muet depuis quand.
+
+    « Aucune ligne de progression » confond deux situations opposées — une
+    passe qui n'a pas été lancée et une passe bloquée. La seconde demande une
+    intervention, la première un `tmux`.
+    """
+    if not chemin.exists():
+        return f'{chemin} absent — la passe n\'a pas été lancée'
+    ecoule = (maintenant or time.time()) - chemin.stat().st_mtime
+    return f'journal muet depuis {duree(ecoule)}' if ecoule > 90 else \
+        'démarrage, première ligne dans quelques secondes'
+
+
 def gpu() -> str:  # pragma: no cover - demande nvidia-smi
     if not shutil.which('nvidia-smi'):
         return ''
@@ -161,7 +175,7 @@ def tableau(args) -> str:  # pragma: no cover - assemble des lectures disque
     e = etat_entrainement(lignes(Path(args.log).expanduser()))
     out.append('\nDISTILLATION')
     if e is None:
-        out.append('  aucune ligne de pas dans le journal')
+        out.append(f'  {silence(Path(args.log).expanduser())}')
     else:
         epoques = args.epoques
         fait = e['epoque'] * e['pas_total'] + e['pas']
@@ -186,7 +200,7 @@ def tableau(args) -> str:  # pragma: no cover - assemble des lectures disque
     c = etat_corpus(lignes(Path(args.log_corpus).expanduser()))
     out.append('\nCORPUS PL@NTNET')
     if c is None:
-        out.append('  aucune ligne de progression dans le journal')
+        out.append(f'  {silence(Path(args.log_corpus).expanduser())}')
     else:
         out.append(f"  {barre(c['part'])} {c['part'] * 100:4.1f} %   "
                    f"{c['faites']}/{c['total']}   {c['vitesse']:.1f} img/s")

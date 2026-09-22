@@ -121,3 +121,18 @@ def test_les_epoques_sortent_dans_lordre_numerique(tmp_path):
 
 def test_aucun_point_de_controle_nest_pas_une_erreur(tmp_path):
     assert epoques_ecrites(tmp_path) == []
+
+
+# --------------------------------------------------------------------------
+# Un journal qui ne dit rien
+# --------------------------------------------------------------------------
+
+def test_un_journal_absent_ne_se_confond_pas_avec_un_journal_bloque(tmp_path):
+    """Une passe non lancée demande un `tmux`, une passe bloquée demande une
+    intervention : les annoncer pareil ferait perdre une nuit."""
+    from suivi import silence
+    assert 'absent' in silence(tmp_path / 'rien.log')
+    journal = tmp_path / 'la.log'
+    journal.write_text('démarrage\n')
+    assert 'démarrage' in silence(journal, maintenant=journal.stat().st_mtime + 10)
+    assert 'muet depuis' in silence(journal, maintenant=journal.stat().st_mtime + 600)

@@ -256,7 +256,11 @@ def main() -> int:  # pragma: no cover - réseau et disque
         for _, bonne in pool.map(tirer, afaire):
             faites += 1
             sautees += 0 if bonne else 1
-            if faites % 2000 == 0:
+            # Toutes les 500 plutôt que 2 000 : à trente images par
+            # seconde, c'est un signe de vie toutes les vingt secondes
+            # au lieu d'une minute, et le tableau de `suivi.py` sait
+            # tout de suite si la passe est vivante.
+            if faites % 500 == 0:
                 vitesse = faites / (time.perf_counter() - debut)
                 reste = (len(afaire) - faites) / max(vitesse, 1e-6) / 60
                 print(f'  {faites}/{len(afaire)}  {vitesse:.1f} img/s  '
