@@ -1391,6 +1391,40 @@ montrent pas une tendance** — c'est la même leçon que la prédiction du
    celui qui progresse le plus vite et qui arrive au contact d'Iris 9 ;
 3. **les deux se mesurent séparément**, à recette figée, un bras à la fois.
 
+### 19 septies. Le bras MobileNetV4, chiffré avant d'être lancé
+
+| | `fastvit_sa12` | **`mobilenetv4_conv_large.e500_r256_in1k`** |
+|---|---|---|
+| dorsal | 11,6 M | **31,3 M** |
+| avec projecteur | 12,7 M | **32,6 M** |
+| sortie du dorsal | 1 024 | **1 280** |
+| débit, lot 64, précision mixte | 266 img/s | **213 img/s** |
+| une époque | 49 min | **62 min** |
+| dix époques | 8,1 h | **10,4 h** |
+| VRAM, lot 64 | — | **2,75 Gio sur 8** |
+| fp16 livré | 23,8 Mo | ~63 Mo |
+
+**Le lot reste à 64, et c'est la condition de l'expérience.** Avec l'InfoNCE,
+la taille du lot *est* la recette : les négatifs d'un lot de 64 ne sont pas
+ceux d'un lot de 32. Un OOM aurait obligé à refaire aussi le bras
+`fastvit_sa12` au lot réduit, sous peine de comparer deux choses qui
+diffèrent par deux variables. À 2,75 Gio la question ne se pose pas.
+
+**Pourquoi le conv et non le hybrid**, alors que le § 5 annonçait
+MobileNetV4 Hybrid : `mobilenetv4_hybrid_large_075` (21,5 M, la taille qu'on
+aurait voulue) **n'a pas de poids pré-entraînés** dans timm, et les seuls
+poids du hybrid existent à **384 px** quand on entraîne à 224. Ce serait une
+seconde variable dans une expérience qui n'en veut qu'une. Le conv est
+pré-entraîné à 256 px, au plus près de notre entrée, et 31,3 M répond à la
+question posée — *est-ce la capacité qui limite la pente ?*
+
+> **Et un piège de `timm` qui coûtera à quiconque essaiera un autre dorsal.**
+> `num_features` n'est pas la sortie du modèle. Chez `fastvit_sa12` les deux
+> valent 1 024 et coïncident ; chez `mobilenetv4_conv_large`, `num_features`
+> vaut 960 quand `num_classes=0` en rend **1 280**, parce que sa tête garde
+> une couche avant le classifieur. `distiller.py` mesure désormais la sortie
+> par une passe à vide en mode évaluation plutôt que de la déduire.
+
 ## 20 ter. Pl@ntNet-300K comme corpus, pas comme avis — 22 septembre 2026
 
 Le § 5 l'avait rejeté comme **second avis** : 4,85 % de couverture, et aucun
