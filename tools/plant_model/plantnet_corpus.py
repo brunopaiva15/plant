@@ -191,14 +191,19 @@ limite tombe avant la première image.
 Télécharger l'archive une fois est donc le seul chemin praticable. C'est
 reprenable, et ça ne se paie qu'une fois :
 
-  curl -L -C - -o {zip} \\
+  until curl -L -C - --retry 20 --retry-delay 5 --retry-all-errors \\
+    -o {zip} \\
     'https://zenodo.org/api/records/5645731/files/plantnet_300K.zip/content'
+  do sleep 10; done
 
   python3 plantnet_corpus.py --sortie {sortie} --archive {zip}
 
-29,5 Gio, une demi-heure sur une bonne ligne. Ensuite tout est local : les
-huit fils lisent le fichier sans limite de débit, et les images se tirent en
-quelques minutes."""
+La boucle n'est pas une précaution : Zenodo ferme la connexion en cours de
+route, et un téléchargement d'une heure et quart ne passe pas d'un bloc.
+`-C -` reprend à l'octet où l'on s'est arrêté.
+
+29,5 Gio à ~6 Mo/s. Ensuite tout est local : les huit fils lisent le fichier
+sans limite de débit, et les images se tirent en quelques minutes."""
 
 
 def diagnostic(erreur: Exception, zip_local: str, sortie: str) -> str:

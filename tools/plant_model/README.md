@@ -629,16 +629,25 @@ REQUESTS` avant la première image. Le script le diagnostique et donne les
 deux commandes plutôt qu'une trace.
 
 ```bash
-curl -L -C - -o ~/plant-data/plantnet_300K.zip \
+until curl -L -C - --retry 20 --retry-delay 5 --retry-all-errors \
+  -o ~/plant-data/plantnet_300K.zip \
   'https://zenodo.org/api/records/5645731/files/plantnet_300K.zip/content'
+do sleep 10; done
 
 python3 plantnet_corpus.py --sortie ~/plant-data/plantnet-300k \
   --archive ~/plant-data/plantnet_300K.zip
 ```
 
-29,5 Gio, une demi-heure sur une bonne ligne, et `-C -` reprend un
-téléchargement coupé. Ensuite tout est local : les huit fils lisent le
-fichier sans limite de débit. Dans les deux cas la passe est **reprenable** — relancer la même commande ne retire que les
+**La boucle n'est pas une précaution, c'est la règle.** Zenodo ferme la
+connexion en cours de route — `SSL_read: unexpected eof while reading` — et
+un téléchargement d'une heure et quart ne passe pas d'un bloc. `-C -` reprend
+à l'octet où l'on s'est arrêté, `--retry-all-errors` couvre les coupures que
+curl voit, et le `until` couvre celles qu'il abandonne. Relancer la boucle
+après coup ne coûte rien : si le fichier est complet, curl le dit et sort.
+
+29,5 Gio à ~6 Mo/s, donc **une heure et quart**. Ensuite tout est local : les
+huit fils lisent le fichier sans limite de débit. Dans les deux cas la passe
+est **reprenable** — relancer la même commande ne retire que les
 manquantes, et l'écriture passe par un fichier renommé, donc un fichier
 présent est un fichier entier.
 
