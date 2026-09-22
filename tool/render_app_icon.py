@@ -20,6 +20,12 @@
 #                             fermé en arc, au cadrage du lancement —
 #                             découpé dans la zone OEIL.
 #
+# Avec --pousse, il rend aussi la séquence de l'écran de bienvenue : le pot
+# du lancement, de la terre nue à la pousse adulte, en quarante images que
+# tool/pack_growth.py assemble dans assets/onboarding/pousse.webp. La
+# dernière image est exactement le pot du lancement, sans son ombre :
+# l'application dessine la sienne.
+#
 # Ensuite, tool/build_app_icon.py en tire toutes les déclinaisons. Blender
 # n'est donc nécessaire que pour changer le dessin, pas pour régénérer les
 # tailles. Un rendu prend environ deux minutes sur quatre cœurs.
@@ -40,6 +46,7 @@ from build_app_icon import OEIL, RENDUS
 
 RACINE = Path(__file__).resolve().parent.parent
 SCENE = RACINE / "tool" / "app_icon_scene.py"
+POUSSE = RACINE / "assets" / "onboarding" / "pousse.webp"
 
 # Chaque calque : les variables d'environnement lues par la scène.
 CALQUES = {
@@ -73,12 +80,13 @@ def main():
     parser = argparse.ArgumentParser(description="Rend les calques de l'icône dans Blender.")
     parser.add_argument("--blender", default=shutil.which("blender") or "blender")
     parser.add_argument("--echantillons", type=int, default=256)
-    parser.add_argument("--seulement", nargs="+", choices=CALQUES, help="ne rendre que ces calques")
+    parser.add_argument("--seulement", nargs="*", choices=CALQUES, help="ne rendre que ces calques (aucun : seulement la pousse)")
+    parser.add_argument("--pousse", type=int, metavar="IMAGES", help="rendre aussi la séquence de pousse, en IMAGES images")
     args = parser.parse_args()
     RENDUS.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory() as tmp:
         for nom, variables in CALQUES.items():
-            if args.seulement and nom not in args.seulement:
+            if args.seulement is not None and nom not in args.seulement:
                 continue
             print(f"Rendu de {nom}…", flush=True)
             image = rendre(args.blender, args.echantillons, nom, variables, Path(tmp))
@@ -87,6 +95,18 @@ def main():
                 Image.open(image).crop(OEIL).save(RENDUS / f"{nom}.png")
             else:
                 shutil.copy(image, RENDUS / f"{nom}.png")
+        if args.pousse:
+            dossier = Path(tmp) / "pousse"
+            dossier.mkdir()
+            for i in range(args.pousse):
+                age = i / (args.pousse - 1)
+                print(f"Pousse {i + 1}/{args.pousse}…", flush=True)
+                # Quarante échantillons suffisent : l'image est petite à l'écran et bouge.
+                rendre(args.blender, 40, f"{i:03d}", {**LANCEMENT, "AGE": str(age)}, dossier)
+            subprocess.run(
+                ["python3", str(RACINE / "tool" / "pack_growth.py"), str(dossier), str(POUSSE), "--fps", "14"],
+                check=True,
+            )
     print(f"Calques rendus dans {RENDUS.relative_to(RACINE)}")
 
 

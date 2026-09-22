@@ -153,8 +153,9 @@ montre déjà ce chiffre.
 
 ## 6. Première expérience (onboarding)
 ```
-Bienvenue ⟶ la plante de l'icône pousse : terre nue, fuseau, feuilles qui
-  s'ouvrent et se découpent, jusqu'à l'icône.
+Bienvenue ⟶ le pot de l'icône, qui vous regarde, voit sa pousse sortir de
+  terre : une tige, puis deux feuilles repliées qui s'ouvrent, jusqu'au pot
+  de l'ouverture.
 Toutes vos plantes ⟶ cinq plantes différentes qui gravitent, chacune à son
   rythme. Puis les autres présentations.
 Iris ⟶ la marque du modèle embarqué : « Iris reconnaît vos plantes hors

@@ -12,8 +12,8 @@
 # graine fixe.
 #
 # Variables d'environnement, décrites plus bas : YEUX, CLIN, FOND, OBJETS,
-# CADRE, CIBLE_Z, SOL, POT_BAS, RES, et YEUX_Z, YEUX_X, YEUX_R pour placer
-# les yeux.
+# CADRE, CIBLE_Z, SOL, POT_BAS, RES, AGE, et YEUX_Z, YEUX_X, YEUX_R pour
+# placer les yeux.
 # ============================================================
 import bpy, bmesh, math, sys, os
 # YEUX=1 pose deux yeux sur le pot
@@ -33,6 +33,13 @@ SOL=os.environ.get('SOL')=='1'
 POT_BAS=float(os.environ.get('POT_BAS','-1.6'))
 # RES : côté de l'image, en pixels
 RES=int(os.environ.get('RES','1024'))
+# AGE : de 0 (terre nue) à 1 (la pousse adulte, celle de l'icône) — la
+# séquence qui pousse sur l'écran de bienvenue
+AGE=float(os.environ.get('AGE','1'))
+adouci=lambda u: (lambda v: v*v*(3-2*v))(min(max(u,0.0),1.0))
+# La tige sort de terre et monte ; les deux feuilles la suivent, repliées
+# l'une contre l'autre, puis s'ouvrent et s'étalent.
+MONTEE=adouci(AGE/0.55); TAILLE=adouci((AGE-0.28)/0.5); OUVERTURE=adouci((AGE-0.45)/0.55)
 from mathutils import Vector
 argv=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
 SAMPLES=int(argv[0]) if argv else 64; OUT=argv[1] if len(argv)>1 else '/tmp/r.png'
@@ -149,8 +156,24 @@ cu=bpy.data.curves.new('tige','CURVE');cu.dimensions='3D';cu.bevel_depth=.07;cu.
 sp=cu.splines.new('BEZIER');sp.bezier_points.add(2)
 for p,(co,h1,h2) in zip(sp.bezier_points,[((-0.03,0,0.80),(-0.03,0,0.6),(-0.03,0,1.0)),((0.0,0,1.35),(-0.05,0,1.2),(0.05,0,1.5)),((0.10,0.02,1.70),(0.07,0.02,1.62),(0.13,0.02,1.78))]):
     p.co=co;p.handle_left=h1;p.handle_right=h2
-t=obj('tige',cu,green)
-bpy.ops.mesh.primitive_uv_sphere_add(radius=.072,location=(0.10,0.02,1.70));bpy.context.object.data.materials.append(green);bpy.ops.object.shade_smooth()
+from mathutils.geometry import interpolate_bezier
+bp=sp.bezier_points;trace=[]
+for a,b in zip(bp,bp[1:]):
+    trace+=interpolate_bezier(a.co,a.handle_right,b.handle_left,b.co,64)[(1 if trace else 0):]
+longueurs=[0.0]
+for a,b in zip(trace,trace[1:]): longueurs.append(longueurs[-1]+(b-a).length)
+def sur_la_tige(f):
+    # le point de la tige à la fraction f de sa longueur
+    cible=f*longueurs[-1]
+    for i in range(1,len(trace)):
+        if longueurs[i]>=cible:
+            u=(cible-longueurs[i-1])/max(longueurs[i]-longueurs[i-1],1e-9);return trace[i-1].lerp(trace[i],u)
+    return trace[-1]
+POINTE=sur_la_tige(max(MONTEE,0.02));DECALAGE=POINTE-trace[-1]
+if MONTEE>0.02:
+    cu.bevel_factor_mapping_end='SPLINE';cu.bevel_factor_end=MONTEE
+    t=obj('tige',cu,green)
+    bpy.ops.mesh.primitive_uv_sphere_add(radius=.072,location=POINTE);bpy.context.object.data.materials.append(green);bpy.ops.object.shade_smooth()
 # ---- feuilles
 def leaf(name,L_,W,fold,curl,loc,rot,col):
     me=bpy.data.meshes.new(name);bm=bmesh.new();nu,nv=28,10;g=[]
@@ -183,8 +206,15 @@ def leaf(name,L_,W,fold,curl,loc,rot,col):
     o=obj(name,me,m);o.location=loc;o.rotation_euler=[math.radians(a) for a in rot]
     s=o.modifiers.new('e','SOLIDIFY');s.thickness=.025;s.offset=0;subsurf(o,2)
     return o
-leaf('feuilleD',1.25,.40,.45,.10,(0.10,0.02,1.66),(70,-28,0),('#14A34F','#5FE67A'))
-leaf('feuilleG',0.95,.31,.45,.08,(0.0,0.0,1.44),(-70,-18,180),('#14A34F','#52DE70'))
+if TAILLE>0.01:
+    # Jeunes, les feuilles sont étroites, pliées en gouttière et dressées ;
+    # elles suivent la pointe de la tige, dont elles sortent ensemble.
+    for nom,L_,W,curl,loc,(rx,ry,rz),jeune,col in (
+        ('feuilleD',1.25,.40,.10,(0.10,0.02,1.66),(70,-28,0),-78,('#14A34F','#5FE67A')),
+        ('feuilleG',0.95,.31,.08,(0.0,0.0,1.44),(-70,-18,180),-74,('#14A34F','#52DE70'))):
+        base=Vector(loc) if OUVERTURE>=1 else POINTE+(Vector(loc)-trace[-1])*OUVERTURE
+        o=leaf(nom,L_,W*(0.45+0.55*OUVERTURE),.45+1.1*(1-OUVERTURE),curl*OUVERTURE,tuple(base),(rx,jeune+(ry-jeune)*OUVERTURE,rz),col)
+        o.scale=(TAILLE,)*3
 
 # ---- monde : fond lilas vu par la caméra, lumière douce ailleurs
 w=bpy.data.worlds.new('w');sc.world=w;w.use_nodes=True;nt=w.node_tree;N=nt.nodes;L=nt.links
