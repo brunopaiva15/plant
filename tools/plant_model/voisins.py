@@ -334,7 +334,13 @@ def main() -> int:  # pragma: no cover - demande le cache et le banc
     if args.embeddings:
         sigs = lire_signature(source)
         if sigs is None:
-            raise SystemExit(f"{source} n'a pas de signature")
+            # Le cas courant n'est pas un cache abîmé, c'est un point de
+            # contrôle pas encore écrit : l'époque tourne toujours. Le dire,
+            # plutôt que laisser chercher une signature manquante.
+            raise SystemExit(
+                f"{source} n'existe pas encore — l'époque n'est pas bouclée"
+                if not source.exists() else
+                f"{source} n'a pas de signature")
         if int(sigs.get('dim', 0)) != int(sig.get('dim', 0)):
             raise SystemExit(
                 f"dimensions incompatibles : références {sig.get('dim')}, "
