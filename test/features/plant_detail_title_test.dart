@@ -1,5 +1,5 @@
 import 'package:flora/app/providers.dart';
-import 'package:flora/domain/models/models.dart';
+import 'package:flora/domain/repositories/repositories.dart';
 import 'package:flora/features/plants/presentation/plant_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -79,10 +79,12 @@ class DriftRoomScanRepository implements RoomScanRepository {
   @override
   Stream<List<RoomMarker>> watchMarkers(String scanId) => (_db.select(_db.roomMarkers)
         ..where((m) => m.scanId.equals(scanId))
-        // L'identifiant départage : deux repères posés dans la même seconde
-        // ne doivent pas échanger leur rang d'une lecture à l'autre — c'est
-        // le rang qui fait la fenêtre ajoutée à la main.
-        ..orderBy([(m) => OrderingTerm.asc(m.createdAt), (m) => OrderingTerm.asc(m.id)]))
+        // L'ordre de pose départage : deux repères posés dans la même seconde
+        // ne doivent pas échanger leur rang d'une lecture à l'autre — c'est le
+        // rang qui fait la fenêtre ajoutée à la main. L'identifiant, tiré au
+        // hasard, les rangeait dans un ordre quelconque ; `rowid` est celui de
+        // l'écriture.
+        ..orderBy([(m) => OrderingTerm.asc(m.createdAt), (m) => OrderingTerm.asc(m.rowId)]))
       .watch()
       .map((rows) => [for (final r in rows) ?r.toDomain()]);
 
