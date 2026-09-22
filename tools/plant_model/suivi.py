@@ -34,6 +34,10 @@ ENTRAINEMENT = re.compile(
 CORPUS = re.compile(r'(\d+)/(\d+)\s+([\d.]+) img/s\s+(\d+) saut')
 
 CONE_TEACHER = 0.2806  # § 19 ter de docs/14 — la géométrie qu'on copie
+# Ce qu'annonce Zenodo pour `plantnet_300K.zip`, au centième de Gio près. Le
+# pourcentage est donc approché, et c'est assez : ce qu'on veut savoir est si
+# ça avance, pas à quel octet on en est.
+ARCHIVE_GIO = 29.49
 
 
 # --------------------------------------------------------------------------
@@ -94,6 +98,26 @@ def duree(secondes: float) -> str:
 def barre(part: float, largeur: int = 28) -> str:
     plein = max(0, min(largeur, round(part * largeur)))
     return '█' * plein + '·' * (largeur - plein)
+
+
+def avancement(octets: int, attendus: float, avant: tuple[int, float] | None,
+               maintenant: float) -> dict:
+    """Où en est un fichier qui grossit, et à quelle vitesse.
+
+    La vitesse se mesure entre deux rafraîchissements plutôt que depuis le
+    début : un téléchargement repris après coupure a passé des minutes à zéro,
+    et une moyenne depuis le lancement annoncerait des heures de trop.
+    """
+    part = octets / (attendus * 1024 ** 3) if attendus else 0.0
+    etat = {'octets': octets, 'part': part, 'vitesse': 0.0, 'reste': 0.0}
+    if avant is None:
+        return etat
+    gagnes, ecoule = octets - avant[0], maintenant - avant[1]
+    if ecoule <= 0 or gagnes <= 0:
+        return etat
+    etat['vitesse'] = gagnes / ecoule
+    etat['reste'] = max(0.0, attendus * 1024 ** 3 - octets) / etat['vitesse']
+    return etat
 
 
 # --------------------------------------------------------------------------
@@ -168,6 +192,9 @@ def gpu() -> str:  # pragma: no cover - demande nvidia-smi
         return ''
 
 
+_precedent: dict[str, tuple[int, float]] = {}
+
+
 def tableau(args) -> str:  # pragma: no cover - assemble des lectures disque
     sortie = Path(args.sortie).expanduser()
     out = [f"── {time.strftime('%H:%M:%S')} ─────────────────────────────────"]
@@ -197,6 +224,18 @@ def tableau(args) -> str:  # pragma: no cover - assemble des lectures disque
         out.append(f"  → python3 voisins.py --banc benchmark.csv --cache {args.cache} "
                    f"--embeddings {args.sortie}/banc-e{faites[-1]}")
 
+    archive = Path(args.archive).expanduser()
+    if archive.exists() and not (sortie.parent / 'plantnet-300k' / 'splits.csv').exists():
+        a = avancement(archive.stat().st_size, ARCHIVE_GIO,
+                       _precedent.get('archive'), time.time())
+        _precedent['archive'] = (a['octets'], time.time())
+        out.append('\nARCHIVE PL@NTNET (téléchargement)')
+        out.append(f"  {barre(a['part'])} {a['part'] * 100:4.1f} %   "
+                   f"{a['octets'] / 1024 ** 3:.2f}/{ARCHIVE_GIO} Gio")
+        out.append(f"  {a['vitesse'] / 1024 ** 2:.1f} Mo/s   reste {duree(a['reste'])}"
+                   if a['vitesse'] else '  vitesse inconnue — deuxième relevé au '
+                                        'prochain rafraîchissement')
+
     c = etat_corpus(lignes(Path(args.log_corpus).expanduser()))
     out.append('\nCORPUS PL@NTNET')
     if c is None:
@@ -220,6 +259,8 @@ def main() -> int:  # pragma: no cover - boucle d'affichage
     ap.add_argument('--log', default='~/plant-data/iris10-complet.log')
     ap.add_argument('--log-corpus', default='~/plant-data/plantnet-corpus.log')
     ap.add_argument('--cache', default='~/plant-data/bioclip')
+    ap.add_argument('--archive', default='~/plant-data/plantnet_300K.zip',
+                    help="le zip en cours de téléchargement")
     ap.add_argument('--epoques', type=int, default=10)
     ap.add_argument('--batch', type=int, default=64,
                     help="images par pas, pour convertir une vitesse en durée")

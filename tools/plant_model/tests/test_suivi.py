@@ -136,3 +136,28 @@ def test_un_journal_absent_ne_se_confond_pas_avec_un_journal_bloque(tmp_path):
     journal.write_text('démarrage\n')
     assert 'démarrage' in silence(journal, maintenant=journal.stat().st_mtime + 10)
     assert 'muet depuis' in silence(journal, maintenant=journal.stat().st_mtime + 600)
+
+
+# --------------------------------------------------------------------------
+# Un fichier qui grossit
+# --------------------------------------------------------------------------
+
+def test_la_vitesse_se_mesure_entre_deux_releves():
+    """Depuis le lancement, un téléchargement repris après coupure a passé
+    des minutes à zéro : la moyenne annoncerait des heures de trop."""
+    from suivi import avancement
+    a = avancement(2 * 1024**3, 4.0, (1024**3, 1000.0), 1100.0)
+    assert a['vitesse'] == 1024**3 / 100
+    assert a['reste'] == (2 * 1024**3) / (1024**3 / 100)
+
+
+def test_un_premier_releve_ne_pretend_pas_connaitre_la_vitesse():
+    from suivi import avancement
+    a = avancement(1024**3, 4.0, None, 1000.0)
+    assert a['vitesse'] == 0.0 and a['part'] == 0.25
+
+
+def test_un_fichier_qui_ne_grossit_plus_ne_divise_pas_par_zero():
+    from suivi import avancement
+    a = avancement(1024**3, 4.0, (1024**3, 1000.0), 1100.0)
+    assert a['vitesse'] == 0.0 and a['reste'] == 0.0

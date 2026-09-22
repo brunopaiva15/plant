@@ -699,10 +699,19 @@ DISTILLATION
   points de contrôle : e1, e2
   → python3 voisins.py --banc benchmark.csv --cache ~/plant-data/bioclip …
 
+ARCHIVE PL@NTNET (téléchargement)
+  ████························ 14.9 %   4.40/29.49 Gio
+  6.2 Mo/s   reste 1 h 09
+
 CORPUS PL@NTNET
   ████························ 14.2 %   34600/243567   33.0 img/s
   12 sautées   reste 1 h 45
 ```
+
+Le panneau de l'archive disparaît de lui-même une fois le corpus construit.
+Sa vitesse se mesure **entre deux rafraîchissements**, pas depuis le début :
+un téléchargement repris après coupure a passé des minutes à zéro, et une
+moyenne depuis le lancement annoncerait des heures de trop.
 
 **Il ne lit que des fichiers déjà écrits** — pas de GPU, pas de réseau, pas
 de modèle chargé. Il tourne donc en boucle sans rien coûter aux deux passes
