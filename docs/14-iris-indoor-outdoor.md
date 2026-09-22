@@ -1358,8 +1358,13 @@ le plus mince, et c'est le monde de l'application.
 |---|---|---|
 | extraction, réduite à 320 px | sans GPU | **243 567 images, 0 sautée, 412 img/s — 10 min** |
 | encodage par le teacher | ~1 h à 80 img/s, cache +627 Mo | à faire, GPU libre |
-| disque | ~7 Gio à 320 px, contre 29,5 Gio pour l'archive | — |
+| disque | ~7 Gio à 320 px, contre 29,5 Gio pour l'archive | **9,5 Gio** — 39 ko par image |
 | époque de distillation | 49 min → **~68 min**, dix époques à ~11 h | — |
+
+Le manifeste rattache **185 836 images sur 243 567 — 76 %** à une espèce du
+catalogue ; les autres gardent une clé `pn:`. Pour la distillation la
+distinction ne sert à rien, elle ne lit que le chemin ; elle comptera le jour
+où ces images serviront à bâtir des centroïdes.
 
 **L'extraction n'a rien coûté à la distillation** : 266 img/s avant, 266
 pendant. Le décodage JPEG à quatre fils et l'entraînement à six ne se
