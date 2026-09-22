@@ -7,10 +7,11 @@ et App Store en réclame alors une série chacune. Le
 premier ne montre pas un écran, mais il en suit la mise en page : la marge
 de page de l'app, un grand titre en haut à gauche, puis des cartes en
 colonne. Une bande sauge porte le nom tracé à la main et la revendication
-en gras ; la plante de l'icône se pose sur son bord ; une carte de verre
-dépoli mord sur la bande et porte ce que l'app dit d'une plante ; une
-carte pleine de terre cuite dit ce qui est gratuit. L'espèce montrée est la
-monstera, celle que tout le monde reconnaît et celle de l'icône ; son
+en gras ; le pot de l'icône, entier, se pose sur son bord ; une carte de
+verre dépoli mord sur la bande et porte ce que l'app dit d'une plante ; une
+carte pleine de terre cuite dit ce que l'app n'impose pas — ni compte, ni
+publicité. Le mot « gratuit » n'y figure plus : l'app ne le sera pas.
+L'espèce montrée est la monstera, celle que tout le monde reconnaît ; son
 arrosage et sa lumière sont ceux de son profil de soin
 (`data/species/care_profiles.dart`), son nom courant celui du catalogue
 livré. Rien de plus — une
