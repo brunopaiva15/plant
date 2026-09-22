@@ -6,7 +6,7 @@
 #   FORMAT=ipad store/capture_ios.sh     # la même série sur le plus grand iPad
 #   LANGS="fr en" store/capture_ios.sh   # deux langues
 #   DEVICE="iPhone 17 Pro" store/capture_ios.sh
-#   STORE_SCENES=identify,diagnosis LANGS=fr store/capture_ios.sh   # rejouer deux scènes
+#   STORE_SCENES=capture,diagnosis LANGS=fr store/capture_ios.sh   # rejouer deux scènes
 #
 # App Store demande une série par famille d'appareils, et le projet en déclare
 # deux (TARGETED_DEVICE_FAMILY = « 1,2 ») : il faut donc les deux passages,

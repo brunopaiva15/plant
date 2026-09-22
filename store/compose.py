@@ -776,7 +776,7 @@ SCENES = [
     ('plants', 'sage', 'collection_monstera.webp', 3.0, 'left'),
     ('plant', 'terracotta', 'collection_ronde.webp', -3.0, 'right'),
     ('care', 'sun', 'onboarding_3.png', 3.5, 'left'),
-    ('identify', 'earth', 'collection_caoutchouc.webp', -3.0, 'right'),
+    ('capture', 'earth', 'collection_caoutchouc.webp', -3.0, 'right'),
     ('garden-calendar', 'lavender', 'onboarding_7.png', 3.0, 'left'),
     ('diagnosis', 'rose', 'collection_sansevieria.webp', -3.5, 'right'),
 ]
@@ -796,11 +796,13 @@ def build(shots, out, lang, fmt='iphone'):
         bottom = draw_text_block(img, title, subtitle, size)
         shot = os.path.join(shots, f'{name}.png')
         modal = {'device': device}
-        if name == 'identify' and not os.path.exists(shot) and fmt == 'iphone':
-            # Pas de modèle sur le web : la feuille « Espèce » est redessinée
-            # sur la fiche du Ficus, avec les vrais résultats. Le repli est
-            # taillé pour une capture de téléphone ; sur iPad, mieux vaut pas
-            # de visuel qu'une feuille aux mauvaises proportions.
+        if name == 'capture' and not os.path.exists(shot) and fmt == 'iphone':
+            # Ni caméra ni modèle sur le web : l'étape photo ne s'y prend pas.
+            # Le repli montre l'autre façon d'identifier — la feuille
+            # « Espèce » redessinée sur la fiche du Ficus, avec les vrais
+            # résultats. Il est taillé pour une capture de téléphone ; sur
+            # iPad, mieux vaut pas de visuel qu'une feuille aux mauvaises
+            # proportions.
             shot = os.path.join(shots, 'plant-ficus.png')
             modal.update(scrim=0.36, sheet=ident_sheet(lang))
         if isinstance(shot, str) and not os.path.exists(shot):
