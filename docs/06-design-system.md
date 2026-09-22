@@ -1006,36 +1006,88 @@ et la page qui ne redemande rien une fois le soutien versé.
 Est-ce beau ? évident ? Peut-on retirer quelque chose ? L'action principale est-elle visible sans scroller ? Trop de texte ? Moins de taps possible ? Cohérent ? Ressemble-t-il à un template ? → si oui, retravailler.
 
 ## Icône de l'application
-Le logo est la monstera en papier découpé, dans son pot terracotta, sur
-fond blanc.
+Le logo est un pot de terre cuite d'où sort une pousse à deux feuilles, en
+argile mate, rendu en 3D sur un dégradé sauge. Le pot a deux yeux, sans
+bouche ni joues : c'est un personnage, pas une mascotte qui parle. Le cadre
+le coupe par le bas, et la pousse porte l'icône.
 
-- Source détourée : `assets/icon/plant.png`. C'est le master : tout le
-  reste en dérive.
-- `icon.png` / `icon_dark.png` : la plante à 92 % sur blanc. Sans alpha :
-  l'App Store la refuse.
-- `icon_ios_foreground.png` : la même plante à 92 %, fond transparent. iOS
+**Couleurs.** Terre cuite orange vif, verts francs, fond pris sur `sage`
+(#2F7D52 → #5FA87A). Elles sont plus saturées que la palette de l'interface,
+exprès : une icône se lit parmi d'autres sur un écran d'accueil, et une
+argile trop pâle s'y éteint. La matière reste mate, sans vernis.
+
+**Les yeux sont strictement identiques.** Chaque œil est un seul maillage —
+la bille et ses deux reflets — tourné face à la caméra, et son noir ne
+réagit pas aux lampes. Deux billes éclairées par les mêmes lampes n'ont
+jamais le même reflet, et c'est ce qu'on voit en premier sur un visage.
+
+La scène entière est décrite par `tool/app_icon_scene.py`, sans fichier
+`.blend`, et `tool/render_app_icon.py` la rend calque par calque dans
+`assets/icon/rendu/` :
+
+- `icone.png` : l'icône entière. C'est le master de toutes les tailles.
+- `avant_plan.png` : le pot seul, au même cadrage, fond transparent. iOS
   pose lui-même le fond du mode nuit et la teinte du mode teinté.
-- `icon_foreground.png` : plante à 62 %, fond transparent. Le XML adaptatif
-  d'Android ajoute un retrait de 16 %, d'où la marge apparemment large.
-- `icon_monochrome.png` : la même silhouette en noir, pour les icônes
-  thématiques d'Android 13+.
+- `avant_plan_adaptatif.png` : le pot seul, champ élargi d'un tiers. Le
+  lanceur d'Android ne montre que les deux tiers centraux de l'avant-plan :
+  ils reprennent ainsi le cadrage de l'icône, et le pot continue sous le
+  masque au lieu de s'arrêter net. Pas de retrait dans `ic_launcher.xml`.
+- `fond.png` : le dégradé seul, fond de l'icône adaptative.
+- `clin_50`, `clin_85`, `clin_100` : l'œil de droite qui se ferme, découpé
+  dans la zone `OEIL` (voir *L'ouverture*).
 
-La plante occupe 92 % de la largeur, comme sur les icônes système : c'est
-elle qui doit se lire sur la grille, pas le blanc autour. Les pointes de
-feuilles s'arrêtent à 4 % des bords, loin du rayon d'angle du squircle
-d'iOS — 22 % du côté, qui n'entame que les coins. Seules les icônes web
-« maskable » descendent à 72 % : leur zone de sûreté est un disque de 80 %
-du côté, et tout ce qui déborde peut être rogné.
+Les rendus sont reproductibles : même graine pour Cycles et pour le grain,
+si bien qu'une image du clin d'œil se pose sur l'icône sans raccord.
 
-Régénérer après toute modification :
+Régénérer les tailles, sans Blender ni chaîne Flutter :
 ```
 python3 tool/build_app_icon.py
 ```
-Le script compose les cinq sources depuis le master, puis toutes les
-déclinaisons d'iOS, d'Android et du web, sans chaîne Flutter installée.
-`dart run flutter_launcher_icons` fait le même travail depuis
-`flutter_launcher_icons.yaml`, à deux réserves près : il rééchantillonne
-autrement, et il retaille les « maskable » comme les autres.
+Le script écrit les sources de `assets/icon/`, les déclinaisons d'iOS,
+d'Android et du web, le logo des écrans de lancement et les images de
+l'ouverture. Refaire les rendus, seulement pour changer le dessin (deux
+minutes par calque sur quatre cœurs) :
+```
+python3 tool/render_app_icon.py --blender /chemin/vers/blender
+```
+`dart run flutter_launcher_icons` sait aussi composer les icônes depuis
+`flutter_launcher_icons.yaml`, mais ni le logo de lancement ni l'ouverture.
+
+`assets/icon/plant.png`, la monstera en papier découpé de l'ancienne icône,
+reste là : la page web de partage la montre encore.
+
+## L'ouverture (`app/launch_splash.dart`)
+À l'ouverture à froid, le logo cligne de l'œil, prend son élan et grossit
+jusqu'à laisser voir l'application. 1,4 seconde en tout :
+
+| Temps | Ce qui se passe |
+|---|---|
+| 0–250 ms | le logo tel que l'a laissé l'écran natif |
+| 250–690 ms | le clin d'œil : trois images en 40 ms, l'œil fermé en arc tenu 160 ms, les mêmes à rebours |
+| 690–880 ms | l'élan : le logo se ramasse à 88 % |
+| 880–1380 ms | le zoom jusqu'à 16 fois sa taille ; le fond s'efface en 300 ms, le logo dans les 250 dernières |
+
+**Le premier cadre est l'écran natif.** iOS (`LaunchScreen.storyboard`) et
+Android (`launch_background.xml`, puis `values-v31` à partir d'Android 12)
+montrent le même logo de 128 points au centre, sur `canvas` clair ou sombre
+selon le système. `LaunchSplash` reprend exactement cette image : on ne voit
+pas la relève. Pour ce faire, il retient le premier cadre
+(`deferFirstFrame`) le temps de décoder ses images — une seconde au plus —,
+sinon le fond paraîtrait seul un instant. Le fond suit le mode sombre du
+système et non le thème choisi dans l'application, que l'écran natif ne
+connaît pas. Et l'ouverture passe au-dessus du grain de l'application :
+l'écran natif n'en a pas.
+
+**Le clin d'œil** ne rejoue pas la 3D : ce sont trois vignettes de l'œil de
+droite, rendues dans la même scène et posées sur le logo, pleines au centre
+et fondues sur les bords.
+
+- **Un toucher** passe directement au zoom.
+- **Réduire les animations** : ni clin d'œil ni zoom. Le logo reste 300 ms,
+  puis s'efface en 250.
+- Seul `main` la demande (`FloraApp(splash: true)`) : les tests construisent
+  l'application sans elle. `test/app/launch_splash_test.dart` tient la
+  chronologie, le toucher et le mouvement réduit.
 
 ## La page web de partage (`supabase/functions/share/`)
 Un lien d'invitation ou de plante ouvre une page dans un navigateur, souvent

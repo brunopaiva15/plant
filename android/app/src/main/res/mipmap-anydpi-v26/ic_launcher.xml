@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Les deux calques sont pleins, sans retrait : l'avant-plan est rendu avec
+     un champ élargi (tool/render_app_icon.py), si bien que sa zone visible
+     reprend le cadrage de l'icône et que le pot continue sous le masque. -->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-  <background android:drawable="@color/ic_launcher_background"/>
-  <foreground>
-      <inset
-          android:drawable="@drawable/ic_launcher_foreground"
-          android:inset="16%" />
-  </foreground>
-  <monochrome>
-      <inset
-          android:drawable="@drawable/ic_launcher_monochrome"
-          android:inset="16%" />
-  </monochrome>
+  <background android:drawable="@drawable/ic_launcher_background"/>
+  <foreground android:drawable="@drawable/ic_launcher_foreground"/>
+  <monochrome android:drawable="@drawable/ic_launcher_monochrome"/>
 </adaptive-icon>

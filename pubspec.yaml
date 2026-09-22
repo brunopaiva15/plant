@@ -125,6 +125,9 @@ flutter:
     - assets/problems/natural/
     # Les six formes d'engrais, rendues dans le studio d'argile d'Auxine.
     - assets/inventory/fertilizer_forms/
+    # L'animation d'ouverture (LaunchSplash) : le logo détouré et l'œil qui
+    # cligne, tirés des rendus de l'icône par tool/build_app_icon.py.
+    - assets/splash/
     # Illustrations 3D de l'onboarding : une image par écran, animée par l'app,
     # la séquence de pousse du premier écran (tool/grow_monstera.py) et la
     # maison d'Apple Maison (tool/build_home.py).

@@ -1,7 +1,7 @@
-# Icône de l'application : la monstera en papier découpé dans son pot, sur
-# fond blanc. Les sources listées ici sont composées à partir du master
-# détouré par tool/build_app_icon.py, qui écrit aussi les déclinaisons de
-# chaque plateforme. Régénérer après modification :
+# Icône de l'application : le pot d'argile et sa pousse, rendus en 3D, sur
+# fond sauge. Les sources listées ici sont composées à partir des rendus de
+# assets/icon/rendu/ par tool/build_app_icon.py, qui écrit aussi les
+# déclinaisons de chaque plateforme. Régénérer après modification :
 #   python3 tool/build_app_icon.py
 # ou, si la chaîne Flutter est installée :
 #   dart run flutter_launcher_icons
@@ -9,18 +9,19 @@ flutter_launcher_icons:
   image_path: "assets/icon/icon.png"
 
   android: "ic_launcher"
-  # Fond plein et avant-plan transparent : le masque du lanceur (rond,
-  # squircle, goutte) découpe le fond sans jamais rogner la plante.
-  adaptive_icon_background: "#FFFFFF"
+  # Deux calques pleins : le dégradé sauge, et le pot rendu avec un champ
+  # élargi d'un tiers, si bien que la zone visible reprend le cadrage de
+  # l'icône et que le pot continue sous le masque du lanceur.
+  adaptive_icon_background: "assets/icon/icon_background.png"
   adaptive_icon_foreground: "assets/icon/icon_foreground.png"
   adaptive_icon_monochrome: "assets/icon/icon_monochrome.png"
 
   ios: true
   # iOS refuse toute transparence dans l'icône de l'App Store.
   remove_alpha_ios: true
-  # Pas l'avant-plan d'Android : sa zone de sûreté rétrécit la plante d'un
-  # tiers, et iOS ne rogne rien. Le mode nuit et le mode teinté prennent
-  # donc la plante à la même taille que l'icône claire, fond en moins.
+  # Pas l'avant-plan d'Android : son champ est élargi d'un tiers, et iOS ne
+  # rogne rien. Le mode nuit et le mode teinté prennent donc le pot au même
+  # cadrage que l'icône claire, fond en moins.
   image_path_ios_dark_transparent: "assets/icon/icon_ios_foreground.png"
   image_path_ios_tinted_grayscale: "assets/icon/icon_ios_foreground.png"
   # Le mode teinté d'iOS 18 attend une image en niveaux de gris.
@@ -29,5 +30,5 @@ flutter_launcher_icons:
   web:
     generate: true
     image_path: "assets/icon/icon.png"
-    background_color: "#FFFFFF"
+    background_color: "#F6EFE4"
     theme_color: "#2F7F53"
