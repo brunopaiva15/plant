@@ -1146,6 +1146,84 @@ banc complet pour trancher entre les survivants. La porte E — le coût mobile
 — se lit au même moment, sur un téléphone réel et pas sur un ordinateur de
 bureau (§ 18).
 
+### 19 quater. La passe complète, époque 1 — 22 septembre 2026
+
+Premier point de contrôle de la passe à 0,2 : `fastvit_sa12`, 797 965 images
+vues en une époque, soit **1,8 fois tout le budget du balayage**.
+
+| indoor, 1 127 images | balayage (0,2) | **époque 1** | teacher | Iris 9 masqué |
+|---|---|---|---|---|
+| texte, armes égales | 0,4082 | **0,5004** | 0,8119 | 0,8119 |
+| texte, répertoire entier | 0,3469 | **0,4366** | 0,7551 | — |
+| centroïde, armes égales | — | **0,5723** | 0,8456 | — |
+| centroïde, répertoire entier | 0,3762 | **0,4543** | 0,7720 | — |
+
+**Neuf points en une époque, et le cône tient.** 0,3096 contre 0,2806 pour le
+teacher : le poids 0,2 ne sur-corrige pas au budget complet. La réserve du
+§ 19 ter est levée.
+
+**Et le compromis qu'on croyait structurel n'en était pas un.** Au balayage,
+la contrastive se payait en fidélité — le témoin était à 0,7162 d'accord, le
+bras à 1,0 tombait à 0,6074. Ici l'accord est à **0,7207**, au-dessus du
+témoin, *avec* le cône du teacher. Le compromis était un effet du petit
+budget, pas une propriété de la recette.
+
+#### Les centroïdes portent le student plus qu'ils ne portent le teacher
+
+| écart centroïdes − texte, armes égales | teacher | **époque 1** |
+|---|---|---|
+| indoor | +3,4 pts | **+7,2 pts** |
+| outdoor | +0,5 pt | **+2,2 pts** |
+
+Le teacher se passe presque des centroïdes ; le student s'y accroche. Le
+mécanisme le plus simple est celui du § 19 bis relu à l'envers : les
+centroïdes sont des moyennes d'images, donc **proches des photos qu'ils
+décrivent**, et la marge entre la bonne espèce et la suivante y est large. Les
+références textuelles sont de l'autre côté de l'écart de modalité de CLIP,
+loin de toutes les images : le rang s'y joue sur des différences fines, que
+l'erreur structurée du student efface. Un student imparfait a donc besoin de
+marges larges.
+
+> **Conséquence produit, si ça tient.** Les centroïdes se construisent sur nos
+> images d'entraînement, donc ils jouent à domicile et ne prouvent rien sur
+> une espèce qu'on n'a pas photographiée. Les textes, eux, n'ont jamais vu une
+> photo (§ porte C). Si le student reste dépendant des centroïdes, la promesse
+> « ajouter une espèce = ajouter une ligne » vaut pour les espèces qu'on
+> photographie, pas pour les autres. À surveiller époque après époque : l'écart
+> doit se **resserrer** vers celui du teacher.
+
+#### Le répertoire entier ne coûte pas plus cher au student qu'au teacher
+
+Indoor, en textes : 0,5004 → 0,4366, soit 6,4 points pour 4 244 références de
+plus. Le teacher paie 5,7 points sur le même passage. L'espace du student
+n'est donc pas particulièrement fragile aux intrus — c'est le rang moyen qui
+est trop bas, pas l'encombrement qui le tue.
+
+#### Et sur ce qu'Iris 9 ne peut pas nommer, il est déjà devant
+
+Le student de l'époque 1 nomme 38 % des 2 000 plantes hors répertoire
+(centroïdes), contre **0 % pour Iris 9**, par construction. C'est acquis dès
+maintenant, et aucune époque supplémentaire n'est nécessaire pour le tenir.
+
+#### La prédiction, écrite avant la suite
+
+De 450 000 images vues (0,4082) à 797 965 (0,5004), le gain est de 9,2 points
+pour 1,8× le budget. Prolongé à ce rythme — et c'est une extrapolation, pas
+une mesure :
+
+| images vues | ~0,8 M | ~1,6 M | ~3,2 M | ~6,4 M | 8,0 M (é10) |
+|---|---|---|---|---|---|
+| texte, armes égales | 0,5004 | ~0,59 | ~0,68 | ~0,77 | **~0,79** |
+
+**Ça arriverait au niveau d'Iris 9, pas clairement au-dessus.** Si c'est le
+cas, la décision ne se prendra pas sur ce chiffre-là mais sur les trois
+autres colonnes — outdoor, hors-répertoire, et le coût mobile de la porte E.
+
+L'époque 2 falsifie ou confirme : **au-dessous de 0,56 la courbe s'aplatit
+déjà**, et la bonne dépense suivante est un dorsal plus large (MobileNetV4
+Hybrid), pas plus d'images. Au-dessus de 0,60, c'est le corpus qui manque, et
+le § 20 ter devient prioritaire.
+
 ## 20 ter. Pl@ntNet-300K comme corpus, pas comme avis — 22 septembre 2026
 
 Le § 5 l'avait rejeté comme **second avis** : 4,85 % de couverture, et aucun
