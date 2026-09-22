@@ -1354,12 +1354,23 @@ le plus mince, et c'est le monde de l'application.
 
 ### Le coût, chiffré
 
-| | |
-|---|---|
-| extraction, réduite à 320 px | **sans GPU** — tourne pendant une distillation |
-| encodage par le teacher | ~1 h à 80 img/s, cache +627 Mo |
-| disque | ~7 Gio à 320 px, contre 29,5 Gio pour l'archive |
-| époque de distillation | 49 min → **~68 min**, donc dix époques à ~11 h |
+| | prévu | **mesuré, 22 septembre** |
+|---|---|---|
+| extraction, réduite à 320 px | sans GPU | **243 567 images, 0 sautée, 412 img/s — 10 min** |
+| encodage par le teacher | ~1 h à 80 img/s, cache +627 Mo | à faire, GPU libre |
+| disque | ~7 Gio à 320 px, contre 29,5 Gio pour l'archive | — |
+| époque de distillation | 49 min → **~68 min**, dix époques à ~11 h | — |
+
+**L'extraction n'a rien coûté à la distillation** : 266 img/s avant, 266
+pendant. Le décodage JPEG à quatre fils et l'entraînement à six ne se
+disputent pas le même goulot — l'un attend le disque, l'autre le GPU.
+
+**Et la lecture à distance est morte en chemin.** `RemoteZip` n'est pas
+réentrant, donc chaque fil doit ouvrir sa propre archive, donc chacun relit
+trente mégaoctets de répertoire central : Zenodo rend `429` avant la première
+image. Le zip se télécharge d'abord — en boucle, parce qu'il ferme la
+connexion en route — et tout se lit ensuite en local, six fois plus vite que
+ce qui était prévu à distance.
 
 Les images restent sur disque pendant tout l'entraînement : le cache ne
 contient que les réponses du teacher, chaque époque relit les photos.
