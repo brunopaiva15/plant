@@ -1457,6 +1457,71 @@ Elle était à surveiller *si* le top-1 décevait. Il n'a pas déçu. Les 0,3266
 relevés sur un lot de 64 sont du bruit autour de 0,31, pas un cône qui se
 referme.
 
+### 19 nonies. Époque 10 : l'indoor plafonne, l'outdoor non — 22 septembre 2026
+
+**Prédit 0,6850, mesuré 0,6513.** La loi de pente, vérifiée à trois
+dix-millièmes une octave plus tôt, se casse sur la dernière.
+
+| pente é6 → é10 (0,737 octave) | |
+|---|---|
+| indoor, textes | **+0,0084** — contre +0,0542 sur é3 → é6 |
+| indoor, centroïdes | **+0,0037** |
+| outdoor, textes | **+0,0590** — tenue, voire mieux |
+| hors répertoire, centroïdes | +0,0421 |
+
+**L'uniformité du § 19 octies était une coïncidence d'une octave.** Trois
+domaines à la même pente au millième, j'en ai fait une loi ; la suivante les
+sépare. L'indoor s'arrête, l'outdoor continue au même rythme.
+
+> **Réserve de taille.** Le banc indoor fait 1 127 images. Les +0,62 point de
+> é6 à é10 valent **sept images**. L'écart à la prédiction (3,4 points, soit
+> 38 images) est lui bien au-delà du bruit, mais la platitude exacte ne l'est
+> pas : la vraie pente indoor est quelque part entre zéro et deux points
+> d'octave, pas mesurable plus finement sur ce banc.
+
+#### La baseline `fastvit_sa12`, close
+
+| é10, mesuré | student | Iris 9 masqué | teacher |
+|---|---|---|---|
+| indoor, textes, armes égales | 0,6513 | **0,8119** | 0,8119 |
+| indoor, centroïdes, armes égales | 0,7081 | — | 0,8456 |
+| outdoor, textes, armes égales | **0,7050** | **0,7615** | 0,9095 |
+| outdoor, centroïdes, armes égales | 0,7060 | — | 0,9145 |
+| hors répertoire, centroïdes | 0,5850 | **0,0** | 0,8405 |
+
+**L'outdoor est à 5,6 points d'Iris 9 et monte encore** à +0,059 par octave :
+une octave de plus — dix époques — le ferait passer devant. L'indoor est à
+16 points et ne bouge plus. Ce ne sont pas deux lectures du même problème,
+ce sont deux problèmes.
+
+#### Et le taux d'apprentissage n'a jamais bougé
+
+`distiller.py` applique **1e-3 constant du début à la fin**. Aucun palier,
+aucune décroissance cosinus. C'est un défaut de ma recette, pas une propriété
+du modèle, et il colle exactement à ce qu'on observe : un pas trop grand en
+fin de passe empêche de converger finement là où il ne reste que des écarts
+fins à gagner — l'indoor — pendant que le domaine encore loin du compte
+continue de progresser par gros sauts.
+
+**Le plafond indoor a donc deux explications candidates**, et elles
+n'appellent pas les mêmes suites :
+
+| hypothèse | ce qui la départagerait |
+|---|---|
+| la capacité de 11,6 M est atteinte | le bras MobileNetV4, déjà prévu |
+| le taux constant empêche la convergence fine | un bras `fastvit_sa12` + cosinus |
+
+Que l'outdoor continue de monter **argumente contre** un plafond de capacité
+pur : une capacité saturée le serait partout. Mais ce n'est pas une preuve,
+les deux domaines n'étant pas au même point de leur courbe.
+
+#### Ce qu'on ne change pas ce soir
+
+Le bras MobileNetV4 part **à recette identique**, taux constant compris. Le
+corriger maintenant confondrait dorsal et calendrier de taux dans une seule
+expérience — le § 13.6 de `docs/09`, encore. Le cosinus se mesure ensuite, à
+dorsal figé, sur une nuit à lui.
+
 ### 19 septies. Le bras MobileNetV4, chiffré avant d'être lancé
 
 | | `fastvit_sa12` | **`mobilenetv4_conv_large.e500_r256_in1k`** |
