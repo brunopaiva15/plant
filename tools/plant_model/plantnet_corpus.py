@@ -235,6 +235,33 @@ def verrou_vivant(verrou: Path, maintenant: float | None = None,
     return (maintenant or time.time()) - verrou.stat().st_mtime < patience
 
 
+def lecteur_dossier(racine: Path):
+    """`lire(membre)` sur une archive déjà décompressée.
+
+    Une archive dézippée est plus simple qu'un zip : pas de répertoire central
+    à relire, pas de réentrance à craindre, chaque fil ouvre son fichier. Et
+    puisque les trente gigaoctets sont déjà sur le disque, les relire à
+    travers le zip serait du travail refait.
+
+    Une image manquante rend `None` comme le lecteur distant : la passe la
+    saute et la compte, elle ne s'arrête pas.
+    """
+    def lire(chemin: str):
+        fichier = racine / chemin
+        try:
+            return fichier.read_bytes()
+        except OSError:
+            # L'archive se décompresse parfois sans son dossier racine ;
+            # le membre est alors directement sous la racine donnée.
+            court = racine / chemin.split('/', 1)[-1]
+            try:
+                return court.read_bytes()
+            except OSError:
+                return None
+
+    return lire
+
+
 def par_fil(ouvrir):
     """Un lecteur par fil d'exécution, ouvert à la première lecture.
 
@@ -305,17 +332,25 @@ def main() -> int:  # pragma: no cover - réseau et disque
     if str(source).startswith('http'):
         print("lecture à distance — si Zenodo coupe (429), télécharger "
               "l'archive une fois et la passer à --archive\n", flush=True)
-    try:
-        premier = lecteur(source)[0]
-    except Exception as e:
-        raise SystemExit(diagnostic(e, zip_local, args.sortie)) from e
+    dossier = Path(source).expanduser() if not str(source).startswith('http') else None
+    if dossier is not None and dossier.is_dir():
+        print(f'archive décompressée : {dossier}\n', flush=True)
+        premier = lecteur_dossier(dossier)
+    else:
+        try:
+            premier = lecteur(source)[0]
+        except Exception as e:
+            raise SystemExit(diagnostic(e, zip_local, args.sortie)) from e
     etat_premier = {'libre': premier}
 
     def ouvrir():
         # Le premier lecteur est déjà ouvert : le rendre au premier fil qui
         # le demande évite de payer deux fois le répertoire central.
         libre = etat_premier.pop('libre', None)
-        return libre if libre is not None else lecteur(source)[0]
+        if libre is not None:
+            return libre
+        return (lecteur_dossier(dossier) if dossier is not None and dossier.is_dir()
+                else lecteur(source)[0])
 
     lire = par_fil(ouvrir)
     debut, faites, sautees = time.perf_counter(), 0, 0

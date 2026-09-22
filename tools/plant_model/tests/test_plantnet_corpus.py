@@ -235,3 +235,32 @@ def test_une_autre_erreur_nest_pas_deguisee_en_429():
     from plantnet_corpus import diagnostic
     m = diagnostic(FileNotFoundError('pas là'), '/z.zip', '/s')
     assert 'curl' not in m and 'FileNotFoundError' in m
+
+
+# --------------------------------------------------------------------------
+# Une archive déjà décompressée
+# --------------------------------------------------------------------------
+
+def test_le_lecteur_de_dossier_rend_les_octets(tmp_path):
+    """Trente gigaoctets déjà sur le disque : les relire à travers le zip
+    serait du travail refait."""
+    from plantnet_corpus import lecteur_dossier
+    membre = tmp_path / 'plantnet_300K/images/train/1/a.jpg'
+    membre.parent.mkdir(parents=True)
+    membre.write_bytes(b'jpeg')
+    assert lecteur_dossier(tmp_path)('plantnet_300K/images/train/1/a.jpg') == b'jpeg'
+
+
+def test_une_archive_sans_son_dossier_racine_se_lit_quand_meme(tmp_path):
+    """`unzip -j`, ou une extraction dans un dossier déjà nommé : le membre
+    est alors directement sous la racine donnée."""
+    from plantnet_corpus import lecteur_dossier
+    membre = tmp_path / 'images/train/1/a.jpg'
+    membre.parent.mkdir(parents=True)
+    membre.write_bytes(b'jpeg')
+    assert lecteur_dossier(tmp_path)('plantnet_300K/images/train/1/a.jpg') == b'jpeg'
+
+
+def test_une_image_absente_du_dossier_est_sautee_pas_fatale(tmp_path):
+    from plantnet_corpus import lecteur_dossier
+    assert lecteur_dossier(tmp_path)('plantnet_300K/images/train/1/a.jpg') is None

@@ -1224,6 +1224,93 @@ déjà**, et la bonne dépense suivante est un dorsal plus large (MobileNetV4
 Hybrid), pas plus d'images. Au-dessus de 0,60, c'est le corpus qui manque, et
 le § 20 ter devient prioritaire.
 
+### 19 quinquies. Époque 2 : la prédiction était trop haute — 22 septembre 2026
+
+| indoor, 1 127 images | é1 | **é2** | teacher | Iris 9 masqué |
+|---|---|---|---|---|
+| texte, armes égales | 0,5004 | **0,5590** | 0,8119 | 0,8119 |
+| texte, répertoire entier | 0,4366 | **0,4818** | 0,7551 | — |
+| centroïde, armes égales | 0,5723 | **0,6406** | 0,8456 | — |
+| centroïde, répertoire entier | 0,4543 | **0,5315** | 0,7720 | — |
+
+| outdoor, 2 000 images | é1 | **é2** | teacher | Iris 9 masqué |
+|---|---|---|---|---|
+| texte, armes égales | 0,4705 | **0,5435** | 0,9095 | 0,7615 |
+| centroïde, armes égales | 0,4925 | **0,5700** | 0,9145 | — |
+
+| hors répertoire, 2 000 images | é1 | **é2** | teacher | Iris 9 |
+|---|---|---|---|---|
+| centroïde, répertoire entier | 0,3800 | **0,4630** | 0,8405 | **0,0** |
+
+**La prédiction annonçait ~0,59, la mesure donne 0,5590.** Le seuil de
+falsification écrit au § 19 quater — « sous 0,56 la courbe s'aplatit déjà » —
+est franchi d'un millième. Un seuil raté d'un millième ne tranche rien, et le
+faire parler serait pire que de l'avoir écrit. Ce qui tranche est la pente.
+
+#### La pente par octave, qui elle est nette
+
+| images vues | top-1 | pente depuis le point précédent |
+|---|---|---|
+| 450 000 (balayage) | 0,4082 | — |
+| 797 965 (é1) | 0,5004 | **+0,1116 / octave** |
+| 1 595 930 (é2) | 0,5590 | **+0,0586 / octave** |
+
+**La pente a été divisée par deux en une octave.** Ce n'est pas une courbe
+log-linéaire qu'on prolonge, c'est une approche d'asymptote.
+
+| é10 (7,98 M, soit 2,32 octaves de plus) | projection |
+|---|---|
+| si la pente reste à 0,0586 | **0,695** |
+| si elle continue de se diviser par deux | **0,605** |
+
+**Dans les deux cas, en dessous des 0,8119 d'Iris 9.** Et pour atteindre
+0,8119 à pente constante il faudrait 4,3 octaves de plus, soit **vingt fois
+le budget** : deux cents époques. Ce n'est pas une question de patience.
+
+> **La prédiction du § 19 quater est donc fausse, et de dix à dix-neuf
+> points.** Elle prolongeait une pente mesurée sur deux points, en écrivant
+> « c'est une extrapolation, pas une mesure » sans en tirer la conséquence :
+> deux points ne montrent pas une courbure. Trois suffisent, et ils disent
+> autre chose.
+
+#### La réserve sur les centroïdes se réalise, dans le mauvais sens
+
+| écart centroïdes − texte, armes égales | é1 | **é2** | teacher |
+|---|---|---|---|
+| indoor | +7,19 pts | **+8,16 pts** | +3,4 pts |
+| outdoor | +2,20 pts | **+2,65 pts** | +0,5 pt |
+
+Le § 19 quater demandait de surveiller un resserrement vers l'écart du
+teacher. **Il s'élargit.** Le student s'appuie de plus en plus sur des
+références bâties à partir de nos propres images ; la promesse « ajouter une
+espèce = ajouter une ligne » reste donc conditionnée aux espèces qu'on
+photographie. Ce n'est pas rédhibitoire — c'est une contrainte de produit à
+écrire noir sur blanc.
+
+#### Ce qui progresse le plus vite est ce qu'Iris 9 ne sait pas faire
+
+En une époque : **+7,3 points en outdoor** (textes), **+8,3 points sur le
+hors-répertoire**, contre +5,9 en indoor. Le student gagne le plus là où
+Iris 9 est le plus faible — et sur les 2 000 plantes hors répertoire il est à
+0,4630 contre **zéro**, ce qu'aucune époque supplémentaire d'Iris 9 ne
+changerait.
+
+#### Ce qu'on en fait
+
+1. **La passe va au bout.** Elle est payée, elle écrit un point de contrôle
+   par époque, et une courbe complète à `fastvit_sa12` est exactement la
+   baseline qu'il faut pour juger MobileNetV4 Hybrid **à recette figée**
+   (§ 13.6 de `docs/09`). L'interrompre pour changer de dorsal, c'est se
+   retrouver sans point de comparaison ;
+2. **le dorsal passe devant le corpus.** Une asymptote à 11,6 M de paramètres
+   ne se déplace pas en ajoutant des images. Le § 20 ter reste juste sur le
+   fond — ces images-là sont le bon monde — mais il n'est plus la dépense
+   prioritaire ;
+3. **l'époque 4 vérifie la courbure.** Si la pente se divise encore par deux
+   (~0,589 attendu à é4), l'asymptote est confirmée. Si elle se stabilise
+   à 0,0586 (~0,617), c'est le budget qui manque encore et le corpus
+   reprend son rang.
+
 ## 20 ter. Pl@ntNet-300K comme corpus, pas comme avis — 22 septembre 2026
 
 Le § 5 l'avait rejeté comme **second avis** : 4,85 % de couverture, et aucun
