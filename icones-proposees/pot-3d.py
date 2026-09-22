@@ -3,7 +3,7 @@ from mathutils import Vector
 argv=sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else []
 SAMPLES=int(argv[0]) if argv else 64; OUT=argv[1] if len(argv)>1 else '/tmp/r.png'
 # fond : deux teintes du dégradé et teinte de la lumière d'ambiance
-BG0,BG1,AMB=(argv[2:5] if len(argv)>=5 else ['#8A6DFF','#C9A8FF','#E4DAFF'])
+BG0,BG1,AMB=(argv[2:5] if len(argv)>=5 else ['#2F7D52','#5FA87A','#DDEFE2'])
 bpy.ops.wm.read_factory_settings(use_empty=True)
 sc=bpy.context.scene
 def hexc(h,a=1):
