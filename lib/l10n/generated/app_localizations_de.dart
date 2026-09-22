@@ -6623,7 +6623,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get roomScanAddWindowHelp =>
-      'Der Scan sieht ein Fenster hinter einem zugezogenen Vorhang nicht. Füge es hier in seiner Größe hinzu.';
+      'Der Scan übersieht ein Fenster hinter einem zugezogenen Vorhang oder hält es für eine Öffnung. Füge es hier in seiner Größe hinzu.';
 
   @override
   String get roomScanTapForWindow =>

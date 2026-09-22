@@ -95,6 +95,40 @@ void main() {
     expect(o.contains(const RoomPoint(1.6, 1.1)), isTrue);
   });
 
+  test("un vide dont l'appui est au-dessus du sol est une fenêtre, un passage non", () {
+    // RoomPlan range dans les ouvertures ce qu'il n'a pas reconnu comme
+    // fenêtre : un trou à quatre-vingt-dix centimètres du sol ne se
+    // traverse pas, et la pièce le lit comme une fenêtre. Le passage, lui,
+    // part du sol et reste une ouverture.
+    final json = fixture();
+    json['openings'] = [
+      {
+        'identifier': 'OPENING_HIGH',
+        'parentIdentifier': 'WALL_RIGHT',
+        'category': {'opening': <String, Object?>{}},
+        'dimensions': [1.4, 1.2, 0.0],
+        'transform': roomPlanTransform(x: 2.1, y: 1.5, z: 0.5, yawDeg: 90),
+      },
+      {
+        'identifier': 'DOORWAY',
+        'parentIdentifier': 'WALL_BACK',
+        'category': {'opening': <String, Object?>{}},
+        'dimensions': [0.9, 2.1, 0.0],
+        'transform': roomPlanTransform(x: -1.0, y: 1.05, z: 1.8),
+      },
+    ];
+    final room = RoomPlanParser.parse(json);
+    expect(room.openings.single.id, 'DOORWAY');
+    // Elle vient après la fenêtre du relevé : les rangs du JSON tiennent.
+    expect(room.windows.map((w) => w.id), ['WINDOW_1', 'OPENING_HIGH']);
+    final w = room.windows.last;
+    expect(w.kind, RoomSurfaceKind.window);
+    expect(w.bottomY, closeTo(0.9, 1e-6));
+    expect(w.width, 1.4);
+    expect(w.parentId, 'WALL_RIGHT');
+    expect(w.byHand, isFalse);
+  });
+
   test('la section retenue est la plus proche du milieu des murs', () {
     final json = fixture();
     json['sections'] = [

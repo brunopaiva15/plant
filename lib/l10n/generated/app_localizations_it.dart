@@ -6635,7 +6635,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get roomScanAddWindowHelp =>
-      'La scansione non vede una finestra dietro una tenda tirata. Aggiungila qui, con la sua misura.';
+      'La scansione non vede una finestra dietro una tenda tirata, oppure la scambia per un\'apertura. Aggiungila qui, con la sua misura.';
 
   @override
   String get roomScanTapForWindow =>

@@ -6597,7 +6597,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get roomScanAddWindowHelp =>
-      'The scan does not see a window behind a drawn curtain. Add it here, at its size.';
+      'The scan misses a window behind a drawn curtain, or takes it for a gap. Add it here, at its size.';
 
   @override
   String get roomScanTapForWindow =>

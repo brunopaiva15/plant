@@ -3304,7 +3304,7 @@
   "roomScanCurtainHelp": "Le scan ne détecte pas les rideaux. Un voilage divise la lumière par 2 et ôte le soleil direct ; un rideau souvent tiré la divise par 3.",
   "roomScanPlace": "Placer",
   "roomScanAddWindow": "Ajouter une fenêtre",
-  "roomScanAddWindowHelp": "Le scan ne voit pas une fenêtre derrière un rideau tiré. Ajoutez-la ici, à sa taille.",
+  "roomScanAddWindowHelp": "Le scan manque une fenêtre derrière un rideau tiré, ou la prend pour un vide. Ajoutez-la ici, à sa taille.",
   "roomScanTapForWindow": "Touchez le plan près du mur qui porte la fenêtre.",
   "roomScanWindowSmall": "Petite fenêtre · 0,6 m",
   "roomScanWindowStandard": "Fenêtre · 1,2 m",

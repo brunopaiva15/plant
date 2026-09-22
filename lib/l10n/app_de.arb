@@ -2237,7 +2237,7 @@
   "roomScanCurtainHelp": "Der Scan erkennt keine Vorhänge. Eine Gardine halbiert das Licht und nimmt direkte Sonne; ein meist zugezogener Vorhang teilt es durch 3.",
   "roomScanPlace": "Setzen",
   "roomScanAddWindow": "Fenster hinzufügen",
-  "roomScanAddWindowHelp": "Der Scan sieht ein Fenster hinter einem zugezogenen Vorhang nicht. Füge es hier in seiner Größe hinzu.",
+  "roomScanAddWindowHelp": "Der Scan übersieht ein Fenster hinter einem zugezogenen Vorhang oder hält es für eine Öffnung. Füge es hier in seiner Größe hinzu.",
   "roomScanTapForWindow": "Tippe auf dem Grundriss neben die Wand, in der das Fenster sitzt.",
   "roomScanWindowSmall": "Kleines Fenster · 0,6 m",
   "roomScanWindowStandard": "Fenster · 1,2 m",
