@@ -36,7 +36,7 @@ class LaunchSplash extends StatefulWidget {
 
   /// La zone de l'œil dans l'image du pot, de 1024 px, là où se posent les
   /// images du clin d'œil. Même valeur que `OEIL` dans `tool/build_app_icon.py`.
-  static const Rect eyeRect = Rect.fromLTWH(501, 665, 176, 176);
+  static const Rect eyeRect = Rect.fromLTWH(497, 614, 176, 176);
 
   static const _logo = AssetImage('assets/splash/logo.webp');
   static const _wink = [
