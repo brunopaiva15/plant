@@ -30,7 +30,7 @@ COTE = 1024
 # La zone de l'œil de droite dans le rendu du lancement, de 1024 px (gauche,
 # haut, droite, bas) : les images du clin d'œil y sont découpées, et
 # `LaunchSplash` les y repose. Même valeur que `LaunchSplash.eyeRect`.
-OEIL = (497, 614, 673, 790)
+OEIL = (501, 665, 677, 841)
 # Dans cette zone, l'image du clin d'œil est pleine jusqu'à ce rayon, puis
 # se fond dans le logo jusqu'au bord : le raccord ne se voit pas.
 OEIL_PLEIN = 56

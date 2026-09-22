@@ -53,7 +53,7 @@ CALQUES = {
 # Le pot de l'écran de lancement : raccourci pour qu'on le voie entier sans
 # qu'il paraisse plus long que sur l'icône, champ un peu élargi, caméra
 # baissée sur son milieu.
-LANCEMENT = {"FOND": "0", "POT_BAS": "-0.6", "CADRE": "0.84", "CIBLE_Z": "0.8"}
+LANCEMENT = {"FOND": "0", "POT_BAS": "-0.3", "CADRE": "0.88", "CIBLE_Z": "0.95"}
 CALQUES["lancement"] = LANCEMENT
 for clin in ("50", "85", "100"):
     CALQUES[f"lancement_clin_{clin}"] = {**LANCEMENT, "CLIN": str(int(clin) / 100)}
