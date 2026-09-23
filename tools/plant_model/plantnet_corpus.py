@@ -44,6 +44,7 @@ import argparse
 import csv
 import io
 import json
+import os
 import threading
 import time
 from pathlib import Path
@@ -153,9 +154,14 @@ def ecrire(sortie: Path, relatif: str, octets: bytes) -> None:
     """
     chemin = sortie / relatif
     chemin.parent.mkdir(parents=True, exist_ok=True)
-    partiel = chemin.with_suffix('.part')
+    # Un temporaire propre à chaque fil : deux fils qui écrivent la même image
+    # — une photo présente deux fois dans un lot iNaturalist — se partageaient
+    # `x.part`, et le second renommait un fichier que le premier avait déjà
+    # déplacé. `os.replace` écrase sans erreur : le dernier gagne, et c'est la
+    # même image.
+    partiel = chemin.with_name(f'.{chemin.stem}.{os.getpid()}.{threading.get_ident()}.part')
     partiel.write_bytes(octets)
-    partiel.rename(chemin)
+    os.replace(partiel, chemin)
 
 
 # --------------------------------------------------------------------------

@@ -332,3 +332,27 @@ def test_taxa_en_clair_sous_un_nom_gz_se_lit_quand_meme(tmp_path):
     f = tmp_path / 'taxa.csv.gz'
     f.write_text(TAXA_TSV, encoding='utf-8')
     assert lire_taxa(f) == {47126, 51798}
+
+
+def test_une_photo_en_double_dans_un_fragment_est_gardee_une_fois(tmp_path):
+    """Photo 15086, deux fois dans le même lot : la passe du 23 septembre
+    s'est arrêtée dessus."""
+    pa = pytest.importorskip('pyarrow')
+    pq = pytest.importorskip('pyarrow.parquet')
+    from inat_corpus import COLONNES, traiter_fragment
+    from PIL import Image
+    t = io.BytesIO()
+    Image.fromarray((np.random.default_rng(7).random((48, 48, 3)) * 255).astype('uint8')) \
+        .resize((500, 375)).save(t, format='JPEG')
+    ligne = {'photo_id': '15086', 'observation_uuid': 'a', 'taxon_id': 51798,
+             'species_name': 'Monstera deliciosa', 'taxonomic_rank': 'species', 'image': t.getvalue()}
+    fichier = tmp_path / 'f.parquet'
+    pq.write_table(pa.Table.from_pylist([ligne] * 6), fichier)
+    sortie = tmp_path / 's'
+    sortie.mkdir()
+    with open(sortie / 'index.csv', 'w', newline='', encoding='utf-8') as index_f:
+        csv.DictWriter(index_f, fieldnames=COLONNES).writeheader()
+        c = traiter_fragment(fichier, sortie, PLANTES, set(), np.array([], dtype=np.uint64),
+                             CATALOGUE, 320, 6, 4, index_f)
+    assert (c['gardée'], c['doublon']) == (1, 5)
+    assert ecrire_splits(sortie / 'index.csv', sortie) == 1

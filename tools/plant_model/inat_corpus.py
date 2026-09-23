@@ -354,7 +354,7 @@ def traiter_fragment(fichier: Path, sortie: Path, plantes, connues, banc, catalo
     import pyarrow.parquet as pq
     from concurrent.futures import ThreadPoolExecutor
     compte = {'lignes': 0, 'sans taxon': 0, 'pas une plante': 0, 'déjà au corpus': 0,
-              'observation du banc': 0,
+              'observation du banc': 0, 'doublon': 0,
               'proche du banc': 0, 'illisible': 0, 'déjà écrite': 0, 'gardée': 0}
     verrou = threading.Lock()
     w = csv.DictWriter(index_f, fieldnames=COLONNES)
@@ -375,6 +375,10 @@ def traiter_fragment(fichier: Path, sortie: Path, plantes, connues, banc, catalo
 
     colonnes = ['photo_id', 'observation_uuid', 'taxon_id', 'species_name',
                 'taxonomic_rank', 'image']
+    # Le jeu contient des photos en double. Deux copies dans le même lot
+    # partaient sur deux fils vers le même fichier ; une seule suffit, et le
+    # bilan doit compter la photo une fois.
+    vus: set[str] = set()
     with ThreadPoolExecutor(max_workers=fils) as pool:
         for lot in pq.ParquetFile(fichier).iter_batches(batch_size=512, columns=colonnes):
             lignes = lot.to_pylist()
@@ -385,7 +389,10 @@ def traiter_fragment(fichier: Path, sortie: Path, plantes, connues, banc, catalo
                                        l.get('observation_uuid') or '', interdites)
                 if motif:
                     compte[motif] += 1
+                elif str(l['photo_id']) in vus:
+                    compte['doublon'] += 1
                 else:
+                    vus.add(str(l['photo_id']))
                     a_ouvrir.append(l)
             for issue, l, relatif in pool.map(une, a_ouvrir):
                 compte[issue] += 1

@@ -264,3 +264,14 @@ def test_une_archive_sans_son_dossier_racine_se_lit_quand_meme(tmp_path):
 def test_une_image_absente_du_dossier_est_sautee_pas_fatale(tmp_path):
     from plantnet_corpus import lecteur_dossier
     assert lecteur_dossier(tmp_path)('plantnet_300K/images/train/1/a.jpg') is None
+
+
+def test_deux_fils_qui_ecrivent_la_meme_image_ne_se_genent_pas(tmp_path):
+    """Une photo présente deux fois dans un lot iNaturalist partait sur deux
+    fils vers le même fichier ; ils se partageaient le temporaire, et le
+    second renommait un fichier déjà déplacé."""
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        list(pool.map(lambda i: ecrire(tmp_path, 'images/1/a.jpg', b'x' * 1000), range(200)))
+    assert (tmp_path / 'images/1/a.jpg').read_bytes() == b'x' * 1000
+    assert list(tmp_path.rglob('*.part')) == []
