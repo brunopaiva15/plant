@@ -1653,6 +1653,37 @@ taux freinait davantage. L'hypothèse « capacité » n'est pas morte, elle a
 **Ce qui reste loin : Iris 9.** 0,6646 contre 0,8119 en indoor, quinze points ;
 0,7020 contre 0,7615 en outdoor, six points.
 
+#### é10 : le calendrier vaut quatre à sept points partout
+
+| textes, é10 | taux constant | **cosinus** | écart | Iris 9 masqué |
+|---|---|---|---|---|
+| indoor, armes égales | 0,6513 | **0,6957** | +4,4 | 0,8119 |
+| indoor, répertoire entier | 0,5750 | **0,6318** | +5,7 | — |
+| outdoor, armes égales | 0,7050 | **0,7420** | +3,7 | **0,7615** |
+| outdoor, répertoire entier | 0,6505 | **0,6950** | +4,5 | — |
+| hors répertoire, rép. entier | 0,5050 | **0,5745** | +7,0 | **0,0** |
+
+**Une seule variable, et le gain est de 49 images sur 1 127 en indoor, de
+139 sur 2 000 hors répertoire.** Le taux constant était le premier frein de
+la recette, et de loin : la nuit MobileNetV4 à taux constant, avec 2,7 fois
+la capacité, n'avait rien gagné du tout en indoor.
+
+**L'outdoor est à deux points d'Iris 9** — 0,7420 contre 0,7615, trente-neuf
+images. C'est précisément le domaine de Pl@ntNet-300K (§ 20 ter), dont le
+cache est prêt. **L'indoor reste à onze points et demi.**
+
+> **Le cosinus devient la recette de référence.** Tout bras suivant se
+> compare à `iris10-cosinus`, pas à `iris10-complet`. Le calendrier constant
+> reste le défaut de `distiller.py` uniquement pour que les passes du
+> 22 septembre se reprennent à l'identique.
+
+#### La suite, dans l'ordre
+
+1. **MobileNetV4 + cosinus**, en cours : la capacité, mesurée cette fois
+   sous un taux qui ne la désavantage pas ;
+2. **le corpus Pl@ntNet**, avec le meilleur des deux dorsaux : l'outdoor est
+   à deux points, et ce corpus est de l'outdoor.
+
 ## 20 ter. Pl@ntNet-300K comme corpus, pas comme avis — 22 septembre 2026
 
 Le § 5 l'avait rejeté comme **second avis** : 4,85 % de couverture, et aucun
