@@ -41,6 +41,7 @@
   "greetingEveningAnonymous": "Buonasera",
   "todayHeroCare": "{count, plural, =1{cura oggi} other{cure oggi}}",
   "statDays": "{count, plural, =1{giorno} other{giorni}}",
+  "todayHeroWeek": "{count, plural, =0{cure questa settimana} =1{cura questa settimana} other{cure questa settimana}}",
   "careCount": "{count, plural, =0{Niente da fare} =1{1 cura} other{{count} cure}}",
   "sectionOverdue": "In ritardo",
   "sectionToday": "Oggi",

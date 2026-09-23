@@ -438,8 +438,10 @@ haut, ordinaire une fois le vert passé, rendue au retour.
 Les quatre onglets s'ouvrent sur la tête verte (`brand: true`) :
 
 - **Aujourd'hui** : la date, puis en grand le nombre de soins du jour
-  (« 3 » et « soins aujourd'hui », `todayHeroCare`) ; quand tout est fait, le
-  chiffre passe aux plantes plutôt que de dire « 0 ». Un pot 3D se pose à
+  (« 3 » et « soins aujourd'hui », `todayHeroCare`) ; la journée faite, il
+  passe aux soins des sept jours qui viennent (`todayHeroWeek`). Jamais au
+  nombre de plantes : il change à peine d'un jour à l'autre et ne dit pas
+  quoi faire — c'est le premier retour reçu sur la tête verte. Un pot 3D se pose à
   droite, la météo et l'air de la maison suivent en pilules de verre. La
   carte de terre cuite du matin est partie : le chiffre est dans la tête.
 - **Plantes** : le champ de recherche de verre, puis le nombre de plantes.
