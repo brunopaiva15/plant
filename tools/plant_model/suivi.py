@@ -140,6 +140,45 @@ def journaux_actifs(racine: Path, maintenant: float | None = None,
                   if maintenant - j.stat().st_mtime < fenetre)
 
 
+def erreur_finale(lignes: list[str]) -> str:
+    """La dernière erreur du journal si la passe s'est arrêtée dessus, sinon ''.
+
+    Arrêtée *dessus* : la trace doit venir après la dernière ligne de
+    progression. Une erreur suivie d'une relance réussie, dans le même
+    journal ouvert en `tee -a`, n'est plus un arrêt.
+    """
+    trace = max((i for i, l in enumerate(lignes) if 'Traceback (most recent call last)' in l),
+                default=-1)
+    if trace < 0:
+        return ''
+    motifs = (ENTRAINEMENT, INAT, CACHE, CORPUS)
+    progres = max((i for i, l in enumerate(lignes) if any(m.search(l) for m in motifs)),
+                  default=-1)
+    if progres > trace:
+        return ''
+    return derniere_ligne(lignes[trace:])
+
+
+def journaux_arretes(racine: Path, maintenant: float | None = None,
+                     fenetre: float = 900.0, memoire: float = 86400.0) -> list[tuple[Path, str]]:
+    """Les journaux muets depuis plus de `fenetre`, arrêtés sur une erreur.
+
+    **Une passe qui plante ne doit pas disparaître comme une passe qui a
+    fini.** Les deux cessent d'écrire ; seule la trace les distingue. On les
+    garde une journée : assez pour la voir au retour, pas assez pour traîner
+    la trace d'hier une fois réparée.
+    """
+    maintenant = maintenant or time.time()
+    sortie = []
+    for j in sorted(racine.glob('*.log')):
+        age = maintenant - j.stat().st_mtime
+        if fenetre <= age < memoire:
+            e = erreur_finale(lignes(j, 200))
+            if e:
+                sortie.append((j, e))
+    return sortie
+
+
 def nature(lignes: list[str]) -> str:
     """De quelle sorte de passe un journal parle, d'après ce qu'il écrit.
 
@@ -577,6 +616,11 @@ def tableau_actif(args) -> str:  # pragma: no cover - assemble des lectures disq
             # progression : on montre ce qu'elle fait plutôt que rien.
             out.append(f'\n{nom.upper()}')
             out.append(f'  {derniere_ligne(l)[:100]}')
+    for journal, e in journaux_arretes(racine, fenetre=args.fenetre):
+        depuis = duree(time.time() - journal.stat().st_mtime)
+        out.append(f'\nARRÊTÉE — {journal.stem}, depuis {depuis}')
+        out.append(f'  {e[:100]}')
+        out.append(f'  → tail -n 30 {journal}')
     if not actifs:
         out.append(f"\n  aucun journal de {racine} n'a bougé depuis "
                    f"{duree(args.fenetre)} — rien ne tourne")

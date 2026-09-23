@@ -534,12 +534,29 @@ def main() -> int:  # pragma: no cover - réseau et disque
     with open(index, 'a', newline='', encoding='utf-8') as index_f:
         if neuf:
             csv.DictWriter(index_f, fieldnames=COLONNES).writeheader()
+        echecs_de_suite = 0
         for i, nom in enumerate(a_faire, 1):
             verrou.touch()
             url = f'https://huggingface.co/datasets/{args.depot}/resolve/main/{nom}'
-            fichier = telecharger(url, telech / Path(nom).name, _entetes())
-            c = traiter_fragment(fichier, sortie, plantes, connues, banc, catalogue,
-                                 args.taille, args.seuil, args.fils, index_f, interdites)
+            # Un fragment qui échoue — coupure qui dure, fichier abîmé — est
+            # laissé pour la passe suivante, pas marqué fait : une relance le
+            # reprendra. Cinq de suite, c'est le réseau ou le disque, plus un
+            # fragment : on s'arrête plutôt que d'en sauter cinq cents.
+            try:
+                fichier = telecharger(url, telech / Path(nom).name, _entetes())
+                c = traiter_fragment(fichier, sortie, plantes, connues, banc, catalogue,
+                                     args.taille, args.seuil, args.fils, index_f, interdites)
+            except Exception as e:
+                echecs_de_suite += 1
+                print(f'  fragment {i}/{len(a_faire)}  {nom}  ÉCHEC {type(e).__name__}: '
+                      f'{str(e)[:120]} — laissé pour la prochaine passe', flush=True)
+                (telech / (Path(nom).name + '.part')).unlink(missing_ok=True)
+                if echecs_de_suite >= 5:
+                    raise SystemExit('cinq fragments de suite en échec : le problème '
+                                     'n\'est pas un fragment. Relancer la même commande '
+                                     'une fois réglé, elle reprend où elle s\'est arrêtée.')
+                continue
+            echecs_de_suite = 0
             bilan[nom] = c
             bilan_f.write_text(json.dumps(bilan, ensure_ascii=False, indent=1))
             with open(faits_f, 'a') as f:

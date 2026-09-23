@@ -358,3 +358,43 @@ def test_lecart_se_dit_en_points():
     assert points(0.7050, 0.6957) == ' (+0.9)'
     assert points(0.6531, 0.6957) == ' (−4.3)'
     assert points(0.7, None) == ''
+
+
+# --------------------------------------------------------------------------
+# Une passe arrêtée sur une erreur
+# --------------------------------------------------------------------------
+
+TRACE = ['Traceback (most recent call last):\n', '  File "x.py", line 1\n',
+         'requests.exceptions.HTTPError: 429 Client Error: Too Many Requests\n']
+
+
+def test_une_passe_arretee_sur_une_erreur_la_donne():
+    from suivi import erreur_finale
+    assert erreur_finale(ENTRAINE + TRACE) == \
+        'requests.exceptions.HTTPError: 429 Client Error: Too Many Requests'
+
+
+def test_une_erreur_suivie_dune_relance_reussie_nest_plus_un_arret():
+    """`tee -a` garde l'ancienne trace dans le journal de la relance."""
+    from suivi import erreur_finale
+    assert erreur_finale(TRACE + ENTRAINE) == ''
+
+
+def test_une_passe_finie_sans_trace_nest_pas_arretee():
+    from suivi import erreur_finale
+    assert erreur_finale(ENTRAINE) == ''
+
+
+def test_une_passe_arretee_reste_visible_une_journee(tmp_path):
+    """Muette comme une passe finie ; seule la trace la distingue."""
+    import os
+    from suivi import journaux_arretes
+    for nom, age, contenu in (('inat.log', 3600, ENTRAINE + TRACE),
+                              ('iris10-cosinus.log', 3600, ENTRAINE),
+                              ('vieux.log', 3 * 86400, TRACE),
+                              ('actif.log', 60, TRACE)):
+        f = tmp_path / nom
+        f.write_text(''.join(contenu), encoding='utf-8')
+        os.utime(f, (1_000_000 - age, 1_000_000 - age))
+    arretes = journaux_arretes(tmp_path, maintenant=1_000_000)
+    assert [j.name for j, _ in arretes] == ['inat.log']
