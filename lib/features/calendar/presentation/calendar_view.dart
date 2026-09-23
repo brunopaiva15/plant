@@ -194,7 +194,7 @@ class _EventRow extends ConsumerWidget {
         if (!event.allDay) Dates.time(context, event.date),
       ];
       return FloraListRow(
-        leading: EmojiTile(emoji: category?.emoji ?? '📅', size: 32, background: c.sageSoft),
+        leading: EmojiTile(emoji: category?.emoji ?? '📅', size: 32),
         title: event.title ?? '',
         subtitle: parts.isEmpty ? null : parts.join(' · '),
         chevron: false,

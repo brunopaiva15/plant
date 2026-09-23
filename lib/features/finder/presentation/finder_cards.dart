@@ -31,7 +31,7 @@ class SpeciesTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.colors;
     final image = ref.watch(speciesThumbnailProvider(scientificName)).asData?.value;
-    if (image == null) return EmojiTile(emoji: emoji, size: size, variant: variant, background: background);
+    if (image == null) return EmojiTile(emoji: emoji, size: size);
     return ClayBox(
       width: size,
       height: size,

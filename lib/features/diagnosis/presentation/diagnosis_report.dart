@@ -178,7 +178,7 @@ class _UrgentCard extends StatelessWidget {
       color: c.terracottaSoft,
       child: Row(
         children: [
-          EmojiTile(emoji: '⚠️', background: c.surface, variant: 2),
+          EmojiTile(emoji: '⚠️'),
           const SizedBox(width: Space.md),
           Expanded(child: Text(context.l10n.urgentHint, style: context.text.callout.copyWith(fontWeight: FontWeight.w600))),
         ],
@@ -208,7 +208,7 @@ class _FindingCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          EmojiTile(emoji: natural ? '🌿' : '🩺', variant: 2),
+          EmojiTile(emoji: natural ? '🌿' : '🩺'),
           const SizedBox(width: Space.md),
           Expanded(
             child: Column(
@@ -255,7 +255,7 @@ class AnotherPhotoCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              EmojiTile(emoji: '📷', background: c.surface, variant: 3),
+              EmojiTile(emoji: '📷'),
               const SizedBox(width: Space.md),
               Expanded(
                 child: Column(
@@ -336,7 +336,7 @@ class _DiagnosisQuestionsCardState extends State<DiagnosisQuestionsCard> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              EmojiTile(emoji: '💬', background: c.surface, variant: 1),
+              EmojiTile(emoji: '💬'),
               const SizedBox(width: Space.md),
               Expanded(child: Text(l10n.diagnosisQuestionsHint, style: context.text.callout)),
             ],

@@ -42,7 +42,7 @@ class _WaterTypesBody extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  EmojiTile(emoji: '💧', background: c.surface, variant: 0),
+                  EmojiTile(emoji: '💧'),
                   const SizedBox(width: Space.md),
                   Expanded(
                     child: Column(

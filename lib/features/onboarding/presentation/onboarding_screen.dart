@@ -623,7 +623,7 @@ class _PlacePageState extends ConsumerState<_PlacePage> {
                   FloraCard(
                     child: Row(
                       children: [
-                        EmojiTile(emoji: '📍', background: c.waterSoft),
+                        EmojiTile(emoji: '📍'),
                         const SizedBox(width: Space.sm),
                         Expanded(child: Text(found.name, style: context.text.title3)),
                         Icon(CupertinoIcons.checkmark_circle_fill, color: c.sage),
@@ -772,7 +772,7 @@ class _HomePageState extends ConsumerState<_HomePage> {
                     onTap: _sensors.length > 1 ? _pick : null,
                     child: Row(
                       children: [
-                        EmojiTile(emoji: '🏠', background: c.sunSoft),
+                        EmojiTile(emoji: '🏠'),
                         const SizedBox(width: Space.sm),
                         Expanded(
                           child: Column(

@@ -23,7 +23,7 @@ class DiagnosisSettingsScreen extends ConsumerWidget {
           FloraCard(
             child: Row(
               children: [
-                EmojiTile(emoji: configured ? '🩺' : '🔒', background: configured ? context.colors.sageSoft : null),
+                EmojiTile(emoji: configured ? '🩺' : '🔒'),
                 const SizedBox(width: Space.sm),
                 Expanded(child: Text(configured ? l10n.diagnosisEnabled : l10n.diagnosisUnavailable, style: context.text.title3)),
               ],

@@ -30,7 +30,6 @@ class TodayNotice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = context.colors;
     final l10n = context.l10n;
     return FloraCard(
       color: color,
@@ -40,7 +39,7 @@ class TodayNotice extends StatelessWidget {
         children: [
           // La tuile reste crème sur une carte teintée : c'est elle qui fait
           // ressortir l'emoji, pas la teinte.
-          EmojiTile(emoji: emoji, background: color == null ? null : c.surface),
+          EmojiTile(emoji: emoji),
           const SizedBox(width: Space.sm),
           Expanded(
             child: Column(

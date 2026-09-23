@@ -87,7 +87,7 @@ class LocationDetailScreen extends ConsumerWidget {
           ],
           Row(
             children: [
-              EmojiTile(emoji: location.icon, size: 56, background: c.sageSoft),
+              EmojiTile(emoji: location.icon, size: 56),
               const SizedBox(width: Space.md),
               Expanded(
                 child: Column(

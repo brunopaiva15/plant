@@ -54,7 +54,7 @@ class _CategoriesBody extends ConsumerWidget {
                     child: FloraCard(
                       padding: EdgeInsets.zero,
                       child: FloraListRow(
-                        leading: EmojiTile(emoji: g.emoji, background: c.sageSoft),
+                        leading: EmojiTile(emoji: g.emoji),
                         title: g.label,
                         trailing: ReorderableDragStartListener(
                           index: index,
@@ -146,7 +146,7 @@ class _CategoryEditBodyState extends ConsumerState<_CategoryEditBody> {
           SheetHeader(title: widget.existing == null ? l10n.newEventCategory : l10n.editEventCategory),
           Row(
             children: [
-              EmojiTile(emoji: _emoji, size: 52, background: c.sageSoft),
+              EmojiTile(emoji: _emoji, size: 52),
               const SizedBox(width: Space.sm),
               Expanded(
                 child: FloraTextField(

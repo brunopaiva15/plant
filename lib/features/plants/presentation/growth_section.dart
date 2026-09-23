@@ -50,7 +50,7 @@ class GrowthSection extends StatelessWidget {
                 onTap: onAdd,
                 child: Row(
                   children: [
-                    EmojiTile(emoji: '📷', size: 44, background: c.sageSoft),
+                    EmojiTile(emoji: '📷', size: 44),
                     const SizedBox(width: Space.md),
                     Expanded(
                       child: Column(

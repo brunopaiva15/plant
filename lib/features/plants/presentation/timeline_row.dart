@@ -45,7 +45,7 @@ class TimelineRow extends ConsumerWidget {
         children: [
           Column(
             children: [
-              EmojiTile(emoji: emoji, size: 36, background: c.softFor(action.typeKey)),
+              EmojiTile(emoji: emoji, size: 36),
               if (!isLast) Expanded(child: Container(width: 1.5, margin: const EdgeInsets.symmetric(vertical: 4), color: c.line)),
             ],
           ),

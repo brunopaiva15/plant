@@ -645,7 +645,7 @@ class _AnswerTile extends StatelessWidget {
             padding: const EdgeInsets.all(Space.md),
             child: Row(
               children: [
-                EmojiTile(emoji: emoji, size: 48, variant: variant, background: selected ? c.surface : c.surfaceMuted),
+                EmojiTile(emoji: emoji, size: 48),
                 const SizedBox(width: Space.md),
                 Expanded(
                   child: Column(
