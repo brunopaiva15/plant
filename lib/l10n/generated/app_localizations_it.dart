@@ -5028,66 +5028,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get replayOnboarding => 'Rivedi la presentazione';
 
   @override
-  String get whatsNewTitle => 'Novità';
-
-  @override
-  String get whatsNewModelUpdate => 'Aggiornamento del modello';
-
-  @override
-  String get whatsNewIrisIntro =>
-      'Il modello integrato è stato riaddestrato: più specie, meno errori, sempre senza rete.';
-
-  @override
-  String whatsNewIrisSpeciesTitle(String count) {
-    return '$count specie riconosciute';
-  }
-
-  @override
-  String get whatsNewIrisSpeciesBody =>
-      'Il catalogo accoglie piante d\'interno più rare.';
-
-  @override
-  String get whatsNewIrisOfflineTitle => 'Sempre sul dispositivo';
-
-  @override
-  String get whatsNewIrisOfflineBody =>
-      'Il riconoscimento resta locale: niente esce senza il tuo consenso, e puoi disattivare il ripiego online.';
-
-  @override
-  String get whatsNewIrisDoubtTitle => 'Dubbio segnalato';
-
-  @override
-  String get whatsNewIrisDoubtBody =>
-      'Due specie che si somigliano: vengono proposte entrambe.';
-
-  @override
-  String get whatsNewRoomsIntro =>
-      'Questa versione aggiunge la scansione della casa, separa interno ed esterno in Iris e amplia l\'enciclopedia.';
-
-  @override
-  String get whatsNewRoomScanBody =>
-      'Scansiona le tue stanze con il LiDAR: l\'app calcola la luce di ogni punto. Su iPhone Pro e iPad Pro.';
-
-  @override
-  String get whatsNewIndoorOutdoorTitle => 'Interno ed esterno';
-
-  @override
-  String get whatsNewIndoorOutdoorBody =>
-      'Iris riconosce entrambi da un solo modello. L\'app propone allora solo le specie adatte al luogo.';
-
-  @override
-  String get whatsNewDiagnosisQuestionsBody =>
-      'L\'app chiede quello che manca per decidere: un\'osservazione o una foto da un\'altra angolazione.';
-
-  @override
-  String get whatsNewNaturalBody =>
-      'L\'enciclopedia elenca 32 fenomeni innocui: guttazione, nettare extrafloreale, muffa bianca del terriccio.';
-
-  @override
-  String get whatsNewCareSourcesBody =>
-      'La scheda di cura indica la fonte di ogni valore: la RHS, l\'habitat d\'origine o una regola di coltura.';
-
-  @override
   String onbStepOf(int current, int total) {
     return 'Passo $current di $total';
   }

@@ -7,7 +7,6 @@ import '../core/haptics.dart';
 import '../core/l10n/l10n.dart';
 import '../core/native_shell.dart';
 import '../design_system/design_system.dart';
-import '../features/whats_new/presentation/whats_new_gate.dart';
 import 'quick_actions.dart';
 import 'tab_scroll.dart';
 
@@ -18,10 +17,9 @@ import 'tab_scroll.dart';
 /// d'une tablette — un pliable ouvert. Le contenu est alors posé à côté du
 /// rail, pas dessous : voir [FloraTabRail.fitsIn].
 ///
-/// C'est aussi le point d'atterrissage de l'application : [WhatsNewGate] y
-/// guette une mise à jour et ouvre, le cas échéant, la fenêtre des
-/// nouveautés — une fois, au premier rendu. [QuickActionsHost] y pose les
-/// raccourcis de l'icône et exécute celui qui a ouvert l'application.
+/// C'est aussi le point d'atterrissage de l'application : [QuickActionsHost]
+/// y pose les raccourcis de l'icône et exécute celui qui a ouvert
+/// l'application.
 ///
 /// Un second tap sur l'onglet courant ramène sa liste en haut, comme sur
 /// iOS ; la branche revient aussi à sa racine, pour le jour où elle
@@ -118,7 +116,7 @@ class _AppShellState extends ConsumerState<AppShell> {
     // pages de se redéclarer à chaque pli.
     final content = RailActionsScope(
       slot: _railActions,
-      child: WhatsNewGate(child: QuickActionsHost(child: shell)),
+      child: QuickActionsHost(child: shell),
     );
     // Fenêtre large sans être une tablette — un pliable ouvert : le menu se
     // met debout à droite, et le contenu prend ce qui reste. Ailleurs, rien
