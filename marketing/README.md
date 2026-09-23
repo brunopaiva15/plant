@@ -1,17 +1,26 @@
 # Kit marketing
 
-Les images d'Auxine pour les réseaux, aux formats courants, dans
-`marketing/fr/`. Toutes sortent de `kit.py`, avec les couleurs, les polices,
-l'appareil et les objets 3D des visuels du magasin (`store/compose.py`).
+Les images d'Auxine pour les réseaux, aux formats courants, en quatre
+langues : `marketing/fr/`, `en/`, `de/`, `it/`. Chaque dossier a les mêmes
+fichiers, sous les mêmes noms. Toutes sortent de `kit.py`, avec les couleurs,
+les polices, l'appareil et les objets 3D des visuels du magasin
+(`store/compose.py`).
 
 ```sh
-python3 marketing/kit.py                  # captures de store/shots-fr/
-python3 marketing/kit.py store/shots-fr   # ou un autre dossier
+python3 marketing/kit.py              # les quatre langues
+python3 marketing/kit.py de           # une seule
+python3 marketing/kit.py fr store/x   # avec un autre dossier de captures
 ```
 
-Les captures sont celles de `store/shots-fr/` (hors du dépôt) : du web avec
-`store/capture.mjs`, ou du simulateur avec `store/capture_ios.sh`. Celles du
-simulateur donnent la barre d'onglets native ; le script reconnaît les deux.
+Les captures sont celles de `store/shots-<langue>/` (hors du dépôt) : du web
+avec `store/capture.mjs`, ou du simulateur avec `store/capture_ios.sh`. Celles
+du simulateur donnent la barre d'onglets native ; le script reconnaît les deux.
+
+Les textes sont dans `TEXTES`, un registre par langue comme dans l'app
+(« vous », *you*, *du*, *tu*), écrits depuis l'intention plutôt que traduits
+du français : le compte à rebours « J-3 » devient « 3 days », « 3 Tage »,
+« 3 giorni ». Le prix s'écrit à la façon de chaque langue (« €0.99 » et
+« CHF 1 » en anglais).
 
 ## Les fichiers
 
@@ -63,6 +72,6 @@ Aucune image ne porte de date : elle va dans le texte qui l'accompagne.
 
 ## En francs suisses
 
-Chaque image qui dit le prix existe aussi en « 1 CHF », le palier suisse de
-0,99 €, sous le même nom suivi de `-chf` : `post-carre-prix-chf.jpg`,
-`sortie/story-disponible-chf.jpg`, etc. (12 images).
+Chaque image qui dit le prix existe aussi en francs (« 1 CHF », le palier suisse de
+0,99 €), sous le même nom suivi de `-chf` : `post-carre-prix-chf.jpg`,
+`sortie/story-disponible-chf.jpg`, etc. (12 images par langue).
