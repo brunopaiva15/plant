@@ -1791,6 +1791,14 @@ Extrapolé au jeu entier, et c'est une extrapolation d'un fragment sur 595 :
 L'encodage par le teacher prendrait ~2,5 h ; une époque sur les deux corpus
 réunis, ~95 min à `fastvit_sa12`.
 
+**Mesuré sur le jeu entier, le 23 septembre au soir : 596 518 photos de
+plantes retenues**, les 595 fragments triés, aucun en échec. L'extrapolation
+du premier fragment (~720 000) était haute : la part de plantes baisse au fil
+des fragments, 49 % sur le premier, ~38 % en cumul. Deux incidents en route,
+tous deux corrigés dans le script : une photo présente deux fois dans un même
+lot faisait se croiser deux écritures, et un fragment en échec arrêtait toute
+la passe.
+
 ### Trois gardes contre la fuite dans le banc
 
 Le banc est bâti sur notre propre collecte GBIF/iNaturalist ; une partie de
