@@ -31,7 +31,7 @@ void main() {
     expect(find.text('app'), findsOneWidget);
     expect(tester.binding.sendFramesToEngine, isTrue);
 
-    await tester.pump(const Duration(milliseconds: 1500));
+    await tester.pump(const Duration(milliseconds: 1700));
     await tester.pump();
     expect(logo(), findsNothing);
     expect(find.text('app'), findsOneWidget);
@@ -47,15 +47,17 @@ void main() {
     );
   });
 
-  testWidgets('un toucher passe directement à l’élan', (tester) async {
+  testWidgets('un toucher saute le clin d’œil', (tester) async {
     await pumpSplash(tester);
     await tester.tap(logo(), warnIfMissed: false);
-    // Le contrôleur repart de l'élan : son horloge démarre au cadre suivant.
+    // Le contrôleur repart de l'ouverture : son horloge démarre au cadre
+    // suivant.
     await tester.pump();
-    // L'élan et la fenêtre durent 760 ms : sans le toucher, le pot serait
-    // encore là, à peine sorti du clin d'œil.
-    await tester.pump(const Duration(milliseconds: 780));
+    // L'ouverture seule dure une seconde : sans le toucher, on serait encore
+    // au clin d'œil, et loin de la fin.
+    await tester.pump(const Duration(milliseconds: 1020));
     await tester.pump();
+    expect(find.byType(CustomPaint).evaluate().where((e) => e.widget is CustomPaint && (e.widget as CustomPaint).painter != null), isEmpty);
     expect(logo(), findsNothing);
   });
 
@@ -76,7 +78,7 @@ void main() {
     expect(chromes.last['veil'], isTrue, reason: 'la barre d’onglets paraîtrait sur l’écran de lancement');
     await tester.pump(const Duration(milliseconds: 1000));
     expect(chromes.last['veil'], isTrue, reason: 'encore voilées pendant que la fenêtre s’ouvre');
-    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump(const Duration(milliseconds: 700));
     await tester.pump();
     expect(chromes.last['veil'], isFalse, reason: 'rendues une fois l’application découverte');
   });
@@ -84,7 +86,7 @@ void main() {
   testWidgets('l’application reste la même du premier au dernier cadre', (tester) async {
     await pumpSplash(tester);
     final avant = tester.state(find.byType(_Compteur));
-    await tester.pump(const Duration(milliseconds: 1500));
+    await tester.pump(const Duration(milliseconds: 1700));
     await tester.pump();
     expect(logo(), findsNothing);
     expect(identical(tester.state(find.byType(_Compteur)), avant), isTrue,
