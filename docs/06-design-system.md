@@ -391,6 +391,45 @@ dès que le grand titre glisse *sous* la barre.
 Ailleurs — Android, et iOS avant que la chrome ne soit passée au natif — la
 `CupertinoSliverNavigationBar` et son repli restent ce qu'ils étaient.
 
+### La barre sur la tête verte (`LargeTitlePage(brand: true)`)
+Une page d'onglet peut s'ouvrir sur la tête verte : le grand titre passe en
+blanc sur `brand`, suivi de ce que la page pose en `hero` (un grand chiffre,
+des pastilles), puis du bord arrondi de la feuille crème. La barre du système
+reste celle d'UIKit — ses boutons, ses menus, son titre replié —, seul son
+**ton** change :
+
+| ton | quand | la barre | l'heure |
+|---|---|---|---|
+| `brand` | le vert est encore sous la barre | transparente, titre et boutons blancs | blanche |
+| `plain` | le vert est passé | le flou ordinaire d'iOS, boutons au vert `sage` | celle du thème |
+
+Le ton voyage avec les boutons (`publishActions(brand: …)`, clé `tone`) et
+UIKit le pose sur l'élément de navigation de l'hôte (`standardAppearance`,
+`scrollEdgeAppearance`) : il suit la page et se fond d'une page à l'autre.
+Ce qui décide, c'est le **bord haut de la feuille** (`_BordDeFeuille`) : tant
+qu'il est plus bas que la barre, il reste du vert dessous. Sa place dans la
+liste se relève après chaque image — au moment où la position change, la
+liste n'a pas encore été remise en page, et l'écran dirait où le bord
+*était* ; la première version restait ainsi bloquée sur le vert.
+
+Tirée vers le bas, la page ne découvre pas de crème au-dessus du titre : un
+aplat vert suit le rebond (`_FondDeMarque`).
+
+L'heure suit la barre. `NavigationDOnglet` la veut blanche au ton `brand` ;
+sans barre, il laisse décider la page — Flutter, par ce qu'il déclare sous
+l'heure —, et `OngletsDAuxine` laisse décider l'onglet ouvert. Avant, le
+contrôleur d'onglets tranchait seul, et une photo en tête de fiche gardait
+l'heure noire.
+
+Le titre replié est en Bricolage (720, 17 pt, qui suit le texte agrandi) :
+UIKit déclare la police depuis le fichier que Flutter embarque déjà
+(`FlutterDartProject.lookupKey(forAsset:)`), sans copie dans le projet Xcode.
+La fenêtre est teinte au `sage` : les boutons de barre, l'onglet choisi et
+les menus quittent le bleu du système.
+
+`test/design_system/brand_page_test.dart` tient le trajet : transparente en
+haut, ordinaire une fois le vert passé, rendue au retour.
+
 ### Le nom d'une plante dans la barre de sa fiche
 La fiche n'a pas de grand titre : son en-tête est une photo, et le nom se lit
 dessous. Défilée, la barre restait donc nue — plus rien ne disait quelle

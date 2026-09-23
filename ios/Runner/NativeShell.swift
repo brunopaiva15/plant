@@ -1,3 +1,4 @@
+import CoreText
 import Flutter
 import UIKit
 
@@ -68,6 +69,8 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
   /// redit pas une chrome qui n'a pas changé.
   private var barreDemandee = false
   private var ongletsDemandes = false
+  /// Le ton de la barre du haut, tel que la page ouverte l'a demandé.
+  private var ton: TonDeBarre = .ordinaire
 
   static func register(with messenger: FlutterBinaryMessenger) {
     let channel = FlutterMethodChannel(name: name, binaryMessenger: messenger)
@@ -87,7 +90,11 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
       !(flutter is UITabBarController)
     else { return }
 
-    let onglets = UITabBarController()
+    Typographie.enregistrer()
+    // Le vert d'Auxine plutôt que le bleu du système : boutons de barre,
+    // onglet choisi, menus. Ce que la fenêtre teinte, tout le reste l'hérite.
+    window.tintColor = Palette.sauge
+    let onglets = OngletsDAuxine()
     onglets.delegate = shared
     shared.flutter = flutter
     shared.onglets = onglets
@@ -178,6 +185,7 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
       // a pu laisser une barre invisible derrière elle.
       navigation.navigationBar.alpha = 1
       navigation.navigationBar.isUserInteractionEnabled = true
+      navigation.setNeedsStatusBarAppearanceUpdate()
     }
     let montrerLesOnglets = ongletsVisibles && !voile
     // `setTabBarHidden(_:animated:)` est l'API faite pour ça, depuis iOS 18.
@@ -251,7 +259,7 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
     let choisi = min(onglets.selectedIndex, max(0, titres.count - 1))
     hotes = titres.indices.map { _ in HostViewController() }
     navigations = titres.indices.map { i in
-      let navigation = UINavigationController(rootViewController: hotes[i])
+      let navigation = NavigationDOnglet(rootViewController: hotes[i])
       navigation.navigationBar.prefersLargeTitles = false
       navigation.tabBarItem = UITabBarItem(
         title: titres[i],
@@ -264,6 +272,7 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
     onglets.selectedIndex = choisi
     enEcho = false
     heberger(dans: hotes[choisi])
+    habiller(hotes[choisi], ton: ton)
     // Des contrôleurs neufs arrivent avec leurs barres visibles. Dart ne
     // redit pas une chrome qui n'a pas changé : c'est donc ici qu'on la
     // remet, et au lancement elle vaut « rien de visible ».
@@ -276,6 +285,7 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
     onglets.selectedIndex = index
     enEcho = false
     heberger(dans: hotes[index])
+    habiller(hotes[index], ton: ton)
   }
 
   /// Déménage la vue de Flutter dans l'hôte donné. Sans effet s'il y est déjà.
@@ -316,7 +326,10 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
   /// bord — l'ordre qu'une page écrit.
   private func appliquer(_ args: [String: Any]) {
     guard let onglets, onglets.selectedIndex < hotes.count else { return }
-    let item = hotes[onglets.selectedIndex].navigationItem
+    let hote = hotes[onglets.selectedIndex]
+    let item = hote.navigationItem
+    ton = (args["tone"] as? String) == "brand" ? .marque : .ordinaire
+    habiller(hote, ton: ton)
     let titre = args["title"] as? String
     item.title = (titre?.isEmpty ?? true) ? nil : titre
 
@@ -337,6 +350,39 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
           : UIBarButtonItemGroup(barButtonItems: proeminents, representativeItem: nil)
       }
     #endif
+  }
+
+  /// Donne à la barre de l'hôte le ton demandé, et à la barre d'état celui
+  /// qui va avec.
+  ///
+  /// **Sur la tête verte**, la barre est transparente : le vert passe dessous
+  /// sans voile, et le titre replié, les boutons et l'heure sont blancs.
+  /// **Ailleurs**, c'est la barre ordinaire d'iOS — son flou, son filet —,
+  /// avec le titre en Bricolage et les boutons au vert d'Auxine.
+  ///
+  /// L'apparence se pose sur l'élément de navigation de l'hôte, pas sur la
+  /// barre : c'est ainsi qu'UIKit la fait suivre d'une page à l'autre, et
+  /// qu'il fond le passage de l'une à l'autre au lieu de sauter.
+  private func habiller(_ hote: UIViewController, ton: TonDeBarre) {
+    let apparence = UINavigationBarAppearance()
+    switch ton {
+    case .marque:
+      apparence.configureWithTransparentBackground()
+      apparence.titleTextAttributes = [.foregroundColor: UIColor.white, .font: Typographie.titreDeBarre]
+    case .ordinaire:
+      apparence.configureWithDefaultBackground()
+      apparence.titleTextAttributes = [.font: Typographie.titreDeBarre]
+    }
+    let item = hote.navigationItem
+    item.standardAppearance = apparence
+    item.scrollEdgeAppearance = apparence
+    item.compactAppearance = apparence
+    let navigation = hote.navigationController as? NavigationDOnglet
+    navigation?.navigationBar.tintColor = ton == .marque ? .white : nil
+    if navigation?.ton != ton {
+      navigation?.ton = ton
+      navigation?.setNeedsStatusBarAppearanceUpdate()
+    }
   }
 
   /// Les boutons de droite, séparés de celui qu'il ne faut pas replier.
@@ -451,9 +497,89 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
   }
 }
 
+/// Le ton de la barre du haut : posée sur la tête verte, ou ordinaire.
+enum TonDeBarre { case ordinaire, marque }
+
+/// Le contrôleur d'onglets, qui laisse l'onglet ouvert dire la couleur de
+/// l'heure. Sans lui, c'est le contrôleur d'onglets qui en déciderait, et il
+/// ne sait rien de la tête verte.
+final class OngletsDAuxine: UITabBarController {
+  override var childForStatusBarStyle: UIViewController? { selectedViewController }
+}
+
+/// La navigation d'un onglet : l'heure en blanc sur la tête verte, dans la
+/// couleur du thème ailleurs.
+final class NavigationDOnglet: UINavigationController {
+  var ton: TonDeBarre = .ordinaire
+
+  /// Sans barre, c'est la page qui décide : Flutter, par ce qu'il déclare
+  /// sous l'heure (une photo en tête de fiche la veut blanche). Avec une
+  /// barre, c'est le ton de la barre.
+  override var childForStatusBarStyle: UIViewController? {
+    isNavigationBarHidden ? topViewController : nil
+  }
+
+  override var preferredStatusBarStyle: UIStatusBarStyle {
+    ton == .marque && !isNavigationBarHidden ? .lightContent : .default
+  }
+}
+
+/// Les couleurs d'Auxine dont UIKit a besoin, recopiées de
+/// `lib/design_system/tokens/colors.dart`.
+enum Palette {
+  /// `sage` : le vert qui écrit, sombre en clair et clair en sombre.
+  static let sauge = UIColor { trait in
+    trait.userInterfaceStyle == .dark
+      ? UIColor(red: CGFloat(0x74) / 255, green: CGFloat(0xCF) / 255, blue: CGFloat(0x95) / 255, alpha: 1)
+      : UIColor(red: CGFloat(0x2A) / 255, green: CGFloat(0x74) / 255, blue: CGFloat(0x47) / 255, alpha: 1)
+  }
+}
+
+/// Bricolage Grotesque, la police des titres d'Auxine, pour les titres que
+/// dessine UIKit.
+///
+/// Flutter l'embarque dans ses propres ressources ; UIKit ne la voit pas tant
+/// qu'on ne la lui déclare pas. On la déclare donc depuis le même fichier —
+/// `assets/fonts/BricolageGrotesque-VF.ttf` —, sans en garder une copie à
+/// part dans le projet Xcode. C'est une fonte variable : le poids et la
+/// taille optique se règlent sur ses axes, comme côté Dart.
+enum Typographie {
+  private static var enregistree = false
+  private static let nom = "BricolageGrotesque-96ptExtraBold"
+
+  static func enregistrer() {
+    guard !enregistree else { return }
+    enregistree = true
+    let cle = FlutterDartProject.lookupKey(forAsset: "assets/fonts/BricolageGrotesque-VF.ttf")
+    guard let chemin = Bundle.main.path(forResource: cle, ofType: nil) else { return }
+    CTFontManagerRegisterFontsForURL(URL(fileURLWithPath: chemin) as CFURL, .process, nil)
+  }
+
+  /// Le titre replié d'une barre : 17 points, comme celui du système, mais
+  /// gras et serré. Le texte agrandi le fait grandir avec lui.
+  static var titreDeBarre: UIFont {
+    let taille = UIFontMetrics(forTextStyle: .headline).scaledValue(for: 17)
+    guard let base = UIFont(name: nom, size: taille) else {
+      return .preferredFont(forTextStyle: .headline)
+    }
+    let axes: [NSNumber: NSNumber] = [
+      0x7767_6874: 720,  // 'wght'
+      0x6F70_737A: NSNumber(value: Double(taille)),  // 'opsz'
+    ]
+    let descripteur = base.fontDescriptor.addingAttributes([
+      UIFontDescriptor.AttributeName(rawValue: kCTFontVariationAttribute as String): axes
+    ])
+    return UIFont(descriptor: descripteur, size: taille)
+  }
+}
+
 /// L'hôte d'un onglet : une vue vide, qui reçoit celle de Flutter quand c'est
 /// son tour. Elle ne dessine rien et ne capte rien — tout vient de Flutter.
 final class HostViewController: UIViewController {
+  /// La vue de Flutter, quand elle est ici : c'est elle qui dit la couleur de
+  /// l'heure d'une page sans barre.
+  override var childForStatusBarStyle: UIViewController? { children.first }
+
   override func viewDidLoad() {
     super.viewDidLoad()
     view.backgroundColor = .clear
