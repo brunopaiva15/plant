@@ -993,10 +993,17 @@ coupée au bord de l'image se verrait sur le fond uni.
 
 **Rien n'y est linéaire**, et c'est ce qui la rend fluide : une première
 version faisait grossir le pot en fondu pendant que tout le fond s'effaçait
-d'un bloc, et l'ensemble paraissait raide. La fenêtre est découpée dans le
-fond par un peintre (`BlendMode.dstOut`) ; l'ombre au pied du pot, à demi
-transparente, n'y ouvre rien — une matrice de couleur ne garde du masque que
-ce qui est franchement opaque.
+d'un bloc, et l'ensemble paraissait raide.
+
+**La fenêtre est un tracé**, pas une image découpée. La deuxième version
+perçait le fond avec l'image du pot et un mode de fusion (`BlendMode.dstOut`)
+dans une couche à part : juste dans le moteur des tests, mais sur l'iPhone
+la découpe se remplissait de noir, et l'application ne paraissait qu'une
+fois l'ouverture finie. Le fond est maintenant un rectangle percé du contour
+du pot, rempli en pair-impair — ce que tout moteur dessine de la même façon.
+Le contour (`app/launch_silhouette.dart`, environ 300 points) est tiré du
+rendu par `tool/build_app_icon.py` : suivi pixel à pixel, puis simplifié.
+L'ombre au pied du pot n'en fait pas partie.
 
 **Le premier cadre est l'écran natif.** iOS (`LaunchScreen.storyboard`) et
 Android (`launch_background.xml`, puis `values-v31` à partir d'Android 12)
