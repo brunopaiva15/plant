@@ -5017,66 +5017,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get replayOnboarding => 'Einführung erneut ansehen';
 
   @override
-  String get whatsNewTitle => 'Neuerungen';
-
-  @override
-  String get whatsNewModelUpdate => 'Modell-Update';
-
-  @override
-  String get whatsNewIrisIntro =>
-      'Das eingebaute Modell wurde neu trainiert: mehr Arten, weniger Fehler, weiterhin ohne Netz.';
-
-  @override
-  String whatsNewIrisSpeciesTitle(String count) {
-    return '$count erkannte Arten';
-  }
-
-  @override
-  String get whatsNewIrisSpeciesBody =>
-      'Seltenere Zimmerpflanzen kommen in den Katalog.';
-
-  @override
-  String get whatsNewIrisOfflineTitle => 'Weiterhin auf dem Gerät';
-
-  @override
-  String get whatsNewIrisOfflineBody =>
-      'Die Erkennung bleibt lokal: Ohne deine Zustimmung geht nichts raus, und der Online-Rückfall lässt sich abschalten.';
-
-  @override
-  String get whatsNewIrisDoubtTitle => 'Zweifel werden angezeigt';
-
-  @override
-  String get whatsNewIrisDoubtBody =>
-      'Zwei Arten, die sich ähneln: beide werden vorgeschlagen.';
-
-  @override
-  String get whatsNewRoomsIntro =>
-      'Diese Version bringt den Scan der Wohnung, trennt drinnen und draußen in Iris und erweitert die Enzyklopädie.';
-
-  @override
-  String get whatsNewRoomScanBody =>
-      'Scanne deine Räume mit LiDAR: Die App berechnet das Licht an jeder Stelle. Auf iPhone Pro und iPad Pro.';
-
-  @override
-  String get whatsNewIndoorOutdoorTitle => 'Drinnen und draußen';
-
-  @override
-  String get whatsNewIndoorOutdoorBody =>
-      'Iris erkennt beides aus einem einzigen Modell. Die App schlägt dann nur Arten für diesen Ort vor.';
-
-  @override
-  String get whatsNewDiagnosisQuestionsBody =>
-      'Die App fragt, was zum Entscheiden fehlt: eine Beobachtung oder ein Foto aus einem anderen Winkel.';
-
-  @override
-  String get whatsNewNaturalBody =>
-      'Die Enzyklopädie führt 32 harmlose Erscheinungen auf: Guttation, extrafloraler Nektar, weißer Schimmel auf der Erde.';
-
-  @override
-  String get whatsNewCareSourcesBody =>
-      'Die Pflegehinweise nennen die Quelle jedes Werts: die RHS, das Herkunftshabitat oder eine Kultivierungsregel.';
-
-  @override
   String onbStepOf(int current, int total) {
     return 'Schritt $current von $total';
   }

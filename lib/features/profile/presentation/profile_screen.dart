@@ -16,8 +16,6 @@ import '../../account/application/sign_in_availability.dart';
 import '../../community/application/moderation_providers.dart';
 import '../../account/presentation/gardens_screen.dart' show gardenLabel;
 import '../../room_scan/application/room_scan_providers.dart';
-import '../../whats_new/application/release_notes.dart';
-import '../../whats_new/presentation/whats_new_sheet.dart';
 
 /// Profil : prénom, apparence, notifications, données, sources.
 class ProfileScreen extends ConsumerWidget {
@@ -30,9 +28,6 @@ class ProfileScreen extends ConsumerWidget {
     final prefs = ref.watch(preferencesProvider);
     final user = ref.watch(currentUserProvider).value;
     final count = ref.watch(activePlantCountProvider).value ?? 0;
-    // La dernière nouveauté livrée, pour la ligne qui la rouvre. `latest` ne
-    // consomme rien : la fenêtre du lancement garde son tour.
-    final derniereNouveaute = ref.watch(whatsNewProvider).latest(releaseNotes(l10n));
     final themeLabel = switch (prefs.themeMode) { ThemeMode.system => l10n.themeSystem, ThemeMode.light => l10n.themeLight, ThemeMode.dark => l10n.themeDark };
     final languageLabel = prefs.locale == null ? l10n.languageSystem : _languageName(prefs.locale!.languageCode);
 
@@ -188,18 +183,6 @@ class ProfileScreen extends ConsumerWidget {
               const SizedBox(height: Space.lg),
               FloraGroup(
                 children: [
-                  // La fenêtre des nouveautés s'ouvre d'elle-même après une
-                  // mise à jour, une seule fois, et jamais sur une
-                  // installation neuve — qui découvre tout. Cette ligne
-                  // rouvre la dernière livrée, sans rien consommer : c'est le
-                  // seul chemin pour la relire, et le seul pour la voir quand
-                  // le mécanisme l'a passée sous silence.
-                  if (derniereNouveaute != null)
-                    FloraListRow(
-                      leading: Icon(CupertinoIcons.sparkles, size: 20, color: c.sun),
-                      title: l10n.whatsNewTitle,
-                      onTap: () => showWhatsNew(context, derniereNouveaute),
-                    ),
                   FloraListRow(leading: const Text('✨', style: TextStyle(fontSize: 18)), title: l10n.replayOnboarding, onTap: () => context.push(Routes.onboarding)),
                   FloraListRow(leading: Icon(CupertinoIcons.info, size: 20, color: c.inkSecondary), title: l10n.aboutSources, onTap: () => context.push(Routes.about)),
                 ],

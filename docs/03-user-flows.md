@@ -210,36 +210,7 @@ Plantes ─[tap 💡]⟶ | Plantes (vide) ─[Trouver une plante]⟶ | Choisir u
   élargit alors hors catalogue, avec le texte libre en plus — appel réseau seulement
   sur ce geste, propositions marquées « à vérifier avant d'acheter ».
 
-## 9. Après une mise à jour (fenêtre des nouveautés)
-1. L'application s'ouvre sur l'onglet du jour ; `WhatsNewGate`, posé autour de
-   la coquille à onglets, interroge la règle une fois, après la première image.
-2. La règle (`WhatsNew.take`) ne dit oui que si l'onboarding est fait **et** que
-   l'appareil a déjà enregistré une version : une installation neuve ne se voit
-   pas raconter ce qu'elle n'a jamais connu, elle note seulement son point de
-   départ. Le lancement qui suit une mise à jour, lui, montre la plus récente
-   des nouveautés jamais vues — une seule, même si deux versions ont été
-   sautées.
-3. La fenêtre s'ouvre (sheet native iOS / dialogue plein écran Android), se
-   ferme par « Continuer », par la croix, ou — sur iOS, une fois la page
-   revenue en haut — d'un glissement vers le bas. Un lien discret peut mener au
-   réglage concerné, ouvert après fermeture.
-4. Elle est marquée comme vue **avant** d'être affichée : une application tuée
-   en cours de lecture ne la rouvre pas au lancement suivant.
-5. La porte d'entrée manuelle est dans les réglages : une ligne
-   « Nouveautés » rouvre la dernière livrée (`WhatsNew.latest`), sans rien
-   consommer. C'est le seul chemin pour la relire — et le seul pour la voir
-   quand la règle l'a passée sous silence, ce qui est le cas de toute
-   installation neuve : le premier lancement marque tout le catalogue comme
-   vu.
-
-Ajouter une version = une entrée dans `releaseNotes()` et ses clés dans les
-quatre `.arb`. Un identifiant de nouveauté ne se renomme ni ne se réemploie :
-le renommer rouvre la fenêtre chez tous ceux qui l'avaient fermée, le
-réemployer avale en silence celle qui devait s'ouvrir. L'identifiant de
-l'exemple (`iris-8`) est déjà dépensé sur tout appareil ayant lancé cette
-version — la vraie livraison d'Iris 8 en prendra donc un autre.
-
-## 10. Relever une pièce, puis poser une plante (iPhone et iPad à LiDAR)
+## 9. Relever une pièce, puis poser une plante (iPhone et iPad à LiDAR)
 ```
 Jardin ─[tap Salon]⟶ Fiche emplacement ─[tap « Scanner cette pièce »]⟶ une phrase
   (ce qui va se passer, rien ne quitte l'appareil)

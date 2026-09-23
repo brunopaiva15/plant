@@ -748,7 +748,7 @@ agent, nombre en toutes lettres, phrase trop longue, registre mêlé. Le chantie
 de réécriture et ses lots sont dans `docs/18-clarte-des-textes.md`.
 
 ## Composants (`design_system/components/`)
-Button · IconButton · PressableScale · ClayBox · ClayLoader · Appear · Card · ActionTile · PlantCard · CareCard · PaperSheet · ActionChip · Pill · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · Slider (natif) · StepDots · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · IrisMark · PhotoGrid · PhotoViewer · QuantityStepper · DatePicker (natif) · PlantPicker · PhotoPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader · ScrollFade · WhatsNewWindow
+Button · IconButton · PressableScale · ClayBox · ClayLoader · Appear · Card · ActionTile · PlantCard · CareCard · PaperSheet · ActionChip · Pill · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · Slider (natif) · StepDots · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · IrisMark · PhotoGrid · PhotoViewer · QuantityStepper · DatePicker (natif) · PlantPicker · PhotoPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader · ScrollFade
 
 ## L'écran du matin (`features/today/`)
 Le grand titre salue : « Bonjour Paul » jusqu'à dix-huit heures, « Bonsoir
@@ -997,31 +997,6 @@ une ligne du compte rendu.
 **La barre du bas ne porte qu'un geste à la fois** : analyser, puis
 enregistrer dans le journal. `test/features/diagnosis_screen_test.dart` tient
 le formulaire.
-
-## La fenêtre des nouveautés (`features/whats_new/`)
-Ce que l'application montre après une mise à jour : un bandeau teinté qui
-s'éteint dans le fond de la page, la marque posée au centre sur une médaille
-d'argile qui respire, un titre en Bricolage, trois points forts, et un bouton
-qui reste sous les yeux pendant que la page défile.
-
-- **Présentation native, dessin commun.** `showFloraScrollableFlow` : la sheet
-  empilée d'iOS d'un côté, le dialogue plein écran de Material 3 de l'autre.
-- **Le contenu défile parce qu'il emprunte le `ScrollController` de la sheet.**
-  La sheet d'iOS arme un `VerticalDragGestureRecognizer` par-dessus tout son
-  contenu ; sans ce contrôleur, elle remporte chaque geste vertical et la page
-  reste figée pendant que la sheet descend. Avec lui, la liste défile tant
-  qu'elle n'est pas en haut, et referme la sheet une fois en haut. Un flow à
-  plusieurs pages défilantes ne peut pas s'en servir — d'où `showFloraFlow`,
-  qui reste à côté.
-- **La médaille est `surface`, pas la teinte** du bandeau : la marque d'Iris a
-  ses couleurs figées, garanties lisibles sur les quatre fonds de carte et
-  sur rien d'autre.
-- **L'accent ne porte que des icônes** — pastilles des points forts, lueur du
-  bandeau. Titres et corps restent à l'encre : c'est ce qui autorise l'ocre et
-  le rose, qui ne tiennent que 3:1.
-- **Contenu = données.** Une version est une entrée de `releaseNotes()` et ses
-  clés dans les quatre `.arb`. Aucune image à livrer.
-- Quand elle s'ouvre : voir docs/03, *Après une mise à jour*.
 
 ## Design review (par écran)
 Est-ce beau ? évident ? Peut-on retirer quelque chose ? L'action principale est-elle visible sans scroller ? Trop de texte ? Moins de taps possible ? Cohérent ? Ressemble-t-il à un template ? → si oui, retravailler.
