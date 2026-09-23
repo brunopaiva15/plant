@@ -33,10 +33,10 @@ et non « un cran de confiance ».
 | Mots-clés | `rappel,arrosage,fleurs,jardinage,entretien,arroser,botanique,malade,calendrier,rempotage,photo,pot` | 98 / 100 |
 
 
-### Description (3062 / 4000 caractères)
+### Description (3042 / 4000 caractères)
 
 ```
-Auxine est un carnet pour vos plantes. Chaque plante a sa page, avec son espèce, sa pièce, ses photos et l'historique de ses soins. L'écran d'accueil indique les arrosages du jour et ceux des jours suivants. Gratuite, sans abonnement, sans compte et sans publicité.
+Auxine est un carnet pour vos plantes. Chaque plante a sa page, avec son espèce, sa pièce, ses photos et l'historique de ses soins. L'écran d'accueil indique les arrosages du jour et ceux des jours suivants. Un seul achat, sans abonnement, sans compte et sans publicité.
 
 RECONNAISSANCE DES ESPÈCES, SANS CONNEXION
 
@@ -66,9 +66,9 @@ IPHONE ET IPAD
 
 Widgets d'écran d'accueil et d'écran verrouillé avec les soins du jour. Raccourcis par appui long sur l'icône. Lecture d'un capteur de température ou d'humidité Apple Maison pour ajuster les conseils. Prise en charge de Dynamic Type, du texte en gras et du contraste élevé.
 
-GRATUITE
+UN SEUL ACHAT
 
-Toutes les fonctions sont accessibles. Aucun abonnement, aucune limite de plantes ou de photos, aucune publicité, aucun compte obligatoire. Un achat unique permet de soutenir le développement, sans rien déverrouiller.
+Toutes les fonctions sont incluses dans le prix de l'application. Aucun abonnement, aucun achat intégré, aucune limite de plantes ou de photos, aucune publicité, aucun compte obligatoire.
 
 DONNÉES
 
@@ -92,10 +92,10 @@ Téléchargez Auxine pour savoir chaque matin quelles plantes arroser.
 | Mots-clés | `tagebuch,erinnerung,garten,blumen,umpflanzen,dünger,zimmerpflanze,wachstum,kalender,botanik,tracker` | 99 / 100 |
 
 
-### Description (2993 / 4000 caractères)
+### Description (2964 / 4000 caractères)
 
 ```
-Auxine ist ein Notizbuch für Ihre Pflanzen. Jede Pflanze hat ihre eigene Seite, mit Art, Zimmer, Fotos und dem Verlauf ihrer Pflege. Der Startbildschirm zeigt das Gießen von heute und von den nächsten Tagen. Kostenlos, ohne Abo, ohne Konto, ohne Werbung.
+Auxine ist ein Notizbuch für Ihre Pflanzen. Jede Pflanze hat ihre eigene Seite, mit Art, Zimmer, Fotos und dem Verlauf ihrer Pflege. Der Startbildschirm zeigt das Gießen von heute und von den nächsten Tagen. Einmal kaufen, ohne Abo, ohne Konto, ohne Werbung.
 
 ARTERKENNUNG, OHNE VERBINDUNG
 
@@ -125,9 +125,9 @@ IPHONE UND IPAD
 
 Widgets für Home- und Sperrbildschirm mit der Pflege von heute. Kurzbefehle über langes Drücken auf das Symbol. Auslesen eines Temperatur- oder Feuchtesensors aus Apple Home, um die Hinweise anzupassen. Unterstützung für Dynamic Type, fetten Text und erhöhten Kontrast.
 
-KOSTENLOS
+EINMALIGER KAUF
 
-Alle Funktionen sind verfügbar. Kein Abo, keine Grenze an Pflanzen oder Fotos, keine Werbung, kein Pflichtkonto. Ein einmaliger Kauf unterstützt die Entwicklung, ohne etwas freizuschalten.
+Alle Funktionen sind im Preis der App enthalten. Kein Abo, keine In-App-Käufe, keine Grenze an Pflanzen oder Fotos, keine Werbung, kein Pflichtkonto.
 
 DATEN
 
@@ -151,10 +151,10 @@ Laden Sie Auxine, um jeden Morgen zu wissen, welche Pflanzen zu gießen sind.
 | Mots-clés | `diary,reminder,garden,flowers,repotting,fertilizer,indoor,houseplant,growth,tracker,calendar,botany` | 99 / 100 |
 
 
-### Description (2724 / 4000 caractères)
+### Description (2716 / 4000 caractères)
 
 ```
-Auxine is a notebook for your plants. Each plant has its own page, with its species, its room, its photos and the history of its care. The home screen lists the waterings due today and over the coming days. Free, no subscription, no account, no ads.
+Auxine is a notebook for your plants. Each plant has its own page, with its species, its room, its photos and the history of its care. The home screen lists the waterings due today and over the coming days. One purchase, no subscription, no account, no ads.
 
 SPECIES RECOGNITION, OFFLINE
 
@@ -184,9 +184,9 @@ IPHONE AND IPAD
 
 Home Screen and Lock Screen widgets with the care due today. Shortcuts from a long press on the icon. Reading of an Apple Home temperature or humidity sensor to adjust the advice. Support for Dynamic Type, bold text and increased contrast.
 
-FREE
+ONE PURCHASE
 
-Every feature is available. No subscription, no limit on plants or photos, no advertising, no compulsory account. A one-off purchase supports development without unlocking anything.
+Every feature is included in the price of the app. No subscription, no in-app purchases, no limit on plants or photos, no advertising, no compulsory account.
 
 DATA
 
@@ -210,10 +210,10 @@ Download Auxine to know each morning which plants to water.
 | Mots-clés | `promemoria,giardino,fiori,annaffiatura,rinvaso,fertilizzante,crescita,calendario,botanica,tracker` | 97 / 100 |
 
 
-### Description (2972 / 4000 caractères)
+### Description (2965 / 4000 caractères)
 
 ```
-Auxine è un taccuino per le vostre piante. Ogni pianta ha la sua pagina, con la specie, la stanza, le foto e lo storico delle cure. La schermata iniziale indica le annaffiature di oggi e quelle dei giorni successivi. Gratuita, senza abbonamento, senza account e senza pubblicità.
+Auxine è un taccuino per le vostre piante. Ogni pianta ha la sua pagina, con la specie, la stanza, le foto e lo storico delle cure. La schermata iniziale indica le annaffiature di oggi e quelle dei giorni successivi. Un solo acquisto, senza abbonamento, senza account e senza pubblicità.
 
 RICONOSCIMENTO DELLE SPECIE, SENZA CONNESSIONE
 
@@ -243,9 +243,9 @@ IPHONE E IPAD
 
 Widget per schermata Home e schermata di blocco con le cure di oggi. Scorciatoie con pressione prolungata sull'icona. Lettura di un sensore di temperatura o umidità di Apple Casa per adattare i consigli. Supporto di Dynamic Type, testo in grassetto e contrasto elevato.
 
-GRATUITA
+UN SOLO ACQUISTO
 
-Tutte le funzioni sono accessibili. Nessun abbonamento, nessun limite di piante o di foto, nessuna pubblicità, nessun account obbligatorio. Un acquisto unico sostiene lo sviluppo, senza sbloccare nulla.
+Tutte le funzioni sono incluse nel prezzo dell'app. Nessun abbonamento, nessun acquisto in-app, nessun limite di piante o di foto, nessuna pubblicità, nessun account obbligatorio.
 
 DATI
 

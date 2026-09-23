@@ -8,7 +8,7 @@ lib/
 │   ├── router.dart                go_router, shell 4 onglets, routes plein écran
 │   └── providers.dart             providers racine (db, repos, services)
 ├── core/
-│   ├── config/app_config.dart     APP_NAME, identifiant du soutien, réglages produit
+│   ├── config/app_config.dart     APP_NAME, réglages produit
 │   ├── config/relay_config.dart   adresse du relais des clés d'API (docs/19) — plus aucune clé de tiers dans le binaire
 │   ├── haptics.dart
 │   ├── observability/             Analytics / CrashReporter (interfaces + no-op)

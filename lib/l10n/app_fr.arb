@@ -31,7 +31,6 @@
   "offlineCollaboration": "Inviter, rejoindre un jardin et changer un rôle demande une connexion.",
   "offlineDiagnosis": "L'analyse demande une connexion.",
   "offlineIdentification": "La recherche en ligne demande une connexion ; la reconnaissance sur votre appareil, non.",
-  "offlineSupport": "L'achat demande une connexion.",
   "tabToday": "Aujourd'hui",
   "tabPlants": "Plantes",
   "tabGarden": "Jardin",
@@ -2395,28 +2394,6 @@
       }
     }
   },
-  "supportTitle": "Auxine est gratuite",
-  "supportBody": "Toutes les fonctions sont accessibles. Aucun abonnement, aucune publicité, aucun compte obligatoire.",
-  "supportOffer": "Pour aider le développeur, un achat unique suffit.",
-  "supportOnce": "Une seule fois",
-  "supportGive": "Soutenir · {price}",
-  "@supportGive": {
-    "placeholders": {
-      "price": {
-        "type": "String"
-      }
-    }
-  },
-  "supportRestore": "Restaurer mon soutien",
-  "supportThanksTitle": "Merci",
-  "supportThanksBody": "Votre soutien est enregistré.",
-  "supportUnavailable": "L'achat n'est pas disponible sur cet appareil.",
-  "supportFailed": "L'achat n'a pas abouti.",
-  "supportNothingToRestore": "Aucun soutien à restaurer.",
-  "supportSettings": "Soutenir le développeur",
-  "supportFreeForever": "Gratuite, sans limite",
-  "supportAlready": "Merci pour votre soutien",
-  "supportNoThanks": "Non merci",
   "emptyGardenSubtitle": "Ajoutez votre première plante.",
   "finderTitle": "Trouver une plante",
   "finderEntryHint": "Aide au choix",

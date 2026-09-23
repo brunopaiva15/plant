@@ -165,9 +165,8 @@ Où sont vos plantes ? ⟶ [Utiliser ma position] · Plus tard
 Comment vous appelez-vous ? ⟶ [Ajouter ma première plante] · Plus tard
 Et si vous changez de téléphone ? ⟶ deux phrases (sauvegarde, jardin partagé,
   l'identifiant Apple suffit), puis [Continuer avec Apple] · Plus tard. L'étape
-  n'existe que sur iOS avec un backend : ailleurs, le prénom mène droit au
-  soutien.
-Auxine est gratuite ⟶ soutien facultatif, [Non merci]
+  n'existe que sur iOS avec un backend : ailleurs, le prénom mène droit à
+  l'app. C'est la dernière étape.
   ⟶ Flow création (identique au 1)
   ⟶ Fiche plante : « 💧 Arrosage recommandé dans 7 jours » [Arroser maintenant]
   ⟶ Notification proposée après la première action (permission demandée en contexte)

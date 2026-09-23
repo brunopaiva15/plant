@@ -1,4 +1,5 @@
 import 'package:flora/app/providers.dart';
+import 'package:flora/app/router.dart';
 import 'package:flora/data/services/preferences_service.dart';
 import 'package:flora/design_system/design_system.dart';
 import 'package:flora/features/onboarding/presentation/onboarding_screen.dart';
@@ -8,14 +9,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'fakes/fake_auth_repository.dart';
 
 /// L'étape « compte » de l'onboarding : elle vient après le prénom, seulement
 /// là où l'on peut ouvrir un compte — un backend, et Sign in with Apple. Sans
-/// backend, ou sur Android, le prénom mène droit au soutien : on ne propose
-/// pas une connexion qui n'existe pas.
+/// backend, ou sur Android, le prénom mène droit à l'app : on ne propose pas
+/// une connexion qui n'existe pas. Le compte est la dernière étape.
 
 Future<void> _pump(WidgetTester tester, FakeAuthRepository auth) async {
   SharedPreferences.setMockInitialValues({'locale': 'fr'});
@@ -29,7 +31,13 @@ Future<void> _pump(WidgetTester tester, FakeAuthRepository auth) async {
         authRepositoryProvider.overrideWithValue(auth),
         preferencesServiceProvider.overrideWithValue(prefs),
       ],
-      child: MaterialApp(
+      child: MaterialApp.router(
+        // La fin de l'onboarding mène à l'écran du jour : un routeur minimal
+        // le remplace par un repère.
+        routerConfig: GoRouter(routes: [
+          GoRoute(path: '/', builder: (_, _) => const OnboardingScreen()),
+          GoRoute(path: Routes.today, builder: (_, _) => const Text('Accueil')),
+        ]),
         locale: const Locale('fr'),
         localizationsDelegates: const [
           AppLocalizations.delegate,
@@ -39,7 +47,6 @@ Future<void> _pump(WidgetTester tester, FakeAuthRepository auth) async {
         ],
         supportedLocales: AppLocalizations.supportedLocales,
         theme: buildFloraTheme(Brightness.light),
-        home: const OnboardingScreen(),
       ),
     ),
   );
@@ -102,11 +109,11 @@ void main() {
         await _pastName(tester);
         expect(find.text('Sauvegarde et partage'), findsOneWidget);
         expect(find.text('Continuer avec Apple'), findsOneWidget);
-        expect(find.text('Auxine est gratuite'), findsNothing, reason: 'le soutien attend derrière le compte');
+        expect(find.text('Accueil'), findsNothing, reason: "l'app attend derrière le compte");
 
         await _tap(tester, 'Continuer avec Apple');
         expect(auth.appleSignIns, 1);
-        expect(find.text('Auxine est gratuite'), findsOneWidget);
+        expect(find.text('Accueil'), findsOneWidget);
       }));
 
   testWidgets("« Plus tard » passe outre, sans se connecter", (tester) => _on(TargetPlatform.iOS, () async {
@@ -116,20 +123,20 @@ void main() {
         expect(find.text('Sauvegarde et partage'), findsOneWidget);
         await _tap(tester, 'Plus tard');
         expect(auth.appleSignIns, 0);
-        expect(find.text('Auxine est gratuite'), findsOneWidget);
+        expect(find.text('Accueil'), findsOneWidget);
       }));
 
-  testWidgets('sans backend : le prénom mène droit au soutien', (tester) => _on(TargetPlatform.iOS, () async {
+  testWidgets("sans backend : le prénom mène droit à l'app", (tester) => _on(TargetPlatform.iOS, () async {
         await _pump(tester, FakeAuthRepository(remote: false));
         await _pastName(tester);
         expect(find.text('Sauvegarde et partage'), findsNothing);
-        expect(find.text('Auxine est gratuite'), findsOneWidget);
+        expect(find.text('Accueil'), findsOneWidget);
       }));
 
   testWidgets('sur Android, même avec un backend : pas de compte à proposer', (tester) => _on(TargetPlatform.android, () async {
         await _pump(tester, FakeAuthRepository(remote: true));
         await _pastName(tester);
         expect(find.text('Sauvegarde et partage'), findsNothing);
-        expect(find.text('Auxine est gratuite'), findsOneWidget);
+        expect(find.text('Accueil'), findsOneWidget);
       }));
 }

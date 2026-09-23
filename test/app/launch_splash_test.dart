@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flora/app/launch_splash.dart';
+import 'package:flora/core/native_shell.dart';
 import 'package:flora/design_system/design_system.dart';
 
 /// L'animation d'ouverture se retire d'elle-même, rend la main au premier
@@ -12,7 +14,7 @@ void main() {
         theme: buildFloraTheme(Brightness.light),
         home: MediaQuery(
           data: MediaQueryData(disableAnimations: reduceMotion),
-          child: const LaunchSplash(child: Text('app')),
+          child: const LaunchSplash(child: _Compteur()),
         ),
       ),
     );
@@ -45,15 +47,48 @@ void main() {
     );
   });
 
-  testWidgets('un toucher passe directement au zoom', (tester) async {
+  testWidgets('un toucher passe directement à l’élan', (tester) async {
     await pumpSplash(tester);
     await tester.tap(logo(), warnIfMissed: false);
-    // Le contrôleur repart du zoom : son horloge démarre au cadre suivant.
+    // Le contrôleur repart de l'élan : son horloge démarre au cadre suivant.
     await tester.pump();
-    // Le zoom seul dure 500 ms : sans le toucher, le logo serait encore là.
-    await tester.pump(const Duration(milliseconds: 520));
+    // L'élan et la fenêtre durent 760 ms : sans le toucher, le pot serait
+    // encore là, à peine sorti du clin d'œil.
+    await tester.pump(const Duration(milliseconds: 780));
     await tester.pump();
     expect(logo(), findsNothing);
+  });
+
+  testWidgets('les barres natives restent voilées tant que dure l’ouverture', (tester) async {
+    const canal = MethodChannel('ch.vergasta.plant/native_shell');
+    final chromes = <Map<Object?, Object?>>[];
+    NativeShell.debugForceSupported = true;
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(canal, (call) async {
+      if (call.method == 'setChrome') chromes.add(call.arguments as Map<Object?, Object?>);
+      return true;
+    });
+    addTearDown(() {
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(canal, null);
+      NativeShell.debugReset();
+    });
+
+    await pumpSplash(tester);
+    expect(chromes.last['veil'], isTrue, reason: 'la barre d’onglets paraîtrait sur l’écran de lancement');
+    await tester.pump(const Duration(milliseconds: 1000));
+    expect(chromes.last['veil'], isTrue, reason: 'encore voilées pendant que la fenêtre s’ouvre');
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump();
+    expect(chromes.last['veil'], isFalse, reason: 'rendues une fois l’application découverte');
+  });
+
+  testWidgets('l’application reste la même du premier au dernier cadre', (tester) async {
+    await pumpSplash(tester);
+    final avant = tester.state(find.byType(_Compteur));
+    await tester.pump(const Duration(milliseconds: 1500));
+    await tester.pump();
+    expect(logo(), findsNothing);
+    expect(identical(tester.state(find.byType(_Compteur)), avant), isTrue,
+        reason: 'la fin de l’ouverture ne doit pas reconstruire l’application');
   });
 
   testWidgets('réduire les animations : ni clin d’œil ni zoom, un fondu', (tester) async {
@@ -68,4 +103,18 @@ void main() {
     await tester.pump();
     expect(logo(), findsNothing);
   });
+}
+
+/// Une application qui garde un état : si l'ouverture la reconstruisait, son
+/// état changerait d'identité.
+class _Compteur extends StatefulWidget {
+  const _Compteur();
+
+  @override
+  State<_Compteur> createState() => _CompteurState();
+}
+
+class _CompteurState extends State<_Compteur> {
+  @override
+  Widget build(BuildContext context) => const Text('app');
 }

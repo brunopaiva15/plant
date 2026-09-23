@@ -30,7 +30,9 @@ ROOT = os.path.join(HERE, '..')
 FONTS = os.path.join(HERE, 'fonts/inter/extras/ttf')
 HAND = os.path.join(ROOT, 'assets', 'fonts', 'ShantellSans-VF.ttf')
 CLAY = os.path.join(ROOT, 'assets', 'onboarding')
-ICON = os.path.join(ROOT, 'assets', 'icon', 'icon_ios_foreground.png')
+# Le pot de l'icône, entier, tel que l'ouverture de l'app le montre
+# (tool/render_app_icon.py).
+POT = os.path.join('assets', 'icon', 'rendu', 'lancement.png')
 INTER_ZIP = 'https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip'
 
 # --- les deux gabarits --------------------------------------------------------
@@ -59,7 +61,7 @@ FORMATS = {
         # coins, le cadre, l'île (ou, sans elle, l'œil de la caméra).
         'device': {'px': 3, 'status': 54, 'radius': 55, 'bezel': 12, 'island': (126, 37), 'camera': 0, 'cellular': True},
         'cover': {
-            'title': 296, 'plant': 900, 'plant_dx': 40, 'plant_overlap': 130,
+            'title': 296, 'plant_h': 760, 'plant_dx': 28, 'plant_overlap': 80,
             'card_h': 860, 'card_gap': 86, 'radius': 72, 'pad': 76,
             'name': 88, 'species': 54, 'species_y': 118, 'rows_y': 234,
             'rows': 'liste', 'row_h': 132, 'row_gap': 26, 'row_icon': 88, 'row_x': 126, 'row_label': 54, 'row_value': 58,
@@ -78,7 +80,7 @@ FORMATS = {
         'phone_width': 1310, 'phone_gap': 115, 'phone_clay': 620,
         'device': {'px': 2, 'status': 24, 'radius': 26, 'bezel': 20, 'island': None, 'camera': 5, 'cellular': False},
         'cover': {
-            'title': 320, 'plant': 950, 'plant_dx': 30, 'plant_overlap': 170,
+            'title': 320, 'plant_h': 690, 'plant_dx': 26, 'plant_overlap': 74,
             'card_h': 980, 'card_gap': 90, 'radius': 90, 'pad': 100,
             'name': 116, 'species': 70, 'species_y': 156, 'rows_y': 420,
             # Trois soins côte à côte : sur une fiche presque carrée, une liste
@@ -568,7 +570,7 @@ COVER = {
             ('assets/problems/clay_abiotique.webp', 'Lumière', 'Vive indirecte'),
             ('assets/onboarding/onboarding_2.png', 'Dernier soin', 'Il y a 2 jours'),
         ],
-        'footer': 'Gratuite, sans compte, sans publicité',
+        'footer': 'Sans compte, sans publicité',
     },
     'en': {
         'title': 'Auxine',
@@ -580,7 +582,7 @@ COVER = {
             ('assets/problems/clay_abiotique.webp', 'Light', 'Bright indirect'),
             ('assets/onboarding/onboarding_2.png', 'Last care', '2 days ago'),
         ],
-        'footer': 'Free, no account, no ads',
+        'footer': 'No account, no ads',
     },
     'de': {
         'title': 'Auxine',
@@ -592,7 +594,7 @@ COVER = {
             ('assets/problems/clay_abiotique.webp', 'Licht', 'Hell, indirekt'),
             ('assets/onboarding/onboarding_2.png', 'Letzte Pflege', 'Vor 2 Tagen'),
         ],
-        'footer': 'Kostenlos, ohne Konto, ohne Werbung',
+        'footer': 'Ohne Konto, ohne Werbung',
     },
     'it': {
         'title': 'Auxine',
@@ -604,7 +606,7 @@ COVER = {
             ('assets/problems/clay_abiotique.webp', 'Luce', 'Viva indiretta'),
             ('assets/onboarding/onboarding_2.png', 'Ultima cura', '2 giorni fa'),
         ],
-        'footer': 'Gratuita, senza account, senza pubblicità',
+        'footer': 'Senza account, senza pubblicità',
     },
 }
 
@@ -672,8 +674,8 @@ def crisp(path, height=None, width=None, box=None):
 def cover(lang, size):
     """La fiche d'ouverture entre dans le même gabarit que les sept autres :
     même fond, même titre au même endroit, même sous-titre. À la place de
-    l'appareil, la plante de l'icône, la carte de ce que l'app dit d'une
-    plante en verre dépoli, et la carte pleine de terre cuite."""
+    l'appareil, le pot de l'icône, la carte de ce que l'app dit d'une plante
+    en verre dépoli, et la carte pleine de terre cuite."""
     t, c, m = COVER[lang], L['cover'], L['margin']
     img = background('sage', seed=1)
     # Le nom de l'app n'est pas un titre de fiche : il se lit de loin, dans la
@@ -687,9 +689,11 @@ def cover(lang, size):
     gw, gh = W - 2 * m, c['card_h']
     gx, gy = m, by - c['card_gap'] - gh
 
-    # Sur l'iPhone la plante est au milieu, au-dessus de la carte ; sur l'iPad,
-    # ou le titre ne prend que la moitie de la largeur, elle passe a sa droite.
-    plant = crisp('assets/icon/icon_ios_foreground.png', width=c['plant'])
+    # Le pot de l'icône, au milieu, posé derrière la carte : elle n'en cache
+    # que la base, ses yeux restent bien au-dessus. Il est plus haut que large,
+    # c'est donc sa hauteur qui se règle ; et c'est le corps du pot qu'on
+    # centre, pas ses feuilles, qui partent à droite (plant_dx).
+    plant = crisp(POT, height=c['plant_h'])
     paste_with_shadow(img, plant, ((W - plant.width) // 2 + c['plant_dx'], gy + c['plant_overlap'] - plant.height), blur=64, offset=(16, 46), alpha=0.28)
 
     glass(img, (gx, gy, gw, gh), radius=c['radius'], blur=56, alpha=0.58)

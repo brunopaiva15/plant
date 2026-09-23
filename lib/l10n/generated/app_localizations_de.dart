@@ -108,9 +108,6 @@ class AppLocalizationsDe extends AppLocalizations {
       'Die Online-Suche braucht eine Verbindung; die Erkennung auf deinem Gerät nicht.';
 
   @override
-  String get offlineSupport => 'Der Kauf erfordert eine Verbindung.';
-
-  @override
   String get tabToday => 'Heute';
 
   @override
@@ -5083,57 +5080,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String aboutSpeciesCount(String count) {
     return '$count Arten offline durchsuchbar';
   }
-
-  @override
-  String get supportTitle => 'Auxine ist kostenlos';
-
-  @override
-  String get supportBody =>
-      'Alle Funktionen sind verfügbar. Kein Abo, keine Werbung, kein Pflichtkonto.';
-
-  @override
-  String get supportOffer =>
-      'Wenn du den Entwickler unterstützen möchtest, genügt ein einmaliger Kauf.';
-
-  @override
-  String get supportOnce => 'Nur einmal';
-
-  @override
-  String supportGive(String price) {
-    return 'Unterstützen · $price';
-  }
-
-  @override
-  String get supportRestore => 'Unterstützung wiederherstellen';
-
-  @override
-  String get supportThanksTitle => 'Danke';
-
-  @override
-  String get supportThanksBody => 'Deine Unterstützung wurde gespeichert.';
-
-  @override
-  String get supportUnavailable =>
-      'Der Kauf ist auf diesem Gerät nicht verfügbar.';
-
-  @override
-  String get supportFailed => 'Der Kauf ist nicht zustande gekommen.';
-
-  @override
-  String get supportNothingToRestore =>
-      'Keine Unterstützung zum Wiederherstellen.';
-
-  @override
-  String get supportSettings => 'Entwickler unterstützen';
-
-  @override
-  String get supportFreeForever => 'Kostenlos, ohne Limit';
-
-  @override
-  String get supportAlready => 'Danke für deine Unterstützung';
-
-  @override
-  String get supportNoThanks => 'Nein danke';
 
   @override
   String get emptyGardenSubtitle => 'Füge deine erste Pflanze hinzu.';

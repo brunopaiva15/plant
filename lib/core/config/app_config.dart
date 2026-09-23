@@ -94,9 +94,6 @@ abstract final class AppConfig {
   /// restent en base et dans les documents.
   static const bool roomScanEnabled = true;
 
-  /// Achat unique, facultatif, qui ne déverrouille rien : l'application est
-  /// entière et gratuite. Voir `SupportService`.
-  static const String supportProductId = 'ch.vergasta.plant.support';
 
   /// Durée pendant laquelle une action peut être annulée.
   static const Duration undoWindow = Duration(seconds: 5);

@@ -912,96 +912,6 @@ qui reste sous les yeux pendant que la page défile.
   clés dans les quatre `.arb`. Aucune image à livrer.
 - Quand elle s'ouvre : voir docs/03, *Après une mise à jour*.
 
-## La page du soutien (`features/support/`)
-« Auxine est gratuite » demande sans rien vendre, et elle n'est pas une page :
-c'est **un objet qu'on tend**. Une seule pièce d'argile porte tout — le titre,
-ce qui est ouvert, le montant, le bouton — et la plante n'y est pas rangée :
-elle est **posée dessus**, débordant du coin haut droit, comme on laisse une
-plante sur un coin de table. C'est ce débordement qui sépare un objet d'une
-carte à image.
-
-- **La pièce** est en argile crue — `surfaceMuted`, un cran sous le papier —,
-  relief franc, rayon `xl`. Elle a été en terre cuite pâle, et c'était une
-  erreur de sens autant que de goût : dans cette application la terre cuite
-  est la couleur du retard et de l'urgence, et un grand aplat rouge derrière
-  une demande se lit comme un avertissement. `surfaceMuted` ne dit rien que
-  la matière, laisse ressortir le vert du bouton et la terre cuite du
-  montant, et rentre dans le contrat de contraste — les trois encres y
-  tiennent 4,5:1, ce que le pastel de terre cuite ne faisait pas.
-- **La plante** est celle de l'icône, avec sa pousse et sa respiration. Le
-  `Stack` ne rogne pas (`Clip.none`) : ce qui dépasse pousse la pièce vers le
-  bas, ce qui y entre creuse sa marge haute, pour que le titre ne lui passe
-  pas dessous.
-- **Le texte** est rangé à gauche dans la pièce, comme celui des écrans de
-  l'onboarding — un titre d'affiche, pas une légende. Sous le titre, deux
-  phrases reprises mot pour mot de `store/listing.md` : ce que l'auteur écrit
-  déjà de l'application, plutôt qu'une reformulation. Une première version
-  tenait en une seule phrase, un deux-points et quatre compléments — la
-  cadence d'une machine, et un deux-points qui n'annonçait pas une valeur
-  mais une énumération. Les deux-points de l'application servent ailleurs à
-  nommer un champ (« Dernier : {date} ») ; celui-là ne nommait rien.
-- **La porte**, en pleine encre, entre ce qu'on a reçu et ce qu'on demande :
-  « Si vous souhaitez néanmoins aider le développeur, un achat unique
-  suffit. » Tout le travail est dans « néanmoins » — le paragraphe au-dessus
-  vient de dire que rien n'est dû, celui-ci ouvre quand même une possibilité
-  sans rien exiger. Elle nomme aussi la seule chose qui puisse motiver le
-  geste : l'argent va à une personne, pas à une société. Rien n'y est
-  supposé du lecteur ni promis en échange — c'est un constat, comme le reste
-  des textes, et il disparaît une fois le soutien versé.
-- **Le montant est dans le bouton** (« Soutenir · CHF 5.00 »), et nulle part
-  ailleurs. Écrit en grand et à la main au-dessus, il tenait la moitié du bas
-  de la pièce et le bouton n'en était plus que la conclusion ; dans le
-  bouton, ce qu'on lit est ce qu'on va faire et ce que cela coûte, d'un seul
-  tenant. Dessous, centré et en encre tertiaire, ce que le bouton ne dit
-  pas — « Une seule fois ». Centré parce qu'il appartient au bouton, pas au
-  paragraphe rangé à gauche au-dessus.
-- **Rien d'autre ne se lit après le bouton.** Une mention y a
-  traîné — « le soutien ne déverrouille rien » —, et c'était un avertissement
-  juste avant le geste : la phrase du haut dit déjà que tout est ouvert, donc
-  qu'il n'y a rien à déverrouiller.
-- **Sur le papier, sous la pièce**, ne reste que ce qui ne lui appartient
-  pas : retrouver un soutien déjà versé n'est pas l'accepter.
-- **Une fois versé**, un sceau d'argile se pose au ressort contre le pot, et
-  c'est la phrase du haut qui revient au bas de la pièce en plus petit : elle
-  se ferme sur ce qu'elle est venue dire plutôt que sur un blanc.
-
-**Deux versions ont échoué avant celle-ci**, et pour la même raison. La
-première empilait une pastille en capitales, une grille de quatre tuiles à
-icônes et une carte de prix : la page d'accueil de n'importe quel service. La
-seconde a tout dégraissé — illustration, titre, phrase, trait, bouton — et
-restait le squelette de tous les écrans du monde, simplement plus propre. Ce
-n'était pas la densité qui clochait, c'était la structure. La revue de design
-ci-dessous demande « ressemble-t-il à un template ? » ; la question se repose
-à chaque ajout, et enlever n'y répond pas à soi seul.
-
-**Ce que l'App Store demande** (règles 3.1.1 et 3.2.2(iv)) :
-
-- l'achat est un **non consommable**, donc restaurable : « Restaurer mon
-  soutien » est offert **partout où l'achat l'est**, onboarding compris.
-  C'est là qu'il sert le plus — quelqu'un qui change de téléphone repasse par
-  l'onboarding avant de voir les réglages ;
-- le prix vient du magasin, déjà mis en forme dans la monnaie de la personne
-  (`SupportOffer.price`), et se lit en entier avant le bouton ;
-- rien ne laisse croire à une contrepartie, et ce sont les phrases du haut
-  qui s'en chargent — tout est déjà accessible, il n'y a rien à vendre. Le
-  mot *don* est
-  évité — un pourboire au développeur passe par l'achat intégré (3.1.1), une
-  collecte pour une cause est interdite dans l'app (3.2.2(iv)), et les deux ne
-  doivent pas se confondre ;
-- là où le magasin n'existe pas, une phrase remplace le bouton.
-
-**Dans l'onboarding**, `SupportPitch` se rend en version courte (`compact`) :
-seule la scène rapetisse, la page y partageant sa hauteur avec les points de
-progression. « Non merci » n'appartient pas à la proposition mais à
-l'étape, qui le dessine elle-même avec le bouton discret de l'onboarding,
-celui de « Plus tard » : sous « Restaurer mon soutien », qui est vert, deux
-fantômes de la même couleur ne disaient plus lequel était la sortie.
-
-Les pièces se posent l'une après l'autre (`Appear`).
-`test/features/support_screen_test.dart` tient l'ordre — ce qui est ouvert
-avant le montant —, le montant qui ne paraît que là où le magasin le propose,
-et la page qui ne redemande rien une fois le soutien versé.
-
 ## Design review (par écran)
 Est-ce beau ? évident ? Peut-on retirer quelque chose ? L'action principale est-elle visible sans scroller ? Trop de texte ? Moins de taps possible ? Cohérent ? Ressemble-t-il à un template ? → si oui, retravailler.
 
@@ -1060,25 +970,33 @@ python3 tool/render_app_icon.py --blender /chemin/vers/blender
 reste là : la page web de partage la montre encore.
 
 ## L'ouverture (`app/launch_splash.dart`)
-À l'ouverture à froid, le pot cligne de l'œil, prend son élan et grossit
-jusqu'à laisser voir l'application. 1,4 seconde en tout.
+À l'ouverture à froid, le pot cligne de l'œil, prend son élan, puis sa
+silhouette s'ouvre sur l'application comme une fenêtre qui s'agrandit — le
+geste de l'ouverture de X. 1,4 seconde en tout.
 
 **Tout l'écran est au sauge de l'icône** (#459765, le milieu de son
 dégradé), en clair comme en sombre, et le pot y est posé entier, sur une
 ombre de contact : il ne se détache d'aucun cadre. Ce pot est raccourci : à
 peine plus long que ce qu'en montre l'icône, il en garde la silhouette
-trapue, là où le pot de l'icône montré en entier paraissait un gobelet. L'icône elle-même ne
-convenait pas — son dégradé et son pot coupé par le bas auraient laissé voir
+trapue, là où le pot de l'icône montré en entier paraissait un gobelet.
+L'icône elle-même ne convenait pas — son dégradé et son pot coupé par le bas auraient laissé voir
 un carré au milieu de l'écran. L'ombre est dessinée à la composition et non
 par Blender : la lampe principale l'allonge hors du cadre, et une ombre
 coupée au bord de l'image se verrait sur le fond uni.
 
 | Temps | Ce qui se passe |
 |---|---|
-| 0–250 ms | le pot tel que l'a laissé l'écran natif |
-| 250–690 ms | le clin d'œil : trois images en 40 ms, l'œil fermé en arc tenu 160 ms, les mêmes à rebours |
-| 690–880 ms | l'élan : le pot se ramasse à 88 % |
-| 880–1380 ms | le zoom jusqu'à 16 fois sa taille ; le fond s'efface en 300 ms, le pot dans les 250 dernières |
+| 0–200 ms | le pot tel que l'a laissé l'écran natif |
+| 200–640 ms | le clin d'œil : trois images en 40 ms, l'œil fermé en arc tenu 160 ms, les mêmes à rebours ; le pot s'écrase sur sa base en fermant l'œil et se relève d'un rebond élastique |
+| 640–960 ms | l'élan : une inspiration (106 %), puis le pot se ramasse (84 %) |
+| 960–1400 ms | la fenêtre : le pot s'efface en 160 ms et sa silhouette, découpée dans le fond, s'agrandit en accélérant jusqu'à trente fois sa taille ; l'application, à 107 %, se pose dessous en dépassant d'un cheveu |
+
+**Rien n'y est linéaire**, et c'est ce qui la rend fluide : une première
+version faisait grossir le pot en fondu pendant que tout le fond s'effaçait
+d'un bloc, et l'ensemble paraissait raide. La fenêtre est découpée dans le
+fond par un peintre (`BlendMode.dstOut`) ; l'ombre au pied du pot, à demi
+transparente, n'y ouvre rien — une matrice de couleur ne garde du masque que
+ce qui est franchement opaque.
 
 **Le premier cadre est l'écran natif.** iOS (`LaunchScreen.storyboard`) et
 Android (`launch_background.xml`, puis `values-v31` à partir d'Android 12)
@@ -1087,19 +1005,34 @@ montrent le même pot de 160 points au centre, sur le même sauge.
 Pour ce faire, il retient le premier cadre (`deferFirstFrame`) le temps de
 décoder ses images — une seconde au plus —, sinon le fond paraîtrait seul un
 instant. Android 12 ne montre qu'un disque de 192 dp au centre de l'icône de
-lancement : le pot, feuilles comprises, y tient largement à 160 dp. Et l'ouverture
-passe au-dessus du grain de l'application : l'écran natif n'en a pas.
+lancement : le pot, feuilles comprises, y tient largement à 160 dp. Et
+l'ouverture passe au-dessus du grain de l'application : l'écran natif n'en a
+pas.
+
+**Les barres natives d'iOS sont voilées tant qu'elle dure**
+(`NativeShell.setLaunching`). Elles sont posées par-dessus Flutter, et rien
+de ce que Flutter dessine ne les couvre : la barre d'onglets et celle du
+haut paraissaient sur l'écran vert dès que la coquille se déclarait. Voiler
+et non effacer, pour que la page garde leur place. Mais au lancement elles
+n'ont encore jamais paru, et leur place ne se mesurait pas : le natif les
+pose donc un instant, transparentes, le temps d'une mise en page, pour la
+mesurer (`mesurerLaChrome`), avant de les cacher.
+
+**L'application garde sa place dans l'arbre** du premier au dernier cadre.
+La première version la sortait de la pile une fois l'ouverture finie, et
+l'application entière se reconstruisait.
 
 **Le clin d'œil** ne rejoue pas la 3D : ce sont trois vignettes de l'œil de
 droite, rendues dans la même scène et posées sur le pot, pleines au centre
 et fondues sur les bords.
 
-- **Un toucher** passe directement au zoom.
+- **Un toucher** passe directement à l'élan.
 - **Réduire les animations** : ni clin d'œil ni zoom. Le pot reste 300 ms,
   puis s'efface en 250.
 - Seul `main` la demande (`FloraApp(splash: true)`) : les tests construisent
   l'application sans elle. `test/app/launch_splash_test.dart` tient la
-  chronologie, le toucher et le mouvement réduit.
+  chronologie, le toucher, le mouvement réduit, le voile des barres natives
+  et l'application qui ne se reconstruit pas.
 
 ## La page web de partage (`supabase/functions/share/`)
 Un lien d'invitation ou de plante ouvre une page dans un navigateur, souvent

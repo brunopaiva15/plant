@@ -161,11 +161,15 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
   /// quatre sens, parce qu'une barre rangée dans la bande verticale ne prend
   /// pas la sienne en haut.
   private func appliquerLaChrome(barre: Bool, onglets ongletsVisibles: Bool, voile: Bool) {
+    // Sous un voile, la place se reprend chaque fois que la chrome demandée
+    // change : au lancement, l'ouverture voile une chrome qui n'a encore
+    // jamais paru, et c'est la coquille, arrivée ensuite, qui la demande.
+    let aMesurer = voile && (voile != voilee || barre != barreDemandee || ongletsVisibles != ongletsDemandes)
     barreDemandee = barre
     ongletsDemandes = ongletsVisibles
-    if voile != voilee {
+    if voile != voilee || aMesurer {
       voilee = voile
-      margesVoilees = voile ? margesDeLaChrome() : .zero
+      margesVoilees = voile ? mesurerLaChrome(barre: barre, onglets: ongletsVisibles) : .zero
     }
     let montrerLaBarre = barre && !voile
     for navigation in navigations {
@@ -186,6 +190,39 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
       barreDOnglets.isUserInteractionEnabled = montrerLesOnglets
     }
     flutter?.additionalSafeAreaInsets = margesVoilees
+  }
+
+  /// La place que prendra la chrome demandée, qu'elle soit déjà à l'écran ou
+  /// non.
+  ///
+  /// Une chrome qui n'a jamais paru n'occupe rien, et la mesurer en l'état
+  /// donnerait zéro : au lancement, la page sauterait sous les barres le jour
+  /// où l'ouverture les rend. On la pose donc le temps d'une mise en page,
+  /// transparente, et on la mesure. Tout se passe avant que l'écran ne se
+  /// redessine — `appliquerLaChrome` la cache aussitôt après — : elle ne se
+  /// voit jamais.
+  private func mesurerLaChrome(barre: Bool, onglets ongletsVisibles: Bool) -> UIEdgeInsets {
+    if barre {
+      for navigation in navigations {
+        navigation.navigationBar.alpha = 0
+        navigation.setNavigationBarHidden(false, animated: false)
+      }
+    }
+    if ongletsVisibles, let barreDOnglets = onglets?.tabBar {
+      barreDOnglets.alpha = 0
+      if #available(iOS 18.0, *) {
+        onglets?.setTabBarHidden(false, animated: false)
+      } else {
+        barreDOnglets.isHidden = false
+      }
+    }
+    onglets?.view.setNeedsLayout()
+    onglets?.view.layoutIfNeeded()
+    flutter?.view.layoutIfNeeded()
+    let marges = margesDeLaChrome()
+    for navigation in navigations { navigation.navigationBar.alpha = 1 }
+    onglets?.tabBar.alpha = 1
+    return marges
   }
 
   /// Ce que la chrome ajoute aujourd'hui à la marge sûre de Flutter.

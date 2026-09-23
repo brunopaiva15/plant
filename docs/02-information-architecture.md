@@ -8,13 +8,13 @@ Tab bar
 ├── Aujourd'hui   (ce qui demande attention)
 ├── Plantes       (la collection)
 ├── Jardin        (emplacements, [inventaire P2], [calendrier P2])
-└── Profil        (apparence, notifications, archives, compte, soutien, à propos)
+└── Profil        (apparence, notifications, archives, compte, à propos)
 ```
 
 ## Hiérarchie des écrans
 ```
 Root
-├── Ouverture (clin d'œil du pot, docs/06) → Onboarding (5 écrans + lieu + prénom + compte [iOS, backend] + soutien) → Shell
+├── Ouverture (clin d'œil du pot, docs/06) → Onboarding (5 écrans + lieu + prénom + compte [iOS, backend]) → Shell
 └── Shell (tabs)
     ├── Aujourd'hui
     │   ├── [Plante] → Fiche plante
