@@ -72,6 +72,23 @@ SORTIE = {
     'nouveautes': dict(title='Nouveau\ndans Auxine.', sub='La mise à jour est sur l’App Store.', tint='terracotta', shot='today',
                        obj=OBJ.format('caoutchouc')),
 }
+
+
+# Le prix en francs suisses : sur l'App Store suisse, le palier de 0,99 €
+# vaut 1 CHF. Chaque image qui dit le prix a sa version « -chf ».
+def en_chf(t):
+    t = dict(t)
+    for k in ('title', 'lead', 'sub'):
+        if t.get(k):
+            t[k] = t[k].replace('0,99 €', '1 CHF')
+    if t.get('pills'):
+        t['pills'] = [p.replace('0,99 €', '1 CHF') for p in t['pills']]
+    return t
+
+
+THEMES['prix-chf'] = en_chf(THEMES['prix'])
+for k in ('disponible', 'disponible-ecran'):
+    SORTIE[f'{k}-chf'] = en_chf(SORTIE[k])
 THEMES.update(SORTIE)
 
 
@@ -389,9 +406,9 @@ def sortie():
     for k in SORTIE:
         carre(k, d)
         story(k, d)
-    for k in ('bientot', 'disponible', 'disponible-ecran', 'merci'):
+    for k in ('bientot', 'disponible', 'disponible-ecran', 'disponible-chf', 'disponible-ecran-chf', 'merci'):
         portrait(k, d)
-    for k in ('disponible', 'disponible-ecran'):
+    for k in ('disponible', 'disponible-ecran', 'disponible-chf', 'disponible-ecran-chf'):
         paysage(k, d)
     for nom, taille, cy, h in (('banniere-x-1500x500', (1500, 500), 330, 250),
                                ('banniere-linkedin-1584x396', (1584, 396), 200, 230)):
@@ -403,13 +420,13 @@ def sortie():
 if __name__ == '__main__':
     sortie()
     profils()
-    for k in ('prix', 'iris', 'soins', 'diagnostic', 'fiche', 'hors-ligne'):
+    for k in ('prix', 'prix-chf', 'iris', 'soins', 'diagnostic', 'fiche', 'hors-ligne'):
         carre(k)
-    for k in ('prix', 'iris', 'soins', 'collection', 'calendrier'):
+    for k in ('prix', 'prix-chf', 'iris', 'soins', 'collection', 'calendrier'):
         portrait(k)
-    for k in ('marque', 'prix', 'iris', 'soins', 'diagnostic'):
+    for k in ('marque', 'prix', 'prix-chf', 'iris', 'soins', 'diagnostic'):
         story(k)
-    for k in ('marque', 'iris', 'prix'):
+    for k in ('marque', 'iris', 'prix', 'prix-chf'):
         paysage(k)
     n = sum(len(f) for _, _, f in os.walk(OUT))
     print(n, 'fichiers dans', os.path.relpath(OUT))

@@ -60,3 +60,9 @@ chiffres.
 
 S'y ajoutent les bannières X et LinkedIn « Disponible sur l'App Store. ».
 Aucune image ne porte de date : elle va dans le texte qui l'accompagne.
+
+## En francs suisses
+
+Chaque image qui dit le prix existe aussi en « 1 CHF », le palier suisse de
+0,99 €, sous le même nom suivi de `-chf` : `post-carre-prix-chf.jpg`,
+`sortie/story-disponible-chf.jpg`, etc. (12 images).
