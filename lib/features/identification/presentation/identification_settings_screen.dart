@@ -32,7 +32,7 @@ class IdentificationSettingsScreen extends ConsumerWidget {
           FloraCard(
             child: Row(
               children: [
-                EmojiTile(emoji: configured ? '🔬' : '🔒', background: configured ? context.colors.sageSoft : null),
+                EmojiTile(emoji: configured ? '🔬' : '🔒'),
                 const SizedBox(width: Space.sm),
                 Expanded(child: Text(configured ? l10n.identificationEnabled : l10n.identificationDisabled, style: context.text.title3)),
               ],

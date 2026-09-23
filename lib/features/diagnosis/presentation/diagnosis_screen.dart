@@ -750,7 +750,7 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                EmojiTile(emoji: '🌡️', background: c.surface, variant: 2),
+                EmojiTile(emoji: '🌡️'),
                 const SizedBox(width: Space.md),
                 Expanded(
                   child: Column(
@@ -1097,13 +1097,12 @@ class _CheckCard<T extends Object> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = context.colors;
     return FloraCard(
       color: tint,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          EmojiTile(emoji: emoji, background: c.surface, variant: variant),
+          EmojiTile(emoji: emoji),
           const SizedBox(width: Space.md),
           Expanded(
             child: FloraChoice<T>(

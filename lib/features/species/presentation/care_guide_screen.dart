@@ -572,7 +572,7 @@ class _AspectCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            EmojiTile(emoji: emoji, background: tint == null ? null : c.surface, variant: variant),
+            EmojiTile(emoji: emoji),
             const SizedBox(width: Space.md),
             Expanded(
               child: Column(

@@ -670,7 +670,7 @@ class _NextCareState extends ConsumerState<_NextCare> {
                             padding: const EdgeInsets.symmetric(horizontal: Space.sm, vertical: Space.xs),
                             child: Row(
                               children: [
-                                EmojiTile(emoji: types[s.typeKey]?.emoji ?? '✓', background: c.softFor(s.typeKey)),
+                                EmojiTile(emoji: types[s.typeKey]?.emoji ?? '✓'),
                                 const SizedBox(width: Space.sm),
                                 Expanded(
                                   child: Column(
@@ -785,7 +785,7 @@ class _CareGuideCard extends ConsumerWidget {
           padding: const EdgeInsets.all(Space.md),
           child: Row(
             children: [
-              EmojiTile(emoji: '📖', size: 44, background: c.sageSoft),
+              EmojiTile(emoji: '📖', size: 44),
               const SizedBox(width: Space.md),
               Expanded(
                 child: Column(

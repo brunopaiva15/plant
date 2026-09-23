@@ -44,7 +44,7 @@ class PlantPlaceCard extends ConsumerWidget {
       padding: const EdgeInsets.all(Space.md),
       child: Row(
         children: [
-          EmojiTile(emoji: '📐', size: 44, background: place.betterElsewhere ? c.sunSoft : c.sageSoft),
+          EmojiTile(emoji: '📐', size: 44),
           const SizedBox(width: Space.md),
           Expanded(
             child: Column(
