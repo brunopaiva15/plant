@@ -725,3 +725,29 @@ student qui ne saura rien retrouver, et la courbe de perte ne le dira pas.
 **Le chiffre qui décide n'y est pas.** Il est dans `voisins.py --embeddings`,
 sur un `banc-eN` ; le tableau se contente de signaler ceux qui existent et
 d'écrire la commande à copier.
+
+## Les plantes d'iNaturalist comme corpus
+
+```bash
+source ~/venv-torch/bin/activate && pip install pyarrow requests
+cd ~/plant/tools/plant_model
+python3 -u inat_corpus.py --fragments 2   # essai : la part de plantes, le débit
+python3 -u inat_corpus.py                 # le tout, reprenable
+```
+
+**Sans GPU.** Il lit `philipp-zettl/inaturalist-enriched` (595 fichiers
+Parquet, 197 Go) un fichier à la fois : téléchargement reprenable, tri,
+réduction à 320 px, suppression. On ne garde que les plantes retenues —
+~720 000 images et ~24 Go d'après le premier fragment. Relancer la même
+commande reprend au fichier suivant ; `fragments-faits.txt` dit où on en est,
+`bilan.json` combien chaque fichier a donné et pourquoi le reste est écarté.
+
+**Il refuse de tourner sans le manifeste et sans le banc.** Ce sont eux qui
+l'empêchent de faire entrer une photo du banc — ou sa photo sœur, prise
+pendant la même observation — dans l'entraînement. Trois gardes : `photo_id`,
+empreinte perceptuelle, observation (§ 20 quater de `docs/14`). Le manifeste
+attendu par défaut est `~/plant-data/dataset-v8-indoor/manifest.jsonl` ;
+`--manifeste` pour un autre chemin.
+
+`HF_TOKEN` dans l'environnement, s'il est défini, relève la limite de débit de
+Hugging Face.

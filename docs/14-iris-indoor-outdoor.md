@@ -1767,6 +1767,61 @@ pour un student distillé, ce sont toutes des images **sans étiquette**, donc
 gratuites à intégrer. Ce qui les départage n'est plus leur annotation, c'est
 la **provenance** — quel monde elles apportent que le nôtre n'a pas.
 
+## 20 quater. Les plantes d'iNaturalist — 23 septembre 2026
+
+`philipp-zettl/inaturalist-enriched` : 1 487 090 photos iNaturalist sous CC0
+ou CC-BY, instantané du 27 mars 2026, 595 fichiers Parquet, 197 Go avec les
+images. Mêmes raisons que Pl@ntNet-300K (§ 20 ter) : le student n'a pas
+besoin d'étiquettes, donc une observation « casual » ou mal identifiée vaut
+une photo de plante comme une autre.
+
+**Mesuré sur le premier fragment** (2 500 lignes) :
+
+| | |
+|---|---|
+| plantes (descendantes de *Plantae*, taxon 47126) | **1 216, soit 49 %** |
+| sans taxon | 0 |
+| rang espèce ou inférieur | 91 % des plantes |
+| photos par observation | 1,37 en moyenne — des sœurs existent |
+| taille des sources | ~500 px de grand côté |
+| tri + réduction à 320 px | 147 img/s sur un fil, **34 Ko** par image |
+
+Extrapolé au jeu entier, et c'est une extrapolation d'un fragment sur 595 :
+**~720 000 photos de plantes, ~24 Go**, avant les exclusions ci-dessous.
+L'encodage par le teacher prendrait ~2,5 h ; une époque sur les deux corpus
+réunis, ~95 min à `fastvit_sa12`.
+
+### Trois gardes contre la fuite dans le banc
+
+Le banc est bâti sur notre propre collecte GBIF/iNaturalist ; une partie de
+ses photos est donc très probablement dans ce jeu. `inat_corpus.py` refuse de
+tourner sans le manifeste et sans le banc, et écarte :
+
+1. **par `photo_id`** toutes les photos iNaturalist de nos manifestes — celles
+   du banc pour la fuite, les autres parce qu'elles sont déjà au corpus ;
+2. **par empreinte perceptuelle** (même `phash64`, même seuil de 6 bits que
+   `plant_dataset/dedup.py`) toute image à portée d'une image du banc — une
+   copie relayée par GBIF, recompressée, redimensionnée ;
+3. **par observation** : `splits.py` regroupe déjà nos photos par
+   observation, deux prises de la même plante le même jour étant une fuite.
+   Le fragment mesuré en a 1,37 par observation : la photo *sœur* d'une image
+   du banc peut être là, sous un autre `photo_id` et un autre cadrage. Les
+   observations iNaturalist du banc sont demandées à l'API, et toutes leurs
+   photos écartées par `photo_id` comme par `observation_uuid`.
+
+### Ce qui reste à vérifier : la licence
+
+Le jeu n'a **pas de colonne licence** ; son auteur annonce CC0 et CC-BY. La
+règle du § 4.1 de `docs/09` veut qu'on vérifie : un contrôle par échantillon
+contre l'API iNaturalist, avant que ces images entrent dans un modèle livré.
+
+### L'ordre
+
+Le bras Pl@ntNet passe **avant** : son cache est prêt, et il répond à la même
+question — des images distinctes en plus aident-elles ? S'il ne gagne rien,
+ce corpus-ci ne gagnera probablement rien non plus. La préparation, elle, ne
+prend ni GPU ni décision : elle tourne à côté.
+
 ## 21. Ce qui est décidé et ce qui reste ouvert
 
 ### Décidé
