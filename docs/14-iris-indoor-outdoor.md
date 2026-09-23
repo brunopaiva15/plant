@@ -1684,6 +1684,35 @@ cache est prêt. **L'indoor reste à onze points et demi.**
 2. **le corpus Pl@ntNet**, avec le meilleur des deux dorsaux : l'outdoor est
    à deux points, et ce corpus est de l'outdoor.
 
+### 19 duodecies. MobileNetV4 + cosinus : la capacité, mesurée cette fois à armes égales — 23 septembre 2026
+
+Même recette que `iris10-cosinus`, seul le dorsal change. Le taux constant
+qui désavantageait le gros dorsal au § 19 decies n'est plus là.
+
+| textes, é10 | fastvit + cosinus | **MobileNetV4 + cosinus** | écart |
+|---|---|---|---|
+| indoor, armes égales | 0,6957 | **0,6832** | −1,3 |
+| outdoor, armes égales | 0,7420 | **0,7115** | −3,1 |
+| hors répertoire, rép. entier | 0,5745 | **0,5300** | −4,5 |
+
+**MobileNetV4 est derrière à chacune des dix époques**, dans les trois
+domaines. L'écart se resserre en indoor (−3,8 à é1, −0,5 à é5 et é6) sans
+jamais s'inverser, et reste net en outdoor et hors répertoire.
+
+> **L'hypothèse « capacité » est éliminée, cette fois sous un taux qui ne la
+> désavantage pas.** 2,7 fois les paramètres d'un réseau convolutif n'ont
+> rien apporté — et coûteraient ~63 Mo livrés contre ~24.
+
+Reste la seconde hypothèse du § 19 decies : **un student convolutif copie
+moins bien la géométrie d'un teacher ViT** que `fastvit_sa12`, qui a de
+l'attention dans ses derniers étages. Le motif des écarts va dans son sens —
+plus faibles en indoor, domaine le plus représenté au corpus, plus forts là
+où la géométrie doit se généraliser. Ce n'est pas une preuve ; le seul dorsal
+qui la testerait, MobileNetV4 *hybrid*, n'existe pré-entraîné qu'à 384 px.
+
+**Décision : `fastvit_sa12` reste le dorsal.** Les bras suivants — corpus
+Pl@ntNet, corpus iNaturalist — se font avec lui.
+
 ## 20 ter. Pl@ntNet-300K comme corpus, pas comme avis — 22 septembre 2026
 
 Le § 5 l'avait rejeté comme **second avis** : 4,85 % de couverture, et aucun
