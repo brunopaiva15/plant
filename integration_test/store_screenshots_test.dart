@@ -13,6 +13,7 @@
 // qui échoue est dite, pas fatale : les autres captures se prennent quand même.
 import 'package:flora/app/app.dart';
 import 'package:flora/app/router.dart';
+import 'package:flora/core/native_shell.dart';
 import 'package:flora/l10n/generated/app_localizations.dart';
 import 'package:flora/main.dart' as app;
 import 'package:flutter/widgets.dart';
@@ -227,8 +228,18 @@ void main() {
     // de repli, et « Choisir une photo » passe par le magasin de photos de la
     // démo, qui rend le Ficus lyrata (core/demo/demo_photo_storage.dart).
     await scene('capture', () async {
-      await go(Routes.plants);
-      await tapLabel(l10n.addPlant);
+      // Le « + » d'Aujourd'hui, seul bouton de droite de la page. Sur iOS, la
+      // barre est celle d'UIKit : le bouton n'existe pas dans l'arbre de
+      // Flutter, et le chercher par son étiquette ne trouvait rien — la scène
+      // échouait avant même d'ouvrir la création. On passe alors par le canal
+      // du bouton natif, comme son toucher (`R0`, le premier à droite).
+      await go(Routes.today);
+      if (NativeShell.isSupported && NativeShell.onAction != null) {
+        NativeShell.onAction!('R0');
+        await wait(tester, 2500);
+      } else {
+        await tapLabel(l10n.addPlant);
+      }
       await tapText(l10n.choosePhoto);
       // Le champ d'analyse tient deux secondes au minimum, le modèle prend le
       // reste : les noms n'arrivent qu'après, un par un.
