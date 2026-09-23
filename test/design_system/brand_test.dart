@@ -48,6 +48,19 @@ void main() {
     expect(sheet.top, lessThan(header.bottom), reason: 'le coin arrondi se découpe sur le vert');
   });
 
+  testWidgets('les disques ne sont pas coupés au bord haut', (tester) async {
+    // Tirée vers le bas, la liste fait descendre la tête sur le vert du fond :
+    // les disques doivent y continuer, et non s'arrêter sur une ligne droite.
+    await pump(tester, const BrandHeader(child: SizedBox(height: 300, width: double.infinity)));
+    final clip = tester.widget<ClipRect>(find.descendant(of: find.byType(BrandHeader), matching: find.byType(ClipRect)));
+    final size = tester.getSize(find.byType(BrandHeader));
+    final rect = clip.clipper!.getClip(size);
+    expect(rect.top, lessThanOrEqualTo(-size.width * 0.54), reason: 'le grand disque monte au-dessus de la tête');
+    expect(rect.bottom, size.height, reason: 'en bas, la coupe reste');
+    expect(rect.left, 0);
+    expect(rect.right, size.width);
+  });
+
   testWidgets('une carte vive pose son encre', (tester) async {
     await pump(tester, PopCard(color: FloraColors.light.terracottaPop, child: const Text('Prochain arrosage')));
     expect(DefaultTextStyle.of(tester.element(find.text('Prochain arrosage'))).style.color, FloraColors.light.onPop);
