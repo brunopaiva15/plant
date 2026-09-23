@@ -970,9 +970,9 @@ python3 tool/render_app_icon.py --blender /chemin/vers/blender
 reste là : la page web de partage la montre encore.
 
 ## L'ouverture (`app/launch_splash.dart`)
-À l'ouverture à froid, le pot cligne de l'œil, prend son élan, puis sa
-silhouette s'ouvre sur l'application comme une fenêtre qui s'agrandit — le
-geste de l'ouverture de X. 1,4 seconde en tout.
+À l'ouverture à froid, le pot cligne de l'œil, puis joue l'ouverture de
+Twitter : sa silhouette se ramasse, puis s'ouvre sur l'application comme une
+fenêtre qui s'agrandit. 1,64 seconde en tout.
 
 **Tout l'écran est au sauge de l'icône** (#459765, le milieu de son
 dégradé), en clair comme en sombre, et le pot y est posé entier, sur une
@@ -988,12 +988,29 @@ coupée au bord de l'image se verrait sur le fond uni.
 |---|---|
 | 0–200 ms | le pot tel que l'a laissé l'écran natif |
 | 200–640 ms | le clin d'œil : trois images en 40 ms, l'œil fermé en arc tenu 160 ms, les mêmes à rebours ; le pot s'écrase sur sa base en fermant l'œil et se relève d'un rebond élastique |
-| 640–960 ms | l'élan : une inspiration (106 %), puis le pot se ramasse (84 %) |
-| 960–1400 ms | la fenêtre : le pot s'efface en 160 ms et sa silhouette, découpée dans le fond, s'agrandit en accélérant jusqu'à trente fois sa taille ; l'application, à 107 %, se pose dessous en dépassant d'un cheveu |
+| 640–1640 ms | l'ouverture de Twitter |
 
-**Rien n'y est linéaire**, et c'est ce qui la rend fluide : une première
-version faisait grossir le pot en fondu pendant que tout le fond s'effaçait
-d'un bloc, et l'ensemble paraissait raide.
+**L'ouverture de Twitter est reprise valeur pour valeur**, d'après
+« Implementing Twitter's App Loading Animation in React Native » (blog de
+React Native, 2018). Une avancée de 0 à 100, menée en une seconde par la
+courbe par défaut d'`Animated.timing` (`Easing.inOut(Easing.ease)`), et
+trois interpolations linéaires par morceaux :
+
+- la silhouette : 1 → 0,8 entre 0 et 10, puis 0,8 → 70 jusqu'à 100 ;
+- l'application dans la silhouette : invisible jusqu'à 15, en fondu jusqu'à
+  30 ;
+- l'application elle-même : 110 → 100 % tout du long.
+
+Chez Twitter, on voit au travers du masque une couche blanche, nette à toutes
+les tailles. Ici, le pot s'efface entre 10 et 15 — le temps que la
+silhouette reparte — et laisse un aplat du fond de l'application (`canvas`),
+que celle-ci recouvre ensuite en fondu. Agrandie cinq à seize fois pendant
+ce fondu, l'image du pot n'était plus qu'une tache floue et translucide.
+
+Les deux premières versions n'étaient pas celles de Twitter : la première
+faisait grossir le pot en fondu pendant que tout le fond s'effaçait d'un
+bloc, et paraissait raide ; la seconde avait sa propre chronologie, avec une
+inspiration avant l'élan.
 
 **La fenêtre est un tracé**, pas une image découpée. La deuxième version
 perçait le fond avec l'image du pot et un mode de fusion (`BlendMode.dstOut`)
@@ -1033,7 +1050,7 @@ l'application entière se reconstruisait.
 droite, rendues dans la même scène et posées sur le pot, pleines au centre
 et fondues sur les bords.
 
-- **Un toucher** passe directement à l'élan.
+- **Un toucher** saute le clin d'œil : l'ouverture part aussitôt.
 - **Réduire les animations** : ni clin d'œil ni zoom. Le pot reste 300 ms,
   puis s'efface en 250.
 - Seul `main` la demande (`FloraApp(splash: true)`) : les tests construisent
