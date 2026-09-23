@@ -36,6 +36,13 @@ CORPUS = re.compile(r'(\d+)/(\d+)\s+([\d.]+) img/s\s+(\d+) saut')
 # porte pas de « sautées » : le cache n'a pas le droit d'en perdre.
 CACHE = re.compile(r'(\d+)/(\d+)\s+([\d.]+) img/s\s+reste ([\d.]+) h')
 
+# `  fragment 3/595  data/train-0002-of-unknown.parquet  gardées 1180/2500  —
+#    cumul : 3570 gardées, 3810 hors plantes, 12 déjà au corpus, 1 écartées pour
+#    le banc  reste 412 min`
+INAT = re.compile(r'fragment (\d+)/(\d+)\s+(\S+)\s+gardées (\d+)/(\d+)\s+— cumul : '
+                  r'(\d+) gardées, (\d+) hors plantes, (\d+) déjà au corpus, '
+                  r'(\d+) écartées pour le banc\s+reste (\d+) min')
+
 CONE_TEACHER = 0.2806  # § 19 ter de docs/14 — la géométrie qu'on copie
 # Ce qu'annonce Zenodo pour `plantnet_300K.zip`, au centième de Gio près. Le
 # pourcentage est donc approché, et c'est assez : ce qu'on veut savoir est si
@@ -102,6 +109,58 @@ def etat_cache(lignes: list[str]) -> dict | None:
     return {'fait': fait, 'total': total, 'finie': finie,
             'vitesse': float(m[3]) if m else 0.0,
             'part': 1.0 if finie else (fait / total if total else 0.0)}
+
+
+def etat_inat(lignes: list[str]) -> dict | None:
+    """L'avancée de `inat_corpus.py`, lue sur sa dernière ligne de fragment."""
+    m = derniere(lignes, INAT)
+    if not m:
+        return None
+    return {'fragment': int(m[1]), 'fragments': int(m[2]), 'nom': m[3],
+            'gardees_fragment': int(m[4]), 'lignes_fragment': int(m[5]),
+            'gardees': int(m[6]), 'hors_plantes': int(m[7]), 'deja': int(m[8]),
+            'banc': int(m[9]), 'reste_min': int(m[10]),
+            'part': int(m[1]) / int(m[2]) if int(m[2]) else 0.0}
+
+
+def journaux_actifs(racine: Path, maintenant: float | None = None,
+                    fenetre: float = 900.0) -> list[Path]:
+    """Les journaux `*.log` écrits depuis moins de `fenetre` secondes.
+
+    **Un sujet en cours est un journal qui bouge.** Aucune liste à tenir à
+    jour : une passe lancée apparaît dès sa première ligne, une passe finie
+    disparaît un quart d'heure après sa dernière — le temps de la voir finir.
+    Le quart d'heure couvre la ligne la plus lente qu'on écrive : un fragment
+    iNaturalist, téléchargement compris.
+    """
+    maintenant = maintenant or time.time()
+    return sorted(j for j in racine.glob('*.log')
+                  if maintenant - j.stat().st_mtime < fenetre)
+
+
+def nature(lignes: list[str]) -> str:
+    """De quelle sorte de passe un journal parle, d'après ce qu'il écrit.
+
+    Le nom du fichier est libre — c'est celui qu'on a donné à `tee` — alors
+    que le format des lignes ne l'est pas.
+    """
+    for ligne in reversed(lignes):
+        if ENTRAINEMENT.search(ligne):
+            return 'distillation'
+        if INAT.search(ligne):
+            return 'inat'
+        if CACHE.search(ligne):
+            return 'cache'
+        if CORPUS.search(ligne):
+            return 'corpus'
+    return 'autre'
+
+
+def derniere_ligne(lignes: list[str]) -> str:
+    for ligne in reversed(lignes):
+        if ligne.strip():
+            return ligne.strip()
+    return ''
 
 
 def passes_suivies(noms: list[str], sortie: str, log: str,
@@ -333,13 +392,62 @@ def tableau(args) -> str:  # pragma: no cover - assemble des lectures disque
     return '\n'.join(out)
 
 
+def tableau_actif(args) -> str:  # pragma: no cover - assemble des lectures disque
+    """Tout ce qui tourne en ce moment, et rien de ce qui a fini."""
+    racine = Path(args.racine).expanduser()
+    out = [f"── {time.strftime('%H:%M:%S')} ─────────────────────────────────"]
+    actifs = journaux_actifs(racine, fenetre=args.fenetre)
+    for journal in actifs:
+        l = lignes(journal)
+        sorte, nom = nature(l), journal.stem
+        if sorte == 'distillation':
+            out += panneau(nom, str(racine / nom), str(journal), args)
+        elif sorte == 'inat':
+            i = etat_inat(l)
+            out.append(f'\nCORPUS INATURALIST — {nom}')
+            out.append(f"  fragment {i['fragment']}/{i['fragments']}   {barre(i['part'])} "
+                       f"{i['part'] * 100:4.1f} %   reste {duree(i['reste_min'] * 60)}")
+            out.append(f"  {i['gardees']} plantes gardées   {i['hors_plantes']} hors plantes   "
+                       f"{i['deja']} déjà au corpus   {i['banc']} écartées pour le banc")
+        elif sorte == 'cache':
+            k = etat_cache(l)
+            out.append(f'\nCACHE TEACHER — {nom}')
+            if k['finie']:
+                out.append(f"  {barre(1.0)} terminé — {k['total']} vecteurs ajoutés")
+            else:
+                out.append(f"  {barre(k['part'])} {k['part'] * 100:4.1f} %   "
+                           f"{k['fait']}/{k['total']}   {k['vitesse']:.1f} img/s   "
+                           f"reste {duree(reste(k['fait'], k['total'], k['vitesse']))}")
+        elif sorte == 'corpus':
+            c = etat_corpus(l)
+            out.append(f'\nCORPUS — {nom}')
+            out.append(f"  {barre(c['part'])} {c['part'] * 100:4.1f} %   "
+                       f"{c['faites']}/{c['total']}   {c['vitesse']:.1f} img/s")
+        else:
+            # Une passe qui démarre n'a pas encore écrit sa première ligne de
+            # progression : on montre ce qu'elle fait plutôt que rien.
+            out.append(f'\n{nom.upper()}')
+            out.append(f'  {derniere_ligne(l)[:100]}')
+    if not actifs:
+        out.append(f"\n  aucun journal de {racine} n'a bougé depuis "
+                   f"{duree(args.fenetre)} — rien ne tourne")
+    carte = gpu()
+    if carte:
+        out.append(f'\nGPU  {carte}')
+    return '\n'.join(out)
+
+
 def main() -> int:  # pragma: no cover - boucle d'affichage
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--passe', action='append', default=[], metavar='NOM',
                     help='répétable : suit ~/plant-data/NOM et ~/plant-data/NOM.log')
-    ap.add_argument('--sortie', default='~/plant-data/iris10-complet')
-    ap.add_argument('--log', default='~/plant-data/iris10-complet.log')
+    ap.add_argument('--sortie', default=None)
+    ap.add_argument('--log', default=None)
+    ap.add_argument('--racine', default='~/plant-data',
+                    help='sans --passe ni --sortie : suit tout journal de ce dossier qui bouge')
+    ap.add_argument('--fenetre', type=float, default=900.0, metavar='SECONDES',
+                    help="un journal muet depuis plus longtemps est une passe finie")
     ap.add_argument('--log-corpus', default='~/plant-data/plantnet-corpus.log')
     ap.add_argument('--log-cache', default='~/plant-data/bioclip-plantnet.log',
                     help="la passe du teacher sur un nouveau corpus")
@@ -354,12 +462,20 @@ def main() -> int:  # pragma: no cover - boucle d'affichage
     args = ap.parse_args()
 
 
+    # Sans rien préciser : tout ce qui tourne, rien de ce qui a fini. Les
+    # options d'avant restent pour suivre une passe nommée.
+    if args.passe or args.sortie or args.log:
+        args.sortie = args.sortie or '~/plant-data/iris10-complet'
+        args.log = args.log or '~/plant-data/iris10-complet.log'
+        rendre = tableau
+    else:
+        rendre = tableau_actif
     if not args.boucle:
-        print(tableau(args))
+        print(rendre(args))
         return 0
     try:
         while True:
-            print('\033[2J\033[H' + tableau(args), flush=True)
+            print('\033[2J\033[H' + rendre(args), flush=True)
             time.sleep(args.boucle)
     except KeyboardInterrupt:
         return 0

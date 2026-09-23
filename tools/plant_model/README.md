@@ -683,12 +683,19 @@ pour rien.
 **Pas pendant la passe en cours.** Une variable à la fois (§ 13.6 de
 `docs/09`) : ajouter le corpus au milieu rendrait l'écart inattribuable.
 
-## Suivre deux passes d'un coup d'œil
+## Suivre ce qui tourne
 
 ```bash
 python3 suivi.py              # une fois
 python3 suivi.py --boucle 30  # se rafraîchit, Ctrl-C pour sortir
 ```
+
+**Sans option, il suit tout ce qui tourne et rien de ce qui a fini.** Un
+sujet en cours est un journal de `~/plant-data/*.log` écrit depuis moins d'un
+quart d'heure ; sa nature — distillation, cache du teacher, corpus Pl@ntNet,
+corpus iNaturalist — se lit dans ses lignes, pas dans son nom. Une passe
+lancée apparaît dès sa première ligne, une passe finie disparaît un quart
+d'heure après sa dernière. `--passe NOM` suit une passe nommée comme avant.
 
 ```
 DISTILLATION

@@ -228,3 +228,45 @@ def test_un_corpus_fini_ne_reste_pas_a_999():
     c = etat_corpus(TIRE + ['\n/x/plantnet-300k — 243567 images, 0 sautées cette passe\n'])
     assert c['finie'] and c['part'] == 1.0
     assert not etat_corpus(TIRE)['finie']
+
+
+# --------------------------------------------------------------------------
+# Ce qui tourne, et rien de ce qui a fini
+# --------------------------------------------------------------------------
+
+def test_seuls_les_journaux_qui_bougent_sont_suivis(tmp_path):
+    """Un sujet en cours est un journal qui bouge : aucune liste à tenir."""
+    import os
+    from suivi import journaux_actifs
+    for nom, age in (('iris10-mnv4-cos.log', 30), ('inat.log', 200), ('iris10-complet.log', 90000)):
+        f = tmp_path / nom
+        f.write_text('x\n')
+        os.utime(f, (1_000_000 - age, 1_000_000 - age))
+    actifs = [j.name for j in journaux_actifs(tmp_path, maintenant=1_000_000, fenetre=900)]
+    assert actifs == ['inat.log', 'iris10-mnv4-cos.log']
+
+
+def test_la_nature_se_lit_dans_les_lignes_pas_dans_le_nom():
+    """Le nom est celui qu'on a donné à `tee`, le format des lignes non."""
+    from suivi import nature
+    assert nature(ENTRAINE) == 'distillation'
+    assert nature(CACHE_EN_COURS) == 'cache'
+    assert nature(TIRE) == 'corpus'
+    assert nature(['  fragment 3/595  data/train-0002-of-unknown.parquet  gardées 1180/2500  '
+                   '— cumul : 3570 gardées, 3810 hors plantes, 12 déjà au corpus, '
+                   '1 écartées pour le banc  reste 412 min\n']) == 'inat'
+    assert nature(['empreintes du banc…\n']) == 'autre'
+
+
+def test_lavancee_inaturalist_se_lit():
+    from suivi import etat_inat
+    i = etat_inat(['  fragment 3/595  data/train-0002-of-unknown.parquet  gardées 1180/2500  '
+                   '— cumul : 3570 gardées, 3810 hors plantes, 12 déjà au corpus, '
+                   '1 écartées pour le banc  reste 412 min\n'])
+    assert (i['fragment'], i['fragments'], i['gardees'], i['banc'], i['reste_min']) == (3, 595, 3570, 1, 412)
+
+
+def test_une_passe_qui_demarre_montre_sa_derniere_ligne():
+    from suivi import derniere_ligne
+    assert derniere_ligne(['a\n', '  empreintes du banc : 3000/5127\n', '\n']) == \
+        'empreintes du banc : 3000/5127'
