@@ -37,15 +37,35 @@ class BrandHeader extends StatelessWidget {
           painter: _Discs(Colors.white),
           child: Padding(
             padding: padding.add(EdgeInsets.only(bottom: underlap)),
-            child: DefaultTextStyle.merge(
-              style: TextStyle(color: c.onBrand),
-              child: IconTheme.merge(data: IconThemeData(color: c.onBrand), child: child),
+            child: OnBrand(
+              child: DefaultTextStyle.merge(
+                style: TextStyle(color: c.onBrand),
+                child: IconTheme.merge(data: IconThemeData(color: c.onBrand), child: child),
+              ),
             ),
           ),
         ),
       ),
     );
   }
+}
+
+/// Dit à ce qu'il enveloppe qu'il est posé sur le vert de la marque.
+///
+/// Les pièces ordinaires — une pilule, un bouton rond — s'y font de verre :
+/// blanc à 14 %, filet blanc, encre blanche. Un écran n'a donc pas à choisir
+/// une autre pièce pour sa tête verte ; il pose la même, et elle s'accorde.
+class OnBrand extends InheritedWidget {
+  const OnBrand({super.key, required super.child});
+
+  static bool of(BuildContext context) => context.dependOnInheritedWidgetOfExactType<OnBrand>() != null;
+
+  /// Le fond et le filet d'une pièce de verre.
+  static const Color glass = Color(0x24FFFFFF);
+  static const Color glassLine = Color(0x42FFFFFF);
+
+  @override
+  bool updateShouldNotify(OnBrand oldWidget) => false;
 }
 
 /// Deux disques très pâles en haut à droite : le décor de la tête verte.
@@ -143,9 +163,9 @@ class GlassChip extends StatelessWidget {
       constraints: const BoxConstraints(minHeight: 44),
       padding: const EdgeInsets.symmetric(horizontal: Space.md),
       decoration: BoxDecoration(
-        color: selected ? Colors.white : Colors.white.withValues(alpha: 0.14),
+        color: selected ? Colors.white : OnBrand.glass,
         borderRadius: Radii.fullAll,
-        border: selected ? null : Border.all(color: Colors.white.withValues(alpha: 0.26)),
+        border: selected ? null : Border.all(color: OnBrand.glassLine),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -242,13 +262,18 @@ class StatBlock extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(label, style: context.text.caption.copyWith(color: soft, fontWeight: FontWeight.w700, fontSize: 14)),
-            Text.rich(
-              TextSpan(
-                text: value,
-                children: [if (unit != null) TextSpan(text: ' $unit', style: number.copyWith(fontSize: number.fontSize! * 0.5, letterSpacing: 0))],
+            // Un chiffre ne se coupe pas : dans une case étroite, il rapetisse.
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: AlignmentDirectional.centerStart,
+              child: Text.rich(
+                TextSpan(
+                  text: value,
+                  children: [if (unit != null) TextSpan(text: ' $unit', style: number.copyWith(fontSize: number.fontSize! * 0.5, letterSpacing: 0))],
+                ),
+                style: number,
+                maxLines: 1,
               ),
-              style: number,
-              maxLines: 1,
             ),
             if (detail != null) Text(detail!, style: context.text.caption.copyWith(color: soft, fontWeight: FontWeight.w600, fontSize: 14)),
           ],

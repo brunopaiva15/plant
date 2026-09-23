@@ -6,6 +6,7 @@ import '../tokens/motion.dart';
 import '../tokens/radius.dart';
 import '../tokens/spacing.dart';
 import 'clay.dart';
+import 'brand.dart';
 import 'pressable.dart';
 
 /// Chip sélectionnable en pilule (filtres, emplacements, types).
@@ -193,6 +194,9 @@ class FloraPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
+    // Sur la tête verte, la pilule se fait de verre.
+    final verre = OnBrand.of(context);
+    final ink = verre ? c.onBrand : c.ink;
     return Pressable(
       onTap: onTap,
       scale: 0.95,
@@ -205,7 +209,11 @@ class FloraPill extends StatelessWidget {
         child: IntrinsicWidth(
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: Space.xs),
-            decoration: BoxDecoration(color: c.surface, borderRadius: Radii.fullAll, border: Border.all(color: c.line)),
+            decoration: BoxDecoration(
+              color: verre ? OnBrand.glass : c.surface,
+              borderRadius: Radii.fullAll,
+              border: verre ? Border.all(color: OnBrand.glassLine) : null,
+            ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -213,13 +221,13 @@ class FloraPill extends StatelessWidget {
                 Flexible(
                   child: Text(
                     label,
-                    style: context.text.callout.copyWith(color: c.ink, fontWeight: FontWeight.w500),
+                    style: context.text.callout.copyWith(color: ink, fontWeight: FontWeight.w600),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (detail != null) ...[const SizedBox(width: 6), Text(detail!, style: context.text.caption)],
-                if (chevron) ...[const SizedBox(width: 2), Icon(CupertinoIcons.chevron_right, size: 13, color: c.inkTertiary)],
+                if (detail != null) ...[const SizedBox(width: 6), Text(detail!, style: context.text.caption.copyWith(color: verre ? ink : null))],
+                if (chevron) ...[const SizedBox(width: 2), Icon(CupertinoIcons.chevron_right, size: 13, color: verre ? ink : c.inkTertiary)],
               ],
             ),
           ),

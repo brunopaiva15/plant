@@ -49,6 +49,7 @@ class GardenScreen extends ConsumerWidget {
           };
     return LargeTitlePage(
       title: l10n.gardenTitle,
+      brand: true,
       trailing: trailing,
       slivers: [
         SliverToBoxAdapter(

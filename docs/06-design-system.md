@@ -430,6 +430,32 @@ les menus quittent le bleu du système.
 `test/design_system/brand_page_test.dart` tient le trajet : transparente en
 haut, ordinaire une fois le vert passé, rendue au retour.
 
+### Les écrans à tête verte
+Les quatre onglets s'ouvrent sur la tête verte (`brand: true`) :
+
+- **Aujourd'hui** : la date, puis en grand le nombre de soins du jour
+  (« 3 » et « soins aujourd'hui », `todayHeroCare`) ; quand tout est fait, le
+  chiffre passe aux plantes plutôt que de dire « 0 ». Un pot 3D se pose à
+  droite, la météo et l'air de la maison suivent en pilules de verre. La
+  carte de terre cuite du matin est partie : le chiffre est dans la tête.
+- **Plantes** : le champ de recherche de verre, puis le nombre de plantes.
+- **Jardin** et **Profil** : le titre seul, en blanc.
+
+Posées sur le vert, les pièces ordinaires se font de verre d'elles-mêmes
+(`OnBrand`) : `FloraPill`, `FloraIconButton`. Un écran pose la même pièce
+qu'ailleurs, et elle s'accorde.
+
+Les boutons de soin prennent les accents vifs (`CareKindColors.popFor`) :
+« Arroser » en `waterPop`, « Fertiliser » en `sunPop`, « Rempoter » en
+`terracottaPop`, encre `onPop` ; les autres soins gardent leur accent de
+texte et `onAccent`.
+
+La fiche d'une plante garde sa photo en tête. Son nom passe en Bricolage
+40, et une rangée de chiffres le suit (`_Stats`) : le prochain arrosage en
+grand sur le vert (jours restants, puis le rythme ou le retard), la
+dernière hauteur et le nombre de feuilles relevés. Rien quand il n'y a rien
+à compter.
+
 ### Le nom d'une plante dans la barre de sa fiche
 La fiche n'a pas de grand titre : son en-tête est une photo, et le nom se lit
 dessous. Défilée, la barre restait donc nue — plus rien ne disait quelle

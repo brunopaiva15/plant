@@ -315,7 +315,7 @@ abstract final class NativeShell {
     // de la page d'en dessous le jour où l'effacement échouerait.
     if (charge['bar'] == false) {
       _dernieresActions = null;
-      unawaited(_invoke('setActions', const {'title': '', 'leading': [], 'actions': []}));
+      unawaited(_invoke('setActions', const {'title': '', 'leading': [], 'actions': [], 'tone': 'plain'}));
     }
     unawaited(_invoke('setChrome', charge));
   }

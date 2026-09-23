@@ -4,6 +4,7 @@ import '../theme/flora_theme.dart';
 import '../tokens/motion.dart';
 import '../tokens/spacing.dart';
 import 'adaptive.dart';
+import 'brand.dart';
 import 'clay.dart';
 import 'clay_loader.dart';
 import 'pressable.dart';
@@ -127,6 +128,8 @@ class FloraIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
+    // Sur la tête verte, le bouton se fait de verre.
+    final verre = OnBrand.of(context) && background == null;
     return Pressable(
       onTap: onPressed,
       enabled: onPressed != null,
@@ -136,11 +139,11 @@ class FloraIconButton extends StatelessWidget {
         width: size,
         height: size,
         decoration: BoxDecoration(
-          color: filled ? (background ?? c.surface) : Colors.transparent,
+          color: filled ? (verre ? OnBrand.glass : background ?? c.surface) : Colors.transparent,
           shape: BoxShape.circle,
-          border: filled && background == null ? Border.all(color: c.line.withValues(alpha: 0.6)) : null,
+          border: filled && background == null ? Border.all(color: verre ? OnBrand.glassLine : c.line.withValues(alpha: 0.6)) : null,
         ),
-        child: Icon(icon, size: size * 0.5, color: color ?? c.ink),
+        child: Icon(icon, size: size * 0.5, color: color ?? (verre ? c.onBrand : c.ink)),
       ),
     );
   }

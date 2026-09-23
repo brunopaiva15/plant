@@ -16,6 +16,7 @@ class CompletableButton extends StatelessWidget {
     required this.done,
     required this.onPressed,
     this.color,
+    this.foreground,
     this.compact = false,
   });
 
@@ -24,6 +25,10 @@ class CompletableButton extends StatelessWidget {
   final bool done;
   final VoidCallback onPressed;
   final Color? color;
+
+  /// L'encre du libellé sur [color] ; `onAccent` par défaut. Un accent vif
+  /// (`CareKindColors.popFor`) la veut sombre.
+  final Color? foreground;
   final bool compact;
 
   @override
@@ -38,7 +43,7 @@ class CompletableButton extends StatelessWidget {
       child: AnimatedContainer(
         duration: Motion.of(context, Motion.standard),
         curve: Motion.easeOut,
-        height: compact ? 36 : 44,
+        height: compact ? 40 : 44,
         padding: EdgeInsets.symmetric(horizontal: compact ? Space.sm : Space.md),
         decoration: BoxDecoration(color: done ? c.sageSoft : accent, borderRadius: Radii.fullAll),
         child: AnimatedSwitcher(
@@ -56,7 +61,7 @@ class CompletableButton extends StatelessWidget {
               Text(
                 done ? doneLabel : label,
                 style: (compact ? context.text.caption : context.text.callout).copyWith(
-                  color: done ? c.sage : c.onAccent,
+                  color: done ? c.sage : foreground ?? c.onAccent,
                   fontWeight: FontWeight.w700,
                 ),
               ),

@@ -40,6 +40,7 @@ class ProfileScreen extends ConsumerWidget {
 
     return LargeTitlePage(
       title: l10n.profileTitle,
+      brand: true,
       slivers: [
         SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: Space.page),

@@ -136,6 +136,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get greetingEveningAnonymous => 'Good evening';
 
   @override
+  String todayHeroCare(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'tasks today',
+      one: 'task today',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'days',
+      one: 'day',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String careCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
