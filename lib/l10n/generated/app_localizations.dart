@@ -348,6 +348,12 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{jour} other{jours}}'**
   String statDays(int count);
 
+  /// Sous le grand chiffre de la tête verte d'Aujourd'hui, quand rien n'est dû dans la journée : les soins des sept jours qui viennent, sans le nombre.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =0{soin cette semaine} =1{soin cette semaine} other{soins cette semaine}}'**
+  String todayHeroWeek(int count);
+
   /// No description provided for @careCount.
   ///
   /// In fr, this message translates to:

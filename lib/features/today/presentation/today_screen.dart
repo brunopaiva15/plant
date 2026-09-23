@@ -7,6 +7,7 @@ import '../../../app/providers.dart';
 import '../../../app/router.dart';
 import '../../../app/sync_coordinator.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/utils/dates.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_engine.dart';
 import '../../../domain/models/models.dart';
@@ -97,6 +98,9 @@ class TodayScreen extends ConsumerWidget {
     final upcoming = all.where((t) => statusOf(t) == DueStatus.upcoming).toList();
     final dueTasks = ref.watch(dueTasksProvider);
     final dueCount = live.where((t) => statusOf(t) != DueStatus.upcoming).length + dueTasks.length;
+    // Les soins des sept jours qui viennent : ce que la tête montre quand la
+    // journée est faite.
+    final weekCount = live.where((t) => statusOf(t) == DueStatus.upcoming && t.dueAt != null && now.daysUntil(t.dueAt!) <= 7).length;
 
     return LargeTitlePage(
       title: greeting,
@@ -105,7 +109,7 @@ class TodayScreen extends ConsumerWidget {
       collapsedTitle: l10n.appName,
       // La tête verte : le jour, et en grand ce qu'il y a à faire.
       brand: true,
-      hero: _TodayHero(dueCount: tasks.hasValue ? dueCount : null, plantCount: plantCount),
+      hero: _TodayHero(dueCount: tasks.hasValue ? dueCount : null, weekCount: weekCount, plantCount: plantCount),
       leading: FloraIconButton(
         icon: CupertinoIcons.chart_bar,
         semanticLabel: l10n.dashboardTitle,
@@ -170,13 +174,18 @@ class TodayScreen extends ConsumerWidget {
 /// La tête verte du matin : la date, le nombre de soins du jour en grand,
 /// puis le temps qu'il fait et l'air de la maison sur une rangée de pilules.
 ///
-/// Quand tout est fait, le chiffre passe aux plantes : la tête ne dit pas
-/// « 0 », elle dit ce qu'il y a dans la maison.
+/// Le chiffre dit toujours ce qu'il y a à faire, jamais ce qu'on possède :
+/// le nombre de plantes change à peine d'un jour à l'autre, et ne dit pas
+/// quoi faire. La journée faite, il passe aux soins des sept jours qui
+/// viennent.
 class _TodayHero extends ConsumerWidget {
-  const _TodayHero({required this.dueCount, required this.plantCount});
+  const _TodayHero({required this.dueCount, required this.weekCount, required this.plantCount});
 
   /// `null` tant que les soins ne sont pas lus : pas de chiffre provisoire.
   final int? dueCount;
+
+  /// Les soins à venir dans les sept jours.
+  final int weekCount;
   final int plantCount;
 
   @override
@@ -195,7 +204,7 @@ class _TodayHero extends ConsumerWidget {
         ? null
         : due > 0
             ? ('$due', l10n.todayHeroCare(due))
-            : ('$plantCount', l10n.plantCount(plantCount).replaceFirst(RegExp(r'^\d+\s*'), ''));
+            : ('$weekCount', l10n.todayHeroWeek(weekCount));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

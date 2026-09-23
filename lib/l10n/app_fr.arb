@@ -71,6 +71,15 @@
       }
     }
   },
+  "todayHeroWeek": "{count, plural, =0{soin cette semaine} =1{soin cette semaine} other{soins cette semaine}}",
+  "@todayHeroWeek": {
+    "description": "Sous le grand chiffre de la tête verte d'Aujourd'hui, quand rien n'est dû dans la journée : les soins des sept jours qui viennent, sans le nombre.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "careCount": "{count, plural, =0{Aucun soin} =1{1 soin} other{{count} soins}}",
   "@careCount": {
     "placeholders": {

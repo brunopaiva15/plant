@@ -158,6 +158,18 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String todayHeroWeek(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Aufgaben diese Woche',
+      one: 'Aufgabe diese Woche',
+      zero: 'Aufgaben diese Woche',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String careCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
