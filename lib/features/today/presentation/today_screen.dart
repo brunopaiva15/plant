@@ -206,7 +206,7 @@ class _TodayHero extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Expanded(child: HeroNumber(value: chiffre.$1, label: chiffre.$2, size: 120)),
-              const ExcludeSemantics(child: Image(image: AssetImage('assets/onboarding/collection_monstera.webp'), width: 136)),
+              const ExcludeSemantics(child: Image(image: AssetImage('assets/objects/arrosoir.webp'), width: 140)),
             ],
           ),
         ],

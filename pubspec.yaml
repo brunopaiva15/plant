@@ -131,6 +131,8 @@ flutter:
     # la séquence de pousse du premier écran (tool/grow_monstera.py) et la
     # maison d'Apple Maison (tool/build_home.py).
     - assets/onboarding/
+    # Les objets posés sur les têtes vertes (tool/build_objects.py).
+    - assets/objects/
     # Les guides de multiplication : un dossier par archétype de geste, une
     # séquence d'argile par étape (tool/build_cutting_guide.py), jouées par
     # l'app quand on multiplie une plante. Flutter ne descend pas dans les

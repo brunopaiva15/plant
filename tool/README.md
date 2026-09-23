@@ -139,6 +139,23 @@ for f in glob.glob('/tmp/collection/*.png'):
     Image.open(f).convert('RGBA').save('assets/onboarding/' + os.path.basename(f)[:-4] + '.webp', quality=92, method=6)"
 ```
 
+Les pots sont aux couleurs vives de la palette (orange, bleu, jaune, rose),
+rendus en « Standard » plutôt qu'en AgX : AgX, fait pour la photo, les
+ramenait au pastel. Les teintes de départ sont un cran plus soutenues que
+celles de la palette, pour qu'elles y reviennent à l'image.
+
+# Les objets des têtes vertes
+
+`build_objects.py` rend ce qui se pose à côté du grand chiffre d'une tête
+verte. Pour l'instant l'arrosoir du matin, bleu `waterPop`, pomme jaune.
+Même argile, même studio que la collection, même rendu « Standard ».
+
+```bash
+blender -b -noaudio -P tool/build_objects.py -- 640 64 /tmp/objets
+python3 -c "from PIL import Image
+Image.open('/tmp/objets/arrosoir.png').convert('RGBA').save('assets/objects/arrosoir.webp', quality=92, method=6)"
+```
+
 # Les guides de multiplication (sept archétypes)
 
 `build_cutting_guide.py` rend les séquences des guides qui s'ouvrent avant la
