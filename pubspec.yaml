@@ -158,12 +158,13 @@ flutter:
     # docs/09-plant-recognition.md.
     - assets/model/
 
-  # Police « main » des grands titres (Shantell Sans, OFL, cf. assets/fonts/OFL.txt).
-  # Police variable : la graisse se règle via FontVariation('wght', …).
+  # Police des titres et des chiffres (Bricolage Grotesque, OFL, cf.
+  # assets/fonts/OFL-BricolageGrotesque.txt), réduite à la chasse normale.
+  # Police variable : graisse et taille optique se règlent via FontVariation.
   fonts:
-    - family: ShantellSans
+    - family: BricolageGrotesque
       fonts:
-        - asset: assets/fonts/ShantellSans-VF.ttf
+        - asset: assets/fonts/BricolageGrotesque-VF.ttf
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

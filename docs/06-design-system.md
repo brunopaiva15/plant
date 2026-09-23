@@ -117,22 +117,33 @@ reculent au tiers pour la même raison.
 ## Couleurs (`design_system/tokens/colors.dart`)
 | Token | Clair | Sombre | Usage |
 |---|---|---|---|
-| `canvas` | #F6EFE4 | #221A15 | papier crème / terre sombre |
-| `surface` | #FBF6EE | #2E2219 | cartes, sheets |
-| `surfaceMuted` | #EFE4D4 | #3A2C22 | chips, champs |
-| `surfaceElevated` | #FFFBF5 | #443428 | éléments flottants |
-| `ink` | #4A3528 | #F6EFE4 | texte principal : un brun franc, jamais noir |
-| `inkSecondary` | #6F5A4E | #C2AE9C | texte secondaire |
-| `inkTertiary` | #746256 | #A69485 | captions, placeholders |
-| `line` | #E6D9C8 | #4A3A2E | séparateurs (rares) |
-| `sage` | #2C774E | #6DC48D | accent, boutons principaux |
-| `sageSoft` | #E4EFE6 | #2C3D31 | fond positif, chip active |
-| `terracotta` / `terracottaSoft` | #9C482C / #F2D9CB | #E59A70 / #4A2E22 | retard, héros du matin |
-| `water` / `waterSoft` | #39689A / #DCE7F3 | #8FB8E4 / #2B3644 | arrosage |
-| `sun` / `sunSoft` | #966E2C / #F3E3C2 | #E7C15C / #45391F | lumière, engrais |
-| `rose` / `roseSoft` | #C64A61 / #F5DDE0 | #EC8A9B / #4A2C31 | favoris, santé |
-| `danger` | #C0392B | #E47064 | destructif |
-| `shadow` | #5E2C14 à 14 % | — | ombre portée du clay |
+| `canvas` | #FFFBF4 | #17130F | la feuille crème / brun de nuit |
+| `surface` | #F4ECE0 | #261F19 | cartes posées sur la feuille |
+| `surfaceMuted` | #EDE3D4 | #31281F | chips, champs |
+| `surfaceElevated` | #FFFFFF | #3A3027 | éléments flottants |
+| `ink` | #1C1712 | #F6EFE4 | texte principal : un noir chaud |
+| `inkSecondary` | #66594D | #BCAC9C | texte secondaire |
+| `inkTertiary` | #66594D | #AE9E8F | captions, placeholders |
+| `line` | #E8DDCC | #3A3027 | séparateurs (rares) |
+| `sage` | #2A7447 | #74CF95 | accent de texte, boutons principaux |
+| `sageSoft` | #DDF0E2 | #1F3527 | fond positif, chip active |
+| `terracotta` / `terracottaSoft` | #9A3E1A / #FFE0D2 | #FF9A6E / #45251A | retard, rempotage |
+| `water` / `waterSoft` | #1B5E96 / #D9EEFF | #8CCBFF / #1B3247 | arrosage |
+| `sun` / `sunSoft` | #7A5F00 / #FFF4B8 | #FFD84D / #3D3414 | lumière, engrais |
+| `rose` / `roseSoft` | #B83A55 / #FFDDE4 | #F58CA0 / #45222B | favoris, santé |
+| `danger` | #B8321F | #FF8373 | destructif |
+| `brand` / `onBrand` | #358354 / #FFFFFF | idem | la tête verte d'un écran, le vert de l'icône |
+| `terracottaPop` | #FF7B45 | idem | accent vif : la carte du prochain soin |
+| `sunPop` | #FFE14D | idem | accent vif : l'engrais |
+| `waterPop` | #5DB7FF | idem | accent vif : « Arroser » |
+| `onPop` | #1C1712 | idem | l'encre posée sur un accent vif |
+| `shadow` | #3A2A1A à 12 % | — | ombre portée |
+
+Deux familles d'accents. Les **accents de texte** (`sage`, `terracotta`,
+`water`, `sun`, `rose`, `danger`) écrivent sur la feuille et sur leur pastel ;
+ils sont sombres en clair, clairs en sombre. Les **accents vifs** (`brand` et
+les trois `*Pop`) sont des aplats : ils gardent leur éclat dans les deux thèmes,
+le blanc va sur `brand`, l'encre `onPop` sur les trois autres.
 
 ### Le contrat de contraste
 Un accent sert tantôt de texte sur un pastel (la pastille « 💧 Dans 2 j »),
@@ -151,7 +162,9 @@ exécution :
 - **`onAccent`** — ce qu'on pose sur un accent employé comme fond — **≥ 4.5:1**
   sur chacun d'eux. Une seule valeur par thème suffit : les accents sont tous
   sombres en clair, tous clairs en sombre. Ne jamais écrire `Colors.white` en
-  dur là-dessus : sur l'ocre du thème sombre, cela donnait 1,7:1.
+  dur là-dessus : sur l'ocre du thème sombre, cela donnait 1,7:1 ;
+- `onBrand` sur `brand` et `onPop` sur les accents vifs : **≥ 4.5:1** (7:1 en
+  contraste élevé, où `brand` fonce et les accents vifs s'éclaircissent).
 
 C'est cette dernière règle qui fixe la clarté des accents, et qui a assombri
 la terre cuite, le bleu et l'ocre par rapport aux premières maquettes.
@@ -160,10 +173,10 @@ la terre cuite, le bleu et l'ocre par rapport aux premières maquettes.
 La galerie dans un coin du viseur, la croix d'une vue de plus : sous elles il
 n'y a pas un fond du thème mais un cadrage. Elles sont donc hors du contrat,
 comme la marque d'Iris — pastille blanche (`OnMedia.tile`, #FFFFFF à 85 %) et
-encre figée (`OnMedia.ink`, #4A3528) dans les quatre palettes. Prendre `ink`
+encre figée (`OnMedia.ink`, #1C1712) dans les quatre palettes. Prendre `ink`
 de la palette du moment, comme la première version, faisait tourner l'icône au
 crème en thème sombre : elle s'effaçait dans sa pastille, à 1,2:1. L'encre
-figée tient 8:1 sur la pastille au pire du fondu.
+figée tient 12:1 sur la pastille au pire du fondu.
 
 ### Contraste élevé
 `FloraColors.lightHighContrast` / `darkHighContrast`, servies par
@@ -173,20 +186,26 @@ Mêmes teintes, seule la clarté bouge : le texte vise AAA (7:1), les icônes
 qu'attend qui active ce réglage.
 
 ## Typographie (`typography.dart`)
-Deux voix : la **main** pour ce qui est grand (Shantell Sans, police variable
-sous licence OFL, `assets/fonts/`), le **système** pour tout ce qui se lit
-(SF sur iOS, Roboto sur Android). La graisse de Shantell se règle par
-`FontVariation('wght', …)`, pas par `fontWeight`.
+Deux voix : une voix **forte** pour ce qui se voit de loin (Bricolage
+Grotesque, police variable sous licence OFL, `assets/fonts/`, réduite à la
+chasse normale), le **système** pour tout ce qui se lit (SF sur iOS, Roboto sur
+Android). Graisse et taille optique se règlent par `FontVariation('wght', …)`
+et `FontVariation('opsz', …)`, pas par `fontWeight`. Les titres restent à 720
+pour que « Texte en gras » puisse les pousser à 800, le maximum de la fonte ;
+les chiffres y sont d'emblée.
 
 | Style | Police | Taille / poids | Usage |
 |---|---|---|---|
-| Display | Shantell | 34 / 700 | grand titre d'onglet, chiffre du héros |
-| Title1 | Shantell | 28 / 700 | nom de plante (fiche) |
-| Title2 | Shantell | 22 / 600 | sections |
+| Hero | Bricolage | 96 / 800 | le grand chiffre d'une tête d'écran |
+| Stat | Bricolage | 34 / 800 | un chiffre de carte |
+| Display | Bricolage | 34 / 720 | grand titre d'onglet |
+| Title1 | Bricolage | 28 / 720 | nom de plante (fiche) |
+| Title2 | Bricolage | 22 / 650 | sections |
 | Title3 | système | 17 / 600 | titres de cartes |
 | Body | système | 17 / 400 | texte |
 | Callout | système | 15 / 400 | secondaire |
 | Caption | système | 13 / 500 | métadonnées |
+
 Dynamic Type : toutes les tailles suivent `MediaQuery.textScaler`, et la mise
 en page suit le texte — hauteurs planchers plutôt que fixes, libellés qui
 plient sur deux lignes plutôt que de se faire couper. La barre d'onglets
@@ -686,7 +705,7 @@ une ombre droite — la lumière vient du dessus, pas d'un coin —, un filet, e
 un coin corné en bas à droite qui emporte l'ombre du coin avec lui. Les
 cartes d'argile restent des pièces posées sur la feuille : deux matières, et
 c'est leur écart qui dit que la fiche est un objet. Les titres de sections
-passent à la main (`SectionHeader`, Shantell 22), comme écrits sur la
+passent à la main (`SectionHeader`, Bricolage 22), comme écrits sur la
 feuille, et la provenance se tamponne au pied : le libellé de
 `careMatchLabel` — « Fiche de l'espèce », « Repères généraux », « Complétée
 par l'IA » — dans un cadre d'encre posé de travers. L'aperçu du dénicheur
@@ -890,7 +909,7 @@ le formulaire.
 ## La fenêtre des nouveautés (`features/whats_new/`)
 Ce que l'application montre après une mise à jour : un bandeau teinté qui
 s'éteint dans le fond de la page, la marque posée au centre sur une médaille
-d'argile qui respire, un titre en Shantell, trois points forts, et un bouton
+d'argile qui respire, un titre en Bricolage, trois points forts, et un bouton
 qui reste sous les yeux pendant que la page défile.
 
 - **Présentation native, dessin commun.** `showFloraScrollableFlow` : la sheet
