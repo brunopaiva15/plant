@@ -39,6 +39,8 @@
   "greetingAnonymous": "Hallo",
   "greetingEvening": "Guten Abend {name}",
   "greetingEveningAnonymous": "Guten Abend",
+  "todayHeroCare": "{count, plural, =1{Aufgabe heute} other{Aufgaben heute}}",
+  "statDays": "{count, plural, =1{Tag} other{Tage}}",
   "careCount": "{count, plural, =0{Nichts zu tun} =1{1 Aufgabe} other{{count} Aufgaben}}",
   "sectionOverdue": "Überfällig",
   "sectionToday": "Heute",

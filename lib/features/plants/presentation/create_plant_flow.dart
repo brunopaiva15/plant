@@ -407,7 +407,12 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
       });
     }
 
-    setState(() => _identification = pending);
+    // Un bloc, pas une flèche : l'affectation vaut le Future, et un setState
+    // qui rend un Future lève en debug — l'étape photo restait alors figée,
+    // sans rien dire, là où la version publiée passait.
+    setState(() {
+      _identification = pending;
+    });
   }
 
   /// Évaluation produit complète : Iris reste le classifieur, Jev décide

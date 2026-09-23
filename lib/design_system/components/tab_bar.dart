@@ -107,8 +107,9 @@ class FloraTabBar extends StatelessWidget {
           child: MediaQuery.withClampedTextScaling(
             maxScaleFactor: _maxLabelScale,
             child: ClayBox(
-              color: c.surface,
+              color: c.surfaceElevated,
               shape: const ClayShape.pill(),
+              floating: true,
               height: height,
               padding: const EdgeInsets.all(6),
               child: _TabStrip(

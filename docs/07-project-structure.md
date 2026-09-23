@@ -16,9 +16,9 @@ lib/
 │   ├── network/                   état du réseau (sonde, garde `ref.online`, délais) ; RelayClient et AppAttest, qui ouvrent le relais (docs/19)
 │   └── utils/                     date helpers, extensions
 ├── design_system/
-│   ├── tokens/                    colors, typography (Shantell Sans + système), spacing, radius, motion
+│   ├── tokens/                    colors, typography (Bricolage Grotesque + système), spacing, radius, motion
 │   ├── theme/                     ThemeData clair / sombre, FloraTheme extension
-│   └── components/                composants réutilisables ; clay.dart = ClayBox / ClayPainter / GrainOverlay, shutter.dart = le déclencheur posé sur un viseur
+│   └── components/                composants réutilisables ; clay.dart = ClayBox / ClayPainter, brand.dart = la tête verte et ses pièces, shutter.dart = le déclencheur posé sur un viseur
 ├── domain/
 │   ├── models/                    Plant, Location, PlantAction, CareSchedule, PlantPhoto, ActionType, Tag…
 │   ├── repositories/              interfaces

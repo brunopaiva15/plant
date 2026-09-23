@@ -53,6 +53,24 @@
     }
   },
   "greetingEveningAnonymous": "Bonsoir",
+  "todayHeroCare": "{count, plural, =1{soin aujourd'hui} other{soins aujourd'hui}}",
+  "@todayHeroCare": {
+    "description": "Sous le grand chiffre de la tête verte d'Aujourd'hui, sans le nombre.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "statDays": "{count, plural, =1{jour} other{jours}}",
+  "@statDays": {
+    "description": "L'unité sous un grand chiffre de jours, sans le nombre : « 3 » puis « jours ».",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "careCount": "{count, plural, =0{Aucun soin} =1{1 soin} other{{count} soins}}",
   "@careCount": {
     "placeholders": {

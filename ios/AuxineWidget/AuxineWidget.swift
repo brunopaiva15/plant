@@ -101,17 +101,17 @@ struct Words {
 /// pas accès aux tokens Dart : les valeurs sont recopiées, et à tenir à jour
 /// avec `lib/design_system/tokens/colors.dart`.
 enum Palette {
-  static let canvas = dual(0xF6EFE4, 0x221A15)
-  static let surface = dual(0xFBF6EE, 0x2E2219)
-  static let ink = dual(0x4A3528, 0xF6EFE4)
-  static let inkSecondary = dual(0x6F5A4E, 0xC2AE9C)
-  static let sage = dual(0x2C774E, 0x6DC48D)
-  static let sageSoft = dual(0xE4EFE6, 0x2C3D31)
-  static let terracotta = dual(0x9C482C, 0xE59A70)
-  static let terracottaSoft = dual(0xF2D9CB, 0x4A2E22)
+  static let canvas = dual(0xFFFBF4, 0x17130F)
+  static let surface = dual(0xF4ECE0, 0x261F19)
+  static let ink = dual(0x1C1712, 0xF6EFE4)
+  static let inkSecondary = dual(0x66594D, 0xBCAC9C)
+  static let sage = dual(0x2A7447, 0x74CF95)
+  static let sageSoft = dual(0xDDF0E2, 0x1F3527)
+  static let terracotta = dual(0x9A3E1A, 0xFF9A6E)
+  static let terracottaSoft = dual(0xFFE0D2, 0x45251A)
   /// Ce qu'on pose sur un accent employé comme fond : clair sur les accents
   /// sombres du thème clair, sombre sur les accents clairs du thème sombre.
-  static let onAccent = dual(0xFBF6EE, 0x221A15)
+  static let onAccent = dual(0xFFFBF4, 0x17130F)
   static let shadow = dual(0x5E2C14, 0x000000)
 
   private static func dual(_ light: UInt32, _ dark: UInt32) -> Color {

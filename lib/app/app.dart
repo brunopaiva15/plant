@@ -47,10 +47,8 @@ class FloraApp extends ConsumerWidget {
         // pages Cupertino (sans lui, iOS souligne les textes en jaune).
         final app = Material(
           type: MaterialType.transparency,
-          child: GrainOverlay(child: ToastHost(child: child ?? const SizedBox.shrink())),
+          child: ToastHost(child: child ?? const SizedBox.shrink()),
         );
-        // L'ouverture passe au-dessus du grain : l'écran natif n'en a pas, et
-        // le premier cadre doit lui être identique.
         return MediaQuery(
           data: media.copyWith(disableAnimations: reduce),
           child: splash ? LaunchSplash(child: app) : app,

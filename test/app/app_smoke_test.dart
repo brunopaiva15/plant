@@ -194,6 +194,9 @@ void main() {
     expect(find.text('Monstera'), findsWidgets);
     expect(find.text('Arroser'), findsOneWidget);
 
+    // La tête verte du matin pousse les cartes plus bas : on descend jusqu'au bouton.
+    await tester.ensureVisible(find.text('Arroser'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Arroser'));
     await tester.pump(const Duration(milliseconds: 300));
     // La carte reste visible en état « Arrosée » le temps de l'animation.

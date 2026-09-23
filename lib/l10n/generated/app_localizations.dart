@@ -336,6 +336,18 @@ abstract class AppLocalizations {
   /// **'Bonsoir'**
   String get greetingEveningAnonymous;
 
+  /// Sous le grand chiffre de la tête verte d'Aujourd'hui, sans le nombre.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{soin aujourd\'hui} other{soins aujourd\'hui}}'**
+  String todayHeroCare(int count);
+
+  /// L'unité sous un grand chiffre de jours, sans le nombre : « 3 » puis « jours ».
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{jour} other{jours}}'**
+  String statDays(int count);
+
   /// No description provided for @careCount.
   ///
   /// In fr, this message translates to:

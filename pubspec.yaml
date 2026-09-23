@@ -131,6 +131,8 @@ flutter:
     # la séquence de pousse du premier écran (tool/grow_monstera.py) et la
     # maison d'Apple Maison (tool/build_home.py).
     - assets/onboarding/
+    # Les objets posés sur les têtes vertes (tool/build_objects.py).
+    - assets/objects/
     # Les guides de multiplication : un dossier par archétype de geste, une
     # séquence d'argile par étape (tool/build_cutting_guide.py), jouées par
     # l'app quand on multiplie une plante. Flutter ne descend pas dans les
@@ -151,19 +153,18 @@ flutter:
     - assets/care_scene/balcony/light/
     - assets/care_scene/plants/
     - assets/care_scene/props/
-    # Le grain du papier, posé par-dessus l'écran.
-    - assets/textures/
     # Iris, le modèle de reconnaissance d'espèces (TFLite) : poids, classes,
     # métadonnées. Produit par tools/plant_model/train.py, voir
     # docs/09-plant-recognition.md.
     - assets/model/
 
-  # Police « main » des grands titres (Shantell Sans, OFL, cf. assets/fonts/OFL.txt).
-  # Police variable : la graisse se règle via FontVariation('wght', …).
+  # Police des titres et des chiffres (Bricolage Grotesque, OFL, cf.
+  # assets/fonts/OFL-BricolageGrotesque.txt), réduite à la chasse normale.
+  # Police variable : graisse et taille optique se règlent via FontVariation.
   fonts:
-    - family: ShantellSans
+    - family: BricolageGrotesque
       fonts:
-        - asset: assets/fonts/ShantellSans-VF.ttf
+        - asset: assets/fonts/BricolageGrotesque-VF.ttf
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

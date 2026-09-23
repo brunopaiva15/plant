@@ -37,8 +37,8 @@ os.makedirs(DOSSIER, exist_ok=True)
 PLANTES = [
     {
         "nom": "monstera",
-        "pot": ("C87A57", 1.0),
-        "feuille": "0E6B34",
+        "pot": ("F2622A", 1.0),
+        "feuille": "0B7A36",
         "feuilles": [
             (206.0, 34.0, 0.66, 1.16, 0.435, 4, 2, -8.0),
             (28.0, 30.0, 0.78, 1.08, 0.435, 4, 2, 6.0),
@@ -48,8 +48,8 @@ PLANTES = [
     {
         # Feuilles entieres et larges, comme un caoutchouc : aucune fente.
         "nom": "caoutchouc",
-        "pot": ("B87050", 0.92),
-        "feuille": "18693C",
+        "pot": ("2C8FEF", 0.92),
+        "feuille": "12803E",
         "feuilles": [
             (200.0, 42.0, 0.50, 0.80, 0.60, 0, 0, -12.0),
             (44.0, 38.0, 0.62, 0.86, 0.60, 0, 0, 10.0),
@@ -61,8 +61,8 @@ PLANTES = [
         # Lames droites et etroites, comme une sansevieria : presque pas de
         # petiole, les feuilles partent de la terre.
         "nom": "sansevieria",
-        "pot": ("CE8462", 0.80),
-        "feuille": "2A7A4C",
+        "pot": ("FFC400", 0.80),
+        "feuille": "1F8A48",
         "feuilles": [
             (210.0, 9.0, 0.10, 1.42, 0.115, 0, 0, 0.0),
             (330.0, 14.0, 0.10, 1.24, 0.105, 0, 0, 4.0),
@@ -74,8 +74,8 @@ PLANTES = [
     {
         # Petites feuilles rondes au bout de longues tiges fines.
         "nom": "ronde",
-        "pot": ("C0764F", 0.86),
-        "feuille": "2E8B57",
+        "pot": ("F2557A", 0.86),
+        "feuille": "1E9150",
         "feuilles": [
             (190.0, 46.0, 0.62, 0.40, 0.92, 0, 0, 0.0),
             (250.0, 33.0, 0.74, 0.36, 0.92, 0, 0, 0.0),
@@ -87,8 +87,8 @@ PLANTES = [
     {
         # Un semis : deux cotyledons ronds, rien d'autre.
         "nom": "semis",
-        "pot": ("D18C68", 0.62),
-        "feuille": "359160",
+        "pot": ("F2622A", 0.62),
+        "feuille": "25A058",
         "feuilles": [
             (215.0, 26.0, 0.46, 0.34, 0.95, 0, 0, 0.0),
             (35.0, 24.0, 0.50, 0.36, 0.95, 0, 0, 0.0),
@@ -161,6 +161,9 @@ for recette in PLANTES:
     # l'application, et ne doit pas toucher les bords de sa propre image.
     studio(objets, fill=0.86)
     rendu_transparent(RES, SAMPLES)
+    # Les pots sont aux couleurs vives de la palette : le rendu « Standard »
+    # les garde telles quelles, là où AgX les ramenait au pastel.
+    bpy.context.scene.view_settings.view_transform = "Standard"
     chemin = os.path.join(DOSSIER, "collection_%s.png" % recette["nom"])
     bpy.context.scene.render.filepath = chemin
     bpy.ops.render.render(write_still=True)

@@ -78,7 +78,7 @@ Rect _pill(WidgetTester tester) => tester.getRect(find.byType(ClayBox).first);
 /// La bulle : la seule pièce sauge du rail.
 Rect _bulle(WidgetTester tester) => tester.getRect(
       find.byWidgetPredicate(
-        (w) => w is DecoratedBox && w.decoration is BoxDecoration && (w.decoration as BoxDecoration).color == FloraColors.light.sage,
+        (w) => w is DecoratedBox && w.decoration is BoxDecoration && (w.decoration as BoxDecoration).color?.toARGB32() == FloraColors.light.sage.toARGB32(),
       ),
     );
 

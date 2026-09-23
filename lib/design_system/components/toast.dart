@@ -127,6 +127,7 @@ class _ToastCard extends StatelessWidget {
         color: c.ink,
         shape: const ClayShape.pill(),
         depth: ClayDepth.deep,
+        floating: true,
         padding: const EdgeInsets.fromLTRB(Space.md, Space.sm, Space.sm, Space.sm),
         child: Row(
           children: [

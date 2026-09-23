@@ -247,6 +247,9 @@ void main() {
     // tourne vraiment, la feuille « Espèce » est celle de l'app.
     await scene('identify', () async {
       await go(Routes.plants);
+      // La tête verte pousse la grille : le Ficus, en deuxième rangée, peut
+      // finir sous la barre d'onglets.
+      await reveal(find.text('Ficus lyrata'));
       await tapText('Ficus lyrata');
       await tapLabel(l10n.more);
       await tapText(l10n.identify);
@@ -276,6 +279,9 @@ void main() {
     // recouvre, et le repli du web la redessine par-dessus.
     await scene('plant-ficus', () async {
       await go(Routes.plants);
+      // La tête verte pousse la grille : le Ficus, en deuxième rangée, peut
+      // finir sous la barre d'onglets.
+      await reveal(find.text('Ficus lyrata'));
       await tapText('Ficus lyrata');
       await shot('plant-ficus');
     });

@@ -87,6 +87,15 @@ void main() {
           _expectAtLeast(c.onAccent, bg, 4.5, 'onAccent sur $n');
         }
       });
+
+      test('les accents vifs portent leur encre', () {
+        // La tête verte d'un écran, le bouton « Arroser », la carte du
+        // prochain soin : de grands aplats où l'on écrit une phrase entière.
+        _expectAtLeast(c.onBrand, c.brand, text, 'onBrand sur brand');
+        for (final (bg, n) in [(c.terracottaPop, 'terracottaPop'), (c.sunPop, 'sunPop'), (c.waterPop, 'waterPop')]) {
+          _expectAtLeast(c.onPop, bg, text, 'onPop sur $n');
+        }
+      });
     });
   }
 
@@ -102,10 +111,10 @@ void main() {
     // modèle est écrit en toutes lettres à côté d'elle, et rien de ce qu'elle
     // porte n'a besoin d'être lu.
     const surfaces = <(Color, String)>[
-      (Color(0xFFF6EFE4), 'le canvas clair'),
-      (Color(0xFF221A15), 'le canvas sombre'),
-      (Color(0xFFE4EFE6), 'le pastel des réglages, clair'),
-      (Color(0xFF2C3D31), 'le pastel des réglages, sombre'),
+      (Color(0xFFFFFBF4), 'le canvas clair'),
+      (Color(0xFF17130F), 'le canvas sombre'),
+      (Color(0xFFDDF0E2), 'le pastel des réglages, clair'),
+      (Color(0xFF1F3527), 'le pastel des réglages, sombre'),
     ];
 
     test('la feuille se détache des deux thèmes, sur les mêmes pixels', () {

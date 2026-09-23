@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -278,7 +279,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
     // s'est replié, puis la première ligne du nom a glissé sous la barre. Le
     // titre de la fiche devient alors celui de la page, comme iOS le fait
     // d'un grand titre.
-    final titre1 = context.text.title1;
+    final titre1 = _nomStyle(context);
     final ligne = MediaQuery.textScalerOf(context).scale(titre1.fontSize ?? 28) * (titre1.height ?? 1.2);
     final seuil = entete - barre + ligne;
 
@@ -397,7 +398,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(plant.name, style: context.text.title1),
+                  Semantics(header: true, child: Text(plant.name, style: _nomStyle(context))),
                   if (plant.speciesName != null) ...[
                     const SizedBox(height: 2),
                     Pressable(
@@ -446,6 +447,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
               ),
             ),
           ),
+          _Stats(plantId: id),
           _NextCare(plantId: id, plantName: plant.name),
           _QuickActions(onTap: (key) => _quick(key, plant.name), justDone: _justDone),
           SliverToBoxAdapter(
@@ -554,6 +556,74 @@ class _TitreDeBarre extends StatelessWidget {
   }
 }
 
+/// Le nom d'une plante en tête de sa fiche : le grand titre de la page.
+TextStyle _nomStyle(BuildContext context) => context.text.display.copyWith(fontSize: 40, height: 1.05, letterSpacing: -1);
+
+/// Les chiffres de la plante, en une rangée : le prochain arrosage en grand
+/// sur le vert, puis la dernière hauteur et le nombre de feuilles relevés.
+/// Rien quand il n'y a rien à compter.
+class _Stats extends ConsumerWidget {
+  const _Stats({required this.plantId});
+
+  final String plantId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final now = DateTime.now();
+    final arrosage = (ref.watch(plantSchedulesProvider(plantId)).value ?? const <CareSchedule>[])
+        .where((s) => s.enabled && s.nextDueAt != null && CareKind.fromKey(s.typeKey) == CareKind.watering)
+        .firstOrNull;
+    final series = ref.watch(measurementSeriesProvider(plantId)).value ?? const <MeasurementSeries>[];
+    final mesures = [
+      for (final kind in const [MeasurementKind.height, MeasurementKind.leaves])
+        ?series.where((s) => s.kind == kind && s.points.isNotEmpty).firstOrNull,
+    ];
+    if (arrosage == null && mesures.isEmpty) return const SliverToBoxAdapter(child: SizedBox.shrink());
+
+    StatBlock mesure(MeasurementSeries s) {
+      final v = s.latest.value;
+      return StatBlock(
+        label: l10n.measurementKindName(s.kind),
+        value: v == v.roundToDouble() ? '${v.toInt()}' : v.toStringAsFixed(1),
+        unit: s.latest.unit.isEmpty ? null : s.latest.unit,
+      );
+    }
+
+    final jours = arrosage == null ? 0 : math.max(0, CareEngine.daysUntil(arrosage.nextDueAt, now) ?? 0);
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(Space.page, Space.md, Space.page, 0),
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (arrosage != null)
+                Expanded(
+                  flex: 3,
+                  child: StatBlock(
+                    label: l10n.kindName(arrosage.typeKey),
+                    value: '$jours',
+                    unit: l10n.statDays(jours),
+                    // Le rythme, ou le retard quand il y en a un : c'est lui
+                    // qui compte alors.
+                    detail: jours == 0 ? l10n.dueLabel(arrosage.nextDueAt, now) : l10n.everyDays(arrosage.intervalDays),
+                    brand: true,
+                    large: true,
+                  ),
+                ),
+              for (final s in mesures) ...[
+                const SizedBox(width: Space.xs),
+                Expanded(flex: 2, child: mesure(s)),
+              ],
+            ].skipWhile((w) => w is SizedBox).toList(),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _NextCare extends ConsumerStatefulWidget {
   const _NextCare({required this.plantId, required this.plantName});
 
@@ -622,7 +692,8 @@ class _NextCareState extends ConsumerState<_NextCare> {
                                   doneLabel: l10n.kindDone(s.typeKey, custom: types[s.typeKey]),
                                   done: _done.contains(s.id),
                                   compact: true,
-                                  color: c.strongFor(s.typeKey),
+                                  color: c.popFor(s.typeKey).$1,
+                                  foreground: c.popFor(s.typeKey).$2,
                                   onPressed: () async {
                                     setState(() => _done.add(s.id));
                                     await ref.read(careActionsProvider).logQuick(context, plantId: widget.plantId, plantName: widget.plantName, typeKey: s.typeKey);

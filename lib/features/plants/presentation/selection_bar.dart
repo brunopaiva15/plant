@@ -81,6 +81,7 @@ class SelectionBar extends ConsumerWidget {
       color: c.surfaceElevated,
       shape: const ClayShape.pill(),
       depth: ClayDepth.deep,
+      floating: true,
       height: 60,
       padding: const EdgeInsets.symmetric(horizontal: Space.xs),
       child: Row(

@@ -195,7 +195,8 @@ abstract final class NativeShell {
 
   static String? _dernieresActions;
 
-  /// Déclare le titre et les boutons de la page ouverte.
+  /// Déclare le titre et les boutons de la page ouverte, et le ton de la
+  /// barre qui les porte ([brand] : posée sur la tête verte).
   ///
   /// Une déclaration identique à la précédente n'est pas renvoyée : une page
   /// se reconstruit souvent, et UIKit refait ses boutons chaque fois qu'on
@@ -204,10 +205,14 @@ abstract final class NativeShell {
     String? title,
     List<NativeAction> leading = const [],
     List<NativeAction> actions = const [],
+    bool brand = false,
   }) async {
     if (!isSupported) return;
     final charge = {
       'title': title ?? '',
+      // Sur la tête verte, la barre est transparente et écrit en blanc ;
+      // ailleurs, c'est la barre ordinaire d'iOS.
+      'tone': brand ? 'brand' : 'plain',
       'leading': [for (final a in leading) a.toMap()],
       'actions': [for (final a in actions) a.toMap()],
     };
@@ -310,7 +315,7 @@ abstract final class NativeShell {
     // de la page d'en dessous le jour où l'effacement échouerait.
     if (charge['bar'] == false) {
       _dernieresActions = null;
-      unawaited(_invoke('setActions', const {'title': '', 'leading': [], 'actions': []}));
+      unawaited(_invoke('setActions', const {'title': '', 'leading': [], 'actions': [], 'tone': 'plain'}));
     }
     unawaited(_invoke('setChrome', charge));
   }

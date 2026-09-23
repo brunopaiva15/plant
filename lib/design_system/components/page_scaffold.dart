@@ -2,12 +2,15 @@ import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../core/native_shell.dart';
 import '../theme/flora_theme.dart';
 import '../tokens/motion.dart';
+import '../tokens/radius.dart';
 import '../tokens/spacing.dart';
 import 'adaptive.dart';
+import 'brand.dart';
 import 'buttons.dart';
 import 'collapsed_title.dart';
 import 'native_actions.dart';
@@ -147,9 +150,23 @@ class LargeTitlePage extends StatelessWidget {
     this.searchField,
     this.controller,
     this.bottomPadding = 132,
+    this.brand = false,
+    this.hero,
   });
 
   final String title;
+
+  /// La page s'ouvre sur la tête verte : le grand titre en blanc sur le vert
+  /// de l'icône, puis [hero], puis la feuille crème qui remonte dessus.
+  ///
+  /// La barre du système reste celle d'iOS ; elle se fait transparente tant
+  /// que le vert est dessous, et reprend son flou ordinaire une fois qu'il est
+  /// passé. Voir `NativeShell.publishActions`.
+  final bool brand;
+
+  /// Ce que la tête verte montre sous le titre : un grand chiffre, des
+  /// pastilles. Ignoré sans [brand].
+  final Widget? hero;
 
   /// Le titre qui reste dans la barre quand le grand titre est parti.
   ///
@@ -180,11 +197,14 @@ class LargeTitlePage extends StatelessWidget {
     // Le titre replié a besoin d'un porteur qui survive aux reconstructions :
     // c'est lui qui monte dans la barre du système quand le grand titre s'en
     // va. Inutile là où la barre est celle de Flutter.
-    if (!NativeShell.isSupported) return _construire(context, null);
-    return _AvecTitreReplie(builder: (context, replie) => _construire(context, replie));
+    if (!NativeShell.isSupported && !brand) return _construire(context, null, null);
+    return _AvecTitreReplie(
+      brand: brand,
+      builder: (context, replie, marque) => _construire(context, NativeShell.isSupported ? replie : null, brand ? marque : null),
+    );
   }
 
-  Widget _construire(BuildContext context, ValueNotifier<String>? replie) {
+  Widget _construire(BuildContext context, ValueNotifier<String>? replie, ValueNotifier<bool>? marque) {
     final c = context.colors;
 
     // Quand le menu est debout à droite, les boutons du haut de page le
@@ -244,7 +264,19 @@ class LargeTitlePage extends StatelessWidget {
     // système qui porte le titre replié — sur la ligne des boutons.
     final aTitreNatif = natif != null && replie != null && isCupertino(context);
     final Widget header;
-    if (aTitreNatif) {
+    if (marque != null) {
+      header = _TeteDeMarque(
+        title: title,
+        hero: hero,
+        gauche: gauche,
+        droite: droite,
+        searchField: searchField,
+        // Là où le système ne tient pas la barre, les boutons restent dans la
+        // tête verte, sur la ligne du haut.
+        leading: natif == null ? lead : null,
+        trailing: natif == null ? suite : null,
+      );
+    } else if (aTitreNatif) {
       header = _GrandTitreNatif(
         title: title,
         replie: replie,
@@ -304,11 +336,7 @@ class LargeTitlePage extends StatelessWidget {
     // points mesurés — et rien ne dit qu'elle soit symétrique : sans ça, une
     // liste ou un sélecteur de section court dessous. La barre de navigation,
     // elle, se protège déjà toute seule (`SafeArea` de Cupertino).
-    final coquille = RailActions(
-      actions: debout ? boutons : const <Widget>[],
-      child: Scaffold(
-        backgroundColor: c.canvas,
-        body: CustomScrollView(
+    final Widget liste = CustomScrollView(
           controller: controller,
         // Sans contrôleur à elle, la page s'attache à celui de son onglet
         // (`app/tab_scroll.dart`) — dit explicitement, et non laissé à
@@ -320,6 +348,7 @@ class LargeTitlePage extends StatelessWidget {
           physics: floraScrollPhysics,
           slivers: [
             header,
+            if (marque != null) SliverToBoxAdapter(child: _BordDeFeuille(notifier: marque)),
             if (aTitreNatif)
               SliverToBoxAdapter(
                 child: CollapsedTitleWatcher(
@@ -337,7 +366,12 @@ class LargeTitlePage extends StatelessWidget {
               ),
             SliverPadding(padding: EdgeInsets.only(bottom: bottomPadding)),
           ],
-        ),
+        );
+    final coquille = RailActions(
+      actions: debout ? boutons : const <Widget>[],
+      child: Scaffold(
+        backgroundColor: c.canvas,
+        body: marque == null ? liste : _FondDeMarque(notifier: marque, child: liste),
       ),
     );
 
@@ -346,6 +380,7 @@ class LargeTitlePage extends StatelessWidget {
     return NativeActions(
       title: '',
       titleListenable: aTitreNatif ? replie : null,
+      brandListenable: marque,
       leading: natif.leading,
       actions: natif.actions,
       child: coquille,
@@ -612,9 +647,12 @@ class _GrandTitreNatif extends StatelessWidget {
 
 /// Porte le titre replié d'une page, et le fait vivre aussi longtemps qu'elle.
 class _AvecTitreReplie extends StatefulWidget {
-  const _AvecTitreReplie({required this.builder});
+  const _AvecTitreReplie({required this.builder, this.brand = false});
 
-  final Widget Function(BuildContext, ValueNotifier<String>) builder;
+  final Widget Function(BuildContext, ValueNotifier<String>, ValueNotifier<bool>) builder;
+
+  /// La page s'ouvre sur la tête verte : la barre part au ton de la marque.
+  final bool brand;
 
   @override
   State<_AvecTitreReplie> createState() => _AvecTitreReplieState();
@@ -623,12 +661,205 @@ class _AvecTitreReplie extends StatefulWidget {
 class _AvecTitreReplieState extends State<_AvecTitreReplie> {
   final ValueNotifier<String> _replie = ValueNotifier<String>('');
 
+  /// Vrai tant que la tête verte est sous la barre.
+  late final ValueNotifier<bool> _marque = ValueNotifier<bool>(widget.brand);
+
   @override
   void dispose() {
     _replie.dispose();
+    _marque.dispose();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) => widget.builder(context, _replie);
+  Widget build(BuildContext context) => widget.builder(context, _replie, _marque);
+}
+
+/// La tête verte d'une page à grand titre : la marge du haut, le titre en
+/// blanc, le champ de recherche s'il y en a un, puis [hero].
+///
+/// Le haut de la tête passe sous la barre du système, transparente à cet
+/// endroit : le vert monte jusqu'au bord de l'écran, l'heure comprise.
+class _TeteDeMarque extends StatelessWidget {
+  const _TeteDeMarque({
+    required this.title,
+    required this.hero,
+    required this.gauche,
+    required this.droite,
+    required this.searchField,
+    required this.leading,
+    required this.trailing,
+  });
+
+  final String title;
+  final Widget? hero;
+  final double gauche;
+  final double droite;
+  final Widget? searchField;
+  final Widget? leading;
+  final Widget? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    final marge = EdgeInsets.fromLTRB(math.max(Space.page, gauche), 0, math.max(Space.page, droite), 0);
+    final boutons = leading != null || trailing != null;
+    return SliverToBoxAdapter(
+      child: BrandHeader(
+        underlap: 0,
+        padding: EdgeInsets.only(top: MediaQuery.paddingOf(context).top + Space.xs, bottom: Space.lg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (boutons)
+              Padding(
+                padding: marge.add(const EdgeInsets.only(bottom: Space.sm)),
+                child: Row(children: [?leading, const Spacer(), ?trailing]),
+              ),
+            Padding(
+              padding: marge,
+              child: Semantics(
+                header: true,
+                child: Text(title, style: context.text.display.copyWith(color: c.onBrand, fontSize: 40, height: 1.05)),
+              ),
+            ),
+            if (searchField != null) Padding(padding: marge.add(const EdgeInsets.only(top: Space.sm)), child: searchField),
+            if (hero != null) Padding(padding: marge.add(const EdgeInsets.only(top: Space.md)), child: hero),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Le bord arrondi de la feuille crème, posé sur le vert — et le guetteur
+/// qui dit quand le vert a fini de passer sous la barre.
+///
+/// C'est son propre bord haut qui compte : tant qu'il est plus bas que la
+/// barre, il reste du vert dessous, et la barre garde le ton de la marque.
+/// Une mesure sur l'écran plutôt qu'un seuil de défilement : la hauteur de la
+/// tête dépend de ce qu'elle porte, du texte agrandi, d'un champ de recherche.
+class _BordDeFeuille extends StatefulWidget {
+  const _BordDeFeuille({required this.notifier});
+
+  final ValueNotifier<bool> notifier;
+
+  @override
+  State<_BordDeFeuille> createState() => _BordDeFeuilleState();
+}
+
+class _BordDeFeuilleState extends State<_BordDeFeuille> {
+  ScrollPosition? _position;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final position = Scrollable.maybeOf(context)?.position;
+    if (identical(position, _position)) return;
+    _position?.removeListener(_relire);
+    _position = position;
+    _position?.addListener(_relire);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _mesurer());
+  }
+
+  @override
+  void dispose() {
+    _position?.removeListener(_relire);
+    super.dispose();
+  }
+
+  /// Où tombe le bord haut, défilement compris : sa place dans la liste.
+  /// Relevée après chaque image, parce qu'au moment où la position change la
+  /// liste n'a pas encore été remise en page — l'écran dirait encore où le
+  /// bord *était*.
+  double? _origine;
+
+  void _mesurer() {
+    if (!mounted) return;
+    final boite = context.findRenderObject();
+    final position = _position;
+    if (boite is! RenderBox || !boite.hasSize || !boite.attached || position == null || !position.hasPixels) return;
+    _origine = boite.localToGlobal(Offset.zero).dy + position.pixels;
+    _relire();
+  }
+
+  void _relire() {
+    final origine = _origine;
+    final position = _position;
+    if (!mounted || origine == null || position == null || !position.hasPixels) return;
+    final haut = origine - position.pixels;
+    // La barre s'arrête là où commence la marge sûre du contenu.
+    final barre = MediaQuery.paddingOf(context).top;
+    final dessous = haut > barre;
+    if (widget.notifier.value != dessous) widget.notifier.value = dessous;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    // La tête a pu changer de hauteur — du texte agrandi, une pastille de
+    // plus : le bord se relève après l'image.
+    WidgetsBinding.instance.addPostFrameCallback((_) => _mesurer());
+    return ColoredBox(
+      color: c.brand,
+      child: Container(
+        height: Radii.xl,
+        decoration: BoxDecoration(color: c.canvas, borderRadius: Radii.sheetTop),
+      ),
+    );
+  }
+}
+
+/// Le fond d'une page à tête verte : du vert au-dessus de la liste quand on
+/// la tire vers le bas — le rebond d'iOS ne doit pas découvrir de crème au-
+/// dessus du titre —, et l'heure en blanc tant que le vert est dessous.
+class _FondDeMarque extends StatefulWidget {
+  const _FondDeMarque({required this.notifier, required this.child});
+
+  final ValueNotifier<bool> notifier;
+  final Widget child;
+
+  @override
+  State<_FondDeMarque> createState() => _FondDeMarqueState();
+}
+
+class _FondDeMarqueState extends State<_FondDeMarque> {
+  final ValueNotifier<double> _tire = ValueNotifier<double>(0);
+
+  @override
+  void dispose() {
+    _tire.dispose();
+    super.dispose();
+  }
+
+  bool _lire(ScrollNotification n) {
+    if (n.depth == 0) _tire.value = math.max(0, -n.metrics.pixels);
+    return false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return ValueListenableBuilder<bool>(
+      valueListenable: widget.notifier,
+      builder: (context, marque, child) => AnnotatedRegion<SystemUiOverlayStyle>(
+        value: marque || c.isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+        child: child!,
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            left: 0,
+            right: 0,
+            top: 0,
+            child: ValueListenableBuilder<double>(
+              valueListenable: _tire,
+              builder: (context, tire, _) => SizedBox(height: tire + 1, child: ColoredBox(color: c.brand)),
+            ),
+          ),
+          NotificationListener<ScrollNotification>(onNotification: _lire, child: widget.child),
+        ],
+      ),
+    );
+  }
 }

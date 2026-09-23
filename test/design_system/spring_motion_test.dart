@@ -47,9 +47,13 @@ double _clayPress(WidgetTester tester) {
 }
 
 /// La bulle de la barre d'onglets : la seule pièce sauge de la barre.
+///
+/// La couleur se compare en 8 bits : le thème s'interpole d'un cadre à
+/// l'autre, et `Color.lerp` entre deux sauges égales peut s'écarter d'un
+/// dernier bit.
 Rect _bubble(WidgetTester tester, Color sage) {
   return tester.getRect(
-    find.byWidgetPredicate((w) => w is DecoratedBox && w.decoration is BoxDecoration && (w.decoration as BoxDecoration).color == sage),
+    find.byWidgetPredicate((w) => w is DecoratedBox && w.decoration is BoxDecoration && (w.decoration as BoxDecoration).color?.toARGB32() == sage.toARGB32()),
   );
 }
 
