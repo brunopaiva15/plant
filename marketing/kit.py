@@ -1,14 +1,15 @@
 """Le kit marketing d'Auxine : profils, bannières, publications et stories,
-aux formats courants des réseaux.
+aux formats courants des réseaux, en français, anglais, allemand et italien.
 
-    python3 marketing/kit.py                  # tout, dans marketing/fr/
-    python3 marketing/kit.py store/shots-fr   # avec un autre jeu de captures
+    python3 marketing/kit.py              # les quatre langues, dans marketing/<langue>/
+    python3 marketing/kit.py en           # une seule
+    python3 marketing/kit.py fr store/x   # avec un autre dossier de captures
 
-Les captures viennent de `store/shots-fr/` : celles du web
-(`store/capture.mjs`) ici, celles du simulateur sur un Mac
-(`store/capture_ios.sh`) — le script les reconnaît à leur taille. Les
-couleurs, les polices, l'appareil et les objets 3D sont ceux des visuels du
-magasin (`store/compose.py`), dont ce script reprend les outils.
+Les captures viennent de `store/shots-<langue>/` : celles du web
+(`store/capture.mjs`) ou celles du simulateur (`store/capture_ios.sh`) — le
+script les reconnaît à leur taille. Les couleurs, les polices, l'appareil et
+les objets 3D sont ceux des visuels du magasin (`store/compose.py`), dont ce
+script reprend les outils.
 """
 import os
 import sys
@@ -24,72 +25,184 @@ from PIL import Image, ImageDraw, ImageFilter  # noqa: E402
 C.ensure_fonts()
 C.use('iphone')
 
-SHOTS = sys.argv[1] if len(sys.argv) > 1 else 'store/shots-fr'
-OUT = os.path.join(HERE, 'fr')
 POT = 'assets/icon/rendu/lancement.png'
 OBJ = 'assets/onboarding/collection_{}.webp'
 
-# --- les thèmes ---------------------------------------------------------------
-# Un thème : le titre (coupé à la main), la phrase dessous, la couleur du
-# fond, la capture et l'objet qui s'y pose. Un objet ne se pose jamais sur
-# sa propre couleur.
-THEMES = {
-    'marque': dict(title='Le carnet\nde vos plantes.', sub='Soins, identification, diagnostic et journal photo.',
-                   tint='sage', shot='today', obj=POT),
-    'prix': dict(big=True, title='0,99 €', lead='Un seul achat.\nSans abonnement.', sub=None, tint='sun', shot='plants',
-                 obj=OBJ.format('monstera'),
-                 pills=['Toutes les fonctions', 'Sans publicité', 'Sans achat intégré', 'Plantes illimitées']),
-    'iris': dict(title='Quelle est\ncette plante ?', sub='Une photo suffit, même sans réseau.', tint='lavender',
-                 shot='capture', obj=OBJ.format('ronde')),
-    'soins': dict(title='Chaque matin,\nles soins du jour.', sub='Arrosage, engrais, rempotage : à cocher en un geste.',
-                  tint='water', shot='today', obj=OBJ.format('sansevieria')),
-    'diagnostic': dict(title='Un diagnostic\nsur photo.', sub='Plus de 200 troubles, ravageurs et maladies.',
-                       tint='night', shot='diagnosis', obj=OBJ.format('monstera')),
-    'fiche': dict(title='Une fiche\npar espèce.', sub='Arrosage selon la saison, lumière, engrais, rempotage.',
-                  tint='sage', shot='care', obj=OBJ.format('ronde')),
-    'collection': dict(title='Toutes vos plantes,\nau même endroit.', sub='Avec leur photo, leur espèce et leur pièce.',
-                       tint='rose', shot='plants', obj=OBJ.format('sansevieria')),
-    'calendrier': dict(title='Le jardin\nen calendrier.', sub='Soins à venir, tâches, lieux et inventaire.',
-                       tint='terracotta', shot='garden-calendar', obj=OBJ.format('caoutchouc')),
-    'hors-ligne': dict(title='Vos plantes\nrestent chez vous.', sub='Sans compte, vos données restent sur votre appareil.',
-                       tint='night', shot=None, obj=POT),
+# --- les textes -----------------------------------------------------------------
+# Un seul registre par langue, comme dans l'app : « vous », « you », « du »,
+# « tu ». Chaque langue part de l'intention, pas du français : le compte à
+# rebours « J-3 » n'a pas d'équivalent ailleurs, il y devient « 3 days »,
+# « 3 Tage », « 3 giorni ». Les phrases reprennent celles du site et des
+# visuels du magasin quand elles existent.
+#
+# Le prix : le palier de 0,99 € vaut 1 CHF sur l'App Store suisse. Chaque
+# image qui le dit a sa version « -chf ».
+TEXTES = {
+    'fr': dict(
+        prix='0,99 €', chf='1 CHF',
+        carnet='Le carnet de vos plantes.', carnet2='Le carnet\nde vos plantes.',
+        fonctions='Soins, identification, diagnostic et journal photo.',
+        dispo='Disponible sur l’App Store.', decouvrir='Découvrez\nAuxine.',
+        themes={
+            'prix': ('0,99 €', None, 'Un seul achat.\nSans abonnement.',
+                     ['Toutes les fonctions', 'Sans publicité', 'Sans achat intégré', 'Plantes illimitées']),
+            'iris': ('Quelle est\ncette plante ?', 'Une photo suffit, même sans réseau.'),
+            'soins': ('Chaque matin,\nles soins du jour.', 'Arrosage, engrais, rempotage : à cocher en un geste.'),
+            'diagnostic': ('Un diagnostic\nsur photo.', 'Plus de 200 troubles, ravageurs et maladies.'),
+            'fiche': ('Une fiche\npar espèce.', 'Arrosage selon la saison, lumière, engrais, rempotage.'),
+            'collection': ('Toutes vos plantes,\nau même endroit.', 'Avec leur photo, leur espèce et leur pièce.'),
+            'calendrier': ('Le jardin\nen calendrier.', 'Soins à venir, tâches, lieux et inventaire.'),
+            'hors-ligne': ('Vos plantes\nrestent chez vous.', 'Sans compte, vos données restent sur votre appareil.'),
+            'bientot': ('Bientôt\nsur l’App Store.', 'Auxine, le carnet de vos plantes.'),
+            'j-3': ('J-3', None, 'Auxine arrive\nsur l’App Store.'),
+            'j-2': ('J-2', None, 'Auxine arrive\nsur l’App Store.'),
+            'j-1': ('J-1', None, 'Auxine arrive\nsur l’App Store.'),
+            'disponible': ('Auxine est\ndisponible.', 'Sur l’App Store, pour iPhone et iPad.', None,
+                           ['0,99 €', 'Un seul achat', 'Sans abonnement']),
+            'merci': ('Merci.', None, 'Pour votre accueil\net vos retours.'),
+            'nouveautes': ('Nouveau\ndans Auxine.', 'La mise à jour est sur l’App Store.'),
+        }),
+    'en': dict(
+        prix='€0.99', chf='CHF 1',
+        carnet='The journal for your plants.', carnet2='The journal\nfor your plants.',
+        fonctions='Care, identification, diagnosis and a photo journal.',
+        dispo='Available on the App Store.', decouvrir='Meet\nAuxine.',
+        themes={
+            'prix': ('€0.99', None, 'One purchase.\nNo subscription.',
+                     ['Every feature', 'No ads', 'No in-app purchases', 'Unlimited plants']),
+            'iris': ('What plant\nis this?', 'One photo is enough, even offline.'),
+            'soins': ('Every morning,\ntoday’s care.', 'Watering, feeding, repotting: tick them off in one tap.'),
+            'diagnostic': ('A diagnosis\nfrom a photo.', 'Over 200 disorders, pests and diseases.'),
+            'fiche': ('A care guide\nfor every species.', 'Seasonal watering, light, feeding, repotting.'),
+            'collection': ('All your plants,\nin one place.', 'With their photo, species and room.'),
+            'calendrier': ('Your garden,\nin a calendar.', 'Upcoming care, tasks, places and inventory.'),
+            'hors-ligne': ('Your plants\nstay with you.', 'Without an account, your data stays on your device.'),
+            'bientot': ('Coming soon\nto the App Store.', 'Auxine, the journal for your plants.'),
+            'j-3': ('3 days', None, 'until Auxine reaches\nthe App Store.'),
+            'j-2': ('2 days', None, 'until Auxine reaches\nthe App Store.'),
+            'j-1': ('1 day', None, 'until Auxine reaches\nthe App Store.'),
+            'disponible': ('Auxine is\nout now.', 'On the App Store, for iPhone and iPad.', None,
+                           ['€0.99', 'One purchase', 'No subscription']),
+            'merci': ('Thank you.', None, 'For the warm welcome\nand your feedback.'),
+            'nouveautes': ('New\nin Auxine.', 'The update is on the App Store.'),
+        }),
+    'de': dict(
+        prix='0,99 €', chf='1 CHF',
+        carnet='Das Journal für deine Pflanzen.', carnet2='Das Journal\nfür deine Pflanzen.',
+        fonctions='Pflege, Erkennung, Diagnose und Fotojournal.',
+        dispo='Jetzt im App Store.', decouvrir='Entdecke\nAuxine.',
+        themes={
+            'prix': ('0,99 €', None, 'Einmal kaufen.\nKein Abo.',
+                     ['Alle Funktionen', 'Keine Werbung', 'Keine In-App-Käufe', 'Unbegrenzt Pflanzen']),
+            'iris': ('Welche Pflanze\nist das?', 'Ein Foto genügt, auch ohne Netz.'),
+            'soins': ('Jeden Morgen,\ndie Pflege des Tages.', 'Gießen, Düngen, Umtopfen: mit einem Tipp abhaken.'),
+            'diagnostic': ('Eine Diagnose\nper Foto.', 'Über 200 Störungen, Schädlinge und Krankheiten.'),
+            'fiche': ('Ein Pflegeblatt\nfür jede Art.', 'Gießen je nach Jahreszeit, Licht, Dünger, Umtopfen.'),
+            'collection': ('Alle deine Pflanzen,\nan einem Ort.', 'Mit Foto, Art und Zimmer.'),
+            'calendrier': ('Der Garten\nim Kalender.', 'Anstehende Pflege, Aufgaben, Orte und Bestand.'),
+            'hors-ligne': ('Deine Pflanzen\nbleiben bei dir.', 'Ohne Konto bleiben deine Daten auf deinem Gerät.'),
+            'bientot': ('Bald\nim App Store.', 'Auxine, das Journal für deine Pflanzen.'),
+            'j-3': ('3 Tage', None, 'bis Auxine\nim App Store ist.'),
+            'j-2': ('2 Tage', None, 'bis Auxine\nim App Store ist.'),
+            'j-1': ('1 Tag', None, 'bis Auxine\nim App Store ist.'),
+            'disponible': ('Auxine\nist da.', 'Im App Store, für iPhone und iPad.', None,
+                           ['0,99 €', 'Einmal kaufen', 'Kein Abo']),
+            'merci': ('Danke.', None, 'Für den Empfang\nund dein Feedback.'),
+            'nouveautes': ('Neu\nin Auxine.', 'Das Update ist im App Store.'),
+        }),
+    'it': dict(
+        prix='0,99 €', chf='1 CHF',
+        carnet='Il diario delle tue piante.', carnet2='Il diario\ndelle tue piante.',
+        fonctions='Cure, identificazione, diagnosi e diario fotografico.',
+        dispo='Disponibile sull’App Store.', decouvrir='Scopri\nAuxine.',
+        themes={
+            'prix': ('0,99 €', None, 'Un solo acquisto.\nSenza abbonamento.',
+                     ['Tutte le funzioni', 'Senza pubblicità', 'Senza acquisti in-app', 'Piante illimitate']),
+            'iris': ('Che pianta\nè questa?', 'Basta una foto, anche senza rete.'),
+            'soins': ('Ogni mattina,\nle cure del giorno.', 'Annaffiare, concimare, rinvasare: spunta con un tocco.'),
+            'diagnostic': ('Una diagnosi\nda una foto.', 'Oltre 200 disturbi, parassiti e malattie.'),
+            'fiche': ('Una scheda\nper ogni specie.', 'Annaffiatura secondo la stagione, luce, concime, rinvaso.'),
+            'collection': ('Tutte le tue piante,\nnello stesso posto.', 'Con foto, specie e stanza.'),
+            'calendrier': ('Il giardino\nin calendario.', 'Cure in arrivo, attività, luoghi e inventario.'),
+            'hors-ligne': ('Le tue piante\nrestano con te.', 'Senza account, i tuoi dati restano sul tuo dispositivo.'),
+            'bientot': ('Presto\nsull’App Store.', 'Auxine, il diario delle tue piante.'),
+            'j-3': ('3 giorni', None, 'e Auxine arriva\nsull’App Store.'),
+            'j-2': ('2 giorni', None, 'e Auxine arriva\nsull’App Store.'),
+            'j-1': ('1 giorno', None, 'e Auxine arriva\nsull’App Store.'),
+            'disponible': ('Auxine è\ndisponibile.', 'Sull’App Store, per iPhone e iPad.', None,
+                           ['0,99 €', 'Un solo acquisto', 'Senza abbonamento']),
+            'merci': ('Grazie.', None, 'Per l’accoglienza\ne i tuoi commenti.'),
+            'nouveautes': ('Novità\nin Auxine.', 'L’aggiornamento è sull’App Store.'),
+        }),
 }
 
-
+# --- les thèmes ---------------------------------------------------------------
+# Un thème : la couleur du fond, la capture et l'objet qui s'y pose — les
+# textes viennent de TEXTES. Un objet ne se pose jamais sur sa propre couleur.
+DECOR = {
+    'marque': dict(tint='sage', shot='today', obj=POT),
+    'prix': dict(big=True, tint='sun', shot='plants', obj=OBJ.format('monstera')),
+    'iris': dict(tint='lavender', shot='capture', obj=OBJ.format('ronde')),
+    'soins': dict(tint='water', shot='today', obj=OBJ.format('sansevieria')),
+    'diagnostic': dict(tint='night', shot='diagnosis', obj=OBJ.format('monstera')),
+    'fiche': dict(tint='sage', shot='care', obj=OBJ.format('ronde')),
+    'collection': dict(tint='rose', shot='plants', obj=OBJ.format('sansevieria')),
+    'calendrier': dict(tint='terracotta', shot='garden-calendar', obj=OBJ.format('caoutchouc')),
+    'hors-ligne': dict(tint='night', shot=None, obj=POT),
+}
 # La sortie : l'annonce, l'attente, le compte à rebours, le merci, et un
 # modèle pour chaque mise à jour. Pas de date : elle se met dans le texte
 # qui accompagne l'image.
-SORTIE = {
-    'bientot': dict(title='Bientôt\nsur l’App Store.', sub='Auxine, le carnet de vos plantes.', tint='night', shot=None, obj=POT),
-    'j-3': dict(big=True, title='J-3', lead='Auxine arrive\nsur l’App Store.', sub=None, tint='water', shot=None, obj=POT),
-    'j-2': dict(big=True, title='J-2', lead='Auxine arrive\nsur l’App Store.', sub=None, tint='lavender', shot=None, obj=POT),
-    'j-1': dict(big=True, title='J-1', lead='Auxine arrive\nsur l’App Store.', sub=None, tint='rose', shot=None, obj=POT),
-    'disponible': dict(title='Auxine est\ndisponible.', sub='Sur l’App Store, pour iPhone et iPad.', tint='sage', shot=None, obj=POT,
-                       pills=['0,99 €', 'Un seul achat', 'Sans abonnement']),
-    'disponible-ecran': dict(title='Auxine est\ndisponible.', sub='Sur l’App Store, pour iPhone et iPad.', tint='sun', shot='today',
-                             obj=OBJ.format('monstera'), pills=['0,99 €', 'Un seul achat', 'Sans abonnement']),
-    'merci': dict(big=True, title='Merci.', lead='Pour votre accueil\net vos retours.', sub=None, tint='sun', shot=None, obj=POT),
-    'nouveautes': dict(title='Nouveau\ndans Auxine.', sub='La mise à jour est sur l’App Store.', tint='terracotta', shot='today',
-                       obj=OBJ.format('caoutchouc')),
+DECOR_SORTIE = {
+    'bientot': dict(tint='night', shot=None, obj=POT),
+    'j-3': dict(big=True, tint='water', shot=None, obj=POT),
+    'j-2': dict(big=True, tint='lavender', shot=None, obj=POT),
+    'j-1': dict(big=True, tint='rose', shot=None, obj=POT),
+    'disponible': dict(tint='sage', shot=None, obj=POT),
+    'disponible-ecran': dict(tint='sun', shot='today', obj=OBJ.format('monstera'), textes='disponible'),
+    'merci': dict(big=True, tint='sun', shot=None, obj=POT),
+    'nouveautes': dict(tint='terracotta', shot='today', obj=OBJ.format('caoutchouc')),
 }
 
+# Ce que lisent les outils, réglé par regler() pour chaque langue.
+TXT, THEMES, SORTIE, OUT, SHOTS = {}, {}, {}, '', ''
 
-# Le prix en francs suisses : sur l'App Store suisse, le palier de 0,99 €
-# vaut 1 CHF. Chaque image qui dit le prix a sa version « -chf ».
+
+def regler(lang, shots=None):
+    """Monte les thèmes d'une langue : les décors, et ses textes dedans."""
+    global TXT, THEMES, SORTIE, OUT, SHOTS
+    TXT = TEXTES[lang]
+    OUT = os.path.join(HERE, lang)
+    SHOTS = shots or f'store/shots-{lang}'
+
+    def monter(decors):
+        out = {}
+        for k, d in decors.items():
+            t = dict(d)
+            textes = TXT['themes'].get(t.pop('textes', k), ('', None)) + (None, None)
+            t['title'], t['sub'], t['lead'], pills = textes[0], textes[1], textes[2], textes[3]
+            if pills:
+                t['pills'] = pills
+            out[k] = t
+        return out
+
+    THEMES = monter(DECOR)
+    THEMES['marque'].update(title=TXT['carnet2'], sub=TXT['fonctions'])
+    SORTIE = monter(DECOR_SORTIE)
+    THEMES['prix-chf'] = en_chf(THEMES['prix'])
+    for k in ('disponible', 'disponible-ecran'):
+        SORTIE[f'{k}-chf'] = en_chf(SORTIE[k])
+    THEMES.update(SORTIE)
+
+
 def en_chf(t):
     t = dict(t)
     for k in ('title', 'lead', 'sub'):
         if t.get(k):
-            t[k] = t[k].replace('0,99 €', '1 CHF')
+            t[k] = t[k].replace(TXT['prix'], TXT['chf'])
     if t.get('pills'):
-        t['pills'] = [p.replace('0,99 €', '1 CHF') for p in t['pills']]
+        t['pills'] = [p.replace(TXT['prix'], TXT['chf']) for p in t['pills']]
     return t
-
-
-THEMES['prix-chf'] = en_chf(THEMES['prix'])
-for k in ('disponible', 'disponible-ecran'):
-    SORTIE[f'{k}-chf'] = en_chf(SORTIE[k])
-THEMES.update(SORTIE)
 
 
 # --- les outils ------------------------------------------------------------------
@@ -127,11 +240,21 @@ def texte(img, x, y, width, title, sub, size, ink, ink2, align='left', lead=None
     prend dessous une seconde ligne en Bricolage, [lead]. Rend le bas du bloc."""
     d = ImageDraw.Draw(img)
     # Un mot ne se coupe pas : trop large pour la place, le titre rapetisse.
-    while max(d.textlength(m, font=C.display(size)) for m in title.split()) > width:
+    # Un titre géant (un prix, un compte à rebours) tient sur sa ligne :
+    # « 3 days » coupé en deux ne se lit plus d'un coup d'œil.
+    prevue = size
+    unites = title.split('\n') if size >= 200 else title.split()
+    while max(d.textlength(m, font=C.display(size)) for m in unites) > width:
         size -= 4
     blocs = [(title, C.display(size), 1.06)]
     if lead:
-        blocs.append((lead, C.display(int(size * 0.3), 750), 1.1))
+        # La ligne dessous garde la taille prévue : un titre qui rapetisse
+        # pour tenir ne l'entraîne pas.
+        # Chacune de ses lignes tient sans se couper, quitte à rapetisser.
+        ls = int(prevue * 0.3)
+        while max(d.textlength(l, font=C.display(ls, 750)) for l in lead.split('\n')) > width:
+            ls -= 2
+        blocs.append((lead, C.display(ls, 750), 1.1))
     for texte_, f, interligne in blocs:
         for line in texte_.split('\n'):
             for l in C.wrap(d, line, f, width):
@@ -201,7 +324,7 @@ def marque(img, cx, cy, height, ink, ink2, tagline=True):
     pot = C.crisp(POT, box=int(height))
     title = C.display(int(height * 0.52))
     sub = C.font('Medium', int(height * 0.12))
-    phrase = tagline if isinstance(tagline, str) else 'Le carnet de vos plantes.'
+    phrase = tagline if isinstance(tagline, str) else TXT['carnet']
     tw = d.textlength('Auxine', font=title)
     if tagline:
         tw = max(tw, d.textlength(phrase, font=sub))
@@ -291,7 +414,7 @@ def story(key, dossier=''):
     img, ink, ink2 = fond((1080, 1920), t['tint'])
     if key == 'marque':
         marque(img, 540, 760, 360, ink, ink2, tagline=False)
-        texte(img, 90, 1040, 900, 'Le carnet\nde vos plantes.', 'Soins, identification, diagnostic et journal photo.',
+        texte(img, 90, 1040, 900, TXT['carnet2'], TXT['fonctions'],
               110, ink, ink2, align='center')
         enregistrer(img, f'story-{key}')
         return
@@ -387,13 +510,13 @@ def profils():
     p = C.crisp(POT, box=86)
     img.alpha_composite(p, (70, 58))
     d.text((70 + p.width + 18, 58 + 62), 'Auxine', font=C.display(52), fill=ink, anchor='ls')
-    texte(img, 70, 200, 640, 'Le carnet\nde vos plantes.', 'Soins, identification, diagnostic et journal photo.', 78, ink, ink2)
+    texte(img, 70, 200, 640, TXT['carnet2'], TXT['fonctions'], 78, ink, ink2)
     telephone(img, 'today', 420, 1200 - 420 - 40, 80, -5)
     enregistrer(img, 'apercu-lien-1200x630')
 
     # La miniature d'une vidéo : 1280 × 720.
     img, ink, ink2 = fond((1280, 720), 'sun')
-    texte(img, 80, 90, 640, 'Découvrez\nAuxine.', 'Le carnet de vos plantes.', 150, ink, ink2)
+    texte(img, 80, 90, 640, TXT['decouvrir'], TXT['carnet'], 150, ink, ink2)
     telephone(img, 'plants', 470, 1280 - 470 - 60, 90, -6)
     # Sous la phrase, jamais dessus : le pot se pose entre le texte et l'appareil.
     objet(img, POT, 190, 560, 720 - 36)
@@ -413,20 +536,24 @@ def sortie():
     for nom, taille, cy, h in (('banniere-x-1500x500', (1500, 500), 330, 250),
                                ('banniere-linkedin-1584x396', (1584, 396), 200, 230)):
         img, ink, ink2 = fond(taille, 'sage')
-        marque(img, 675 if taille[0] == 1500 else 900, cy, h, ink, ink2, tagline='Disponible sur l’App Store.')
+        marque(img, 675 if taille[0] == 1500 else 900, cy, h, ink, ink2, tagline=TXT['dispo'])
         enregistrer(img, f'{d}{nom}')
 
 
 if __name__ == '__main__':
-    sortie()
-    profils()
-    for k in ('prix', 'prix-chf', 'iris', 'soins', 'diagnostic', 'fiche', 'hors-ligne'):
-        carre(k)
-    for k in ('prix', 'prix-chf', 'iris', 'soins', 'collection', 'calendrier'):
-        portrait(k)
-    for k in ('marque', 'prix', 'prix-chf', 'iris', 'soins', 'diagnostic'):
-        story(k)
-    for k in ('marque', 'iris', 'prix', 'prix-chf'):
-        paysage(k)
-    n = sum(len(f) for _, _, f in os.walk(OUT))
-    print(n, 'fichiers dans', os.path.relpath(OUT))
+    langues = [sys.argv[1]] if len(sys.argv) > 1 and sys.argv[1] in TEXTES else list(TEXTES)
+    shots = sys.argv[2] if len(sys.argv) > 2 else None
+    for lang in langues:
+        regler(lang, shots)
+        sortie()
+        profils()
+        for k in ('prix', 'prix-chf', 'iris', 'soins', 'diagnostic', 'fiche', 'hors-ligne'):
+            carre(k)
+        for k in ('prix', 'prix-chf', 'iris', 'soins', 'collection', 'calendrier'):
+            portrait(k)
+        for k in ('marque', 'prix', 'prix-chf', 'iris', 'soins', 'diagnostic'):
+            story(k)
+        for k in ('marque', 'iris', 'prix', 'prix-chf'):
+            paysage(k)
+        n = sum(len(f) for _, _, f in os.walk(OUT))
+        print(n, 'fichiers dans', os.path.relpath(OUT))
