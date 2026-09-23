@@ -270,9 +270,13 @@ def phone(shot, scrim=0.0, sheet=None, device=False):
         screen = Image.new('RGBA', (sw, sh + top))
         screen.paste(shot, (0, top))
     strip = shot.crop((0, 0, sw, top))
-    if max(abs(a - b) for a, b in zip(strip.getpixel((sw // 2, 6)), CANVAS)) < 24:
-        # Le papier de l'app : la barre d'état est du même papier.
-        bar = status_bar(sw, top, strip.getpixel((sw // 2, 6)), INK, u, dev['cellular'])
+    haut = strip.getpixel((sw // 2, 6))
+    if max(abs(a - b) for a, b in zip(haut, CANVAS)) < 24:
+        # La feuille de l'app : la barre d'état est de la même feuille.
+        bar = status_bar(sw, top, haut, INK, u, dev['cellular'])
+    elif max(abs(a - b) for a, b in zip(haut, BRAND)) < 24:
+        # La tête verte : l'heure y est blanche, sans voile.
+        bar = status_bar(sw, top, haut, WHITE, u, dev['cellular'])
     else:
         # Une photo en tête de page : elle continue sous la barre d'état
         # (en miroir et un peu floue quand la capture s'arrête au bord),
