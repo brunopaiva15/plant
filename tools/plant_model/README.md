@@ -697,6 +697,24 @@ corpus iNaturalist — se lit dans ses lignes, pas dans son nom. Une passe
 lancée apparaît dès sa première ligne, une passe finie disparaît un quart
 d'heure après sa dernière. `--passe NOM` suit une passe nommée comme avant.
 
+**Et chaque point de contrôle est évalué tout seul.** Dès qu'un `banc-eN`
+est complet, le tableau lance `voisins.py` dessus en arrière-plan — un à la
+fois, pour ne pas voler le processeur au décodage de la distillation — et
+range la sortie dans `banc-eN/voisins.txt`. Il affiche ensuite le top-1 de
+chaque époque, à côté de la passe de référence **à la même époque** :
+
+```
+  top-1, textes      indoor          outdoor         hors rép.      (écart à iris10-cosinus)
+  é1    0.6000 (+2.0)    0.5800 (−1.3)    0.4500 (+0.4)
+  é2    en cours
+  Iris 9       0.8119           0.7615           0.0000
+```
+
+La référence est `iris10-cosinus` (`--reference` pour une autre), dont les
+points de contrôle sont évalués de la même façon. Un échec s'affiche avec sa
+raison et n'est pas relancé ; supprimer `banc-eN/voisins.echec` le relance.
+`--sans-evaluation` pour ne rien lancer.
+
 ```
 DISTILLATION
   époque 2/10   ███████████████············· 54.5 %   267 img/s

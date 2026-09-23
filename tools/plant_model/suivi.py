@@ -21,8 +21,10 @@ import argparse
 import csv
 import json
 import re
+import shlex
 import shutil
 import subprocess
+import sys
 import time
 from pathlib import Path
 
@@ -161,6 +163,86 @@ def derniere_ligne(lignes: list[str]) -> str:
         if ligne.strip():
             return ligne.strip()
     return ''
+
+
+# --------------------------------------------------------------------------
+# Les résultats : `voisins.py` sur chaque point de contrôle, sans y penser
+# --------------------------------------------------------------------------
+
+# `— indoor — 1127 images`
+_TRANCHE = re.compile(r'^— (\S+) —')
+# `  texte      à armes égales     top-1 0.6957  top-3 0.8527  (1114/1127 nommables)`
+_LIGNE_VOISINS = re.compile(r'^\s+(\S+)\s+(à armes égales|répertoire entier)\s+'
+                            r'top-1 ([\d.]+)\s+top-3 ([\d.]+)')
+
+# Les trois lectures qu'on compare depuis le § 19 sexies de docs/14 : ce que
+# vaut le student là où Iris 9 existe (armes égales), et là où il n'existe pas.
+COLONNES_RESULTAT = (('indoor', 'texte', 'à armes égales'),
+                     ('outdoor', 'texte', 'à armes égales'),
+                     ('ood_plante', 'texte', 'répertoire entier'))
+# Iris 9 masqué, porte C du § 19 de docs/14 ; zéro hors répertoire par construction.
+IRIS9 = (0.8119, 0.7615, 0.0)
+
+
+def lire_voisins(texte: str) -> dict:
+    """{tranche: {(références, lecture): top-1}} depuis la sortie de `voisins.py`."""
+    sortie, tranche = {}, None
+    for ligne in texte.splitlines():
+        m = _TRANCHE.match(ligne)
+        if m:
+            tranche = m[1]
+            sortie.setdefault(tranche, {})
+            continue
+        m = _LIGNE_VOISINS.match(ligne)
+        if m and tranche:
+            sortie[tranche][(m[1], m[2])] = float(m[3])
+    return sortie
+
+
+def resume(resultats: dict) -> tuple:
+    """Les trois chiffres du tableau, None là où la sortie ne les donne pas."""
+    return tuple(resultats.get(t, {}).get((r, l)) for t, r, l in COLONNES_RESULTAT)
+
+
+def etat_evaluation(banc: Path, maintenant: float | None = None,
+                    patience: float = 900.0) -> str:
+    """`faite`, `en cours`, `échec`, `à faire` — ou `incomplet` si le point de
+    contrôle s'écrit encore.
+
+    `index-0.csv` est écrit en dernier par `distiller.py`, après les vecteurs :
+    tant qu'il manque, évaluer lirait un banc à moitié encodé.
+    """
+    if (banc / 'voisins.txt').exists():
+        return 'faite'
+    if (banc / 'voisins.echec').exists():
+        return 'échec'
+    partiel = banc / 'voisins.txt.part'
+    if partiel.exists() and (maintenant or time.time()) - partiel.stat().st_mtime < patience:
+        return 'en cours'
+    if not (banc / 'index-0.csv').exists():
+        return 'incomplet'
+    return 'à faire'
+
+
+def prochaine_evaluation(bancs: list[Path], maintenant: float | None = None) -> Path | None:
+    """Le premier banc à évaluer, ou None si une évaluation tourne déjà.
+
+    **Une à la fois.** Chacune charge les 15 060 références et tient un cœur
+    une minute ; les lancer toutes ensemble volerait le processeur au
+    décodage des images de la distillation, qui en vit.
+    """
+    etats = [(b, etat_evaluation(b, maintenant)) for b in bancs]
+    if any(e == 'en cours' for _, e in etats):
+        return None
+    return next((b for b, e in etats if e == 'à faire'), None)
+
+
+def points(valeur, reference) -> str:
+    """`+1,2` ou `−0,8` points d'écart, vide sans référence."""
+    if valeur is None or reference is None:
+        return ''
+    d = (valeur - reference) * 100
+    return f' ({"+" if d >= 0 else "−"}{abs(d):.1f})'
 
 
 def passes_suivies(noms: list[str], sortie: str, log: str,
@@ -392,6 +474,72 @@ def tableau(args) -> str:  # pragma: no cover - assemble des lectures disque
     return '\n'.join(out)
 
 
+def lancer_evaluation(banc: Path, cache: str) -> None:  # pragma: no cover - processus
+    """`voisins.py` en arrière-plan, sortie dans le dossier du banc.
+
+    Écrit dans un `.part` renommé à la fin : un fichier `voisins.txt` présent
+    est une évaluation entière. Un échec est renommé aussi, pour ne pas être
+    relancé à chaque rafraîchissement. La session est détachée : un Ctrl-C sur
+    le tableau n'interrompt pas une évaluation à moitié faite.
+    """
+    ici = Path(__file__).resolve().parent
+    partiel, final, echec = (banc / 'voisins.txt.part', banc / 'voisins.txt',
+                             banc / 'voisins.echec')
+    commande = (f'{shlex.quote(sys.executable)} voisins.py --banc benchmark.csv '
+                f'--cache {shlex.quote(str(Path(cache).expanduser()))} '
+                f'--embeddings {shlex.quote(str(banc))} > {shlex.quote(str(partiel))} 2>&1 '
+                f'&& mv {shlex.quote(str(partiel))} {shlex.quote(str(final))} '
+                f'|| mv {shlex.quote(str(partiel))} {shlex.quote(str(echec))}')
+    # Le `.part` existe avant que `sh` ait démarré : un rafraîchissement dans
+    # la même seconde le voit « en cours » et ne relance pas une seconde fois.
+    partiel.touch()
+    subprocess.Popen(['sh', '-c', commande], cwd=ici, start_new_session=True,
+                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+
+def bancs_de(dossier: Path) -> dict[int, Path]:
+    return {n: dossier / f'banc-e{n}' for n in epoques_ecrites(dossier)}
+
+
+def resultats_de(banc: Path) -> tuple | None:
+    if etat_evaluation(banc) != 'faite':
+        return None
+    return resume(lire_voisins((banc / 'voisins.txt').read_text(encoding='utf-8')))
+
+
+def panneau_resultats(nom: str, dossier: Path, reference: Path, args) -> list[str]:  # pragma: no cover
+    """Le top-1 de chaque époque, à côté de la référence à la même époque."""
+    bancs, refs = bancs_de(dossier), ({} if reference == dossier else bancs_de(reference))
+    if not bancs:
+        return []
+    if args.evaluer:
+        # l'époque la plus récente d'abord, puis la référence aux mêmes époques
+        ordre = [bancs[n] for n in sorted(bancs, reverse=True)]
+        ordre += [refs[n] for n in sorted(bancs, reverse=True) if n in refs]
+        suivant = prochaine_evaluation(ordre)
+        if suivant is not None:
+            lancer_evaluation(suivant, args.cache)
+    titre = '  top-1, textes      indoor          outdoor         hors rép.'
+    out = [titre if reference == dossier else titre + f'      (écart à {reference.name})']
+    for n in sorted(bancs):
+        r = resultats_de(bancs[n])
+        if r is None:
+            etat = etat_evaluation(bancs[n])
+            if etat == 'échec':
+                # la raison tient en une ligne ; sans elle, « échec » ne dit
+                # pas quoi réparer. Supprimer `voisins.echec` relance.
+                raison = derniere_ligne(lignes(bancs[n] / 'voisins.echec'))[:70]
+                etat = f'échec — {raison}'
+            out.append(f'  é{n:<3}  {etat}')
+            continue
+        ref = resultats_de(refs[n]) if n in refs else None
+        cellules = [f'{v:.4f}{points(v, ref[i] if ref else None)}' if v is not None else '—'
+                    for i, v in enumerate(r)]
+        out.append(f'  é{n:<3}  ' + '   '.join(f'{c:<14}' for c in cellules))
+    out.append('  Iris 9       ' + '   '.join(f'{v:<14.4f}' for v in IRIS9))
+    return out
+
+
 def tableau_actif(args) -> str:  # pragma: no cover - assemble des lectures disque
     """Tout ce qui tourne en ce moment, et rien de ce qui a fini."""
     racine = Path(args.racine).expanduser()
@@ -402,6 +550,7 @@ def tableau_actif(args) -> str:  # pragma: no cover - assemble des lectures disq
         sorte, nom = nature(l), journal.stem
         if sorte == 'distillation':
             out += panneau(nom, str(racine / nom), str(journal), args)
+            out += panneau_resultats(nom, racine / nom, racine / args.reference, args)
         elif sorte == 'inat':
             i = etat_inat(l)
             out.append(f'\nCORPUS INATURALIST — {nom}')
@@ -446,6 +595,10 @@ def main() -> int:  # pragma: no cover - boucle d'affichage
     ap.add_argument('--log', default=None)
     ap.add_argument('--racine', default='~/plant-data',
                     help='sans --passe ni --sortie : suit tout journal de ce dossier qui bouge')
+    ap.add_argument('--reference', default='iris10-cosinus', metavar='NOM',
+                    help='la passe à laquelle chaque époque est comparée')
+    ap.add_argument('--sans-evaluation', dest='evaluer', action='store_false',
+                    help="n'évalue pas les nouveaux points de contrôle")
     ap.add_argument('--fenetre', type=float, default=900.0, metavar='SECONDES',
                     help="un journal muet depuis plus longtemps est une passe finie")
     ap.add_argument('--log-corpus', default='~/plant-data/plantnet-corpus.log')

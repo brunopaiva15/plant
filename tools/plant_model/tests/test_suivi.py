@@ -270,3 +270,91 @@ def test_une_passe_qui_demarre_montre_sa_derniere_ligne():
     from suivi import derniere_ligne
     assert derniere_ligne(['a\n', '  empreintes du banc : 3000/5127\n', '\n']) == \
         'empreintes du banc : 3000/5127'
+
+
+# --------------------------------------------------------------------------
+# Les résultats des points de contrôle
+# --------------------------------------------------------------------------
+
+SORTIE_VOISINS = """références : hf-hub:imageomics/bioclip-2.5-vith14, signature 5fcd9d9cc6fa
+vecteurs   : student:fastvit_sa12-e10, signature 3ccf119d613f
+
+— indoor — 1127 images
+  texte      à armes égales     top-1 0.6957  top-3 0.8527  (1114/1127 nommables)
+  texte      répertoire entier  top-1 0.6318  top-3 0.7977  (1127/1127 nommables)
+  centroide  à armes égales     top-1 0.7081  top-3 0.8483  (1114/1127 nommables)
+
+— outdoor — 2000 images
+  texte      à armes égales     top-1 0.742  top-3 0.885  (2000/2000 nommables)
+
+— ood_plante — 2000 images
+  texte      à armes égales     top-1 0.0  top-3 0.0  (0/2000 nommables)
+  texte      répertoire entier  top-1 0.5745  top-3 0.7695  (2000/2000 nommables)
+"""
+
+
+def test_la_sortie_de_voisins_se_relit():
+    from suivi import lire_voisins
+    r = lire_voisins(SORTIE_VOISINS)
+    assert r['indoor'][('texte', 'à armes égales')] == 0.6957
+    assert r['indoor'][('centroide', 'à armes égales')] == 0.7081
+    assert r['ood_plante'][('texte', 'répertoire entier')] == 0.5745
+
+
+def test_le_resume_prend_les_trois_lectures_comparees():
+    """Armes égales là où Iris 9 existe, répertoire entier hors répertoire —
+    le zéro d'`ood_plante` à armes égales ne dit rien."""
+    from suivi import lire_voisins, resume
+    assert resume(lire_voisins(SORTIE_VOISINS)) == (0.6957, 0.742, 0.5745)
+
+
+def test_une_lecture_absente_reste_absente():
+    from suivi import resume
+    assert resume({}) == (None, None, None)
+
+
+def test_un_banc_encore_ecrit_nest_pas_evalue(tmp_path):
+    """`index-0.csv` s'écrit en dernier ; sans lui, on lirait un banc à moitié
+    encodé."""
+    from suivi import etat_evaluation
+    assert etat_evaluation(tmp_path) == 'incomplet'
+    (tmp_path / 'index-0.csv').write_text('')
+    assert etat_evaluation(tmp_path) == 'à faire'
+
+
+def test_les_etats_dune_evaluation(tmp_path):
+    import os
+    from suivi import etat_evaluation
+    (tmp_path / 'index-0.csv').write_text('')
+    partiel = tmp_path / 'voisins.txt.part'
+    partiel.write_text('')
+    os.utime(partiel, (1000, 1000))
+    assert etat_evaluation(tmp_path, maintenant=1100) == 'en cours'
+    # une évaluation tuée sans avoir fini ne bloque pas pour toujours
+    assert etat_evaluation(tmp_path, maintenant=1000 + 3600) == 'à faire'
+    (tmp_path / 'voisins.echec').write_text('')
+    assert etat_evaluation(tmp_path, maintenant=1100) == 'échec'
+    (tmp_path / 'voisins.txt').write_text('')
+    assert etat_evaluation(tmp_path) == 'faite'
+
+
+def test_une_seule_evaluation_a_la_fois(tmp_path):
+    """Chacune tient un cœur une minute ; toutes ensemble voleraient le
+    processeur au décodage des images de la distillation."""
+    from suivi import prochaine_evaluation
+    a, b = tmp_path / 'banc-e2', tmp_path / 'banc-e1'
+    for d in (a, b):
+        d.mkdir()
+        (d / 'index-0.csv').write_text('')
+    assert prochaine_evaluation([a, b]) == a
+    (a / 'voisins.txt.part').write_text('')
+    assert prochaine_evaluation([a, b]) is None
+    (a / 'voisins.txt.part').rename(a / 'voisins.txt')
+    assert prochaine_evaluation([a, b]) == b
+
+
+def test_lecart_se_dit_en_points():
+    from suivi import points
+    assert points(0.7050, 0.6957) == ' (+0.9)'
+    assert points(0.6531, 0.6957) == ' (−4.3)'
+    assert points(0.7, None) == ''
