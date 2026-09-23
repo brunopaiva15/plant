@@ -202,34 +202,34 @@ class FloraPill extends StatelessWidget {
       scale: 0.95,
       // Dans une bande qui défile, la largeur n'est pas bornée : la pilule
       // prend celle de son texte, jusqu'à un plafond. Dans une colonne, elle
-      // cède la place et coupe son libellé. C'est [IntrinsicWidth] qui borne
-      // la ligne dans les deux cas, pour que le libellé puisse plier.
+      // cède la place et coupe son libellé. La ligne est `min` et le libellé
+      // `Flexible` : c'est assez pour les deux cas. Un `IntrinsicWidth` le
+      // faisait avant, et Flutter web le mesurait mal — « 19° · … » sur une
+      // pilule qui avait la place.
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: maxWidth, minHeight: kMinTapTarget),
-        child: IntrinsicWidth(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: Space.xs),
-            decoration: BoxDecoration(
-              color: verre ? OnBrand.glass : c.surface,
-              borderRadius: Radii.fullAll,
-              border: verre ? Border.all(color: OnBrand.glassLine) : null,
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (emoji != null) ...[Text(emoji!, style: const TextStyle(fontSize: 15)), const SizedBox(width: 6)],
-                Flexible(
-                  child: Text(
-                    label,
-                    style: context.text.callout.copyWith(color: ink, fontWeight: FontWeight.w600),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: Space.md, vertical: Space.xs),
+          decoration: BoxDecoration(
+            color: verre ? OnBrand.glass : c.surface,
+            borderRadius: Radii.fullAll,
+            border: verre ? Border.all(color: OnBrand.glassLine) : null,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (emoji != null) ...[Text(emoji!, style: const TextStyle(fontSize: 15)), const SizedBox(width: 6)],
+              Flexible(
+                child: Text(
+                  label,
+                  style: context.text.callout.copyWith(color: ink, fontWeight: FontWeight.w600),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                if (detail != null) ...[const SizedBox(width: 6), Text(detail!, style: context.text.caption.copyWith(color: verre ? ink : null))],
-                if (chevron) ...[const SizedBox(width: 2), Icon(CupertinoIcons.chevron_right, size: 13, color: verre ? ink : c.inkTertiary)],
-              ],
-            ),
+              ),
+              if (detail != null) ...[const SizedBox(width: 6), Text(detail!, style: context.text.caption.copyWith(color: verre ? ink : null))],
+              if (chevron) ...[const SizedBox(width: 2), Icon(CupertinoIcons.chevron_right, size: 13, color: verre ? ink : c.inkTertiary)],
+            ],
           ),
         ),
       ),

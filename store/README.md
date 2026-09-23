@@ -6,11 +6,10 @@ Le projet Xcode déclare les deux familles (`TARGETED_DEVICE_FAMILY = "1,2"`)
 et App Store en réclame alors une série chacune. Le
 premier ne montre pas un écran, mais il en suit la mise en page : la marge
 de page de l'app, un grand titre en haut à gauche, puis des cartes en
-colonne. Une bande sauge porte le nom tracé à la main et la revendication
-en gras ; le pot de l'icône, entier, se pose sur son bord ; une carte de
-verre dépoli mord sur la bande et porte ce que l'app dit d'une plante ; une
-carte pleine de terre cuite dit ce que l'app n'impose pas — ni compte, ni
-publicité. Le mot « gratuit » n'y figure plus : l'app ne le sera pas.
+colonne. Sur le vert de la marque, le nom en Bricolage blanc et la
+revendication ; le pot de l'icône, entier, se pose sur une carte crème qui
+porte ce que l'app dit d'une plante ; une carte orange vif dit ce que l'app
+n'impose pas — ni compte, ni publicité. Le mot « gratuit » n'y figure plus : l'app ne le sera pas.
 L'espèce montrée est la monstera, celle que tout le monde reconnaît ; son
 arrosage et sa lumière sont ceux de son profil de soin
 (`data/species/care_profiles.dart`), son nom courant celui du catalogue
@@ -19,15 +18,16 @@ fiche chargée ne se lit pas dans une grille de vignettes.
 
 Les sept autres montrent une capture réelle de l'app dans un appareil
 dessiné, légèrement incliné, l'écran complet : c'est l'écran qu'on vend,
-rien ne le recouvre. Au-dessus, un titre tracé en Shantell Sans (la police
-« main » de l'app) et une ligne qui le précise.
+rien ne le recouvre. Au-dessus, un titre en Bricolage Grotesque très gras
+(la police des titres de l'app) et une ligne qui le précise.
 
-La série tient par deux règles communes. Le fond est le pastel plein de la
-teinte, avec deux ou trois formes organiques qui sortent du cadre — jamais
-un aplat, jamais une version laiteuse : à côté d'une fiche du magasin, un
-fond trop clair passe pour un blanc raté. Et un objet de l'onboarding se
-pose devant l'appareil, sur un coin bas, entier et à sa taille native —
-jamais derrière, jamais coupé. Le titre, lui, reste seul : un second objet
+La série tient par deux règles communes. Le fond est un aplat d'une couleur
+de l'app — le vert de la marque, l'orange, le jaune, le bleu, le rose, un
+lilas, le brun de nuit —, avec les deux grands disques pâles de ses têtes
+vertes en haut à droite ; le titre est blanc sur le vert et le brun, à
+l'encre sur les couleurs vives, comme dans l'app. Et un objet 3D se pose
+devant l'appareil, sur un coin bas, entier et à sa taille native — jamais
+derrière, jamais coupé, jamais sur sa propre couleur. Le titre, lui, reste seul : un second objet
 posé en marge faisait deux fois le même geste sur la même fiche.
 
 Le nom de l'application, sur la première fiche, a sa taille à lui
@@ -183,7 +183,7 @@ web depuis Google Fonts : quand le navigateur ne peut pas y aller directement,
 le script relaie ces requêtes par `curl`, qui suit le proxy de la machine.
 
 `compose.py` télécharge la police Inter (SIL OFL) dans `store/fonts/` au
-premier lancement ; Shantell Sans vient de `assets/fonts/`. Les captures et les polices ne sont pas versionnées.
+premier lancement ; Bricolage Grotesque vient de `assets/fonts/`. Les captures et les polices ne sont pas versionnées.
 
 L'iPhone Duo a sa propre taille de visuel — 2007 × 2853 pour l'écran
 intérieur —, mais App Store Connect n'en accepte pas encore le dépôt : la

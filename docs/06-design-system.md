@@ -1,12 +1,16 @@
 # F. Design system
 
-Identité : **argile, terre cuite, fait main**. L'app ressemble à l'atelier
-d'un potier : fond de papier crème, cartes qui semblent modelées, grands titres
-tracés à la main. Le vert reste l'accent du soin, la terre cuite celui de
-l'urgence.
+Identité : **franche, vive, tenue**. Chaque onglet s'ouvre sur le vert de
+l'icône, un grand titre blanc en Bricolage Grotesque et un grand chiffre ; une
+feuille crème remonte dessus et porte le contenu en aplats. Trois couleurs
+vives — l'orange, le jaune, le bleu — marquent ce qu'il y a à faire, et les
+objets 3D de l'icône se posent sur le vert. Les barres, les menus, les
+feuilles et les alertes restent ceux d'iOS : seul le contenu dessous change.
 
-Ce qu'on garde du design précédent : la grille, les cartes très arrondies, la
-tab bar en pilule, les pastels par type de soin. Ce qui change : la matière.
+La direction précédente, en argile — papier grainé, cartes modelées, titres à
+la main en Shantell Sans —, a laissé son nom à `ClayBox` et `ClayPainter`,
+et sa matière aux illustrations qui n'ont pas encore été refaites (les
+problèmes de santé, les fiches d'entretien, la motte de chargement).
 
 ## Matière : des aplats (`design_system/components/clay.dart`)
 Chaque surface est un `ClayBox`, peint par `ClayPainter` : un **aplat franc**,
@@ -188,8 +192,8 @@ exécution :
 - `onBrand` sur `brand` et `onPop` sur les accents vifs : **≥ 4.5:1** (7:1 en
   contraste élevé, où `brand` fonce et les accents vifs s'éclaircissent).
 
-C'est cette dernière règle qui fixe la clarté des accents, et qui a assombri
-la terre cuite, le bleu et l'ocre par rapport aux premières maquettes.
+C'est la règle d'`onAccent` qui fixe la clarté des accents de texte ; les
+accents vifs, eux, restent clairs et portent l'encre.
 
 ### Les commandes posées sur une image (`OnMedia`)
 La galerie dans un coin du viseur, la croix d'une vue de plus : sous elles il
@@ -770,8 +774,8 @@ mesure demeure sur la pilule. La teinte dit le sujet — bleu poussière pour
 la pluie, ocre pour l'air de la maison, sauge pour les rappels — et la
 carte de repos, « Tout est en ordre », reste crème. Sur une carte teintée,
 la tuile reste `surface`. `TodayNoticeSlot` pose la marge commune et fond
-la carte quand elle disparaît, sans laisser de vide. La carte du jour, en
-terre cuite, reste à part : c'est le chiffre du matin, pas un avis.
+la carte quand elle disparaît, sans laisser de vide. Le chiffre du matin, lui,
+n'est pas un avis : il est dans la tête verte.
 
 ## La fiche d'entretien (`features/species/presentation/care_guide_screen.dart`)
 La page suit le chemin réel d'entretien, en sections titrées : **ce qu'elle
@@ -790,10 +794,9 @@ lecture ; une carte se retrouve à sa couleur.
 `design_system/components/paper.dart`) : un cran plus claire que le canvas,
 une ombre droite — la lumière vient du dessus, pas d'un coin —, un filet, et
 un coin corné en bas à droite qui emporte l'ombre du coin avec lui. Les
-cartes d'argile restent des pièces posées sur la feuille : deux matières, et
-c'est leur écart qui dit que la fiche est un objet. Les titres de sections
-passent à la main (`SectionHeader`, Bricolage 22), comme écrits sur la
-feuille, et la provenance se tamponne au pied : le libellé de
+cartes restent des aplats posés sur la feuille : deux matières, et c'est leur
+écart qui dit que la fiche est un objet. Les titres de sections
+sont en Bricolage (`SectionHeader`, 22), et la provenance se tamponne au pied : le libellé de
 `careMatchLabel` — « Fiche de l'espèce », « Repères généraux », « Complétée
 par l'IA » — dans un cadre d'encre posé de travers. L'aperçu du dénicheur
 garde la surface de sa sheet (`CareGuideBody(paper: false)`) : une feuille
@@ -1165,8 +1168,9 @@ et fondues sur les bords.
 ## La page web de partage (`supabase/functions/share/`)
 Un lien d'invitation ou de plante ouvre une page dans un navigateur, souvent
 avant que l'application soit installée : c'est le premier Auxine que voit la
-personne invitée. Elle porte donc la même identité — papier crème grainé,
-pièces d'argile, titres à la main.
+personne invitée. Elle porte l'identité de la direction précédente — papier
+crème grainé, pièces d'argile, titres à la main — et n'a pas encore suivi la
+refonte : c'est la prochaine pièce à reprendre, avec sa vignette.
 
 - `page.ts` tient la feuille de style et la coquille ; `index.ts` route et
   interroge. La page se rend donc sans Supabase, ce qui permet de la
