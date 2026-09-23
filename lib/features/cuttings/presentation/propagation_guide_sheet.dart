@@ -204,6 +204,8 @@ class _PropagationGuideViewState extends ConsumerState<PropagationGuideView> wit
     final c = context.colors;
     final reduce = MediaQuery.disableAnimationsOf(context);
     final tint = _tint(c);
+    // Sous la bande du système, le fond de la feuille suit la teinte.
+    SheetFill.declare(context, OnboardingBackdrop.wash(c, tint));
 
     return Scaffold(
       backgroundColor: OnboardingBackdrop.wash(c, tint),
