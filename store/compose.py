@@ -728,9 +728,14 @@ def build(shots, out, lang, fmt='iphone'):
             shot = os.path.join(shots, 'plant-ficus.png')
             modal.update(scrim=0.36, sheet=ident_sheet(lang))
         if isinstance(shot, str) and not os.path.exists(shot):
-            # Une capture manquée ne bloque pas les autres : le visuel
-            # précédent reste en place, et on le dit.
-            print(f'{i}.png : pas de capture « {name} » dans {shots}, visuel laissé tel quel', file=sys.stderr)
+            # Une capture manquée ne bloque pas les autres. Mais le visuel
+            # d'avant ne reste pas en place : il vient d'une autre série, parfois
+            # d'un autre style, et il partirait au magasin sans que personne ne
+            # le voie — c'est ce qui était arrivé à la troisième fiche iPad.
+            ancien = os.path.join(out, f'{i}.png')
+            if os.path.exists(ancien):
+                os.remove(ancien)
+            print(f'{i}.png : pas de capture « {name} » dans {shots} — visuel retiré, rejouez la scène', file=sys.stderr)
             continue
         box = place_phone(img, shot, y=bottom + L['phone_gap'], angle=angle, **modal)
         place_object(img, clay, L['phone_clay'], corner, box)

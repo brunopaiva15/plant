@@ -146,6 +146,10 @@ scène manquée reste tel quel. Pour rejouer quelques scènes seulement :
 noms des scènes du test, pas ceux des captures : la scène « garden » en
 prend quatre.
 
+Une capture qui manque retire le visuel correspondant au lieu de le
+laisser en place : un visuel d'une série précédente partirait sinon au
+magasin sans que personne ne le voie.
+
 Les captures d'appareil sont l'écran entier, avec la place de la barre
 d'état en haut (marqueur `.device` dans le dossier) : `compose.py` y
 dessine la sienne, l'heure d'Apple.
