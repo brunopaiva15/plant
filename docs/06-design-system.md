@@ -1001,7 +1001,7 @@ dans une couche à part : juste dans le moteur des tests, mais sur l'iPhone
 la découpe se remplissait de noir, et l'application ne paraissait qu'une
 fois l'ouverture finie. Le fond est maintenant un rectangle percé du contour
 du pot, rempli en pair-impair — ce que tout moteur dessine de la même façon.
-Le contour (`app/launch_silhouette.dart`, environ 150 points) est tiré du
+Le contour (`app/launch_silhouette.dart`, environ 300 points) est tiré du
 rendu par `tool/build_app_icon.py` : suivi pixel à pixel, puis simplifié.
 L'ombre au pied du pot n'en fait pas partie.
 
