@@ -44,8 +44,9 @@ ni île ni antenne — un œil de caméra au milieu du bord haut, l'heure, le
 wifi, la batterie. Sur sa fiche d'ouverture, les trois soins passent côte à
 côte : en colonne, ils laisseraient la moitié droite vide.
 
-Le sixième montre l'identification là où elle commence : l'étape photo de
-la création, la photo prise, les trois premiers noms qu'Iris pose dessus —
+Le troisième, juste après l'écran du matin, montre l'identification là où
+elle commence : l'étape « Aperçu » de la création, la photo prise, les trois
+premiers noms qu'Iris pose dessus —
 nom courant en gras, nom scientifique dessous, la première proposition
 cernée de sauge. Le modèle tourne vraiment, sur la photo du Ficus lyrata de
 la démo. Le simulateur n'a pas de caméra : c'est « Choisir une photo » qui
@@ -54,8 +55,21 @@ sert de prise de vue, et le magasin de photos de la démo
 une photothèque vide. Rien d'autre n'est simulé — l'écran, le modèle et les
 noms sont ceux de l'app.
 
-Sur le web, où il n'y a ni caméra ni modèle, cette étape ne se capture pas :
-`compose.py` montre alors l'autre façon d'identifier, la feuille « Espèce »
+Sans Mac, le même écran se prend par un banc de test
+(`test/store/identification_capture_test.dart`) : l'écran de l'app, la
+photo CC0 du Ficus de `ident/`, et la réponse que le modèle livré donne sur
+elle (`ident/score.py`), les noms courants du catalogue dans chaque langue.
+
+```bash
+STORE_CAPTURE=1 flutter test test/store/identification_capture_test.dart
+```
+
+Il écrit `store/shots-<langue>/capture.png` ; hors de cette variable, il ne
+fait rien, et la suite de tests le saute. Après un nouveau modèle, ses
+scores se reportent là aussi.
+
+S'il manque, `compose.py` montre l'autre façon d'identifier, la feuille
+« Espèce »
 redessinée sur la fiche du Ficus assombrie — celle-là même qu'elle recouvre
 dans l'app —, avec des résultats vrais : la photo est une observation
 iNaturalist en CC0 (`ident/ficus-lyrata.jpg`, observation 359128431, photo
@@ -171,7 +185,7 @@ python3 store/compose.py store/shots-it store/it it
 Sans capture `capture.png` — l'étape photo demande une photo, que le web ne
 sait pas fournir —, `compose.py` redessine la feuille « Espèce » sur
 `plant-ficus.png`, avec les résultats mesurés par `ident/score.py`. Le
-sixième visuel montre alors la feuille plutôt que l'étape photo : les deux
+troisième visuel montre alors la feuille plutôt que l'étape photo : les deux
 disent la même chose de l'app, l'une après l'autre dans le parcours.
 
 Le viseur lui-même n'est capturé nulle part : ni le web ni le simulateur
