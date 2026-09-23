@@ -33,6 +33,7 @@ class BrandHeader extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(color: c.brand),
       child: ClipRect(
+        clipper: const _OpenTop(),
         child: CustomPaint(
           painter: _Discs(Colors.white),
           child: Padding(
@@ -48,6 +49,22 @@ class BrandHeader extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Coupe les disques sur les côtés et en bas, mais pas en haut.
+///
+/// Quand on tire la liste vers le bas, la tête descend et laisse voir le vert
+/// du fond au-dessus d'elle. Coupés au bord haut, les disques s'y arrêtaient
+/// net sur une ligne droite ; ouverts, ils continuent dans ce vert. Au repos,
+/// ce qui dépasse tombe hors de l'écran, et la liste le coupe.
+class _OpenTop extends CustomClipper<Rect> {
+  const _OpenTop();
+
+  @override
+  Rect getClip(Size size) => Rect.fromLTRB(0, -size.width, size.width, size.height);
+
+  @override
+  bool shouldReclip(_OpenTop oldClipper) => false;
 }
 
 /// Dit à ce qu'il enveloppe qu'il est posé sur le vert de la marque.
