@@ -1809,11 +1809,15 @@ tourner sans le manifeste et sans le banc, et écarte :
    observations iNaturalist du banc sont demandées à l'API, et toutes leurs
    photos écartées par `photo_id` comme par `observation_uuid`.
 
-### Ce qui reste à vérifier : la licence
+### La licence : le filtre de l'auteur fait foi
 
-Le jeu n'a **pas de colonne licence** ; son auteur annonce CC0 et CC-BY. La
-règle du § 4.1 de `docs/09` veut qu'on vérifie : un contrôle par échantillon
-contre l'API iNaturalist, avant que ces images entrent dans un modèle livré.
+Le jeu n'a pas de colonne licence. Son auteur le construit à partir de
+`photos.csv` du seau iNaturalist, qui porte la licence de chaque photo, et
+n'en garde que CC0 et CC-BY. **Décision du 23 septembre 2026 : ce filtre fait
+foi, sans contrôle par échantillon.**
+
+CC-BY demande l'attribution. `index.csv` garde le `photo_id` de chaque image
+retenue, ce qui suffit à retrouver l'auteur si un usage le demande.
 
 ### L'ordre
 

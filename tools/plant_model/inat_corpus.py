@@ -41,9 +41,10 @@ entraîner un classifieur, est ici une photo de plante comme une autre.
 3. **Aucun gigaoctet inutile.** Chaque fichier Parquet est téléchargé, trié,
    réduit à 320 px, puis supprimé. On ne garde que les plantes retenues.
 
-**Ce qu'il ne vérifie pas : la licence.** Le jeu n'a pas de colonne licence,
-son auteur annonce CC0 et CC-BY. Notre règle (§ 4.1) veut qu'on vérifie ;
-c'est un contrôle par échantillon, séparé, noté au § 20 quater de `docs/14`.
+**La licence n'est pas revérifiée.** Le jeu n'a pas de colonne licence ; son
+auteur filtre CC0 et CC-BY sur `photos.csv`, et ce filtre fait foi (décision
+du 23 septembre 2026, § 20 quater de `docs/14`). `index.csv` garde le
+`photo_id` de chaque image, de quoi retrouver l'attribution que CC-BY demande.
 
 **Ce script ne touche pas au GPU.** Il peut tourner pendant une distillation.
 
