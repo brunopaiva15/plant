@@ -31,6 +31,7 @@ Future<T?> showFloraSheet<T>(
     clipBehavior: Clip.antiAlias,
     constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.92),
     builder: (ctx) => _MargesLaterales(
+      fond: c.surface,
       child: Padding(
         padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(ctx).bottom),
         child: SafeArea(
@@ -201,16 +202,35 @@ class SheetHeader extends StatelessWidget {
 /// grande des deux de chaque côté. Seulement les côtés : le haut et le bas
 /// d'une feuille sont sa propre affaire, et les lui rendre la décalerait.
 ///
-/// Et la feuille s'écarte **pour de bon**, au lieu de se contenter de rentrer
-/// son contenu : c'est sa surface elle-même qui s'arrête avant la bande,
-/// comme le font les autres fenêtres de l'application. Une feuille dont le
-/// fond passait sous l'heure se voyait tout de suite, même avec un contenu
-/// bien rangé. Le `MediaQuery` rendu aux enfants repart donc à zéro de ces
-/// côtés-là : la marge a déjà été prise, la reprendre la compterait deux fois.
-class _MargesLaterales extends StatelessWidget {
-  const _MargesLaterales({required this.child});
+/// **Le contenu s'écarte, le fond non.** Une première version écartait la
+/// surface entière : la feuille s'arrêtait avant la bande, et l'on voyait par
+/// là la page d'en dessous — son vert, son gris —, comme une fenêtre mal
+/// fermée. Le fond passe maintenant sous la bande, comme la tête verte des
+/// pages ; seul ce qui s'y lit ou s'y touche reste dans la zone sûre. Le fond
+/// est celui que la feuille déclare ([SheetFill]), la feuille crème à défaut.
+/// Le `MediaQuery` rendu aux enfants repart à zéro de ces côtés : la marge a
+/// déjà été prise, la reprendre la compterait deux fois.
+class _MargesLaterales extends StatefulWidget {
+  const _MargesLaterales({required this.child, this.fond});
 
   final Widget child;
+
+  /// Le fond de la feuille, quand ce n'est pas la feuille crème : `surface`
+  /// pour une feuille du bas.
+  final Color? fond;
+
+  @override
+  State<_MargesLaterales> createState() => _MargesLateralesState();
+}
+
+class _MargesLateralesState extends State<_MargesLaterales> {
+  final ValueNotifier<Color?> _fond = ValueNotifier<Color?>(null);
+
+  @override
+  void dispose() {
+    _fond.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -219,13 +239,43 @@ class _MargesLaterales extends StatelessWidget {
     final marges = heritee.padding;
     final gauche = math.max(marges.left, vue.padding.left);
     final droite = math.max(marges.right, vue.padding.right);
+    final child = SheetFill._(notifier: _fond, child: widget.child);
     if (gauche == 0 && droite == 0) return child;
-    return Padding(
-      padding: EdgeInsets.only(left: gauche, right: droite),
-      child: MediaQuery(
-        data: heritee.copyWith(padding: marges.copyWith(left: 0, right: 0)),
-        child: child,
+    return ValueListenableBuilder<Color?>(
+      valueListenable: _fond,
+      builder: (context, fond, contenu) => ColoredBox(color: fond ?? widget.fond ?? context.colors.canvas, child: contenu),
+      child: Padding(
+        padding: EdgeInsets.only(left: gauche, right: droite),
+        child: MediaQuery(
+          data: heritee.copyWith(padding: marges.copyWith(left: 0, right: 0)),
+          child: child,
+        ),
       ),
     );
   }
+}
+
+/// Le fond d'une feuille, là où son contenu ne va pas : sous la bande que le
+/// système réserve sur un bord (voir [_MargesLaterales]).
+///
+/// Une feuille dont le fond n'est pas la feuille crème le déclare, et le
+/// redéclare s'il change — le guide de multiplication, dont la teinte suit
+/// l'étape.
+class SheetFill extends InheritedWidget {
+  const SheetFill._({required this.notifier, required super.child});
+
+  final ValueNotifier<Color?> notifier;
+
+  /// Pose [color] sous la bande, s'il y a une feuille autour de [context].
+  /// Sans effet ailleurs.
+  static void declare(BuildContext context, Color color) {
+    final fill = context.getInheritedWidgetOfExactType<SheetFill>();
+    if (fill == null || fill.notifier.value == color) return;
+    // Hors de la construction en cours : le fond se redessine à l'image
+    // suivante, sans reconstruire la feuille qui le déclare.
+    WidgetsBinding.instance.addPostFrameCallback((_) => fill.notifier.value = color);
+  }
+
+  @override
+  bool updateShouldNotify(SheetFill old) => old.notifier != notifier;
 }

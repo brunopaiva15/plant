@@ -263,4 +263,43 @@ void _testsDesFeuilles() {
     await tester.pumpAndSettle();
     expect(tester.getRect(find.byKey(const Key('dedans'))).right, moreOrLessEquals(466 - 84, epsilon: 0.5));
   });
+
+  // Le contenu s'arrête avant la bande, le fond non : une feuille qui
+  // s'arrêtait là laissait voir la page d'en dessous par la bande.
+  testWidgets('le fond d\'une feuille iOS passe sous la bande, son contenu non', (tester) async {
+    const size = Size(466, 678);
+    await tester.binding.setSurfaceSize(size);
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    tester.view.devicePixelRatio = 3;
+    tester.view.padding = const FakeViewPadding(right: 84 * 3);
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: buildFloraTheme(Brightness.light).copyWith(platform: TargetPlatform.iOS),
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: Center(
+              child: FloraButton(
+                label: 'ouvrir',
+                onPressed: () => showFloraFlow<void>(
+                  context,
+                  builder: (_) => const SizedBox.expand(key: Key('dedans')),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('ouvrir'));
+    await tester.pumpAndSettle();
+    final contenu = tester.getRect(find.byKey(const Key('dedans')));
+    expect(contenu.right, moreOrLessEquals(466 - 84, epsilon: 0.5));
+    final fond = find.ancestor(
+      of: find.byKey(const Key('dedans')),
+      matching: find.byWidgetPredicate((w) => w is ColoredBox && w.color == FloraColors.light.canvas),
+    );
+    expect(tester.getRect(fond.first).right, moreOrLessEquals(466, epsilon: 0.5));
+  });
 }
