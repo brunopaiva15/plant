@@ -1574,9 +1574,9 @@ change.
 | textes, armes égales | é3 | é6 | é7 | é10 |
 |---|---|---|---|---|
 | indoor, `fastvit_sa12` | 0,5909 | 0,6451 | — | 0,6513 |
-| indoor, **MobileNetV4** | 0,5883 | **0,6149** | 0,6167 | — |
+| indoor, **MobileNetV4** | 0,5883 | **0,6149** | 0,6167 | **0,6531** |
 | outdoor, `fastvit_sa12` | 0,6070 | 0,6615 | — | 0,7050 |
-| outdoor, **MobileNetV4** | 0,5800 | **0,6245** | 0,6430 | — |
+| outdoor, **MobileNetV4** | 0,5800 | **0,6245** | 0,6430 | **0,6580** |
 
 | pente é3 → é6, une octave | `fastvit_sa12` | **MobileNetV4** |
 |---|---|---|
@@ -1586,8 +1586,16 @@ change.
 
 **Même départ, pente plus faible partout.** À é3 les deux sont à trois
 images l'un de l'autre en indoor ; à é6 MobileNetV4 est 34 images derrière,
-et il plafonne déjà entre é6 et é7. Aucun point de contrôle ne lui donne
-l'avantage — é10 ne renversera pas l'ordre.
+et il plafonne déjà entre é6 et é7.
+
+> **Correction, é10 lu le 23 septembre.** « é10 ne renversera pas l'ordre »
+> était faux pour l'indoor : MobileNetV4 finit à **0,6531 contre 0,6513**,
+> deux images d'écart, soit à égalité. Sa pente é7 → é10 remonte à +0,071
+> par octave, au-dessus de tout ce que fastvit a fait en fin de passe. En
+> outdoor (0,6580 contre 0,7050) et hors répertoire (0,4705 contre 0,505) il
+> reste nettement derrière. Une accélération tardive d'un gros dorsal sous
+> taux constant est exactement ce que le calendrier de taux peut expliquer —
+> voir le § 19 undecies.
 
 > **L'hypothèse « capacité » du § 19 nonies est éliminée, sous la forme où
 > elle a été testée.** Plus de paramètres dans un réseau convolutif n'a pas
@@ -1611,6 +1619,39 @@ s'impose.
 > variable — c'était juste — mais la variable la moins chère à tester était
 > le calendrier, pas le dorsal. Une nuit plus tard, on sait au moins que ce
 > n'était pas la capacité.
+
+### 19 undecies. Le calendrier cosinus : à é6, il bat déjà é10 — 23 septembre 2026
+
+`fastvit_sa12`, même recette que la baseline, une seule variable : le taux
+descend de 1e-3 à zéro en cosinus au lieu de rester constant.
+
+| textes, é6 | taux constant, é6 | taux constant, **é10** | **cosinus, é6** |
+|---|---|---|---|
+| indoor, armes égales | 0,6451 | 0,6513 | **0,6646** |
+| indoor, répertoire entier | 0,5670 | 0,5750 | **0,5963** |
+| outdoor, armes égales | 0,6615 | 0,7050 | **0,7020** |
+| hors répertoire, rép. entier | 0,4790 | 0,5050 | **0,5325** |
+
+**À six époques sur dix, le bras cosinus dépasse la baseline complète en
+indoor et hors répertoire, et l'égale en outdoor.** À é6 son taux est encore
+à 3,5e-4 — un tiers de la valeur de départ ; les quatre époques qui restent
+sont celles du taux bas, où se gagnent les écarts fins.
+
+> **La prédiction écrite la veille était trop prudente.** J'annonçais des
+> premières époques proches de la baseline et un écart qui « doit apparaître
+> à partir de é6 ». À é6 il est de 22 images en indoor et de 81 en outdoor à
+> époque égale. Le taux de 1e-3 était trop haut dès le milieu de passe, pas
+> seulement à la fin.
+
+**Le plafond indoor de la baseline était donc un défaut de recette, pas une
+limite du modèle** — au moins en partie : é10 dira combien. Et la
+correction de MobileNetV4 au § 19 decies prend un autre sens : un gros
+dorsal qui accélère en fin de passe sous taux constant est un dorsal que le
+taux freinait davantage. L'hypothèse « capacité » n'est pas morte, elle a
+été mesurée sous un taux qui la désavantageait.
+
+**Ce qui reste loin : Iris 9.** 0,6646 contre 0,8119 en indoor, quinze points ;
+0,7020 contre 0,7615 en outdoor, six points.
 
 ## 20 ter. Pl@ntNet-300K comme corpus, pas comme avis — 22 septembre 2026
 
