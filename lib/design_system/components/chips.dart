@@ -52,20 +52,20 @@ class FloraChip extends StatelessWidget {
         curve: Motion.easeOut,
         padding: EdgeInsets.symmetric(horizontal: leading == null ? Space.md : Space.sm, vertical: leading == null ? Space.xs + 2 : 6),
         decoration: BoxDecoration(
-          color: selected ? c.sage : c.surface,
+          color: selected ? c.ink : c.surface,
           borderRadius: Radii.fullAll,
-          border: Border.all(color: selected ? c.sage : c.line),
+          border: dashed ? Border.all(color: c.line) : null,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (leading != null) ...[leading!, const SizedBox(width: Space.xs)],
             if (emoji != null) ...[Text(emoji!, style: const TextStyle(fontSize: 15)), const SizedBox(width: 6)],
-            if (icon != null) ...[Icon(icon, size: 16, color: selected ? c.onSage : c.ink), const SizedBox(width: 6)],
+            if (icon != null) ...[Icon(icon, size: 16, color: selected ? c.canvas : c.ink), const SizedBox(width: 6)],
             Flexible(
               child: Text(
                 label,
-                style: context.text.callout.copyWith(color: selected ? c.onSage : c.ink, fontWeight: FontWeight.w500),
+                style: context.text.callout.copyWith(color: selected ? c.canvas : c.ink, fontWeight: FontWeight.w600),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),

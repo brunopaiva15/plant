@@ -12,9 +12,10 @@ enum FloraButtonStyle { primary, secondary, tonal, ghost, destructive }
 
 enum FloraButtonSize { regular, small }
 
-/// Bouton en pilule d'argile. Une seule famille de boutons pour toute l'app :
-/// plein et en relief franc pour le geste principal, crème ou pastel en
-/// relief léger pour les autres, sans matière pour le bouton discret.
+/// Bouton en pilule pleine. Une seule famille de boutons pour toute l'app :
+/// vert pour le geste principal, crème ou pastel pour les autres, sans
+/// matière pour le bouton discret. [pop] le passe sur un accent vif
+/// (`waterPop` pour « Arroser »), avec l'encre `onPop` dessus.
 class FloraButton extends StatelessWidget {
   const FloraButton({
     super.key,
@@ -26,6 +27,7 @@ class FloraButton extends StatelessWidget {
     this.trailingIcon,
     this.loading = false,
     this.expand = false,
+    this.pop,
   });
 
   final String label;
@@ -39,10 +41,13 @@ class FloraButton extends StatelessWidget {
   final bool loading;
   final bool expand;
 
+  /// Un accent vif de la palette, qui remplace le fond du style.
+  final Color? pop;
+
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final (bg, fg) = switch (style) {
+    final (bg, fg) = pop != null ? (pop!, c.onPop) : switch (style) {
       FloraButtonStyle.primary => (c.sage, c.onSage),
       FloraButtonStyle.secondary => (c.surface, c.ink),
       FloraButtonStyle.tonal => (c.sageSoft, c.sage),
@@ -50,7 +55,7 @@ class FloraButton extends StatelessWidget {
       FloraButtonStyle.destructive => (c.danger, c.onAccent),
     };
     final small = size == FloraButtonSize.small;
-    final textStyle = (small ? context.text.callout : context.text.body).copyWith(color: fg, fontWeight: FontWeight.w600);
+    final textStyle = (small ? context.text.callout : context.text.body).copyWith(color: fg, fontWeight: FontWeight.w700);
     final row = Row(
       mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -80,7 +85,7 @@ class FloraButton extends StatelessWidget {
       ],
     );
     final padding = EdgeInsets.symmetric(horizontal: small ? Space.md : Space.xl);
-    final height = small ? 40.0 : 52.0;
+    final height = small ? 44.0 : 56.0;
     final child = style == FloraButtonStyle.ghost
         ? Container(constraints: BoxConstraints(minHeight: height), padding: padding, child: row)
         : ClayBox(

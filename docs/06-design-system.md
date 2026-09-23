@@ -8,23 +8,46 @@ l'urgence.
 Ce qu'on garde du design précédent : la grille, les cartes très arrondies, la
 tab bar en pilule, les pastels par type de soin. Ce qui change : la matière.
 
-## Matière : le clay (`design_system/components/clay.dart`)
-Chaque surface est un `ClayBox`, peint par `ClayPainter` :
-- une **ombre portée teintée** (brun terre en clair, noir en sombre), décalée
-  en bas à droite ;
-- un **reflet intérieur** blanc en haut à gauche et une **ombre intérieure** en
-  bas à droite : c'est ce qui donne le relief modelé.
-Tout est proportionné au plus petit côté (`unit`), donc une tuile de 56 px et
-un héros de 300 px ont le même rendu.
+## Matière : des aplats (`design_system/components/clay.dart`)
+Chaque surface est un `ClayBox`, peint par `ClayPainter` : un **aplat franc**,
+sans reflet ni ombre logée. La couleur fait le relief — une carte crème sur la
+feuille, un accent vif sur la carte. Sous le doigt, l'aplat fonce d'un cran
+(`press`) pendant que `Pressable` le resserre. Le nom vient de la première
+direction, en argile ; il est resté pour ne pas toucher cent appels.
 
 - `ClayShape.rounded(r)` (cartes), `.pill()` (boutons, tab bar, barre de
-  sélection, toast), `.blob(variant)` : quatre jeux de coins elliptiques,
-  choisis par index pour que deux tuiles voisines ne soient jamais identiques
-  (tuiles d'emoji, actions rapides).
-- `ClayDepth.light` (cartes) · `deep` (boutons principaux, héros, éléments
-  flottants).
-- `GrainOverlay` : `assets/textures/grain.png` répété par-dessus l'app à 7 %
-  (10 % en sombre). C'est le grain du papier ; il est ignoré par le pointeur.
+  sélection, toast), `.blob()` : une tuile aux coins arrondis au tiers de son
+  petit côté (tuiles d'emoji, actions rapides, avatars).
+- `floating: true` ajoute la seule ombre qui reste : neutre, droite sous la
+  pièce, pour ce qui flotte au-dessus du contenu (toast, barre de sélection,
+  barre d'onglets Flutter).
+- `ClayDepth` ne change plus le dessin ; il dit encore aux appelants qu'une
+  pièce est franche (bouton principal, carte de couleur).
+- Plus de grain : l'aplat crème se suffit, et le grain grisait les couleurs
+  vives. `assets/textures/grain.png` ne sert plus qu'à l'aperçu de partage.
+
+### La tête verte (`brand.dart`)
+L'écran d'un onglet s'ouvre sur le vert de l'icône et se poursuit sur une
+feuille crème qui remonte dessus :
+
+- `BrandHeader` : l'aplat `brand`, deux disques blancs à 5–6 % qui sortent du
+  cadre en haut à droite, et un texte et des icônes en `onBrand` d'office. Il
+  descend de `Radii.xl` sous la feuille qui suit.
+- `BrandSheet` : la feuille, `canvas`, coins hauts à `Radii.xl` (36), remontée
+  d'autant sur le vert.
+- `HeroNumber` : le grand chiffre (`text.hero`, 112 à 132 pt) et ce qu'il
+  compte, lus d'un tenant.
+- `GlassChip` : une pastille de verre sur le vert (blanc à 14 %, filet à
+  26 %), blanche et pleine quand elle est choisie.
+- `PopCard` : une carte d'accent vif (`terracottaPop`, `sunPop`, `waterPop`),
+  encre `onPop`, un objet 3D qui peut s'y poser à droite.
+- `StatBlock` : un libellé, un chiffre (`text.stat`), son unité ; en blanc sur
+  `brand` pour le chiffre principal d'une rangée (`large`).
+- `FloraButton(pop: …)` passe un bouton sur un accent vif : « Arroser » en
+  `waterPop`, « Fertiliser » en `sunPop`.
+
+Les barres restent celles d'iOS : la tête verte est du contenu, sous la barre
+de navigation native, jamais une barre dessinée en Flutter.
 
 Une `FloraChip` accepte une pièce dessinée devant son libellé (`leading`) plutôt
 qu'un emoji : c'est ce qui porte les illustrations d'argile des problèmes de
@@ -38,9 +61,8 @@ lumière d'une plante, son cycle de vie, la forme et l'origine d'un engrais.
 `FloraAvatar`, la pastille d'`EmptyState`, `SelectionBar` et le toast reposent
 tous sur `ClayBox` : un composant ne dessine jamais sa propre ombre.
 
-La pastille d'un état vide et celle d'un avatar sont des `blob` : leur forme
-est tirée de l'emoji ou du nom, donc stable d'un écran à l'autre et différente
-d'une personne à l'autre. Une pièce modelée, pas un rond.
+Une `FloraChip` choisie passe à l'encre pleine (`ink`, libellé `canvas`) ;
+les autres sont des aplats `surface`, sans filet.
 
 ### Chargement : la motte (`clay_loader.dart`)
 Pas de roue qui tourne. `ClayLoader` est une motte d'argile animée image par
@@ -218,8 +240,8 @@ nécessaire — Flutter épaissit tout seul les styles à `fontWeight`, mais la
 fonte variable des titres n'écoute que `FontVariation`.
 
 ## Spacing (`spacing.dart`) : 4 · 8 · 12 · 16 · 20 · 24 · 32 · 40 · 48
-## Radius (`radius.dart`) : small 10 · medium 16 · large 24 (cartes) · xl 32 (sheets, héros) · full (boutons, chips, tab bar)
-## Élévation : c'est le clay qui fait le relief (voir *Matière*). `shadows.dart` ne sert plus qu'aux rares éléments hors design system.
+## Radius (`radius.dart`) : small 10 · medium 16 · large 26 (cartes) · xl 36 (feuilles, sheets) · full (boutons, chips, tab bar)
+## Élévation : c'est la couleur qui fait le relief (voir *Matière*) ; seule une pièce `floating` porte une ombre. `shadows.dart` ne sert plus qu'aux rares éléments hors design system.
 ## Motion (`motion.dart`)
 - Durées : 150 (micro) · 250 (standard) · 400 (emphase). Courbes : `easeOutCubic`, `Curves.easeInOutCubicEmphasized` pour les sheets.
 - `reduced motion` : durées → 0, pas de translation, uniquement fondu.
@@ -1048,9 +1070,7 @@ montrent le même pot de 160 points au centre, sur le même sauge.
 Pour ce faire, il retient le premier cadre (`deferFirstFrame`) le temps de
 décoder ses images — une seconde au plus —, sinon le fond paraîtrait seul un
 instant. Android 12 ne montre qu'un disque de 192 dp au centre de l'icône de
-lancement : le pot, feuilles comprises, y tient largement à 160 dp. Et
-l'ouverture passe au-dessus du grain de l'application : l'écran natif n'en a
-pas.
+lancement : le pot, feuilles comprises, y tient largement à 160 dp.
 
 **Les barres natives d'iOS sont voilées tant qu'elle dure**
 (`NativeShell.setLaunching`). Elles sont posées par-dessus Flutter, et rien
