@@ -398,3 +398,15 @@ def test_une_passe_arretee_reste_visible_une_journee(tmp_path):
         os.utime(f, (1_000_000 - age, 1_000_000 - age))
     arretes = journaux_arretes(tmp_path, maintenant=1_000_000)
     assert [j.name for j, _ in arretes] == ['inat.log']
+
+
+def test_les_evaluations_prennent_un_python_qui_a_numpy(tmp_path):
+    """Le tableau tourne sans venv ; `voisins.py` non."""
+    from suivi import interprete_pour_voisins
+    venv = tmp_path / 'python3'
+    venv.write_text('')
+    assert interprete_pour_voisins('/usr/bin/python3', str(venv), numpy_ici=True) == '/usr/bin/python3'
+    assert interprete_pour_voisins('/usr/bin/python3', str(venv), numpy_ici=False) == str(venv)
+    # sans venv, on ne peut que tenter l'interprète courant
+    assert interprete_pour_voisins('/usr/bin/python3', str(tmp_path / 'absent'),
+                                   numpy_ici=False) == '/usr/bin/python3'

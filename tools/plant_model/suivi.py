@@ -513,6 +513,26 @@ def tableau(args) -> str:  # pragma: no cover - assemble des lectures disque
     return '\n'.join(out)
 
 
+def interprete_pour_voisins(courant: str = sys.executable,
+                            venv: str = '~/venv-torch/bin/python3',
+                            numpy_ici: bool | None = None) -> str:
+    """Le Python qui sait lancer `voisins.py`.
+
+    Le tableau n'a besoin que de la bibliothèque standard ; il tourne donc
+    aussi dans un terminal où `venv-torch` n'est pas activé. Mais les
+    évaluations héritaient de son interprète, et `voisins.py` sans numpy
+    échouait — é7 et é8 de la passe du 23 septembre. On garde l'interprète
+    courant s'il a numpy, sinon celui du venv s'il existe.
+    """
+    if numpy_ici is None:
+        import importlib.util
+        numpy_ici = importlib.util.find_spec('numpy') is not None
+    if numpy_ici:
+        return courant
+    candidat = Path(venv).expanduser()
+    return str(candidat) if candidat.exists() else courant
+
+
 def lancer_evaluation(banc: Path, cache: str) -> None:  # pragma: no cover - processus
     """`voisins.py` en arrière-plan, sortie dans le dossier du banc.
 
@@ -524,7 +544,7 @@ def lancer_evaluation(banc: Path, cache: str) -> None:  # pragma: no cover - pro
     ici = Path(__file__).resolve().parent
     partiel, final, echec = (banc / 'voisins.txt.part', banc / 'voisins.txt',
                              banc / 'voisins.echec')
-    commande = (f'{shlex.quote(sys.executable)} voisins.py --banc benchmark.csv '
+    commande = (f'{shlex.quote(interprete_pour_voisins())} voisins.py --banc benchmark.csv '
                 f'--cache {shlex.quote(str(Path(cache).expanduser()))} '
                 f'--embeddings {shlex.quote(str(banc))} > {shlex.quote(str(partiel))} 2>&1 '
                 f'&& mv {shlex.quote(str(partiel))} {shlex.quote(str(final))} '
