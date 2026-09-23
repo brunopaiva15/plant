@@ -305,3 +305,30 @@ def test_toutes_les_photos_dune_observation_sont_ses_soeurs():
 def test_une_photo_soeur_du_banc_est_ecartee_par_son_observation():
     """Autre photo_id, autre cadrage : seule l'observation la trahit."""
     assert motif_de_rejet('999', 51798, PLANTES, set(), 'u-555', {'u-555'}) == 'observation du banc'
+
+
+# --------------------------------------------------------------------------
+# taxa.csv, compressé ou non
+# --------------------------------------------------------------------------
+
+TAXA_TSV = ('taxon_id\tancestry\trank_level\trank\tname\tactive\n'
+            '47126\t48460\t70\tkingdom\tPlantae\ttrue\n'
+            '51798\t48460/47126/211194\t10\tspecies\tMonstera deliciosa\ttrue\n'
+            '4925\t48460/1/2\t10\tspecies\tBurhinus grallarius\ttrue\n')
+
+
+def test_taxa_se_lit_compresse(tmp_path):
+    import gzip
+    from inat_corpus import lire_taxa
+    f = tmp_path / 'taxa.csv.gz'
+    f.write_bytes(gzip.compress(TAXA_TSV.encode()))
+    assert lire_taxa(f) == {47126, 51798}
+
+
+def test_taxa_en_clair_sous_un_nom_gz_se_lit_quand_meme(tmp_path):
+    """S3 le sert avec `Content-Encoding: gzip` ; un client qui décompresse à
+    la volée l'enregistre en clair. Le nom ment, l'en-tête non."""
+    from inat_corpus import lire_taxa
+    f = tmp_path / 'taxa.csv.gz'
+    f.write_text(TAXA_TSV, encoding='utf-8')
+    assert lire_taxa(f) == {47126, 51798}

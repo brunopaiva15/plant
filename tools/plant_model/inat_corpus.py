@@ -104,8 +104,17 @@ def taxons_plantes(lignes) -> set[int]:
     return sortie
 
 
-def lire_taxa(chemin: Path) -> set[int]:  # pragma: no cover - fichier réel
-    with gzip.open(chemin, 'rt', encoding='utf-8', newline='') as f:
+def lire_taxa(chemin: Path) -> set[int]:
+    """`taxa.csv`, compressé ou non — on lit les deux premiers octets, pas le nom.
+
+    S3 sert ce fichier avec `Content-Encoding: gzip`, et un client HTTP qui
+    décompresse à la volée l'enregistre en clair sous un nom en `.gz`. Le
+    nom ment alors ; l'en-tête gzip (`1f 8b`), non.
+    """
+    with open(chemin, 'rb') as f:
+        compresse = f.read(2) == b'\x1f\x8b'
+    ouvrir = gzip.open if compresse else open
+    with ouvrir(chemin, 'rt', encoding='utf-8', newline='') as f:
         return taxons_plantes(csv.DictReader(f, delimiter='\t'))
 
 
@@ -322,8 +331,12 @@ def telecharger(url: str, dest: Path, entetes: dict | None = None,
                     break
                 r.raise_for_status()
                 mode = 'ab' if deja and r.status_code == 206 else 'wb'
+                # Les octets tels qu'envoyés, sans décompression à la volée :
+                # `iter_content` défait un `Content-Encoding: gzip`, et un
+                # `.gz` arrivait en clair. Une reprise par plage compte aussi
+                # en octets envoyés, pas en octets décompressés.
                 with open(partiel, mode) as f:
-                    for bloc in r.iter_content(1 << 20):
+                    for bloc in r.raw.stream(1 << 20, decode_content=False):
                         f.write(bloc)
             break
         except Exception as e:
