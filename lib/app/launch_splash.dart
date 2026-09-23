@@ -1,10 +1,8 @@
-import 'dart:async';
-import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
 
 import '../core/native_shell.dart';
 import '../design_system/design_system.dart';
+import 'launch_silhouette.dart';
 
 /// L'ouverture d'Auxine : le pot cligne de l'œil, prend son élan, puis sa
 /// silhouette s'ouvre sur l'application, comme une fenêtre qui s'agrandit.
@@ -83,10 +81,6 @@ class _LaunchSplashState extends State<LaunchSplash> with SingleTickerProviderSt
   bool _done = false;
   bool _reduced = false;
 
-  /// Le pot décodé, pour la fenêtre : c'est sa silhouette qu'on découpe dans
-  /// le fond. `null` tant qu'il n'est pas prêt — le fond part alors en fondu.
-  ui.Image? _hole;
-
   @override
   void initState() {
     super.initState();
@@ -111,7 +105,6 @@ class _LaunchSplashState extends State<LaunchSplash> with SingleTickerProviderSt
     // d'une seconde, l'ouverture part telle quelle.
     Future.wait([
       for (final image in [LaunchSplash._logo, ...LaunchSplash._wink]) precacheImage(image, context),
-      _decode(LaunchSplash._logo).then<ui.Image?>((image) => _hole = image, onError: (Object _) => null),
     ]).timeout(const Duration(seconds: 1), onTimeout: () => const []).whenComplete(() {
       binding.allowFirstFrame();
       if (!mounted) return;
@@ -120,27 +113,9 @@ class _LaunchSplashState extends State<LaunchSplash> with SingleTickerProviderSt
     });
   }
 
-  /// L'image elle-même, et non un widget qui l'affiche : le peintre de la
-  /// fenêtre en a besoin pour découper le fond.
-  Future<ui.Image> _decode(ImageProvider provider) {
-    final done = Completer<ui.Image>();
-    final stream = provider.resolve(createLocalImageConfiguration(context));
-    late final ImageStreamListener listener;
-    listener = ImageStreamListener((info, _) {
-      if (!done.isCompleted) done.complete(info.image.clone());
-      stream.removeListener(listener);
-    }, onError: (error, stack) {
-      if (!done.isCompleted) done.completeError(error, stack);
-      stream.removeListener(listener);
-    });
-    stream.addListener(listener);
-    return done.future;
-  }
-
   @override
   void dispose() {
     _controller.dispose();
-    _hole?.dispose();
     if (!_done) NativeShell.setLaunching(false);
     super.dispose();
   }
@@ -221,16 +196,10 @@ class _LaunchSplashState extends State<LaunchSplash> with SingleTickerProviderSt
     final pot = 1 - _phase(ms, _zoomStart, _zoomStart + 160, Curves.easeOut);
 
     final opening = ms >= _zoomStart;
-    final hole = _hole;
     return Stack(
       fit: StackFit.expand,
       children: [
-        if (!opening)
-          const ColoredBox(color: LaunchSplash.background)
-        else if (hole != null)
-          CustomPaint(painter: _Window(image: hole, scale: scale))
-        else
-          Opacity(opacity: 1 - _phase(ms, _zoomStart, _total, Motion.easeOut), child: const ColoredBox(color: LaunchSplash.background)),
+        if (!opening) const ColoredBox(color: LaunchSplash.background) else CustomPaint(painter: _Window(scale: scale)),
         if (pot > 0)
           Center(
             child: Opacity(
@@ -283,42 +252,32 @@ class _Pot extends StatelessWidget {
 
 /// Le fond sauge percé de la silhouette du pot, à l'échelle [scale].
 ///
-/// L'ombre au pied du pot, à demi transparente, n'est pas une fenêtre : la
-/// matrice de couleur ne garde du masque que ce qui est franchement opaque,
-/// c'est-à-dire le pot et sa pousse.
+/// Un tracé, et non une image découpée par un mode de fusion : sur l'iPhone,
+/// le moteur de rendu remplissait de noir la découpe d'une couche à part, et
+/// l'application ne se voyait qu'une fois l'ouverture finie. Le rectangle et
+/// le contour du pot (`launchSilhouette`, tiré du rendu par
+/// `tool/build_app_icon.py`) se remplissent en pair-impair : tout sauf le pot.
 class _Window extends CustomPainter {
-  const _Window({required this.image, required this.scale});
+  const _Window({required this.scale});
 
-  final ui.Image image;
   final double scale;
-
-  static const _solid = ColorFilter.matrix([
-    0, 0, 0, 0, 0, //
-    0, 0, 0, 0, 0, //
-    0, 0, 0, 0, 0, //
-    0, 0, 0, 4, -510,
-  ]);
 
   @override
   void paint(Canvas canvas, Size size) {
     final bounds = Offset.zero & size;
-    canvas.saveLayer(bounds, Paint());
-    canvas.drawRect(bounds, Paint()..color = LaunchSplash.background);
     final side = LaunchSplash.logoSize * scale;
-    final window = Rect.fromCenter(center: bounds.center, width: side, height: side);
-    final src = Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble());
-    canvas.drawImageRect(
-      image,
-      src,
-      window,
-      Paint()
-        ..blendMode = BlendMode.dstOut
-        ..colorFilter = _solid
-        ..filterQuality = FilterQuality.medium,
-    );
-    canvas.restore();
+    final origin = bounds.center - Offset(side / 2, side / 2);
+    final pot = [
+      for (var i = 0; i + 1 < launchSilhouette.length; i += 2)
+        origin + Offset(launchSilhouette[i] * side, launchSilhouette[i + 1] * side),
+    ];
+    final path = Path()
+      ..fillType = PathFillType.evenOdd
+      ..addRect(bounds)
+      ..addPolygon(pot, true);
+    canvas.drawPath(path, Paint()..color = LaunchSplash.background);
   }
 
   @override
-  bool shouldRepaint(_Window old) => old.scale != scale || old.image != image;
+  bool shouldRepaint(_Window old) => old.scale != scale;
 }

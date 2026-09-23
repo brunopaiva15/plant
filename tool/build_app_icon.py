@@ -17,6 +17,7 @@
 # pas du dessin.
 # ============================================================
 import json
+import math
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFilter
@@ -25,6 +26,7 @@ RACINE = Path(__file__).resolve().parent.parent
 ICONES = RACINE / "assets" / "icon"
 RENDUS = ICONES / "rendu"
 SPLASH = RACINE / "assets" / "splash"
+DART_CONTOUR = RACINE / "lib" / "app" / "launch_silhouette.dart"
 COTE = 1024
 
 # La zone de l'œil de droite dans le rendu du lancement, de 1024 px (gauche,
@@ -90,6 +92,69 @@ def ombrer(pot):
     ombre = ombre.filter(ImageFilter.GaussianBlur(base * 0.05))
     ombre.alpha_composite(pot)
     return ombre
+
+
+def contour(image, cote=512, tolerance=0.6):
+    """Le contour du pot, en polygone : la fenêtre de l'ouverture.
+
+    `LaunchSplash` perce le fond de cette forme au lieu d'y découper l'image
+    par un mode de fusion : sur l'iPhone, le moteur de rendu remplissait la
+    découpe de noir. Un tracé, lui, se dessine partout pareil. Le pot, la
+    tige et les feuilles se touchent : un seul contour extérieur les prend
+    tous. On le suit pixel à pixel (voisinage de Moore) sur une version
+    réduite de l'image, puis on le simplifie (Douglas-Peucker) à
+    `tolerance` pixel près. Les points sont rendus entre 0 et 1.
+    """
+    alpha = image.getchannel("A").resize((cote, cote), Image.LANCZOS).point(lambda v: 255 if v > 128 else 0)
+    px = alpha.load()
+
+    def plein(x, y):
+        return 0 <= x < cote and 0 <= y < cote and px[x, y] > 0
+
+    depart = next((x, y) for y in range(cote) for x in range(cote) if plein(x, y))
+    voisins = [(-1, 0), (-1, -1), (0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1)]
+    p, arriere, trace = depart, (depart[0] - 1, depart[1]), [depart]
+    while True:
+        k = voisins.index((arriere[0] - p[0], arriere[1] - p[1]))
+        for i in range(1, 9):
+            d = voisins[(k + i) % 8]
+            q = (p[0] + d[0], p[1] + d[1])
+            if plein(*q):
+                a = voisins[(k + i - 1) % 8]
+                arriere, p = (p[0] + a[0], p[1] + a[1]), q
+                break
+        if p == depart:
+            break
+        trace.append(p)
+
+    def simplifier(points):
+        if len(points) < 3:
+            return points
+        (x1, y1), (x2, y2) = points[0], points[-1]
+        longueur = math.hypot(x2 - x1, y2 - y1) or 1e-9
+        ecarts = [abs((y2 - y1) * x - (x2 - x1) * y + x2 * y1 - y2 * x1) / longueur for x, y in points[1:-1]]
+        i = max(range(len(ecarts)), key=ecarts.__getitem__)
+        if ecarts[i] <= tolerance:
+            return [points[0], points[-1]]
+        return simplifier(points[: i + 2])[:-1] + simplifier(points[i + 1 :])
+
+    # Le contour est fermé : on le coupe en deux au point le plus éloigné du
+    # départ pour que la simplification ait deux extrémités fixes.
+    loin = max(range(len(trace)), key=lambda i: math.dist(trace[i], depart))
+    points = simplifier(trace[: loin + 1])[:-1] + simplifier(trace[loin:] + [depart])[:-1]
+    return [((x + 0.5) / cote, (y + 0.5) / cote) for x, y in points]
+
+
+def ecrire_contour(points):
+    lignes = [f"  {x:.4f}, {y:.4f}," for x, y in points]
+    DART_CONTOUR.write_text(
+        "// Généré par tool/build_app_icon.py — ne pas modifier à la main.\n"
+        "//\n"
+        "// Le contour du pot de l'ouverture, en coordonnées de 0 à 1 dans son\n"
+        "// image (x, y, x, y…) : la fenêtre que `LaunchSplash` perce dans le fond.\n"
+        "\n"
+        "const launchSilhouette = <double>[\n" + "\n".join(lignes) + "\n];\n"
+    )
 
 
 def plumer(image):
@@ -223,6 +288,7 @@ def main():
     android(pleine, images["icon_foreground.png"][0], images["icon_background.png"][0], logo)
     web(pleine)
     splash(logo)
+    ecrire_contour(contour(rendu("lancement")))
     print(f"Icônes régénérées depuis {RENDUS.relative_to(RACINE)}")
 
 
