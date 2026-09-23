@@ -320,9 +320,10 @@ def profils():
 
     # La miniature d'une vidéo : 1280 × 720.
     img, ink, ink2 = fond((1280, 720), 'sun')
-    texte(img, 80, 110, 640, 'Découvrez\nAuxine.', 'Le carnet de vos plantes.', 150, ink, ink2)
+    texte(img, 80, 90, 640, 'Découvrez\nAuxine.', 'Le carnet de vos plantes.', 150, ink, ink2)
     telephone(img, 'plants', 470, 1280 - 470 - 60, 90, -6)
-    objet(img, POT, 300, 560, 720 - 30)
+    # Sous la phrase, jamais dessus : le pot se pose entre le texte et l'appareil.
+    objet(img, POT, 190, 560, 720 - 36)
     enregistrer(img, 'miniature-video-1280x720')
 
 
