@@ -44,3 +44,19 @@ collection, le calendrier du jardin, les données sur l'appareil. Un thème
 nouveau, ou un format de plus, s'ajoute là. Les textes suivent le ton de
 `docs/06-design-system.md` : pas de point d'exclamation, des chiffres en
 chiffres.
+
+## La sortie
+
+`marketing/fr/sortie/` réunit la série du lancement, définie dans `SORTIE` :
+
+| Thème | Ce qu'il dit | Formats |
+|---|---|---|
+| `bientot` | « Bientôt sur l'App Store. » | carré, portrait, story |
+| `j-3`, `j-2`, `j-1` | le compte à rebours | carré, story |
+| `disponible` | « Auxine est disponible. », le pot seul | carré, portrait, story, 16:9 |
+| `disponible-ecran` | la même annonce, avec l'écran Aujourd'hui | carré, portrait, story, 16:9 |
+| `merci` | « Merci. Pour votre accueil et vos retours. » | carré, portrait, story |
+| `nouveautes` | un modèle pour chaque mise à jour | carré, story |
+
+S'y ajoutent les bannières X et LinkedIn « Disponible sur l'App Store. ».
+Aucune image ne porte de date : elle va dans le texte qui l'accompagne.

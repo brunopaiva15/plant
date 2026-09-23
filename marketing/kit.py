@@ -36,7 +36,7 @@ OBJ = 'assets/onboarding/collection_{}.webp'
 THEMES = {
     'marque': dict(title='Le carnet\nde vos plantes.', sub='Soins, identification, diagnostic et journal photo.',
                    tint='sage', shot='today', obj=POT),
-    'prix': dict(title='0,99 €', lead='Un seul achat.\nSans abonnement.', sub=None, tint='sun', shot='plants',
+    'prix': dict(big=True, title='0,99 €', lead='Un seul achat.\nSans abonnement.', sub=None, tint='sun', shot='plants',
                  obj=OBJ.format('monstera'),
                  pills=['Toutes les fonctions', 'Sans publicité', 'Sans achat intégré', 'Plantes illimitées']),
     'iris': dict(title='Quelle est\ncette plante ?', sub='Une photo suffit, même sans réseau.', tint='lavender',
@@ -54,6 +54,25 @@ THEMES = {
     'hors-ligne': dict(title='Vos plantes\nrestent chez vous.', sub='Sans compte, vos données restent sur votre appareil.',
                        tint='night', shot=None, obj=POT),
 }
+
+
+# La sortie : l'annonce, l'attente, le compte à rebours, le merci, et un
+# modèle pour chaque mise à jour. Pas de date : elle se met dans le texte
+# qui accompagne l'image.
+SORTIE = {
+    'bientot': dict(title='Bientôt\nsur l’App Store.', sub='Auxine, le carnet de vos plantes.', tint='night', shot=None, obj=POT),
+    'j-3': dict(big=True, title='J-3', lead='Auxine arrive\nsur l’App Store.', sub=None, tint='water', shot=None, obj=POT),
+    'j-2': dict(big=True, title='J-2', lead='Auxine arrive\nsur l’App Store.', sub=None, tint='lavender', shot=None, obj=POT),
+    'j-1': dict(big=True, title='J-1', lead='Auxine arrive\nsur l’App Store.', sub=None, tint='rose', shot=None, obj=POT),
+    'disponible': dict(title='Auxine est\ndisponible.', sub='Sur l’App Store, pour iPhone et iPad.', tint='sage', shot=None, obj=POT,
+                       pills=['0,99 €', 'Un seul achat', 'Sans abonnement']),
+    'disponible-ecran': dict(title='Auxine est\ndisponible.', sub='Sur l’App Store, pour iPhone et iPad.', tint='sun', shot='today',
+                             obj=OBJ.format('monstera'), pills=['0,99 €', 'Un seul achat', 'Sans abonnement']),
+    'merci': dict(big=True, title='Merci.', lead='Pour votre accueil\net vos retours.', sub=None, tint='sun', shot=None, obj=POT),
+    'nouveautes': dict(title='Nouveau\ndans Auxine.', sub='La mise à jour est sur l’App Store.', tint='terracotta', shot='today',
+                       obj=OBJ.format('caoutchouc')),
+}
+THEMES.update(SORTIE)
 
 
 # --- les outils ------------------------------------------------------------------
@@ -90,6 +109,9 @@ def texte(img, x, y, width, title, sub, size, ink, ink2, align='left', lead=None
     """Le titre en Bricolage, la phrase en Inter. Un titre géant (le prix)
     prend dessous une seconde ligne en Bricolage, [lead]. Rend le bas du bloc."""
     d = ImageDraw.Draw(img)
+    # Un mot ne se coupe pas : trop large pour la place, le titre rapetisse.
+    while max(d.textlength(m, font=C.display(size)) for m in title.split()) > width:
+        size -= 4
     blocs = [(title, C.display(size), 1.06)]
     if lead:
         blocs.append((lead, C.display(int(size * 0.3), 750), 1.1))
@@ -147,6 +169,14 @@ def objet(img, path, box, x, y):
     return o.size
 
 
+def objet_sous(img, path, top, bottom, box, align, width, margin=40):
+    """L'objet entre le bas du texte ([top]) et [bottom], aussi grand que
+    [box] le permet : il ne remonte jamais sur une ligne."""
+    o = C.crisp(path, box=int(max(160, min(box, bottom - top))))
+    x = (width - o.width) / 2 if align == 'center' else width - o.width - margin
+    poser(img, o, (x, bottom - o.height), blur=max(12, o.height // 10), offset=(o.width // 40, o.height // 14), alpha=0.26)
+
+
 def marque(img, cx, cy, height, ink, ink2, tagline=True):
     """Le pot de l'icône, « Auxine » à côté, et la phrase dessous : le groupe
     centré sur (cx, cy)."""
@@ -154,9 +184,10 @@ def marque(img, cx, cy, height, ink, ink2, tagline=True):
     pot = C.crisp(POT, box=int(height))
     title = C.display(int(height * 0.52))
     sub = C.font('Medium', int(height * 0.12))
+    phrase = tagline if isinstance(tagline, str) else 'Le carnet de vos plantes.'
     tw = d.textlength('Auxine', font=title)
     if tagline:
-        tw = max(tw, d.textlength('Le carnet de vos plantes.', font=sub))
+        tw = max(tw, d.textlength(phrase, font=sub))
     gap = height * 0.15
     x0 = cx - (pot.width + gap + tw) / 2
     base = cy + height / 2
@@ -165,11 +196,12 @@ def marque(img, cx, cy, height, ink, ink2, tagline=True):
     d = ImageDraw.Draw(img)
     d.text((tx, cy + height * (0.14 if tagline else 0.2)), 'Auxine', font=title, fill=ink, anchor='ls')
     if tagline:
-        d.text((tx + height * 0.02, cy + height * 0.36), 'Le carnet de vos plantes.', font=sub, fill=ink2, anchor='ls')
+        d.text((tx + height * 0.02, cy + height * 0.36), phrase, font=sub, fill=ink2, anchor='ls')
 
 
 def enregistrer(img, name, transparent=False):
     path = os.path.join(OUT, name)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     if transparent:
         img.save(path + '.png', optimize=True)
     else:
@@ -185,15 +217,22 @@ def encre_pastille(tint):
 
 # --- les formats ---------------------------------------------------------------
 
-def carre(key):
+def carre(key, dossier=''):
     """Publication carrée, 1080 × 1080 (Instagram, X, Facebook, LinkedIn)."""
     t = THEMES[key]
     img, ink, ink2 = fond((1080, 1080), t['tint'])
+    big = t.get('big')
     if t['shot'] is None:
-        texte(img, 80, 96, 920, t['title'], t['sub'], 96, ink, ink2)
-        objet(img, t['obj'], 560, 1080 - 600, 1080 - 70)
+        y = texte(img, 80, 96, 920, t['title'], t['sub'], 300 if big else 96, ink, ink2, lead=t.get('lead'))
+        if t.get('pills'):
+            fill, pen = encre_pastille(t['tint'])
+            pastilles(img, 80, y + 40, t['pills'], 30, fill, pen)
+            objet_sous(img, t['obj'], y + 30, 1080 - 60, 520, 'right', 1080)
+        elif big:
+            objet_sous(img, t['obj'], y + 30, 1080 - 60, 560, 'right', 1080)
+        else:
+            objet(img, t['obj'], 560, 1080 - 600, 1080 - 70)
     else:
-        big = key == 'prix'
         y = texte(img, 72, 76, 936, t['title'], t['sub'], 200 if big else 84, ink, ink2, lead=t.get('lead'))
         telephone(img, t['shot'], 470, 1080 - 470 - 30, max(y + 30, 400), -4)
         if t.get('pills'):
@@ -201,27 +240,34 @@ def carre(key):
             pastilles(img, 72, y + 40, t['pills'], 27, fill, pen)
         else:
             objet(img, t['obj'], 330, 60, 1080 - 50)
-    enregistrer(img, f'post-carre-{key}')
+    enregistrer(img, f'{dossier}post-carre-{key}')
 
 
-def portrait(key):
+def portrait(key, dossier=''):
     """Publication 4:5, 1080 × 1350 : la plus grande place dans un fil."""
     t = THEMES[key]
     img, ink, ink2 = fond((1080, 1350), t['tint'])
-    big = key == 'prix'
-    y = texte(img, 72, 84, 936, t['title'], t['sub'], 250 if big else 96, ink, ink2, lead=t.get('lead'))
+    big = t.get('big')
+    y = texte(img, 72, 84, 936, t['title'], t['sub'], (330 if t['shot'] is None else 250) if big else 96, ink, ink2, lead=t.get('lead'))
+    if t['shot'] is None:
+        if t.get('pills'):
+            fill, pen = encre_pastille(t['tint'])
+            pastilles(img, 72, y + 40, t['pills'], 32, fill, pen)
+        objet_sous(img, t['obj'], y + 40, 1350 - 70, 640, 'right', 1080)
+        enregistrer(img, f'{dossier}post-portrait-{key}')
+        return
     top = max(y + 50, 560)
     telephone(img, t['shot'], 560, 1080 - 560 + 20, top, -5)
     if t.get('pills'):
         fill, pen = encre_pastille(t['tint'])
-        pastilles(img, 72, top + 50, t['pills'], 30, fill, pen)
+        pastilles(img, 72, min(top + 50, y + 40), t['pills'], 30, fill, pen)
         objet(img, t['obj'], 300, 50, 1350 - 40)
     else:
         objet(img, t['obj'], 360, 50, 1350 - 50)
-    enregistrer(img, f'post-portrait-{key}')
+    enregistrer(img, f'{dossier}post-portrait-{key}')
 
 
-def story(key):
+def story(key, dossier=''):
     """Story et Reels, 1080 × 1920. Le haut (250 px) et le bas (340 px)
     passent sous l'interface : le texte s'en garde."""
     t = THEMES[key]
@@ -232,17 +278,20 @@ def story(key):
               110, ink, ink2, align='center')
         enregistrer(img, f'story-{key}')
         return
-    big = key == 'prix'
-    y = texte(img, 80, 260, 920, t['title'], t['sub'], 280 if big else 118, ink, ink2, lead=t.get('lead'))
+    big = t.get('big')
+    y = texte(img, 80, 260, 920, t['title'], t['sub'], (400 if t['shot'] is None else 280) if big else 118, ink, ink2, lead=t.get('lead'))
     if t.get('pills'):
         fill, pen = encre_pastille(t['tint'])
         y = pastilles(img, 80, y + 40, t['pills'], 34, fill, pen, vertical=False, max_x=1000)
-    telephone(img, t['shot'], 720, 1080 - 720 + 20, max(y + 70, 820), -4)
-    objet(img, t['obj'], 300, 0, 1920 - 150)
-    enregistrer(img, f'story-{key}')
+    if t['shot'] is None:
+        objet_sous(img, t['obj'], y + 80, 1920 - 320, 780, 'center', 1080)
+    else:
+        telephone(img, t['shot'], 720, 1080 - 720 + 20, max(y + 70, 820), -4)
+        objet(img, t['obj'], 300, 0, 1920 - 150)
+    enregistrer(img, f'{dossier}story-{key}')
 
 
-def paysage(key):
+def paysage(key, dossier=''):
     """Publication 16:9, 1600 × 900 (X, LinkedIn, présentation)."""
     t = THEMES[key]
     img, ink, ink2 = fond((1600, 900), t['tint'])
@@ -250,15 +299,22 @@ def paysage(key):
         marque(img, 800, 430, 300, ink, ink2)
         enregistrer(img, f'post-paysage-{key}')
         return
-    big = key == 'prix'
+    big = t.get('big')
     y = texte(img, 96, 150, 800, t['title'], t['sub'], 220 if big else 100, ink, ink2, lead=t.get('lead'))
+    if t['shot'] is None:
+        if t.get('pills'):
+            fill, pen = encre_pastille(t['tint'])
+            pastilles(img, 96, y + 40, t['pills'], 30, fill, pen, vertical=False, max_x=940)
+        objet_sous(img, t['obj'], 90, 900 - 70, 640, 'right', 1600, margin=110)
+        enregistrer(img, f'{dossier}post-paysage-{key}')
+        return
     telephone(img, t['shot'], 540, 1600 - 540 - 60, 120, -5)
     if t.get('pills'):
         fill, pen = encre_pastille(t['tint'])
         pastilles(img, 96, y + 40, t['pills'][:3], 28, fill, pen, vertical=False, max_x=940)
     else:
         objet(img, t['obj'], 330, 760, 900 - 40)
-    enregistrer(img, f'post-paysage-{key}')
+    enregistrer(img, f'{dossier}post-paysage-{key}')
 
 
 def profils():
@@ -327,7 +383,25 @@ def profils():
     enregistrer(img, 'miniature-video-1280x720')
 
 
+def sortie():
+    """La série de la sortie, dans fr/sortie/."""
+    d = 'sortie/'
+    for k in SORTIE:
+        carre(k, d)
+        story(k, d)
+    for k in ('bientot', 'disponible', 'disponible-ecran', 'merci'):
+        portrait(k, d)
+    for k in ('disponible', 'disponible-ecran'):
+        paysage(k, d)
+    for nom, taille, cy, h in (('banniere-x-1500x500', (1500, 500), 330, 250),
+                               ('banniere-linkedin-1584x396', (1584, 396), 200, 230)):
+        img, ink, ink2 = fond(taille, 'sage')
+        marque(img, 675 if taille[0] == 1500 else 900, cy, h, ink, ink2, tagline='Disponible sur l’App Store.')
+        enregistrer(img, f'{d}{nom}')
+
+
 if __name__ == '__main__':
+    sortie()
     profils()
     for k in ('prix', 'iris', 'soins', 'diagnostic', 'fiche', 'hors-ligne'):
         carre(k)
@@ -337,4 +411,5 @@ if __name__ == '__main__':
         story(k)
     for k in ('marque', 'iris', 'prix'):
         paysage(k)
-    print(len(os.listdir(OUT)), 'fichiers dans', os.path.relpath(OUT))
+    n = sum(len(f) for _, _, f in os.walk(OUT))
+    print(n, 'fichiers dans', os.path.relpath(OUT))
