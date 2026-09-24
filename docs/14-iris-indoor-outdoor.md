@@ -1796,6 +1796,30 @@ pour un student distillé, ce sont toutes des images **sans étiquette**, donc
 gratuites à intégrer. Ce qui les départage n'est plus leur annotation, c'est
 la **provenance** — quel monde elles apportent que le nôtre n'a pas.
 
+### Le bras Pl@ntNet, mesuré — 24 septembre 2026
+
+`fastvit_sa12`, recette cosinus, une seule variable : les 243 567 photos de
+Pl@ntNet ajoutées au corpus.
+
+| textes, é10 | cosinus | **+ Pl@ntNet** | écart | Iris 9 |
+|---|---|---|---|---|
+| indoor, armes égales | 0,6957 | **0,7036** | +0,8 | 0,8119 |
+| outdoor, armes égales | 0,7420 | **0,7500** | +0,8 | 0,7615 |
+| hors répertoire, rép. entier | 0,5745 | **0,5640** | −1,1 | 0,0 |
+
+**Le critère écrit avant est rempli, de peu** : l'outdoor gagne sans que
+l'indoor perde — il gagne même, de 0,8 à 1,4 point de é5 à é10. Le
+hors-répertoire recule d'un à deux points sur toute la seconde moitié.
+
+**Mais c'est un petit levier.** Neuf images sur 1 127 en indoor, seize sur
+2 000 en outdoor — et à calcul supérieur : ce bras voit 30 % d'images de plus
+par époque. L'avance outdoor, +2,8 à é4, fond à +0,8 quand la passe converge.
+Le calendrier de taux avait rapporté quatre à sept points ; 243 000 images en
+rapportent moins d'un.
+
+**L'outdoor est désormais à 1,2 point d'Iris 9** (0,7500 contre 0,7615).
+L'indoor reste à onze points.
+
 ## 20 quater. Les plantes d'iNaturalist — 23 septembre 2026
 
 `philipp-zettl/inaturalist-enriched` : 1 487 090 photos iNaturalist sous CC0
