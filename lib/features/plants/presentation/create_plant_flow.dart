@@ -13,6 +13,7 @@ import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
 import '../../../core/network/connectivity.dart';
 import '../../../core/observability/observability.dart';
+import '../../../core/system_settings.dart';
 import '../../../data/services/photo_storage_service.dart';
 import '../../../data/services/jev_identification_policy.dart';
 import '../../../domain/identification/cascade_identifier.dart';
@@ -37,6 +38,7 @@ import '../../../domain/care/care_guide.dart';
 import '../../../domain/identification/identification_context.dart';
 import '../../species/presentation/species_field.dart';
 import 'inline_camera.dart';
+import 'photo_error.dart';
 
 /// Lance le flow de création (3 étapes) et ouvre la fiche de la plante créée.
 ///
@@ -220,7 +222,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
       ref.read(crashReporterProvider).report(e, st, context: 'createPlant.pick');
       if (mounted) {
         await _recoverFromPreviewFailure();
-        ref.read(toastProvider.notifier).show(ToastData(message: context.l10n.photoError, emoji: '!'));
+        ref.read(toastProvider.notifier).show(photoErrorToast(context.l10n, e));
       }
     } finally {
       if (mounted) setState(() => _picking = false);
@@ -253,7 +255,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
       ref.read(crashReporterProvider).report(e, st, context: 'createPlant.capture');
       if (mounted) {
         await _recoverFromPreviewFailure();
-        ref.read(toastProvider.notifier).show(ToastData(message: context.l10n.photoError, emoji: '!'));
+        ref.read(toastProvider.notifier).show(photoErrorToast(context.l10n, e));
       }
     } finally {
       if (mounted) setState(() => _picking = false);
@@ -484,7 +486,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
       await _acceptIdentificationPhoto(stored);
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'createPlant.identifyMore');
-      if (mounted) ref.read(toastProvider.notifier).show(ToastData(message: context.l10n.photoError, emoji: '!'));
+      if (mounted) ref.read(toastProvider.notifier).show(photoErrorToast(context.l10n, e));
     } finally {
       if (mounted) setState(() => _picking = false);
     }
@@ -892,6 +894,10 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
                   width: 220,
                   child: Text(l10n.cameraPermission, textAlign: TextAlign.center, style: context.text.caption.copyWith(color: c.sage)),
                 ),
+                if (_camera.opensSettings) ...[
+                  const SizedBox(height: Space.sm),
+                  Text(l10n.openSettings, style: context.text.caption.copyWith(color: c.sage, fontWeight: FontWeight.w600)),
+                ],
               ],
             ],
           ),
@@ -905,9 +911,11 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     );
     // La photo prise ne se touche pas : « Reprendre » est en dessous. Le
     // viseur, lui, se déclenche du doigt ; sans viseur, toucher l'invite
-    // ouvre l'appareil photo du système.
+    // ouvre l'appareil photo du système — ou les Réglages, si l'accès est
+    // refusé.
     if (_mode == _PhotoMode.review) return frame;
-    return Pressable(onTap: live ? (_camera.isReady ? _capture : null) : () => _pick(PhotoSource.camera), scale: 0.98, haptic: false, child: frame);
+    final VoidCallback fallback = _camera.opensSettings ? SystemSettings.open : () => _pick(PhotoSource.camera);
+    return Pressable(onTap: live ? (_camera.isReady ? _capture : null) : fallback, scale: 0.98, haptic: false, child: frame);
   }
 
   Widget _nameStep() {

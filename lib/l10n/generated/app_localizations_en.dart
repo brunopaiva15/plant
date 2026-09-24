@@ -55,6 +55,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get openSettings => 'Open Settings';
 
   @override
+  String get settingsShort => 'Settings';
+
+  @override
   String get skip => 'Skip';
 
   @override
@@ -2048,6 +2051,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cameraPermission => 'Allow camera access in Settings.';
+
+  @override
+  String get photoLibraryPermission =>
+      'Allow access to your photos in Settings.';
 
   @override
   String get identify => 'Identify';

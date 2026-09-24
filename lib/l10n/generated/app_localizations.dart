@@ -192,6 +192,12 @@ abstract class AppLocalizations {
   /// **'Ouvrir les Réglages'**
   String get openSettings;
 
+  /// No description provided for @settingsShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réglages'**
+  String get settingsShort;
+
   /// No description provided for @skip.
   ///
   /// In fr, this message translates to:
@@ -3635,6 +3641,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Autorisez l\'accès à l\'appareil photo dans les Réglages.'**
   String get cameraPermission;
+
+  /// No description provided for @photoLibraryPermission.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autorisez l\'accès à vos photos dans les Réglages.'**
+  String get photoLibraryPermission;
 
   /// No description provided for @identify.
   ///

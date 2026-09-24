@@ -55,6 +55,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get openSettings => 'Apri Impostazioni';
 
   @override
+  String get settingsShort => 'Impostazioni';
+
+  @override
   String get skip => 'Salta';
 
   @override
@@ -2050,6 +2053,10 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get cameraPermission =>
       'Consenti l\'accesso alla fotocamera nelle Impostazioni.';
+
+  @override
+  String get photoLibraryPermission =>
+      'Consenti l\'accesso alle tue foto nelle Impostazioni.';
 
   @override
   String get identify => 'Identifica';

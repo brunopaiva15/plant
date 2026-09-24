@@ -55,6 +55,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get openSettings => 'Ouvrir les Réglages';
 
   @override
+  String get settingsShort => 'Réglages';
+
+  @override
   String get skip => 'Passer';
 
   @override
@@ -2050,6 +2053,10 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get cameraPermission =>
       'Autorisez l\'accès à l\'appareil photo dans les Réglages.';
+
+  @override
+  String get photoLibraryPermission =>
+      'Autorisez l\'accès à vos photos dans les Réglages.';
 
   @override
   String get identify => 'Identifier';

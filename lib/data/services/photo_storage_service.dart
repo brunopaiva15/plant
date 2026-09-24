@@ -1,7 +1,7 @@
-import 'dart:typed_data';
 import 'dart:io';
 import 'dart:isolate';
 
+import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
@@ -25,15 +25,28 @@ class StoredPhoto {
 
 enum PhotoSource { camera, gallery }
 
+/// L'accès à l'appareil photo ou à la photothèque est refusé.
+///
+/// Distinct d'une erreur quelconque : « Réessayez » n'y changerait rien, iOS
+/// ne repose jamais la question. L'appelant envoie aux Réglages.
+class PhotoAccessDenied implements Exception {
+  const PhotoAccessDenied(this.source);
+
+  final PhotoSource source;
+
+  @override
+  String toString() => 'PhotoAccessDenied(${source.name})';
+}
+
 /// Import, compression et stockage local des photos.
 ///
 /// - Original recompressé en JPEG (max 2048 px, qualité 85).
 /// - Miniature 480 px pour les grilles.
 /// - Traitement dans un isolate pour ne jamais bloquer l'UI.
 class PhotoStorageService {
-  PhotoStorageService();
+  PhotoStorageService({ImagePicker? picker}) : _picker = picker ?? ImagePicker();
 
-  final _picker = ImagePicker();
+  final ImagePicker _picker;
   Directory? _root;
 
   static const _maxSide = 2048;
@@ -65,17 +78,30 @@ class PhotoStorageService {
   /// Ouvre le picker natif et rend le fichier source tel que fourni par
   /// l'appareil photo ou la photothèque. Utile quand l'UI doit montrer la
   /// photo immédiatement, avant la compression et le stockage local.
+  ///
+  /// Lève [PhotoAccessDenied] quand l'accès est refusé.
   Future<File?> pickSource(PhotoSource source) async {
-    final file = await _picker.pickImage(
-      source: source == PhotoSource.camera ? ImageSource.camera : ImageSource.gallery,
-      // Une photo de la galerie peut dater d'il y a deux ans. Sans ses
-      // métadonnées elle arriverait datée d'aujourd'hui : au mauvais mois de
-      // la galerie, au mauvais bout du timelapse et du avant / après.
-      // L'appareil photo, lui, n'a rien à raconter que l'instant présent.
-      requestFullMetadata: source == PhotoSource.gallery,
-    );
+    // Une photo de la galerie peut dater d'il y a deux ans. Sans ses
+    // métadonnées elle arriverait datée d'aujourd'hui : au mauvais mois de
+    // la galerie, au mauvais bout du timelapse et du avant / après.
+    // L'appareil photo, lui, n'a rien à raconter que l'instant présent.
+    final XFile? file;
+    try {
+      file = await _picker.pickImage(
+        source: source == PhotoSource.camera ? ImageSource.camera : ImageSource.gallery,
+        requestFullMetadata: source == PhotoSource.gallery,
+      );
+    } on PlatformException catch (e) {
+      if (_accessDenied.contains(e.code)) throw PhotoAccessDenied(source);
+      rethrow;
+    }
     return file == null ? null : File(file.path);
   }
+
+  /// Les codes d'`image_picker` pour un accès refusé. La photothèque ne
+  /// refuse plus depuis iOS 14 — le sélecteur du système se passe de
+  /// l'autorisation —, l'appareil photo, si.
+  static const _accessDenied = {'camera_access_denied', 'photo_access_denied'};
 
   /// Ouvre le picker natif ; retourne `null` si l'utilisateur annule.
   Future<StoredPhoto?> pick(PhotoSource source) async {

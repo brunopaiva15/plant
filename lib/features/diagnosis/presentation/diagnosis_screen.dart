@@ -12,6 +12,7 @@ import '../../../core/l10n/l10n.dart';
 import '../../../core/l10n/likelihood_labels.dart';
 import '../../../core/network/connectivity.dart';
 import '../../../core/network/network_failure.dart';
+import '../../../core/system_settings.dart';
 import '../../../data/problems/problem_catalog.dart';
 import '../../../data/services/photo_storage_service.dart';
 import '../../../design_system/design_system.dart';
@@ -32,6 +33,7 @@ import '../../network/presentation/offline_notice.dart';
 import '../../plants/application/plant_providers.dart';
 import '../../plants/presentation/inline_camera.dart';
 import '../../plants/presentation/photo_capture_flow.dart';
+import '../../plants/presentation/photo_error.dart';
 import '../../weather/application/weather_providers.dart';
 import 'analysis_wait.dart';
 import 'diagnosis_report.dart';
@@ -197,7 +199,7 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
       if (mounted) _accept(stored);
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'diagnosis.capture');
-      if (mounted) ref.read(toastProvider.notifier).show(ToastData(message: context.l10n.photoError, emoji: '!'));
+      if (mounted) ref.read(toastProvider.notifier).show(photoErrorToast(context.l10n, e));
     } finally {
       // La copie compressée a remplacé le fichier brut du plugin.
       try {
@@ -216,7 +218,7 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
       if (stored != null && mounted) _accept(stored, thenAnalyze: thenAnalyze);
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'diagnosis.pick');
-      if (mounted) ref.read(toastProvider.notifier).show(ToastData(message: context.l10n.photoError, emoji: '!'));
+      if (mounted) ref.read(toastProvider.notifier).show(photoErrorToast(context.l10n, e));
     } finally {
       if (mounted) setState(() => _picking = false);
     }
@@ -929,7 +931,7 @@ class _Viewfinder extends StatelessWidget {
           child: Opacity(
             opacity: full ? 0.5 : 1,
             child: Pressable(
-              onTap: full || busy ? null : (live ? (camera.isReady ? onShoot : null) : onSystemCamera),
+              onTap: full || busy ? null : (live ? (camera.isReady ? onShoot : null) : (camera.opensSettings ? SystemSettings.open : onSystemCamera)),
               scale: 0.98,
               haptic: false,
               semanticLabel: l10n.takePhoto,

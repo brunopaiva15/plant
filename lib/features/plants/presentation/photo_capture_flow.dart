@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/providers.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/system_settings.dart';
 import '../../../data/services/photo_storage_service.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/models/models.dart';
@@ -13,6 +14,7 @@ import '../../account/application/membership_providers.dart';
 import '../../actions/application/care_actions.dart';
 import '../application/plant_providers.dart';
 import 'inline_camera.dart';
+import 'photo_error.dart';
 import 'photo_sheets.dart';
 
 /// Le seul chemin pour ajouter une photo à une plante, d'où qu'on vienne :
@@ -113,7 +115,7 @@ class _PhotoCaptureFlowState extends ConsumerState<PhotoCaptureFlow> {
       _accept(stored);
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'photoFlow.pick');
-      if (mounted) ref.read(toastProvider.notifier).show(ToastData(message: context.l10n.photoError, emoji: '!'));
+      if (mounted) ref.read(toastProvider.notifier).show(photoErrorToast(context.l10n, e));
     } finally {
       if (mounted) setState(() => _picking = false);
     }
@@ -135,7 +137,7 @@ class _PhotoCaptureFlowState extends ConsumerState<PhotoCaptureFlow> {
       if (mounted) _accept(stored);
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'photoFlow.capture');
-      if (mounted) ref.read(toastProvider.notifier).show(ToastData(message: context.l10n.photoError, emoji: '!'));
+      if (mounted) ref.read(toastProvider.notifier).show(photoErrorToast(context.l10n, e));
     } finally {
       // La copie compressée a remplacé le fichier brut du plugin.
       try {
@@ -251,7 +253,9 @@ class _PhotoCaptureFlowState extends ConsumerState<PhotoCaptureFlow> {
                 child: AspectRatio(
                   aspectRatio: 4 / 5,
                   child: Pressable(
-                    onTap: _camera.isReady ? _capture : (_camera.hasViewfinder ? null : () => _pick(PhotoSource.camera)),
+                    onTap: _camera.isReady
+                        ? _capture
+                        : (_camera.hasViewfinder ? null : (_camera.opensSettings ? SystemSettings.open : () => _pick(PhotoSource.camera))),
                     scale: 0.98,
                     semanticLabel: l10n.takePhoto,
                     child: CaptureFrame(
@@ -365,6 +369,10 @@ class CaptureFrame extends StatelessWidget {
                   width: 220,
                   child: Text(l10n.cameraPermission, textAlign: TextAlign.center, style: context.text.caption.copyWith(color: c.sage)),
                 ),
+                if (camera.opensSettings) ...[
+                  const SizedBox(height: Space.sm),
+                  Text(l10n.openSettings, style: context.text.caption.copyWith(color: c.sage, fontWeight: FontWeight.w600)),
+                ],
               ],
             ],
           ),
