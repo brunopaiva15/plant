@@ -24,11 +24,6 @@ abstract final class AppConfig {
   static String modelDisplayName([String? version]) =>
       version == null || version.isEmpty ? modelName : '$modelName $version';
 
-  /// Le modèle qu'on mesure contre Iris, sur les mêmes photos, quand le
-  /// réglage de comparaison est allumé (§ 15 de docs/09). Un nom propre, écrit
-  /// comme Pl@ntNet l'écrit, qui ne se traduit pas plus qu'« Iris ».
-  static const String comparisonModelName = 'Pl@ntNet-300K';
-
   /// Éditeur, tel qu'il apparaît au pied des réglages.
   static const String publisher = 'Vergasta Digital';
   static const String privacyUrl = 'https://vergasta.ch/privacy';

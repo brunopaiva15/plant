@@ -7,6 +7,7 @@ import 'package:flora/data/db/database.dart';
 import 'package:flora/data/services/photo_storage_service.dart';
 import 'package:flora/data/services/preferences_service.dart';
 import 'package:flora/design_system/design_system.dart';
+import 'package:flora/domain/identification/comparison_model.dart';
 import 'package:flora/domain/identification/identification_context.dart';
 import 'package:flora/domain/identification/local_plant_model.dart';
 import 'package:flora/domain/identification/plant_identifier.dart';
@@ -49,9 +50,15 @@ class _Iris implements PlantIdentifier {
       const [IdentificationCandidate(scientificName: 'Ficus lyrata', score: 0.8, source: IdentificationSource.local)];
 }
 
-/// Pl@ntNet-300K, sous le banc d'essai : une réponse fixe, et le compte de ce
-/// qu'on lui a demandé.
-class _PlantNet300k implements PlantIdentifier {
+/// Un modèle de comparaison sous le banc d'essai : une réponse fixe, et le
+/// journal de qui a répondu, dans l'ordre.
+class _Comparison implements PlantIdentifier {
+  _Comparison(this.name, this.log, {this.top = 'Ficus elastica', this.score = 0.62});
+
+  final String name;
+  final List<String> log;
+  final String top;
+  final double score;
   int calls = 0;
 
   @override
@@ -61,9 +68,10 @@ class _PlantNet300k implements PlantIdentifier {
   Future<List<IdentificationCandidate>> identify(List<File> images,
       {String? language, IdentificationContext context = IdentificationContext.unknown}) async {
     calls++;
-    return const [
-      IdentificationCandidate(scientificName: 'Ficus elastica', score: 0.62, source: IdentificationSource.local),
-      IdentificationCandidate(scientificName: 'Ficus lyrata', score: 0.3, source: IdentificationSource.local),
+    log.add(name);
+    return [
+      IdentificationCandidate(scientificName: top, score: score, source: IdentificationSource.local),
+      const IdentificationCandidate(scientificName: 'Ficus lyrata', score: 0.3, source: IdentificationSource.local),
     ];
   }
 }
@@ -89,7 +97,8 @@ class _Broken extends NoLocalModel {
 }
 
 void main() {
-  Future<BuildContext> pump(WidgetTester tester, {PlantIdentifier? comparison, LocalPlantModel? comparisonModel}) async {
+  Future<BuildContext> pump(WidgetTester tester,
+      {PlantIdentifier? plantNet, PlantIdentifier? plantClef, LocalPlantModel? plantNetModel}) async {
     SharedPreferences.setMockInitialValues({'onboarding_done': true, 'locale': 'fr'});
     final prefs = await PreferencesService.load();
     final db = FloraDatabase(NativeDatabase.memory());
@@ -102,8 +111,10 @@ void main() {
       gardenIdProvider.overrideWithValue(auth.gardenId),
       photoStorageProvider.overrideWithValue(_FakeStorage()),
       plantIdentifierProvider.overrideWithValue(const _Iris()),
-      comparisonIdentifierProvider.overrideWithValue(comparison),
-      comparisonPlantModelProvider.overrideWithValue(comparisonModel ?? const NoLocalModel()),
+      comparisonIdentifierProvider(ComparisonModel.plantNet300k).overrideWithValue(plantNet),
+      comparisonIdentifierProvider(ComparisonModel.plantClef2024).overrideWithValue(plantClef),
+      comparisonPlantModelProvider(ComparisonModel.plantNet300k).overrideWithValue(plantNetModel ?? const NoLocalModel()),
+      comparisonPlantModelProvider(ComparisonModel.plantClef2024).overrideWithValue(const NoLocalModel()),
     ]);
     addTearDown(container.dispose);
     late BuildContext pageContext;
@@ -123,18 +134,18 @@ void main() {
     return pageContext;
   }
 
-  group('comparaison avec Pl@ntNet-300K', () {
+  group('comparaison avec d\'autres modèles', () {
     testWidgets('éteinte, la feuille ne montre qu\'Iris, sans score', (tester) async {
       final context = await pump(tester);
       showIdentificationSheet(context, absoluteImagePath: 'photo.jpg');
       await tester.pumpAndSettle();
       expect(find.text('Ficus lyrata'), findsOneWidget);
-      expect(find.textContaining('Pl@ntNet-300K'), findsNothing);
+      expect(find.textContaining('Propositions de'), findsNothing);
       expect(find.textContaining('%'), findsNothing);
     });
 
     testWidgets('un modèle qui ne se charge pas le dit, au lieu de ne rien reconnaître', (tester) async {
-      final context = await pump(tester, comparison: const _Empty(), comparisonModel: const _Broken());
+      final context = await pump(tester, plantNet: const _Empty(), plantNetModel: const _Broken());
       showIdentificationSheet(context, absoluteImagePath: 'photo.jpg');
       await tester.pumpAndSettle();
       expect(find.text('Pl@ntNet-300K indisponible sur cet appareil'), findsOneWidget);
@@ -143,8 +154,8 @@ void main() {
     });
 
     testWidgets('allumée, ses propositions suivent celles d\'Iris, scores compris', (tester) async {
-      final plantNet = _PlantNet300k();
-      final context = await pump(tester, comparison: plantNet);
+      final plantNet = _Comparison('300K', []);
+      final context = await pump(tester, plantNet: plantNet);
       showIdentificationSheet(context, absoluteImagePath: 'photo.jpg');
       await tester.pumpAndSettle();
       expect(plantNet.calls, 1);
@@ -155,7 +166,24 @@ void main() {
       // Le score brut, d'Iris comme de Pl@ntNet-300K : c'est ce qui se compare.
       expect(find.textContaining(RegExp(r'80\s%')), findsOneWidget);
       expect(find.textContaining(RegExp(r'62\s%')), findsOneWidget);
+      expect(find.textContaining('PlantCLEF'), findsNothing, reason: 'son réglage est éteint');
       expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('deux modèles allumés passent l\'un après l\'autre, chacun sa section', (tester) async {
+      final log = <String>[];
+      final context = await pump(tester,
+          plantNet: _Comparison('300K', log),
+          plantClef: _Comparison('CLEF', log, top: 'Ficus benjamina', score: 0.91));
+      showIdentificationSheet(context, absoluteImagePath: 'photo.jpg');
+      await tester.pumpAndSettle();
+      expect(log, ['300K', 'CLEF'], reason: 'l\'ordre de ComparisonModel, jamais en même temps');
+      expect(find.text('Propositions de Pl@ntNet-300K'), findsOneWidget);
+      expect(find.text('Propositions de PlantCLEF 2024'), findsOneWidget);
+      expect(find.text('Ficus benjamina'), findsOneWidget);
+      expect(find.textContaining(RegExp(r'91\s%')), findsOneWidget);
+      // Iris et les deux modèles : trois fois la même espèce.
+      expect(find.text('Ficus lyrata'), findsNWidgets(3));
     });
   });
 

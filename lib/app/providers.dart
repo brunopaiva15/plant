@@ -75,6 +75,7 @@ import '../data/services/preferences_metrics_store.dart';
 import '../data/services/supabase_iris_feedback_recorder.dart';
 import '../domain/identification/iris_feedback.dart';
 import '../data/services/local_plant_model_factory.dart';
+import '../domain/identification/comparison_model.dart';
 import '../domain/identification/cascade_identifier.dart';
 import '../domain/identification/identification_metrics.dart';
 import '../domain/identification/local_plant_model.dart';
@@ -247,7 +248,7 @@ class AppPreferences {
     required this.careAssistEnabled,
     required this.irisFeedbackEnabled,
     required this.irisFeedbackAsked,
-    required this.plantNet300kComparison,
+    required this.comparisons,
     required this.weatherPlace,
     required this.rainCountsAsWatering,
     required this.homeSensor,
@@ -278,8 +279,9 @@ class AppPreferences {
   /// La question a déjà été posée, quelle qu'ait été la réponse.
   final bool irisFeedbackAsked;
 
-  /// Pl@ntNet-300K tourne à côté d'Iris, pour comparer. Faux par défaut.
-  final bool plantNet300kComparison;
+  /// Les modèles qui tournent à côté d'Iris, pour comparer. Aucun par
+  /// défaut.
+  final Set<ComparisonModel> comparisons;
   final WeatherPlace? weatherPlace;
 
   /// La pluie tombée sur un emplacement extérieur vaut un arrosage : la
@@ -319,7 +321,7 @@ class PreferencesController extends Notifier<AppPreferences> {
       careAssistEnabled: s.careAssistEnabled,
       irisFeedbackEnabled: s.irisFeedbackEnabled,
       irisFeedbackAsked: s.irisFeedbackAsked,
-      plantNet300kComparison: s.plantNet300kComparison,
+      comparisons: {for (final m in ComparisonModel.values) if (s.comparing(m)) m},
       weatherPlace: s.weatherPlace == null ? null : WeatherPlace(name: s.weatherPlace!.name, latitude: s.weatherPlace!.lat, longitude: s.weatherPlace!.lon),
       rainCountsAsWatering: s.rainCountsAsWatering,
       homeSensor: HomeSensor.decode(s.homeSensor),
@@ -345,7 +347,7 @@ class PreferencesController extends Notifier<AppPreferences> {
   Future<void> setCareAssistEnabled(bool value) => _apply((s) => s.setCareAssistEnabled(value));
   Future<void> setIrisFeedbackEnabled(bool value) => _apply((s) => s.setIrisFeedbackEnabled(value));
   Future<void> setIrisFeedbackAsked() => _apply((s) => s.setIrisFeedbackAsked());
-  Future<void> setPlantNet300kComparison(bool value) => _apply((s) => s.setPlantNet300kComparison(value));
+  Future<void> setComparing(ComparisonModel model, bool value) => _apply((s) => s.setComparing(model, value));
   /// Changer de lieu périme le climat mis de côté : celui de l'ancienne
   /// ville n'a plus rien à dire des plantes de la nouvelle.
   Future<void> setWeatherPlace(WeatherPlace? place) => _apply((s) async {
@@ -478,32 +480,33 @@ final plantIdentifierProvider = Provider<PlantIdentifier>((ref) {
   );
 });
 
-/// Pl@ntNet-300K, chargé à la première comparaison. Un second interpréteur
-/// et son isolat : rien n'est lu tant que le réglage reste éteint.
-final comparisonPlantModelProvider = Provider<LocalPlantModel>((ref) {
-  final model = createComparisonPlantModel();
-  ref.onDispose(model.dispose);
-  return model;
+/// Un modèle de comparaison, chargé à sa première identification. Un
+/// interpréteur et un isolat de plus chacun : rien n'est lu tant que son
+/// réglage reste éteint.
+final comparisonPlantModelProvider = Provider.family<LocalPlantModel, ComparisonModel>((ref, model) {
+  final local = createComparisonPlantModel(model);
+  ref.onDispose(local.dispose);
+  return local;
 });
 
-/// Pl@ntNet-300K sur les photos qu'Iris vient de voir, quand le réglage le
-/// demande ; `null` sinon.
+/// [ComparisonModel] sur les photos qu'Iris vient de voir, quand son réglage
+/// le demande ; `null` sinon.
 ///
 /// C'est une cascade sans repli : même fusion des photos, même rattachement
 /// au catalogue, donc des noms et des scores qui se lisent à côté de ceux
 /// d'Iris. Ses compteurs restent en mémoire — ils fausseraient ceux d'Iris
 /// dans les réglages — et rien de ce qu'elle rend n'entre dans la décision.
-final comparisonIdentifierProvider = Provider<PlantIdentifier?>((ref) {
-  if (!ref.watch(preferencesProvider.select((p) => p.plantNet300kComparison))) return null;
-  final model = ref.watch(comparisonPlantModelProvider);
-  if (!model.isAvailable) return null;
+final comparisonIdentifierProvider = Provider.family<PlantIdentifier?, ComparisonModel>((ref, model) {
+  if (!ref.watch(preferencesProvider.select((p) => p.comparisons.contains(model)))) return null;
+  final local = ref.watch(comparisonPlantModelProvider(model));
+  if (!local.isAvailable) return null;
   return CascadeIdentifier(
-    local: model,
+    local: local,
     fallback: const UnconfiguredIdentifier(),
     fallbackEnabled: false,
     // Le premier appel charge le modèle : le délai d'Iris, fait pour une
     // cascade qui a un repli, couperait ici un chargement réel.
-    localTimeout: const Duration(seconds: 12),
+    localTimeout: model.timeout,
     lookup: (name, language) => catalogLookup(name, ref.read(speciesIndexProvider).value, language),
   );
 });

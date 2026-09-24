@@ -3804,29 +3804,35 @@ abstract class AppLocalizations {
   /// **'En nommant une plante, vous envoyez ses photos et le nom retenu pour entraîner les prochaines versions de {name}. Vous seul pouvez les lire, et supprimer votre compte les efface. Désactivé, rien ne quitte votre appareil.'**
   String irisFeedbackHint(String name);
 
-  /// No description provided for @plantNet300kComparison.
+  /// No description provided for @modelComparison.
   ///
   /// In fr, this message translates to:
   /// **'Comparer avec {name}'**
-  String plantNet300kComparison(String name);
+  String modelComparison(String name);
 
-  /// No description provided for @plantNet300kComparisonHint.
+  /// No description provided for @modelComparisonTitle.
   ///
   /// In fr, this message translates to:
-  /// **'L\'application soumet aussi vos photos à {name}, sur votre appareil, et montre ses propositions sous celles de {iris}.'**
-  String plantNet300kComparisonHint(String name, String iris);
+  /// **'Modèles à comparer'**
+  String get modelComparisonTitle;
 
-  /// No description provided for @plantNet300kSection.
+  /// No description provided for @modelComparisonHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'application soumet aussi vos photos à chaque modèle allumé, sur votre appareil, et montre ses propositions sous celles de {iris}.'**
+  String modelComparisonHint(String iris);
+
+  /// No description provided for @modelComparisonSuggestions.
   ///
   /// In fr, this message translates to:
   /// **'Propositions de {name}'**
-  String plantNet300kSection(String name);
+  String modelComparisonSuggestions(String name);
 
-  /// No description provided for @plantNet300kNone.
+  /// No description provided for @modelComparisonNone.
   ///
   /// In fr, this message translates to:
   /// **'{name} ne reconnaît aucune plante sur ces photos.'**
-  String plantNet300kNone(String name);
+  String modelComparisonNone(String name);
 
   /// No description provided for @irisFeedbackNeedsAccount.
   ///

@@ -694,10 +694,11 @@
       }
     }
   },
-  "plantNet300kComparison": "Mit {name} vergleichen",
-  "plantNet300kComparisonHint": "Die App lässt deine Fotos zusätzlich von {name} auf deinem Gerät erkennen und zeigt die Vorschläge unter denen von {iris}.",
-  "plantNet300kSection": "Vorschläge von {name}",
-  "plantNet300kNone": "{name} erkennt auf diesen Fotos keine Pflanze.",
+  "modelComparison": "Mit {name} vergleichen",
+  "modelComparisonTitle": "Modelle zum Vergleichen",
+  "modelComparisonHint": "Die App lässt deine Fotos zusätzlich von jedem eingeschalteten Modell auf deinem Gerät erkennen und zeigt die Vorschläge unter denen von {iris}.",
+  "modelComparisonSuggestions": "Vorschläge von {name}",
+  "modelComparisonNone": "{name} erkennt auf diesen Fotos keine Pflanze.",
   "irisFeedbackNeedsAccount": "Zum Senden von Fotos braucht es ein Konto.",
   "irisFeedbackAskTitle": "Senden identifizierter Fotos",
   "irisFeedbackAskBody": "Deine Fotos vom Bestimmen und der Name können die nächsten Versionen von {name} trainieren. Nur du wirst sie lesen können, und mit deinem Konto werden sie gelöscht. Du kannst diese Wahl in den Einstellungen ändern.",

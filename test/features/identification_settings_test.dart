@@ -1,6 +1,7 @@
 import 'package:flora/app/providers.dart';
 import 'package:flora/data/services/preferences_service.dart';
 import 'package:flora/design_system/design_system.dart';
+import 'package:flora/domain/identification/comparison_model.dart';
 import 'package:flora/features/identification/presentation/identification_settings_screen.dart';
 import 'package:flora/l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -79,17 +80,21 @@ void main() {
     expect(h.prefs.irisFeedbackEnabled, isTrue);
   });
 
-  testWidgets('la comparaison avec Pl@ntNet-300K est éteinte, et s\'allume', (tester) async {
+  testWidgets('chaque modèle de comparaison est éteint, et s\'allume seul', (tester) async {
     final h = await _pump(tester, available: false);
-    expect(h.prefs.plantNet300kComparison, isFalse, reason: 'un banc d\'essai ne tourne pas par défaut');
-    final sw = find.descendant(
-      of: find.ancestor(of: find.text(h.l10n.plantNet300kComparison('Pl@ntNet-300K')), matching: find.byType(FloraListRow)),
-      matching: find.byType(AdaptiveSwitch),
-    );
+    Finder switchOf(ComparisonModel m) => find.descendant(
+          of: find.ancestor(of: find.text(h.l10n.modelComparison(m.displayName)), matching: find.byType(FloraListRow)),
+          matching: find.byType(AdaptiveSwitch),
+        );
+    for (final m in ComparisonModel.values) {
+      expect(h.prefs.comparing(m), isFalse, reason: 'un banc d\'essai ne tourne pas par défaut');
+    }
+    final sw = switchOf(ComparisonModel.plantClef2024);
     await tester.ensureVisible(sw);
     await tester.tap(sw);
     await tester.pumpAndSettle();
-    expect(h.prefs.plantNet300kComparison, isTrue);
+    expect(h.prefs.comparing(ComparisonModel.plantClef2024), isTrue);
+    expect(h.prefs.comparing(ComparisonModel.plantNet300k), isFalse);
   });
 
   // Le titre est plus long qu'avant, et la ligne le porte avec un

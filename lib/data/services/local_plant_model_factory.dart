@@ -1,3 +1,4 @@
+import '../../domain/identification/comparison_model.dart';
 import '../../domain/identification/local_plant_model.dart';
 import 'local_plant_model_stub.dart' if (dart.library.io) 'local_plant_model_io.dart' as platform;
 
@@ -10,6 +11,6 @@ import 'local_plant_model_stub.dart' if (dart.library.io) 'local_plant_model_io.
 /// et la cascade passe directement au service distant.
 LocalPlantModel createLocalPlantModel() => platform.createLocalPlantModel();
 
-/// Pl@ntNet-300K, le modèle qu'on mesure contre Iris (§ 15 de `docs/09`).
-/// Même moteur, mêmes contraintes de plateforme.
-LocalPlantModel createComparisonPlantModel() => platform.createComparisonPlantModel();
+/// Un modèle qu'on mesure contre Iris (§ 15 de `docs/09`). Même moteur,
+/// mêmes contraintes de plateforme.
+LocalPlantModel createComparisonPlantModel(ComparisonModel model) => platform.createComparisonPlantModel(model);

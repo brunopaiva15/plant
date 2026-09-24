@@ -16,6 +16,7 @@ import '../../../design_system/design_system.dart';
 import '../../../data/services/photo_storage_service.dart';
 import '../../../data/services/jev_identification_policy.dart';
 import '../../../domain/identification/cascade_identifier.dart';
+import '../../../domain/identification/comparison_model.dart';
 import '../../../domain/identification/identification_context.dart';
 import '../../../domain/identification/iris_feedback.dart';
 import '../../../domain/identification/identification_confidence.dart';
@@ -86,12 +87,12 @@ class _Shot {
 class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
   late Future<List<IdentificationCandidate>> _future;
 
-  /// Ce que Pl@ntNet-300K voit sur les mêmes photos, quand le réglage de
-  /// comparaison est allumé ; `null` sinon. Calculé **après** Iris, jamais en
-  /// même temps : deux inférences simultanées se partageraient le processeur
-  /// et pousseraient Iris au-delà du délai de la cascade, qui partirait alors
-  /// en ligne — la comparaison fausserait ce qu'elle mesure.
-  Future<List<IdentificationCandidate>>? _compare;
+  /// Ce que voit chaque modèle de comparaison allumé, sur les mêmes photos ;
+  /// vide quand aucun ne l'est. Calculé **après** Iris et l'un après l'autre,
+  /// jamais en même temps : deux inférences simultanées se partageraient le
+  /// processeur et pousseraient Iris au-delà du délai de la cascade, qui
+  /// partirait alors en ligne — la comparaison fausserait ce qu'elle mesure.
+  Map<ComparisonModel, Future<List<IdentificationCandidate>>> _compare = const {};
 
   /// La photo d'origine, celles que l'appelant a prêtées, puis celles
   /// ajoutées ici pour lever un doute. Le moteur les fusionne par moyenne
@@ -162,16 +163,23 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
     return iris;
   }
 
-  /// Pl@ntNet-300K sur les photos du moment, une fois Iris servie — qu'elle
-  /// ait répondu ou échoué. Sans effet quand le réglage est éteint.
-  Future<List<IdentificationCandidate>>? _compareAfter(Future<Object?> iris) {
-    final comparison = ref.read(comparisonIdentifierProvider);
-    if (comparison == null) return null;
+  /// Les modèles de comparaison allumés, sur les photos du moment : chacun
+  /// attend que le précédent — Iris d'abord — ait répondu ou échoué.
+  Map<ComparisonModel, Future<List<IdentificationCandidate>>> _compareAfter(Future<Object?> iris) {
     final files = _files;
     final language = _language;
-    return iris
-        .then<void>((_) {}, onError: (Object _) {})
-        .then((_) => comparison.identify(files, language: language, context: widget.place));
+    final out = <ComparisonModel, Future<List<IdentificationCandidate>>>{};
+    Future<Object?> previous = iris;
+    for (final model in ComparisonModel.values) {
+      final comparison = ref.read(comparisonIdentifierProvider(model));
+      if (comparison == null) continue;
+      final next = previous
+          .then<void>((_) {}, onError: (Object _) {})
+          .then((_) => comparison.identify(files, language: language, context: widget.place));
+      out[model] = next;
+      previous = next;
+    }
+    return out;
   }
 
   /// Retient la réponse pour que la relance suivante ait quelque chose à
@@ -388,7 +396,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                 candidate: c,
                 onUse: () => _use(c, action),
                 policy: _policy,
-                showScore: _compare != null,
+                showScore: _compare.isNotEmpty,
               ),
           ],
         ),
@@ -477,7 +485,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                 candidate: c,
                 onUse: () => _use(c, JevProductAction.keepUncertain),
                 policy: _policy,
-                showScore: _compare != null,
+                showScore: _compare.isNotEmpty,
               ),
           ],
         ),
@@ -595,9 +603,10 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
               );
             },
           ),
-          if (_compare != null)
+          for (final entry in _compare.entries)
             _ComparisonSection(
-              future: _compare!,
+              model: entry.key,
+              future: entry.value,
               maxCandidates: maxCandidates,
               onUse: _use,
             ),
@@ -607,13 +616,15 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
   }
 }
 
-/// Les propositions de Pl@ntNet-300K, sous celles d'Iris, pour les comparer
-/// sur la même photo (§ 15 de docs/09). Elles se choisissent comme les
+/// Les propositions d'un modèle de comparaison, sous celles d'Iris, pour les
+/// comparer sur la même photo (§ 15 de docs/09). Elles se choisissent comme les
 /// autres : une comparaison qui obligerait à recopier le bon nom à la main ne
 /// servirait pas longtemps.
 class _ComparisonSection extends ConsumerWidget {
-  const _ComparisonSection({required this.future, required this.maxCandidates, required this.onUse});
+  const _ComparisonSection(
+      {required this.model, required this.future, required this.maxCandidates, required this.onUse});
 
+  final ComparisonModel model;
   final Future<List<IdentificationCandidate>> future;
   final int maxCandidates;
   final void Function(IdentificationCandidate candidate) onUse;
@@ -621,12 +632,12 @@ class _ComparisonSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    const name = AppConfig.comparisonModelName;
+    final name = model.displayName;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SectionHeader(
-          title: l10n.plantNet300kSection(name),
+          title: l10n.modelComparisonSuggestions(name),
           padding: const EdgeInsets.only(top: Space.lg, bottom: Space.sm),
         ),
         FutureBuilder<List<IdentificationCandidate>>(
@@ -640,7 +651,7 @@ class _ComparisonSection extends ConsumerWidget {
             // plante » : il n'a rien regardé. Le dire comme les réglages le
             // disent pour Iris, erreur native comprise — c'est elle qui
             // distingue un asset absent d'un runtime trop ancien.
-            final error = ref.read(comparisonPlantModelProvider).loadError;
+            final error = ref.read(comparisonPlantModelProvider(model)).loadError;
             if (results.isEmpty && error != null) {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -650,7 +661,7 @@ class _ComparisonSection extends ConsumerWidget {
                 ],
               );
             }
-            if (results.isEmpty) return Text(l10n.plantNet300kNone(name), style: context.text.caption);
+            if (results.isEmpty) return Text(l10n.modelComparisonNone(name), style: context.text.caption);
             return FloraGroup(
               children: [
                 for (final c in results) CandidateRow(candidate: c, onUse: () => onUse(c), showScore: true),
@@ -703,7 +714,7 @@ class CandidateRow extends ConsumerWidget {
   final FallbackPolicy policy;
 
   /// Le score brut du modèle en plus du cran. Réservé à la comparaison
-  /// d'Iris et de Pl@ntNet-300K : ailleurs, un pourcentage se lit comme une
+  /// d'Iris avec d'autres modèles : ailleurs, un pourcentage se lit comme une
   /// certitude qu'il n'est pas, et le cran suffit.
   final bool showScore;
 

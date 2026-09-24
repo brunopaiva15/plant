@@ -250,25 +250,29 @@ fait remonter le seuil à 0,70 pour l'Iris 7 — il y rendait l'autonomie qu'ava
 la v6 à 0,60 (47 %) avec 85,9 % de précision au lieu de 82,8 %. L'Iris 8 l'a
 gardé tel quel et rend davantage des deux côtés (§ 6.7 bis de `docs/09`).
 
-## Pl@ntNet-300K, pour comparer
+## Pl@ntNet-300K et PlantCLEF 2024, pour comparer
 
-`plantnet300k_export.py` convertit l'un des réseaux publiés par les auteurs
-de Pl@ntNet-300K (PyTorch, 1 081 sorties) en un `.tflite` que l'application
-lit comme Iris, et le range dans `assets/model/plantnet300k/`. Le réglage
-« Comparer avec Pl@ntNet-300K » le fait tourner après Iris sur les mêmes
-photos (§ 15 de `docs/09`).
+Deux scripts convertissent des réseaux publiés par Pl@ntNet (PyTorch) en
+`.tflite` que l'application lit comme Iris, rangés dans
+`assets/model/<key>/`. Les réglages « Comparer avec … » les font tourner
+après Iris sur les mêmes photos (§ 15 de `docs/09`). Ce qu'ils partagent —
+normalisation dans le graphe, fusion des doublons, précision des poids,
+vérification contre PyTorch — est dans `comparaison.py`.
 
 ```bash
-python3 -m pip install litert-torch torchvision pillow   # PyTorch : à part
+python3 -m pip install litert-torch torchvision timm pillow   # PyTorch : à part
 python3 plantnet300k_export.py --check photo1.jpg photo2.jpg
+python3 plantclef2024_export.py --check photo1.jpg photo2.jpg   # 2,3 Go à télécharger
 ```
 
 | option | défaut | |
 |---|---|---|
-| `--arch` | `mobilenet_v3_large` | la dorsale d'Iris ; `resnet50`, `efficientnet_b0`… pour un autre réseau publié |
-| `--float` | non | poids en float32 plutôt qu'en float16, deux fois plus lourd |
-| `--check` | | photos passées dans PyTorch et dans le `.tflite` : l'écart doit rester au millième |
+| `--precision` | `float16` (300K), `int8` (PlantCLEF) | `float32`, `float16` ou `int8` (quantification dynamique) |
+| `--arch` | `mobilenet_v3_large` | 300K seulement : un autre réseau publié, `resnet50`, `efficientnet_b0`… |
+| `--archive` | | PlantCLEF seulement : l'archive Zenodo déjà téléchargée |
+| `--check` | | photos passées dans PyTorch et dans le `.tflite` |
 
-Les poids restent en demi-précision **dans** le flatbuffer : le TensorFlow Lite
-d'iOS (2.12) ne lit pas les poids rangés à part, que le quantificateur écrit
-par défaut.
+Le TensorFlow Lite d'iOS est en 2.12. Les scripts gardent les poids **dans**
+le flatbuffer et écrivent l'attention en clair, sans quoi la 2.12 refuse le
+modèle ; en 2.12, l'int8 dynamique tourne mais sans accélération (§ 15.1 de
+`docs/09`).

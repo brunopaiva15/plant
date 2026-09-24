@@ -3,22 +3,24 @@
  "input_size": 224,
  "load_size": 256,
  "source_size": 512,
- "classes": 1019,
  "network_outputs": 1081,
  "architecture": "mobilenet_v3_large",
- "preprocessing": "included_in_graph_uint8_0_255",
  "weights": "float16",
- "sha256": "a3da889212a729ffcb1a8eabeabde007e0c380a27f66a33f90487600fc48406b",
- "bytes": 13632964,
  "source": {
   "dataset": "Pl@ntNet-300K (Zenodo 5645731)",
   "weights": "https://seafile.plantnet.org/d/01ab6658dad6447c95ae/files/?p=%2Fmobilenet_v3_large_weights_best_acc.tar&dl=1",
+  "license": "dataset CC BY 4.0, code BSD-2; weights: no license stated",
   "citation": "Garcin et al., Pl@ntNet-300K: a plant image dataset with high label ambiguity and a long-tailed distribution, NeurIPS Datasets and Benchmarks 2021"
  },
  "conversion_check": {
   "max_abs_diff": 0.00142,
-  "top1_agreement": "13/13"
+  "top1_agreement": "13/13",
+  "seconds_per_image_2_threads": 0.01
  },
+ "classes": 1019,
+ "preprocessing": "included_in_graph_uint8_0_255",
+ "sha256": "63b00fca38b6c4e985a3644fd258d74e7fe7c232b361bae6c7e0b7ed9af245c6",
+ "bytes": 11565504,
  "species": {
   "lactuca-virosa": "Lactuca virosa",
   "pelargonium-capitatum": "Pelargonium capitatum",

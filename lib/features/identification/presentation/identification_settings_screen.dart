@@ -8,6 +8,7 @@ import '../../../core/l10n/l10n.dart';
 import '../../../core/l10n/species_count_copy.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/identification/cascade_identifier.dart';
+import '../../../domain/identification/comparison_model.dart';
 
 /// Réglages de l'identification. Rien à configurer : le modèle est embarqué
 /// et le service en ligne est fourni avec l'application. L'utilisateur décide
@@ -103,25 +104,25 @@ class IdentificationSettingsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: Space.xs),
           Text(l10n.irisFeedbackHint(AppConfig.modelName), style: context.text.caption),
-          const SizedBox(height: Space.lg),
-          // Un banc d'essai, pas une fonction : Pl@ntNet-300K tourne après
-          // Iris, sur les mêmes photos, et ses propositions s'ajoutent sous
-          // les siennes sans rien changer à la décision (§ 15 de docs/09).
+          // Un banc d'essai, pas une fonction : chaque modèle allumé tourne
+          // après Iris, sur les mêmes photos, et ses propositions s'ajoutent
+          // sous les siennes sans rien changer à la décision (§ 15 de docs/09).
+          SectionHeader(title: l10n.modelComparisonTitle, padding: const EdgeInsets.only(top: Space.lg, bottom: Space.sm)),
           FloraGroup(
             children: [
-              FloraListRow(
-                title: l10n.plantNet300kComparison(AppConfig.comparisonModelName),
-                titleMaxLines: 2,
-                trailing: AdaptiveSwitch(
-                  value: ref.watch(preferencesProvider.select((p) => p.plantNet300kComparison)),
-                  onChanged: (v) => ref.read(preferencesProvider.notifier).setPlantNet300kComparison(v),
+              for (final model in ComparisonModel.values)
+                FloraListRow(
+                  title: l10n.modelComparison(model.displayName),
+                  titleMaxLines: 2,
+                  trailing: AdaptiveSwitch(
+                    value: ref.watch(preferencesProvider.select((p) => p.comparisons.contains(model))),
+                    onChanged: (v) => ref.read(preferencesProvider.notifier).setComparing(model, v),
+                  ),
                 ),
-              ),
             ],
           ),
           const SizedBox(height: Space.xs),
-          Text(l10n.plantNet300kComparisonHint(AppConfig.comparisonModelName, AppConfig.modelName),
-              style: context.text.caption),
+          Text(l10n.modelComparisonHint(AppConfig.modelName), style: context.text.caption),
           const SizedBox(height: Space.sm),
           Text(l10n.identificationStats(metrics.local, metrics.localAccepted, metrics.remote), style: context.text.caption),
           if (identifier is CascadeIdentifier) ...[

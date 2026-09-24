@@ -4368,97 +4368,136 @@ Deux choses restent à mesurer :
   viennent pas de la même tête, comparer leurs scores n'a pas de sens
   (§ 14.1).
 
-## 15. Pl@ntNet-300K à côté d'Iris : le banc d'essai de la 1.0.1
+## 15. Pl@ntNet-300K et PlantCLEF 2024 à côté d'Iris : le banc d'essai de la 1.0.1
 
-La question du § 4.6 et du § 12.8 — que vaut Pl@ntNet-300K pour nous ? — y
-était tranchée sur les métadonnées : recouvrement d'espèces, licences,
-cadrage. Il restait à voir ce que rend **le modèle** sur les photos qu'on
-prend d'une plante chez soi. La 1.0.1 le livre dans l'application, derrière
-un réglage, pour le mesurer là.
+La question du § 4.6 et du § 12.8 — que valent les modèles de Pl@ntNet pour
+nous ? — y était tranchée sur les métadonnées : recouvrement d'espèces,
+licences, cadrage. Il restait à voir ce que rendent **les modèles** sur les
+photos qu'on prend d'une plante chez soi. La 1.0.1 en livre deux dans
+l'application, chacun derrière un réglage, pour les mesurer là.
 
 ### 15.1 Ce qui tourne
 
-Les auteurs publient leurs réseaux entraînés, dont un **MobileNetV3-Large** :
-la dorsale d'Iris, entraînée sur d'autres images. C'est celui-là qui est livré,
-pour que la comparaison mesure le jeu et non l'architecture.
-
-| | Pl@ntNet-300K |
-|---|---|
-| dorsale | MobileNetV3-Large |
-| entrée | 224 px (`Resize(256)` puis `CenterCrop(224)`, la recette des auteurs) |
-| espèces | 1 019 (1 081 sorties, voir plus bas) |
-| poids | float16, 13,6 Mo |
-| masques de lieu | aucun |
+| | Pl@ntNet-300K | PlantCLEF 2024 |
+|---|---|---|
+| réseau publié | MobileNetV3-Large, la dorsale d'Iris | ViT-B/14 à registres, pré-entraîné par DINOv2, affiné en entier (`…_onlyclassifier_then_all`, poids EMA) |
+| jeu | Pl@ntNet-300K, 306 000 images | 1,4 million d'images Pl@ntNet, flore d'Europe du Sud-Ouest |
+| espèces | 1 019 (1 081 sorties, voir plus bas) | 7 806 |
+| top-1 annoncé par les auteurs | — | 75,9 % (une plante par image) |
+| entrée | 224 px (`Resize(256)`, `CenterCrop(224)`) | 518 px (`Resize(518)` bicubique, sans recadrage) |
+| poids | float16, 11,6 Mo | int8 dynamique, 97,4 Mo |
+| licence | jeu CC BY 4.0, poids sans licence déclarée | CC BY 4.0 (Zenodo 10848263) |
+| script | `plantnet300k_export.py` | `plantclef2024_export.py` |
 
 Ce qu'Iris met en face se lit dans sa fiche, au § 0, et nulle part ailleurs.
 
-`tools/plant_model/plantnet300k_export.py` fait la conversion. Il ajoute au
+Les deux scripts partagent `tools/plant_model/comparaison.py`, qui ajoute au
 réseau ce qu'attend `TflitePlantModel` — entrée NHWC en octets 0–255,
 normalisation ImageNet dans le graphe, softmax en sortie — et vérifie que le
-`.tflite` rend ce que rend PyTorch (écart maximal 0,0014 sur les photos de
-contrôle, même premier candidat partout). Côté Dart, rien de neuf : c'est un
-second `TflitePlantModel` sur d'autres assets.
+`.tflite` rend ce que rend PyTorch. Côté Dart, rien de neuf : chaque modèle
+est un `TflitePlantModel` de plus, sur ses propres assets
+(`assets/model/<key>/`, `ComparisonModel`).
 
-**1 081 sorties, 1 019 espèces.** Le jeu nomme parfois la même plante sous
-deux ou trois citations d'auteur (« *Tradescantia zebrina* Bosse », « … hort.
-ex Bosse »). Telles quelles, elles s'affichaient deux fois et se partageaient
-le score. Le graphe additionne leurs probabilités, par un produit avec une
-matrice de 0 et de 1 ; `labels.txt` n'a plus que des espèces distinctes.
+**1 081 sorties, 1 019 espèces.** Pl@ntNet-300K nomme parfois la même plante
+sous deux ou trois citations d'auteur (« *Tradescantia zebrina* Bosse », « …
+hort. ex Bosse »). Telles quelles, elles s'affichaient deux fois et se
+partageaient le score. Le graphe additionne leurs probabilités ; `labels.txt`
+n'a plus que des espèces distinctes. PlantCLEF 2024 n'a pas ce défaut.
 
-**Le TensorFlow Lite d'iOS est en 2.12** (`ios/Podfile.lock`). Le
-quantificateur range les poids d'un modèle de plus de 256 Ko hors du
-flatbuffer, ce que la 2.12 refuse (« Input tensor lacks data ») ; le script
-force la sérialisation d'un seul tenant. Le modèle livré a été chargé et
-exécuté par un interpréteur 2.12 avant d'être commité.
+**Le TensorFlow Lite d'iOS est en 2.12** (`ios/Podfile.lock`), celui
+d'Android est LiteRT 1.4 (`tflite_flutter` 0.12.1). Trois conséquences, que
+les scripts prennent en charge :
+
+- le quantificateur range les poids d'un modèle de plus de 256 Ko hors du
+  flatbuffer, ce que la 2.12 refuse (« Input tensor lacks data ») ; les
+  scripts forcent la sérialisation d'un seul tenant ;
+- l'attention fusionnée de timm se convertit en un op composite inconnu de
+  la 2.12 ; `plantclef2024_export.py` l'écrit en clair (`BATCH_MATMUL`,
+  `SOFTMAX`) ;
+- **l'int8 dynamique n'est pas accéléré en 2.12.** Mesuré sur le poste de
+  conversion, deux fils, une photo à 518 px :
+
+| PlantCLEF 2024 | LiteRT récent | TFLite 2.12 | mémoire en plus (2.12) |
+|---|---|---|---|
+| float32, 370 Mo | 1,6 s | 4,4 s | ~1 000 Mo |
+| int8 poids seuls, 97 Mo | — | 4,3 s | ~1 000 Mo |
+| **int8 dynamique, 97 Mo** (livré) | **0,8 s** | **10,1 s** | **~390 Mo** |
+
+  L'int8 « poids seuls » est aussi rapide que le flottant en 2.12, mais les
+  poids s'y redéplient en float32 au chargement : un gigaoctet de plus, à
+  côté d'Iris et de Pl@ntNet-300K, c'est l'application tuée par iOS sur un
+  téléphone de 4 Go. L'int8 dynamique garde ses poids en int8 et coûte
+  quatre fois moins de mémoire ; sur iPhone il se paie en secondes. Android
+  embarque un LiteRT récent, où il était le plus rapide des trois sur le
+  poste de conversion — à confirmer sur un téléphone. D'où son délai de 60 s
+  par photo (`ComparisonModel.timeout`).
+
+Les deux modèles livrés ont été chargés et exécutés par un interpréteur 2.12
+avant d'être commités. L'int8 dynamique s'écarte du float32 d'au plus 0,09
+en probabilité, sans changer le premier candidat d'aucune des photos de
+contrôle, à un ex-æquo près (*Anthurium*, deux espèces à 0,02).
 
 ### 15.2 Ce que voit l'utilisateur
 
-*Réglages > Identification > Comparer avec Pl@ntNet-300K*, éteint par défaut.
-Allumé :
+*Réglages > Identification > Modèles à comparer* : un interrupteur par
+modèle, tous éteints par défaut. Pour chacun d'allumé :
 
-- chaque identification passe par Iris, **puis** par Pl@ntNet-300K sur les
-  mêmes photos. Après, et non en même temps : deux inférences simultanées se
-  partageraient le processeur, Iris dépasserait le délai de la cascade et
-  partirait en ligne — la comparaison fausserait ce qu'elle mesure ;
+- chaque identification passe par Iris, **puis** par les modèles allumés, un
+  à la fois, dans l'ordre de `ComparisonModel`. Jamais en même temps : deux
+  inférences simultanées se partageraient le processeur, Iris dépasserait le
+  délai de la cascade et partirait en ligne — la comparaison fausserait ce
+  qu'elle mesure ;
 - la feuille d'identification montre ses cinq premières propositions sous
-  celles d'Iris, dans une section « Propositions de Pl@ntNet-300K ». Elles
-  se choisissent comme les autres ;
-- les deux listes affichent le **score brut** à côté du cran de confiance.
-  Réglage éteint, rien ne change : un pourcentage se lit comme une certitude
-  qu'il n'est pas.
+  celles d'Iris, dans une section « Propositions de … ». Elles se
+  choisissent comme les autres ;
+- toutes les listes affichent le **score brut** à côté du cran de
+  confiance. Tout éteint, rien ne change : un pourcentage se lit comme une
+  certitude qu'il n'est pas ;
+- un modèle qui ne se charge pas le dit, erreur native comprise, au lieu de
+  « ne reconnaître aucune plante ».
 
-Rien de ce que rend Pl@ntNet-300K n'entre dans la décision : ni seuil, ni
-repli, ni compteur. Il passe par une `CascadeIdentifier` sans repli (même
-fusion des photos, même rattachement au catalogue) dont les compteurs restent
-en mémoire, pour ne pas fausser ceux d'Iris dans les réglages.
+Rien de ce que rendent ces modèles n'entre dans la décision : ni seuil, ni
+repli, ni compteur. Chacun passe par une `CascadeIdentifier` sans repli
+(même fusion des photos, même rattachement au catalogue) dont les compteurs
+restent en mémoire, pour ne pas fausser ceux d'Iris dans les réglages.
 
 ### 15.3 Premier coup d'œil, et ce qu'il ne dit pas
 
-Neuf photos iNaturalist, une par espèce, passées dans les deux `.tflite` :
+Neuf photos iNaturalist, une par espèce, et la photo de test que les auteurs
+de PlantCLEF joignent à leurs poids, passées dans les trois `.tflite` :
 
-| photo | Iris | Pl@ntNet-300K |
-|---|---|---|
-| *Anthurium andraeanum* | ✅ 1,00 | ✅ 1,00 |
-| *Cirsium vulgare* | *Carduus nutans* 0,92 | ✅ 1,00 |
-| *Fittonia albivenis* | ✅ 0,92 | ✅ 1,00 |
-| *Lactuca virosa* | *Chrysanthemum × morifolium* 0,30 | *Lactuca serriola* 1,00 |
-| *Monstera deliciosa* | ✅ 1,00 | *Alocasia macrorrhizos* 0,99 |
-| *Pelargonium zonale* | ✅ 0,99 | *Pelargonium inquinans* 0,56 |
-| *Schefflera arboricola* | ✅ 0,85 | ✅ 0,99 |
-| *Tradescantia zebrina* | ✅ 0,53 | ✅ 1,00 |
-| *Zamioculcas zamiifolia* | ✅ 0,78 | *Erucastrum incanum* 0,68 |
+| photo | Iris | Pl@ntNet-300K | PlantCLEF 2024 |
+|---|---|---|---|
+| *Anthurium andraeanum* | ✅ 1,00 | ✅ 1,00 | *Datura metel* 0,02 ✗ |
+| *Cirsium vulgare* | *Carduus nutans* 0,92 | ✅ 1,00 | ✅ 0,07 |
+| *Fittonia albivenis* | ✅ 0,92 | ✅ 1,00 | *Salix reticulata* 0,01 ✗ |
+| *Lactuca virosa* | *Chrysanthemum × morifolium* 0,30 | *Lactuca serriola* 1,00 | *Lactuca quercina* 0,47 (✅ 2ᵉ, 0,16) |
+| *Monstera deliciosa* | ✅ 1,00 | *Alocasia macrorrhizos* 0,99 ✗ | *Polypodium macaronesicum* 0,05 ✗ |
+| *Pelargonium zonale* | ✅ 0,99 | *Pelargonium inquinans* 0,56 | *Pelargonium graveolens* 0,05 (✅ 3ᵉ) |
+| *Schefflera arboricola* | ✅ 0,85 | ✅ 0,99 | *Pyracantha angustifolia* 0,03 ✗ |
+| *Tradescantia zebrina* | ✅ 0,53 | ✅ 1,00 | *Tradescantia fluminensis* 0,05 ✗ |
+| *Zamioculcas zamiifolia* | ✅ 0,78 | *Erucastrum incanum* 0,68 | *Cyrtomium falcatum* 0,11 ✗ |
+| *Orchis simia* (photo des auteurs) | — | — | ✅ 0,43 |
 
-Neuf photos ne mesurent rien, et celles-ci moins encore : Iris s'entraîne
-sur iNaturalist et a pu voir ces images-là. Elles disent en revanche deux
+✗ : l'espèce n'est pas parmi celles du modèle — il ne pouvait pas la nommer.
+
+Dix photos ne mesurent rien, et celles-ci moins encore : Iris s'entraîne
+sur iNaturalist et a pu voir ces images-là. Elles disent en revanche trois
 choses à vérifier sur les vraies photos :
 
-- **Pl@ntNet-300K ne peut pas nommer ce qu'il ne connaît pas**, et il le
-  nomme quand même avec assurance : pas de *Monstera* dans ses 1 019
-  espèces, donc un *Alocasia* à 0,99. C'est la panne du § 3.2 ;
-- **ses scores sont bien plus tranchés** qu'Iris — 1,00 sur une erreur. Le
-  seuil de 0,70 de `FallbackPolicy`, mesuré sur Iris, ne lui vaudrait rien ;
-  s'il devait remplacer Iris, la courbe du § 6.7 serait à refaire.
+- **aucun des deux ne peut nommer ce qu'il ne connaît pas.** Pas de
+  *Monstera* dans Pl@ntNet-300K, et six des neuf plantes d'intérieur
+  absentes des 7 806 espèces de PlantCLEF 2024 : c'est une flore sauvage,
+  pas un catalogue de salon. C'est la panne du § 3.2 ;
+- **Pl@ntNet-300K est sûr de lui jusque dans l'erreur** — 1,00 sur une
+  espèce voisine, 0,99 sur un *Alocasia* pour un *Monstera* ;
+- **PlantCLEF 2024 répartit sa confiance** : 0,07 pour un *Cirsium vulgare*
+  juste, 0,43 pour la photo de test de ses propres auteurs. Entraîné avec
+  mixup et cutmix sur 7 806 classes, il ne sort presque jamais de score
+  franc. C'est honnête, mais aucun seuil d'Iris ne s'y transpose : le
+  0,70 de `FallbackPolicy` le ferait partir en ligne à chaque photo.
 
-Remplacer Iris se jugera donc sur les plantes qu'on photographie vraiment,
-dans la maison : c'est ce que ce réglage permet de relever.
-
+S'il fallait remplacer Iris par l'un d'eux, la courbe du § 6.7 serait à
+refaire, et la question des espèces d'intérieur absentes resterait entière.
+Cela se jugera sur les plantes qu'on photographie vraiment, dans la maison :
+c'est ce que ces réglages permettent de relever.

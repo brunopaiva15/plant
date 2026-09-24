@@ -2150,22 +2150,25 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String plantNet300kComparison(String name) {
+  String modelComparison(String name) {
     return 'Confronta con $name';
   }
 
   @override
-  String plantNet300kComparisonHint(String name, String iris) {
-    return 'L\'app analizza le tue foto anche con $name, sul tuo dispositivo, e ne mostra le proposte sotto quelle di $iris.';
+  String get modelComparisonTitle => 'Modelli da confrontare';
+
+  @override
+  String modelComparisonHint(String iris) {
+    return 'L\'app analizza le tue foto anche con ogni modello attivo, sul tuo dispositivo, e ne mostra le proposte sotto quelle di $iris.';
   }
 
   @override
-  String plantNet300kSection(String name) {
+  String modelComparisonSuggestions(String name) {
     return 'Proposte di $name';
   }
 
   @override
-  String plantNet300kNone(String name) {
+  String modelComparisonNone(String name) {
     return '$name non riconosce nessuna pianta in queste foto.';
   }
 
