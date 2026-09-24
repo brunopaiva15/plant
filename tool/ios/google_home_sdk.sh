@@ -32,7 +32,14 @@
 set -euo pipefail
 
 VERSION=1.10.1
-URL="https://storage.googleapis.com/home_sdk_ios/GoogleHomeSDK-${VERSION}.tar.gz"
+# Dès qu'une version sort, Google range la précédente dans `deprecated/` :
+# l'URL d'une version épinglée ne tient qu'un mois. On essaie donc les deux
+# emplacements, la racine d'abord.
+BUCKET="https://storage.googleapis.com/home_sdk_ios"
+URLS=(
+  "${BUCKET}/GoogleHomeSDK-${VERSION}.tar.gz"
+  "${BUCKET}/deprecated/GoogleHomeSDK-${VERSION}.tar.gz"
+)
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$root"
@@ -43,10 +50,23 @@ if [ -z "$archive" ]; then
   temp="$(mktemp -d)"
   archive="$temp/GoogleHomeSDK-${VERSION}.tar.gz"
   echo "Téléchargement du SDK ${VERSION}…"
-  # `-sS` plutôt qu'une barre de progression : sur une CI, la sortie n'est
-  # pas un terminal et la barre ne produit que du bruit. Trois tentatives,
-  # parce qu'un build ne doit pas échouer sur un paquet perdu.
-  curl -fsSL --retry 3 --retry-delay 2 -o "$archive" "$URL"
+  # `-s` plutôt qu'une barre de progression : sur une CI, la sortie n'est
+  # pas un terminal et la barre ne produit que du bruit. Sans `-S` non plus :
+  # le 404 attendu à la racine se dit en une ligne ci-dessous, pas en erreur
+  # de curl. Trois tentatives, parce qu'un build ne doit pas échouer sur un
+  # paquet perdu.
+  ok=""
+  for url in "${URLS[@]}"; do
+    if curl -fsL --retry 3 --retry-delay 2 -o "$archive" "$url"; then
+      ok=1
+      break
+    fi
+    echo "Absent de ${url}."
+  done
+  if [ -z "$ok" ]; then
+    echo "Échec : GoogleHomeSDK-${VERSION}.tar.gz est introuvable dans ${BUCKET}." >&2
+    exit 1
+  fi
 fi
 
 echo "Extraction dans vendor/GoogleHomeSDK…"
