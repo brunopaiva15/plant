@@ -27,6 +27,7 @@ import '../../../domain/models/models.dart';
 import '../../../domain/repositories/repositories.dart';
 import '../../locations/presentation/location_edit_sheet.dart';
 import '../../locations/presentation/location_picker_sheet.dart';
+import '../../../domain/identification/identification_confidence.dart';
 import '../../../domain/identification/identification_policy.dart';
 import '../../identification/presentation/identification_photos.dart';
 import '../../identification/presentation/identification_sheet.dart';
@@ -128,6 +129,19 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   IdentificationCandidate? _chosen;
   ChosenSource? _chosenSource;
 
+  /// Vrai quand `_chosen` a été retenue par l'application, sans geste de la
+  /// personne : elle part avec la photo qu'elle nommait, et rien ne va
+  /// entraîner Iris tant que personne ne l'a confirmée.
+  bool _autoPicked = false;
+
+  /// Le nom qu'une candidate a donné à la plante. Tant que la personne ne
+  /// l'a pas changé, une autre candidate le remplace — sinon choisir le
+  /// Ficus après le Pothos proposé laissait une plante « Pothos ».
+  String? _derivedName;
+
+  /// Première plante du jardin : chaque étape porte sa consigne.
+  bool _guided = false;
+
   /// Une photo d'abord ; une seconde seulement si Iris hésite.
   static const int maxIdentificationPhotos = 2;
 
@@ -151,6 +165,13 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     // Le flux s'ouvre tout de suite : la première étape est celle de la photo,
     // et l'aperçu doit y être avant que l'utilisateur ne pense à viser.
     _camera.start();
+    // Le guide ne vaut que pour la première plante : ensuite, les gestes
+    // sont connus. Une bouture suppose déjà une plante.
+    if (widget.parentPlantId == null) {
+      unawaited(ref.read(plantRepositoryProvider).watchActiveCount().first.then((count) {
+        if (mounted && count == 0) setState(() => _guided = true);
+      }, onError: (_) {}));
+    }
     // L'espèce est déjà connue (bouture, proposition retenue) : elle apporte
     // avec elle le rythme de soins conseillé par sa fiche.
     final inherited = widget.speciesName?.trim() ?? '';
@@ -265,6 +286,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   void _showRawPreview(File source, {required bool owned}) {
     if (!mounted) return;
     setState(() {
+      _dropAutoPick();
       _reviewSource = source;
       _reviewSourceOwned = owned;
       _identification = null;
@@ -281,6 +303,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     final owned = _reviewSourceOwned;
     if (mounted) {
       setState(() {
+        _dropAutoPick();
         _reviewSource = null;
         _reviewSourceOwned = false;
         _photo = null;
@@ -319,6 +342,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     final path = await storage.absolutePath(stored.filePath);
     if (!mounted) return;
     setState(() {
+      _dropAutoPick();
       _photo = stored;
       _identificationPaths
         ..clear()
@@ -345,6 +369,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     _primaryScanTimer?.cancel();
     _identificationRun++;
     setState(() {
+      _dropAutoPick();
       _photo = null;
       _reviewSource = null;
       _reviewSourceOwned = false;
@@ -406,6 +431,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
           _primaryIdentificationDone = true;
           _primaryPreviewCandidates = results.take(3).toList(growable: false);
         });
+        _preselectLikely(results);
       });
     }
 
@@ -415,6 +441,38 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     setState(() {
       _identification = pending;
     });
+  }
+
+  /// La plupart du temps, on ne sait pas quelle plante on a : ce n'est pas
+  /// à la personne de trancher quand Iris a reconnu l'espèce. Une candidate
+  /// « probable » — celle que la cascade accepterait sans appel — est donc
+  /// retenue d'office ; un autre nom la remplace d'un toucher. Sous ce
+  /// seuil, les suggestions restent à choisir, ou à laisser.
+  void _preselectLikely(List<IdentificationCandidate> results) {
+    if (results.isEmpty || _chosen != null || _species.text.trim().isNotEmpty) return;
+    // Dehors, la cascade tempère sa confiance selon le modèle : plutôt que
+    // de recopier ce seuil ici, on laisse choisir.
+    if (_place == IdentificationContext.outdoor) return;
+    final identifier = ref.read(plantIdentifierProvider);
+    final policy = identifier is CascadeIdentifier ? identifier.policy : const FallbackPolicy();
+    if (IdentificationConfidence.of(results.first, policy: policy) != IdentificationConfidence.likely) return;
+    _applyCandidate(results.first, confirmed: false);
+  }
+
+  /// Une nouvelle photo, ou plus de photo : l'espèce retenue d'office sur
+  /// l'ancienne ne vaut plus, ni le nom et le rythme qu'elle avait apportés.
+  /// À appeler dans un `setState`.
+  void _dropAutoPick() {
+    if (!_autoPicked) return;
+    _autoPicked = false;
+    _chosen = null;
+    _species.clear();
+    if (_name.text.trim() == _derivedName) _name.clear();
+    _derivedName = null;
+    if (!_intervalsTouched) {
+      _watering = AppConfig.defaultWateringInterval;
+      _fertilizing = AppConfig.defaultFertilizingInterval;
+    }
   }
 
   /// Évaluation produit complète : Iris reste le classifieur, Jev décide
@@ -707,12 +765,15 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
                       ? l10n.identifying
                       : _primaryPreviewCandidates.isEmpty
                           ? l10n.identifyNone
-                          : l10n.identifyHint,
+                          : _autoPicked
+                              ? l10n.identifyPreselectedHint
+                              : l10n.identifyChooseHint,
             ),
         };
         return _StepLayout(
           title: title,
           subtitle: subtitle,
+          tip: _guided && _mode == _PhotoMode.aim ? l10n.guideAimTip : null,
           body: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -819,6 +880,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
             _DetectedPlantsOverlay(
               candidates: _primaryPreviewCandidates,
               onPick: _pickPreviewCandidate,
+              selected: _chosen?.scientificName,
             ),
         ],
       );
@@ -923,6 +985,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     final c = context.colors;
     return _StepLayout(
       title: l10n.stepNameTitle,
+      tip: _guided ? l10n.guideNameTip : null,
       scrollable: true,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -944,9 +1007,11 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
           SpeciesField(
             controller: _species,
             onPicked: (s) {
-              if (_name.text.trim().isEmpty) _name.text = s.commonName ?? s.scientificName.split(' ').first;
+              final name = _name.text.trim();
+              if (name.isEmpty || name == _derivedName) _name.text = _derivedName = s.commonName ?? s.scientificName.split(' ').first;
               _applyCareProfile(s.scientificName, family: s.family);
               _chosen = null;
+              _autoPicked = false;
               _chosenSource = ChosenSource.picker;
             },
           ),
@@ -1039,15 +1104,21 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     _go(1);
   }
 
-  void _applyCandidate(IdentificationCandidate c) {
+  /// [confirmed] : la personne a touché ce nom. Faux quand l'application
+  /// le retient d'office ([_preselectLikely]).
+  void _applyCandidate(IdentificationCandidate c, {bool confirmed = true}) {
     setState(() {
       _chosen = c;
-      _chosenSource = c.source == IdentificationSource.remote
-          ? ChosenSource.remote
-          : ChosenSource.local;
+      _autoPicked = !confirmed;
+      _chosenSource = !confirmed
+          ? null
+          : c.source == IdentificationSource.remote
+              ? ChosenSource.remote
+              : ChosenSource.local;
       _species.text = c.scientificName;
-      if (_name.text.trim().isEmpty) {
-        _name.text = c.commonName ?? c.scientificName.split(' ').first;
+      final name = _name.text.trim();
+      if (name.isEmpty || name == _derivedName) {
+        _name.text = _derivedName = c.commonName ?? c.scientificName.split(' ').first;
       }
     });
     _applyCareProfile(
@@ -1061,6 +1132,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     final locations = ref.watch(locationsProvider).value ?? const <Location>[];
     return _StepLayout(
       title: l10n.stepLocationTitle,
+      tip: _guided ? l10n.guideLocationTip : null,
       scrollable: true,
       body: LocationChips(
         locations: locations,
@@ -1334,10 +1406,15 @@ class _DetectedPlantsOverlay extends StatefulWidget {
   const _DetectedPlantsOverlay({
     required this.candidates,
     required this.onPick,
+    this.selected,
   });
 
   final List<IdentificationCandidate> candidates;
   final ValueChanged<IdentificationCandidate> onPick;
+
+  /// Nom scientifique de la candidate retenue : son badge prend le trait
+  /// vert plein et la coche. Les autres restent tels quels.
+  final String? selected;
 
   @override
   State<_DetectedPlantsOverlay> createState() => _DetectedPlantsOverlayState();
@@ -1449,10 +1526,12 @@ class _DetectedPlantsOverlayState extends State<_DetectedPlantsOverlay>
                     decoration: BoxDecoration(
                       color: c.surface.withValues(alpha: 0.92),
                       borderRadius: BorderRadius.circular(18),
-                      border: Border.all(
-                        color: (i == 0 ? c.sage : c.inkTertiary)
-                            .withValues(alpha: 0.32),
-                      ),
+                      border: items[i].scientificName == widget.selected
+                          ? Border.all(color: c.sage, width: 1.5)
+                          : Border.all(
+                              color: (i == 0 ? c.sage : c.inkTertiary)
+                                  .withValues(alpha: 0.32),
+                            ),
                       boxShadow: const [
                         BoxShadow(
                           color: Color(0x26000000),
@@ -1470,17 +1549,28 @@ class _DetectedPlantsOverlayState extends State<_DetectedPlantsOverlay>
                         mainAxisAlignment: MainAxisAlignment.center,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            items[i].commonName?.trim().isNotEmpty == true
-                                ? items[i].commonName!
-                                : items[i].scientificName,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.center,
-                            style: context.text.callout.copyWith(
-                              color: c.ink,
-                              fontWeight: FontWeight.w700,
-                            ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (items[i].scientificName == widget.selected) ...[
+                                Icon(CupertinoIcons.checkmark_circle_fill, size: 15, color: c.sage),
+                                const SizedBox(width: 4),
+                              ],
+                              Flexible(
+                                child: Text(
+                                  items[i].commonName?.trim().isNotEmpty == true
+                                      ? items[i].commonName!
+                                      : items[i].scientificName,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
+                                  style: context.text.callout.copyWith(
+                                    color: c.ink,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                           if (items[i].commonName?.trim().isNotEmpty == true) ...[
                             const SizedBox(height: 1),
@@ -1506,14 +1596,47 @@ class _DetectedPlantsOverlayState extends State<_DetectedPlantsOverlay>
   }
 }
 
+/// La consigne d'une étape, pour la première plante du jardin seulement.
+///
+/// La création se découvre en s'en servant, mais la première fois rien ne
+/// disait comment cadrer, ni à quoi sert l'espèce. Une phrase par étape le
+/// dit, sur le fond sauge des aides de l'app ; elle disparaît avec la
+/// première plante créée. L'aperçu n'en a pas : sa consigne est déjà son
+/// sous-titre.
+class _GuideTip extends StatelessWidget {
+  const _GuideTip(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.colors;
+    return FloraCard(
+      color: c.sageSoft,
+      padding: const EdgeInsets.all(Space.md),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(CupertinoIcons.lightbulb, size: 18, color: c.sage),
+          const SizedBox(width: Space.sm),
+          Expanded(child: Text(text, style: context.text.caption.copyWith(color: c.ink))),
+        ],
+      ),
+    );
+  }
+}
+
 /// Les deux états de l'étape photo.
 enum _PhotoMode { aim, review }
 
 class _StepLayout extends StatelessWidget {
-  const _StepLayout({required this.title, required this.body, required this.actions, this.subtitle, this.scrollable = false});
+  const _StepLayout({required this.title, required this.body, required this.actions, this.subtitle, this.tip, this.scrollable = false});
 
   final String title;
   final String? subtitle;
+
+  /// La consigne du guide, pour la première plante seulement.
+  final String? tip;
   final Widget body;
   final List<Widget> actions;
   final bool scrollable;
@@ -1526,6 +1649,7 @@ class _StepLayout extends StatelessWidget {
         const SizedBox(height: Space.lg),
         Text(title, style: context.text.title1),
         if (subtitle != null) ...[const SizedBox(height: Space.xs), Text(subtitle!, style: context.text.callout)],
+        if (tip != null) ...[const SizedBox(height: Space.md), _GuideTip(tip!)],
         const SizedBox(height: Space.xl),
       ],
     );

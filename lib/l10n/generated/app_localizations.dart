@@ -3672,6 +3672,36 @@ abstract class AppLocalizations {
   /// **'Suggestions d\'espèce, à confirmer'**
   String get identifyHint;
 
+  /// No description provided for @identifyChooseHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Touchez le nom de votre plante, ou continuez sans choisir.'**
+  String get identifyChooseHint;
+
+  /// No description provided for @identifyPreselectedHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'application retient la plus probable. Touchez un autre nom pour la changer.'**
+  String get identifyPreselectedHint;
+
+  /// No description provided for @guideAimTip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cadrez toute la plante, pot compris, puis prenez la photo. L\'application reconnaît l\'espèce sur cette photo.'**
+  String get guideAimTip;
+
+  /// No description provided for @guideNameTip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Donnez un nom à votre plante, par exemple « Pothos du salon ». L\'espèce règle l\'arrosage conseillé.'**
+  String get guideNameTip;
+
+  /// No description provided for @guideLocationTip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez la pièce où vit votre plante, puis touchez « Terminer ».'**
+  String get guideLocationTip;
+
   /// No description provided for @searchOnline.
   ///
   /// In fr, this message translates to:

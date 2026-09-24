@@ -2071,6 +2071,26 @@ class AppLocalizationsIt extends AppLocalizations {
   String get identifyHint => 'Suggerimenti di specie, da confermare';
 
   @override
+  String get identifyChooseHint =>
+      'Tocca il nome della tua pianta, oppure continua senza scegliere.';
+
+  @override
+  String get identifyPreselectedHint =>
+      'L\'app sceglie la più probabile. Tocca un altro nome per cambiarla.';
+
+  @override
+  String get guideAimTip =>
+      'Inquadra tutta la pianta, vaso compreso, poi scatta la foto. L\'app riconosce la specie da questa foto.';
+
+  @override
+  String get guideNameTip =>
+      'Dai un nome alla tua pianta, per esempio «Pothos del soggiorno». La specie regola l\'annaffiatura consigliata.';
+
+  @override
+  String get guideLocationTip =>
+      'Scegli la stanza in cui vive la tua pianta, poi tocca «Fine».';
+
+  @override
   String get searchOnline => 'Cerca online';
 
   @override

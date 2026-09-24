@@ -2072,6 +2072,26 @@ class AppLocalizationsDe extends AppLocalizations {
   String get identifyHint => 'Artvorschläge, zu bestätigen';
 
   @override
+  String get identifyChooseHint =>
+      'Tippe auf den Namen deiner Pflanze oder mach ohne Auswahl weiter.';
+
+  @override
+  String get identifyPreselectedHint =>
+      'Die App übernimmt die wahrscheinlichste. Tippe auf einen anderen Namen, um sie zu ändern.';
+
+  @override
+  String get guideAimTip =>
+      'Nimm die ganze Pflanze samt Topf ins Bild und mach das Foto. Die App erkennt die Art auf diesem Foto.';
+
+  @override
+  String get guideNameTip =>
+      'Gib deiner Pflanze einen Namen, zum Beispiel „Efeutute im Wohnzimmer“. Die Art bestimmt das empfohlene Gießen.';
+
+  @override
+  String get guideLocationTip =>
+      'Wähle den Raum, in dem deine Pflanze steht, und tippe auf „Fertig“.';
+
+  @override
   String get searchOnline => 'Online suchen';
 
   @override
