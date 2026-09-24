@@ -220,6 +220,30 @@ attendrait le disque toute la journée.
   aux valeurs par défaut — 224 px, dropout 0,3, soixante couches — faute
   d'avoir passé les trois options de la recette. Elle plafonnait douze points
   sous la vraie (§ 13.6 de `docs/09`).
+- **Un redémarrage brutal de Windows peut laisser le disque d'Ubuntu en
+  lecture seule.** Le 24 septembre, après un redémarrage imprévu, toute
+  écriture échouait sur `Read-only file system` ; `dmesg` disait
+  `bad block bitmap checksum` puis `Remounting filesystem read-only`, 1,7 s
+  après chaque démarrage. `wsl --shutdown` ne répare rien : le disque repart,
+  puis rebascule dès qu'on touche la zone abîmée. Ce qui répare, depuis
+  Windows, parce qu'on ne vérifie pas un disque depuis le système qui tourne
+  dessus :
+
+  ```powershell
+  wsl --shutdown
+  $disque = Join-Path ((Get-ChildItem HKCU:\Software\Microsoft\Windows\CurrentVersion\Lxss | ForEach-Object { Get-ItemProperty $_.PSPath } | Where-Object DistributionName -eq 'Ubuntu').BasePath) 'ext4.vhdx'
+  wsl --install -d Debian             # une seule fois : l'outil de réparation
+  wsl --mount $disque --vhd --bare    # PowerShell administrateur
+  wsl -d Debian                       # puis : lsblk, le disque 1 T sans point de montage
+  ```
+
+  Dans Debian, `sudo e2fsck -fn /dev/sdX` d'abord — il ne modifie rien et dit
+  si des fichiers sont touchés (passes 1 à 4) ou seulement les tables de
+  blocs libres (passe 5, le cas du 24) — puis `sudo e2fsck -fy /dev/sdX`.
+  Enfin `wsl --unmount $disque`, `wsl --shutdown`, et vérifier que
+  `wsl -l -v` met toujours Ubuntu par défaut. Les passes finies avant la
+  coupure étaient intactes : le passage en lecture seule est ce qui les a
+  protégées.
 
 ## 3. Reconstruire le jeu d'images (~2 h)
 
