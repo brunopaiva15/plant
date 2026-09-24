@@ -103,6 +103,25 @@ class IdentificationSettingsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: Space.xs),
           Text(l10n.irisFeedbackHint(AppConfig.modelName), style: context.text.caption),
+          const SizedBox(height: Space.lg),
+          // Un banc d'essai, pas une fonction : Pl@ntNet-300K tourne après
+          // Iris, sur les mêmes photos, et ses propositions s'ajoutent sous
+          // les siennes sans rien changer à la décision (§ 15 de docs/09).
+          FloraGroup(
+            children: [
+              FloraListRow(
+                title: l10n.plantNet300kComparison(AppConfig.comparisonModelName),
+                titleMaxLines: 2,
+                trailing: AdaptiveSwitch(
+                  value: ref.watch(preferencesProvider.select((p) => p.plantNet300kComparison)),
+                  onChanged: (v) => ref.read(preferencesProvider.notifier).setPlantNet300kComparison(v),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: Space.xs),
+          Text(l10n.plantNet300kComparisonHint(AppConfig.comparisonModelName, AppConfig.modelName),
+              style: context.text.caption),
           const SizedBox(height: Space.sm),
           Text(l10n.identificationStats(metrics.local, metrics.localAccepted, metrics.remote), style: context.text.caption),
           if (identifier is CascadeIdentifier) ...[

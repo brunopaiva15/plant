@@ -157,6 +157,9 @@ flutter:
     # métadonnées. Produit par tools/plant_model/train.py, voir
     # docs/09-plant-recognition.md.
     - assets/model/
+    # Pl@ntNet-300K, mesuré contre Iris (docs/09 § 15). Produit par
+    # tools/plant_model/plantnet300k_export.py.
+    - assets/model/plantnet300k/
 
   # Police des titres et des chiffres (Bricolage Grotesque, OFL, cf.
   # assets/fonts/OFL-BricolageGrotesque.txt), réduite à la chasse normale.

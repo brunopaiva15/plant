@@ -249,3 +249,26 @@ celle du § 6.7 de `docs/09`, porte sur les versions et non sur les seuils :
 fait remonter le seuil à 0,70 pour l'Iris 7 — il y rendait l'autonomie qu'avait
 la v6 à 0,60 (47 %) avec 85,9 % de précision au lieu de 82,8 %. L'Iris 8 l'a
 gardé tel quel et rend davantage des deux côtés (§ 6.7 bis de `docs/09`).
+
+## Pl@ntNet-300K, pour comparer
+
+`plantnet300k_export.py` convertit l'un des réseaux publiés par les auteurs
+de Pl@ntNet-300K (PyTorch, 1 081 sorties) en un `.tflite` que l'application
+lit comme Iris, et le range dans `assets/model/plantnet300k/`. Le réglage
+« Comparer avec Pl@ntNet-300K » le fait tourner après Iris sur les mêmes
+photos (§ 15 de `docs/09`).
+
+```bash
+python3 -m pip install litert-torch torchvision pillow   # PyTorch : à part
+python3 plantnet300k_export.py --check photo1.jpg photo2.jpg
+```
+
+| option | défaut | |
+|---|---|---|
+| `--arch` | `mobilenet_v3_large` | la dorsale d'Iris ; `resnet50`, `efficientnet_b0`… pour un autre réseau publié |
+| `--float` | non | poids en float32 plutôt qu'en float16, deux fois plus lourd |
+| `--check` | | photos passées dans PyTorch et dans le `.tflite` : l'écart doit rester au millième |
+
+Les poids restent en demi-précision **dans** le flatbuffer : le TensorFlow Lite
+d'iOS (2.12) ne lit pas les poids rangés à part, que le quantificateur écrit
+par défaut.

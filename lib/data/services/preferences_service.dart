@@ -60,6 +60,12 @@ class PreferencesService {
   bool get irisFeedbackAsked => _prefs.getBool('iris_feedback_asked') ?? false;
   Future<void> setIrisFeedbackAsked() => _prefs.setBool('iris_feedback_asked', true);
 
+  /// Faire tourner Pl@ntNet-300K à côté d'Iris, sur les mêmes photos, pour
+  /// comparer. Un banc d'essai : éteint par défaut, et sans effet sur ce
+  /// que la cascade décide (§ 15 de `docs/09`).
+  bool get plantNet300kComparison => _prefs.getBool('plantnet300k_comparison') ?? false;
+  Future<void> setPlantNet300kComparison(bool value) => _prefs.setBool('plantnet300k_comparison', value);
+
   /// Complément des fiches d'entretien par l'IA, quand le catalogue ne
   /// connaît pas l'espèce. Coupé, la fiche s'en tient à ses repères.
   bool get careAssistEnabled => _prefs.getBool('care_assist') ?? true;

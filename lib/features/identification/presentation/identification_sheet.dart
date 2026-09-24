@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/config/app_config.dart';
@@ -85,6 +86,13 @@ class _Shot {
 class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
   late Future<List<IdentificationCandidate>> _future;
 
+  /// Ce que Pl@ntNet-300K voit sur les mêmes photos, quand le réglage de
+  /// comparaison est allumé ; `null` sinon. Calculé **après** Iris, jamais en
+  /// même temps : deux inférences simultanées se partageraient le processeur
+  /// et pousseraient Iris au-delà du délai de la cascade, qui partirait alors
+  /// en ligne — la comparaison fausserait ce qu'elle mesure.
+  Future<List<IdentificationCandidate>>? _compare;
+
   /// La photo d'origine, celles que l'appelant a prêtées, puis celles
   /// ajoutées ici pour lever un doute. Le moteur les fusionne par moyenne
   /// géométrique : l'espèce que toutes les photos voient remonte, celle qui
@@ -147,8 +155,24 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
 
   List<File> get _files => [for (final s in _shots) File(s.path)];
 
-  Future<List<IdentificationCandidate>> _identify() => _remember(
-      ref.read(plantIdentifierProvider).identify(_files, language: _language, context: widget.place));
+  Future<List<IdentificationCandidate>> _identify() {
+    final iris = _remember(
+        ref.read(plantIdentifierProvider).identify(_files, language: _language, context: widget.place));
+    _compare = _compareAfter(iris);
+    return iris;
+  }
+
+  /// Pl@ntNet-300K sur les photos du moment, une fois Iris servie — qu'elle
+  /// ait répondu ou échoué. Sans effet quand le réglage est éteint.
+  Future<List<IdentificationCandidate>>? _compareAfter(Future<Object?> iris) {
+    final comparison = ref.read(comparisonIdentifierProvider);
+    if (comparison == null) return null;
+    final files = _files;
+    final language = _language;
+    return iris
+        .then<void>((_) {}, onError: (Object _) {})
+        .then((_) => comparison.identify(files, language: language, context: widget.place));
+  }
 
   /// Retient la réponse pour que la relance suivante ait quelque chose à
   /// montrer pendant qu'elle calcule.
@@ -360,7 +384,12 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
         FloraGroup(
           children: [
             for (final c in results)
-              CandidateRow(candidate: c, onUse: () => _use(c, action), policy: _policy),
+              CandidateRow(
+                candidate: c,
+                onUse: () => _use(c, action),
+                policy: _policy,
+                showScore: _compare != null,
+              ),
           ],
         ),
         if (state?.offer == SecondPhotoOffer.prominent &&
@@ -448,6 +477,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
                 candidate: c,
                 onUse: () => _use(c, JevProductAction.keepUncertain),
                 policy: _policy,
+                showScore: _compare != null,
               ),
           ],
         ),
@@ -565,8 +595,70 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
               );
             },
           ),
+          if (_compare != null)
+            _ComparisonSection(
+              future: _compare!,
+              maxCandidates: maxCandidates,
+              onUse: _use,
+            ),
         ],
       ),
+    );
+  }
+}
+
+/// Les propositions de Pl@ntNet-300K, sous celles d'Iris, pour les comparer
+/// sur la même photo (§ 15 de docs/09). Elles se choisissent comme les
+/// autres : une comparaison qui obligerait à recopier le bon nom à la main ne
+/// servirait pas longtemps.
+class _ComparisonSection extends ConsumerWidget {
+  const _ComparisonSection({required this.future, required this.maxCandidates, required this.onUse});
+
+  final Future<List<IdentificationCandidate>> future;
+  final int maxCandidates;
+  final void Function(IdentificationCandidate candidate) onUse;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    const name = AppConfig.comparisonModelName;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SectionHeader(
+          title: l10n.plantNet300kSection(name),
+          padding: const EdgeInsets.only(top: Space.lg, bottom: Space.sm),
+        ),
+        FutureBuilder<List<IdentificationCandidate>>(
+          future: future,
+          builder: (context, snap) {
+            if (snap.connectionState != ConnectionState.done) {
+              return Text(l10n.identifying, style: context.text.caption);
+            }
+            final results = (snap.data ?? const <IdentificationCandidate>[]).take(maxCandidates).toList();
+            // Un modèle qui ne s'est pas chargé ne « reconnaît aucune
+            // plante » : il n'a rien regardé. Le dire comme les réglages le
+            // disent pour Iris, erreur native comprise — c'est elle qui
+            // distingue un asset absent d'un runtime trop ancien.
+            final error = ref.read(comparisonPlantModelProvider).loadError;
+            if (results.isEmpty && error != null) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(l10n.modelMissing(name), style: context.text.caption),
+                  SelectableText(error, style: context.text.caption),
+                ],
+              );
+            }
+            if (results.isEmpty) return Text(l10n.plantNet300kNone(name), style: context.text.caption);
+            return FloraGroup(
+              children: [
+                for (final c in results) CandidateRow(candidate: c, onUse: () => onUse(c), showScore: true),
+              ],
+            );
+          },
+        ),
+      ],
     );
   }
 }
@@ -599,6 +691,7 @@ class CandidateRow extends ConsumerWidget {
     required this.onUse,
     this.selected = false,
     this.policy = const FallbackPolicy(),
+    this.showScore = false,
   });
 
   final IdentificationCandidate candidate;
@@ -609,6 +702,11 @@ class CandidateRow extends ConsumerWidget {
   /// mot affiché doit dire la même chose que la décision prise.
   final FallbackPolicy policy;
 
+  /// Le score brut du modèle en plus du cran. Réservé à la comparaison
+  /// d'Iris et de Pl@ntNet-300K : ailleurs, un pourcentage se lit comme une
+  /// certitude qu'il n'est pas, et le cran suffit.
+  final bool showScore;
+
   /// Le côté de la vignette. Assez grand pour qu'une feuille se distingue
   /// d'une fleur, assez petit pour que la ligne reste une ligne de liste.
   static const double thumbnailSize = 44;
@@ -617,7 +715,10 @@ class CandidateRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final confidence = IdentificationConfidence.of(candidate, policy: policy);
-    final mot = l10n.confidenceLabel(confidence);
+    final cran = l10n.confidenceLabel(confidence);
+    final mot = showScore
+        ? '$cran · ${NumberFormat.percentPattern(Localizations.localeOf(context).languageCode).format(candidate.score)}'
+        : cran;
     final commun = candidate.commonName ?? '';
     // Pl@ntNet livre sa photo de référence avec le résultat ; le modèle
     // embarqué ne connaît que des noms, et c'est GBIF qui illustre alors.

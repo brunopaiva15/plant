@@ -3804,6 +3804,30 @@ abstract class AppLocalizations {
   /// **'En nommant une plante, vous envoyez ses photos et le nom retenu pour entraîner les prochaines versions de {name}. Vous seul pouvez les lire, et supprimer votre compte les efface. Désactivé, rien ne quitte votre appareil.'**
   String irisFeedbackHint(String name);
 
+  /// No description provided for @plantNet300kComparison.
+  ///
+  /// In fr, this message translates to:
+  /// **'Comparer avec {name}'**
+  String plantNet300kComparison(String name);
+
+  /// No description provided for @plantNet300kComparisonHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'application soumet aussi vos photos à {name}, sur votre appareil, et montre ses propositions sous celles de {iris}.'**
+  String plantNet300kComparisonHint(String name, String iris);
+
+  /// No description provided for @plantNet300kSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'Propositions de {name}'**
+  String plantNet300kSection(String name);
+
+  /// No description provided for @plantNet300kNone.
+  ///
+  /// In fr, this message translates to:
+  /// **'{name} ne reconnaît aucune plante sur ces photos.'**
+  String plantNet300kNone(String name);
+
   /// No description provided for @irisFeedbackNeedsAccount.
   ///
   /// In fr, this message translates to:

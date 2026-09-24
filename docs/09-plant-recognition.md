@@ -4367,3 +4367,98 @@ Deux choses restent à mesurer :
 - **pas d'arbitrage entre deux entraînements.** Tant que les deux masques ne
   viennent pas de la même tête, comparer leurs scores n'a pas de sens
   (§ 14.1).
+
+## 15. Pl@ntNet-300K à côté d'Iris : le banc d'essai de la 1.0.1
+
+La question du § 4.6 et du § 12.8 — que vaut Pl@ntNet-300K pour nous ? — y
+était tranchée sur les métadonnées : recouvrement d'espèces, licences,
+cadrage. Il restait à voir ce que rend **le modèle** sur les photos qu'on
+prend d'une plante chez soi. La 1.0.1 le livre dans l'application, derrière
+un réglage, pour le mesurer là.
+
+### 15.1 Ce qui tourne
+
+Les auteurs publient leurs réseaux entraînés, dont un **MobileNetV3-Large** :
+la dorsale d'Iris, entraînée sur d'autres images. C'est celui-là qui est livré,
+pour que la comparaison mesure le jeu et non l'architecture.
+
+| | Pl@ntNet-300K |
+|---|---|
+| dorsale | MobileNetV3-Large |
+| entrée | 224 px (`Resize(256)` puis `CenterCrop(224)`, la recette des auteurs) |
+| espèces | 1 019 (1 081 sorties, voir plus bas) |
+| poids | float16, 13,6 Mo |
+| masques de lieu | aucun |
+
+Ce qu'Iris met en face se lit dans sa fiche, au § 0, et nulle part ailleurs.
+
+`tools/plant_model/plantnet300k_export.py` fait la conversion. Il ajoute au
+réseau ce qu'attend `TflitePlantModel` — entrée NHWC en octets 0–255,
+normalisation ImageNet dans le graphe, softmax en sortie — et vérifie que le
+`.tflite` rend ce que rend PyTorch (écart maximal 0,0014 sur les photos de
+contrôle, même premier candidat partout). Côté Dart, rien de neuf : c'est un
+second `TflitePlantModel` sur d'autres assets.
+
+**1 081 sorties, 1 019 espèces.** Le jeu nomme parfois la même plante sous
+deux ou trois citations d'auteur (« *Tradescantia zebrina* Bosse », « … hort.
+ex Bosse »). Telles quelles, elles s'affichaient deux fois et se partageaient
+le score. Le graphe additionne leurs probabilités, par un produit avec une
+matrice de 0 et de 1 ; `labels.txt` n'a plus que des espèces distinctes.
+
+**Le TensorFlow Lite d'iOS est en 2.12** (`ios/Podfile.lock`). Le
+quantificateur range les poids d'un modèle de plus de 256 Ko hors du
+flatbuffer, ce que la 2.12 refuse (« Input tensor lacks data ») ; le script
+force la sérialisation d'un seul tenant. Le modèle livré a été chargé et
+exécuté par un interpréteur 2.12 avant d'être commité.
+
+### 15.2 Ce que voit l'utilisateur
+
+*Réglages > Identification > Comparer avec Pl@ntNet-300K*, éteint par défaut.
+Allumé :
+
+- chaque identification passe par Iris, **puis** par Pl@ntNet-300K sur les
+  mêmes photos. Après, et non en même temps : deux inférences simultanées se
+  partageraient le processeur, Iris dépasserait le délai de la cascade et
+  partirait en ligne — la comparaison fausserait ce qu'elle mesure ;
+- la feuille d'identification montre ses cinq premières propositions sous
+  celles d'Iris, dans une section « Propositions de Pl@ntNet-300K ». Elles
+  se choisissent comme les autres ;
+- les deux listes affichent le **score brut** à côté du cran de confiance.
+  Réglage éteint, rien ne change : un pourcentage se lit comme une certitude
+  qu'il n'est pas.
+
+Rien de ce que rend Pl@ntNet-300K n'entre dans la décision : ni seuil, ni
+repli, ni compteur. Il passe par une `CascadeIdentifier` sans repli (même
+fusion des photos, même rattachement au catalogue) dont les compteurs restent
+en mémoire, pour ne pas fausser ceux d'Iris dans les réglages.
+
+### 15.3 Premier coup d'œil, et ce qu'il ne dit pas
+
+Neuf photos iNaturalist, une par espèce, passées dans les deux `.tflite` :
+
+| photo | Iris | Pl@ntNet-300K |
+|---|---|---|
+| *Anthurium andraeanum* | ✅ 1,00 | ✅ 1,00 |
+| *Cirsium vulgare* | *Carduus nutans* 0,92 | ✅ 1,00 |
+| *Fittonia albivenis* | ✅ 0,92 | ✅ 1,00 |
+| *Lactuca virosa* | *Chrysanthemum × morifolium* 0,30 | *Lactuca serriola* 1,00 |
+| *Monstera deliciosa* | ✅ 1,00 | *Alocasia macrorrhizos* 0,99 |
+| *Pelargonium zonale* | ✅ 0,99 | *Pelargonium inquinans* 0,56 |
+| *Schefflera arboricola* | ✅ 0,85 | ✅ 0,99 |
+| *Tradescantia zebrina* | ✅ 0,53 | ✅ 1,00 |
+| *Zamioculcas zamiifolia* | ✅ 0,78 | *Erucastrum incanum* 0,68 |
+
+Neuf photos ne mesurent rien, et celles-ci moins encore : Iris s'entraîne
+sur iNaturalist et a pu voir ces images-là. Elles disent en revanche deux
+choses à vérifier sur les vraies photos :
+
+- **Pl@ntNet-300K ne peut pas nommer ce qu'il ne connaît pas**, et il le
+  nomme quand même avec assurance : pas de *Monstera* dans ses 1 019
+  espèces, donc un *Alocasia* à 0,99. C'est la panne du § 3.2 ;
+- **ses scores sont bien plus tranchés** qu'Iris — 1,00 sur une erreur. Le
+  seuil de 0,70 de `FallbackPolicy`, mesuré sur Iris, ne lui vaudrait rien ;
+  s'il devait remplacer Iris, la courbe du § 6.7 serait à refaire.
+
+Remplacer Iris se jugera donc sur les plantes qu'on photographie vraiment,
+dans la maison : c'est ce que ce réglage permet de relever.
+

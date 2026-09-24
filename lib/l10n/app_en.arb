@@ -694,6 +694,10 @@
       }
     }
   },
+  "plantNet300kComparison": "Compare with {name}",
+  "plantNet300kComparisonHint": "The app also runs your photos through {name}, on your device, and shows its suggestions below those from {iris}.",
+  "plantNet300kSection": "Suggestions from {name}",
+  "plantNet300kNone": "{name} recognises no plant in these photos.",
   "irisFeedbackNeedsAccount": "An account is needed to send photos.",
   "irisFeedbackAskTitle": "Sending identified photos",
   "irisFeedbackAskBody": "Your identification photos and the chosen name can train the next versions of {name}. Only you will be able to read them, and deleting your account will erase them. You can change this choice in the settings.",

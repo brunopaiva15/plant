@@ -2150,6 +2150,26 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String plantNet300kComparison(String name) {
+    return 'Comparer avec $name';
+  }
+
+  @override
+  String plantNet300kComparisonHint(String name, String iris) {
+    return 'L\'application soumet aussi vos photos à $name, sur votre appareil, et montre ses propositions sous celles de $iris.';
+  }
+
+  @override
+  String plantNet300kSection(String name) {
+    return 'Propositions de $name';
+  }
+
+  @override
+  String plantNet300kNone(String name) {
+    return '$name ne reconnaît aucune plante sur ces photos.';
+  }
+
+  @override
   String get irisFeedbackNeedsAccount =>
       'Il faut un compte pour envoyer des photos.';
 

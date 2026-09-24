@@ -61,6 +61,8 @@ app.*.map.json
 *.tflite
 # …sauf le modèle livré dans l'application : c'est un asset, pas un artefact.
 !/assets/model/*.tflite
+# …et Pl@ntNet-300K, qu'on mesure contre lui dans l'application (docs/09 § 15).
+!/assets/model/plantnet300k/*.tflite
 *.mlmodel
 *.mlpackage
 *.onnx

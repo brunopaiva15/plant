@@ -79,6 +79,19 @@ void main() {
     expect(h.prefs.irisFeedbackEnabled, isTrue);
   });
 
+  testWidgets('la comparaison avec Pl@ntNet-300K est éteinte, et s\'allume', (tester) async {
+    final h = await _pump(tester, available: false);
+    expect(h.prefs.plantNet300kComparison, isFalse, reason: 'un banc d\'essai ne tourne pas par défaut');
+    final sw = find.descendant(
+      of: find.ancestor(of: find.text(h.l10n.plantNet300kComparison('Pl@ntNet-300K')), matching: find.byType(FloraListRow)),
+      matching: find.byType(AdaptiveSwitch),
+    );
+    await tester.ensureVisible(sw);
+    await tester.tap(sw);
+    await tester.pumpAndSettle();
+    expect(h.prefs.plantNet300kComparison, isTrue);
+  });
+
   // Le titre est plus long qu'avant, et la ligne le porte avec un
   // interrupteur : sur un iPhone SE, dans les quatre langues, elle ne
   // déborde pas.
