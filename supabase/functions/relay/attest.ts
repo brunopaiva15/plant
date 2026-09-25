@@ -16,11 +16,12 @@
 // La marche à suivre est celle d'Apple, « Validating Apps That Connect to
 // Your Server ». Chaque étape ci-dessous porte son numéro.
 
-import { concat, sha256, source, timingSafeEqual, toBase64, utf8 } from './bytes.ts';
+import { concat, sha256, timingSafeEqual, toBase64, utf8 } from './bytes.ts';
 import { cborBytes, cborMap, decodeCbor } from './cbor.ts';
 import { appleRootCertificate } from './apple_root.ts';
 import type { Certificate } from './asn1.ts';
 import { children, content, ecdsaSignatureToRaw, parseCertificate, readNode, verifySignedBy } from './asn1.ts';
+import { verifyEcdsa } from './ecdsa.ts';
 
 export class AttestationError extends Error {}
 
@@ -270,20 +271,6 @@ export async function verifyAssertion(
   if (parsed.counter <= previousCounter) throw new AttestationError('compteur d’assertion non progressé');
 
   const nonce = await sha256(concat(authData, await clientDataHash(challenge)));
-  let key: CryptoKey;
-  try {
-    key = await crypto.subtle.importKey(
-      'raw',
-      source(publicKey),
-      { name: 'ECDSA', namedCurve: 'P-256' },
-      false,
-      ['verify'],
-    );
-  } catch {
-    // La clé vient de la base, où une version antérieure du relais a pu
-    // l'écrire autrement : c'est un appareil à réenregistrer, pas une panne.
-    throw new AttestationError('clé publique d’appareil illisible');
-  }
 
   let raw: Uint8Array;
   try {
@@ -291,7 +278,12 @@ export async function verifyAssertion(
   } catch {
     throw new AttestationError('signature mal formée');
   }
-  if (!(await crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, key, source(raw), source(nonce)))) {
+  // Une clé illisible — hors courbe, ou écrite autrement par une version
+  // antérieure du relais — fait échouer la vérification sans lever : c'est
+  // un appareil à réenregistrer, pas une panne. La Web Crypto de Deno, elle,
+  // ne signalait une telle clé qu'au moment de vérifier, par une exception
+  // que rien n'attrapait (`ecdsa.ts`).
+  if (!(await verifyEcdsa('P-256', 'SHA-256', publicKey, raw, nonce))) {
     throw new AttestationError('signature d’assertion invalide');
   }
 

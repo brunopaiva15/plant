@@ -12,7 +12,7 @@
 // refusés. La souplesse ici ouvrirait deux lectures d'un même flux, ce qui
 // est exactement ce dont vit une attaque sur une chaîne de certificats.
 
-import { source } from './bytes.ts';
+import { verifyEcdsa } from './ecdsa.ts';
 
 export interface DerNode {
   readonly tag: number;
@@ -264,6 +264,10 @@ export function ecdsaSignatureToRaw(der: Uint8Array, curve: 'P-256' | 'P-384'): 
 /// Vérifie qu'un certificat a bien été signé par un autre : même nom d'un
 /// maillon à l'autre, algorithme connu, et signature valide sur les octets
 /// du `tbsCertificate`.
+///
+/// Pas par la Web Crypto : le certificat d'appareil d'Apple est signé en
+/// SHA-256 par une clé P-384, un mélange que le runtime des fonctions
+/// Supabase refuse (`ecdsa.ts`).
 export async function verifySignedBy(certificate: Certificate, issuer: Certificate): Promise<boolean> {
   if (certificate.issuer.length !== issuer.subject.length) return false;
   if (!certificate.issuer.every((byte, i) => byte === issuer.subject[i])) return false;
@@ -271,18 +275,11 @@ export async function verifySignedBy(certificate: Certificate, issuer: Certifica
   const hash = SIGNATURE_HASHES[certificate.signatureAlgorithm];
   if (!hash) return false;
 
-  const key = await crypto.subtle.importKey(
-    'spki',
-    source(issuer.spki),
-    { name: 'ECDSA', namedCurve: issuer.curve },
-    false,
-    ['verify'],
-  );
   let raw: Uint8Array;
   try {
     raw = ecdsaSignatureToRaw(certificate.signature, issuer.curve);
   } catch {
     return false;
   }
-  return crypto.subtle.verify({ name: 'ECDSA', hash }, key, source(raw), source(certificate.tbs));
+  return verifyEcdsa(issuer.curve, hash, issuer.publicKey, raw, certificate.tbs);
 }

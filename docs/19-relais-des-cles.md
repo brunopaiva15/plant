@@ -135,7 +135,21 @@ pas signé cette chaîne-là, assertion rejouée, octet modifié.
 
 ```bash
 node --experimental-strip-types supabase/functions/relay/attest_test.ts
+deno run supabase/functions/relay/attest_test.ts
 ```
+
+Les deux, et pas seulement Node : c'est le runtime qui a fait défaut. La
+chaîne fabriquée ne suffit pas non plus, et `apple_fixtures.ts` ajoute une
+vraie attestation d'iPhone, rattachée à la vraie racine d'Apple.
+
+> **Ce que la Web Crypto de Supabase ne sait pas faire.** Elle ne vérifie
+> l'ECDSA que pour P-256 avec SHA-256 et P-384 avec SHA-384. Apple signe le
+> certificat d'appareil en SHA-256 avec une clé P-384 : chaque première
+> attestation levait « Not implemented », le relais répondait 500, et plus
+> aucune identification n'atteignait Pl@ntNet. Node et les Deno récents
+> acceptent ce mélange, et les tests passaient. Toutes les signatures du relais
+> se vérifient donc dans `ecdsa.ts`, sans la Web Crypto, par un chemin unique
+> que les tests éprouvent tel qu'il tourne.
 
 ### 3.2 Les quotas : combien chacun coûte
 
