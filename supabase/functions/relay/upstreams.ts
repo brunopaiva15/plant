@@ -151,11 +151,36 @@ function chatBody(raw: Uint8Array): Record<string, unknown> {
 export async function ai(request: Request): Promise<Response> {
   const body = chatBody(await readBounded(request, 'ai'));
   const upstream = `https://api.infomaniak.com/2/ai/${secrets.infomaniakProduct}/openai/v1/chat/completions`;
-  return passthrough(await call(upstream, {
+  const response = await call(upstream, {
     method: 'POST',
     headers: { 'content-type': 'application/json', authorization: `Bearer ${secrets.infomaniakKey}` },
     body: JSON.stringify(body),
-  }, 'ai'));
+  }, 'ai');
+  const bytes = await response.arrayBuffer();
+  console.log(`relais ai amont ${response.status} ${describeCompletion(bytes)} demandés=${body.max_tokens}`);
+  return passthrough(new Response(bytes, { status: response.status, headers: response.headers }));
+}
+
+/// Ce qu'une réponse du modèle dit de sa propre fin, pour les journaux :
+/// pourquoi il s'est arrêté, combien de jetons il a écrits, et la longueur
+/// de ce qui reste une fois la réflexion écrite. Jamais le texte lui-même —
+/// il parle de la plante de quelqu'un.
+///
+/// C'est ce qui manquait pour lire un diagnostic lent : sans cela, le
+/// journal de la fonction ne disait ni qu'une réponse revenait coupée
+/// (`length`), ni qu'elle revenait vide.
+function describeCompletion(bytes: ArrayBuffer): string {
+  try {
+    const json = JSON.parse(new TextDecoder().decode(bytes)) as {
+      choices?: { finish_reason?: unknown; message?: { content?: unknown } }[];
+      usage?: { completion_tokens?: unknown };
+    };
+    const choice = json.choices?.[0];
+    const content = typeof choice?.message?.content === 'string' ? choice.message.content : '';
+    return `fin=${choice?.finish_reason ?? '?'} écrits=${json.usage?.completion_tokens ?? '?'} contenu=${content.length}`;
+  } catch {
+    return `corps illisible (${bytes.byteLength} octets)`;
+  }
 }
 
 /// Jev, sur l'endpoint Decisions d'OpenRouter. Il ne génère pas de texte : il
