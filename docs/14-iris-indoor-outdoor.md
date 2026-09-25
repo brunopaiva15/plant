@@ -1970,11 +1970,11 @@ déjà, avec plus de pixels pour le faire.
 
 ### Le coût
 
-Environ deux fois le calcul par image (320² / 224² ≈ 2,04), soit ~100 min
-par époque sur le corpus v8 et ~17 h pour la passe, **à confirmer par
-`mesure`** avant de lancer. Même rapport sur le téléphone, à l'inférence :
-c'est le coût d'Iris 9, déjà accepté. La VRAM se lit dans `mesure` : le
-lot de 64 doit tenir dans les 8 Go.
+Environ deux fois le calcul par image (320² / 224² ≈ 2,04). **Mesuré par
+`mesure`, lot de 64, précision mixte : 150 img/s, 89 min par époque,
+14,8 h pour la passe, 6,21 Gio de VRAM réservés sur 8.** C'est 1,8 fois le
+temps d'une époque à 224 (273 img/s). Même rapport sur le téléphone, à
+l'inférence : c'est le coût d'Iris 9, déjà accepté.
 
 ### Le critère, écrit avant
 
