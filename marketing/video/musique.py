@@ -82,8 +82,17 @@ os.makedirs(os.path.dirname(brut), exist_ok=True)
 wavfile.write(brut, SR, (passage * 32767).astype(np.int16))
 ffmpeg = os.path.join(ICI, 'node_modules', '@remotion', 'compositor-linux-x64-gnu', 'ffmpeg')
 sortie = os.path.join(ICI, 'public', 'musique.wav')
-subprocess.run([ffmpeg, '-y', '-loglevel', 'error', '-i', brut, '-af', 'loudnorm=I=-14:TP=-1:LRA=9', '-ar', str(SR), sortie],
-               check=True, env={**os.environ, 'LD_LIBRARY_PATH': os.path.dirname(ffmpeg)})
+# Deux passes : la première mesure le morceau, la seconde applique un gain
+# fixe (mode linéaire). En une seule passe, loudnorm corrige en continu et le
+# volume respire — c'était l'un des « petits bugs » audibles.
+env = {**os.environ, 'LD_LIBRARY_PATH': os.path.dirname(ffmpeg)}
+mesure_ = subprocess.run([ffmpeg, '-hide_banner', '-i', brut, '-af', 'loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json',
+                          '-f', 'null', '-'], capture_output=True, text=True, env=env).stderr
+m = json.loads(mesure_[mesure_.rindex('{'):mesure_.rindex('}') + 1])
+subprocess.run([ffmpeg, '-y', '-loglevel', 'error', '-i', brut, '-af',
+                f"loudnorm=I=-14:TP=-1.5:LRA=11:measured_I={m['input_i']}:measured_TP={m['input_tp']}:"
+                f"measured_LRA={m['input_lra']}:measured_thresh={m['input_thresh']}:offset={m['target_offset']}:linear=true",
+                '-ar', str(SR), sortie], check=True, env=env)
 os.remove(brut)
 
 # Les accents : la force de l'attaque sur chacun des 52 temps du passage,

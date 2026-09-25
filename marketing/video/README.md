@@ -64,13 +64,15 @@ changer `MORCEAU` et `DEBUT_APPROX`, relancer `musique.py`, puis le rendu.
 ```sh
 cd marketing/video
 npm install
-python3 preparer.py      # les téléphones, le pot, les photos → public/
-python3 musique.py       # la musique → public/musique.wav
-npx remotion render src/index.ts Sortie out/auxine-sortie-fr.mp4 --codec=h264 --crf=16
-npx remotion render src/index.ts SortieMuette out/auxine-sortie-fr-muette.mp4 --codec=h264 --crf=16
-npx remotion still src/index.ts Sortie out/auxine-sortie-fr-couverture.png --frame=690
+python3 preparer.py      # les écrans, le cadre, les plans réels → public/
+python3 musique.py       # la musique, ses temps et ses accents → public/, src/musique.json
+./rendu.sh               # la vidéo, sa version muette et la couverture → out/
+APERCU=1 ./rendu.sh      # un aperçu rapide, sans flou de bougé
 npx remotion studio src/index.ts   # pour regarder et régler image par image
 ```
+
+Le son n'est pas rendu par Remotion : `rendu.sh` le pose ensuite avec
+ffmpeg, calé à l'image près (Remotion le décalait d'environ 40 ms).
 
 Les textes à l'écran sont ceux du kit marketing. Le texte reste hors des
 zones que TikTok recouvre (`MARGE` dans `src/temps.ts`).

@@ -1,19 +1,24 @@
 import React from 'react';
-import { AbsoluteFill, Audio, Composition, staticFile } from 'remotion';
+import { AbsoluteFill, Composition } from 'remotion';
+import { CameraMotionBlur } from '@remotion/motion-blur';
 import { Film } from './Film';
 import { DUREE, FPS } from './temps';
 
-export const Sortie: React.FC<{ musique: boolean }> = ({ musique }) => (
+// L'image seule : le son est posé ensuite par ffmpeg (rendu.sh), calé à
+// l'image près. Le flou de bougé mélange 6 sous-images par image, avec un
+// obturateur à 180°, comme une caméra.
+export const Sortie: React.FC<{ flou: boolean }> = ({ flou }) => (
   <AbsoluteFill>
-    <Film />
-    {/* Le passage, déjà coupé sur ses temps et fondu par musique.py. */}
-    {musique && <Audio src={staticFile('musique.wav')} />}
+    {flou ? (
+      <CameraMotionBlur shutterAngle={180} samples={6}>
+        <Film />
+      </CameraMotionBlur>
+    ) : (
+      <Film />
+    )}
   </AbsoluteFill>
 );
 
 export const Racine: React.FC = () => (
-  <>
-    <Composition id="Sortie" component={Sortie} durationInFrames={DUREE} fps={FPS} width={1080} height={1920} defaultProps={{ musique: true }} />
-    <Composition id="SortieMuette" component={Sortie} durationInFrames={DUREE} fps={FPS} width={1080} height={1920} defaultProps={{ musique: false }} />
-  </>
+  <Composition id="Sortie" component={Sortie} durationInFrames={DUREE} fps={FPS} width={1080} height={1920} defaultProps={{ flou: true }} />
 );
