@@ -8,13 +8,13 @@ Tab bar
 ├── Aujourd'hui   (ce qui demande attention)
 ├── Plantes       (la collection)
 ├── Jardin        (emplacements, [inventaire P2], [calendrier P2])
-└── Profil        (apparence, notifications, archives, compte, soutien, à propos)
+└── Profil        (apparence, notifications, archives, compte, à propos)
 ```
 
 ## Hiérarchie des écrans
 ```
 Root
-├── Splash → Onboarding (5 écrans + lieu + prénom + compte [iOS, backend] + soutien) → Shell
+├── Ouverture (clin d'œil du pot, docs/06) → Onboarding (5 écrans + lieu + prénom + compte [iOS, backend]) → Shell
 └── Shell (tabs)
     ├── Aujourd'hui
     │   ├── [Plante] → Fiche plante
@@ -38,7 +38,7 @@ Root
     ├── Jardin
     │   ├── Emplacements (arborescence)
     │   │   ├── Nouvel emplacement (sheet)
-    │   │   └── Fiche emplacement → plan de la pièce relevée [LiDAR] (feuille du relevé), ou « Relever cette pièce » ; plantes de l'emplacement
+    │   │   └── Fiche emplacement → plan de la pièce relevée [LiDAR] (feuille du relevé), ou « Scanner cette pièce » ; plantes de l'emplacement
     │   └── [Inventaire, Calendrier — Phase 2]
     └── Profil
         ├── Apparence (système / clair / sombre, reduced motion)
@@ -51,7 +51,7 @@ Root
         │   ├── Problème (push) : famille, étendue, hôtes, plantes du jardin concernées
         │   ├── Phénomène normal (push) : étendue, hôtes, plantes du jardin concernées — rien à soigner
         │   └── Espèce (push) : la fiche d'entretien, hors de toute plante
-        ├── Relevé de la maison [LiDAR] : toutes les pièces relevées, relever l'appartement
+        ├── Scan de la maison [LiDAR] : toutes les pièces scannées, scanner tout le logement
         ├── Compte
         └── À propos
 ```

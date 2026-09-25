@@ -1,4 +1,5 @@
 import 'package:flora/features/plants/presentation/inline_camera.dart';
+import 'package:flora/l10n/generated/app_localizations.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -62,5 +63,96 @@ void main() {
 
     expect(find.byType(InlineCameraPreview), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  test('sans flux, ni flash ni zoom, et les demander ne casse rien', () async {
+    final camera = InlineCameraController();
+    addTearDown(camera.dispose);
+    await camera.start();
+
+    expect(camera.hasFlash, isFalse);
+    expect(camera.canZoom, isFalse);
+    await camera.toggleFlash();
+    expect(camera.flash, isFalse);
+    camera.setZoom(3);
+    expect(camera.zoom.value, 1);
+  });
+
+  testWidgets("les commandes ne dessinent rien tant qu'il n'y a pas de flux", (tester) async {
+    final camera = InlineCameraController();
+    addTearDown(camera.dispose);
+    await camera.start();
+
+    await tester.pumpWidget(
+      Localizations(
+        locale: const Locale('fr'),
+        delegates: AppLocalizations.localizationsDelegates,
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: SizedBox(width: 200, height: 250, child: InlineCameraControls(controller: camera)),
+        ),
+      ),
+    );
+
+    expect(find.byType(GestureDetector), findsNothing);
+    expect(find.byType(Text), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  group('le pincement', () {
+    // Le cadre du viseur se touche pour déclencher : le pincement vit sous
+    // lui, dans le même arbre, comme sur les trois écrans de prise de vue.
+    Future<({List<double> scales, int Function() taps})> monter(WidgetTester tester) async {
+      final scales = <double>[];
+      var taps = 0;
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: GestureDetector(
+            onTap: () => taps++,
+            child: RawGestureDetector(
+              behavior: HitTestBehavior.opaque,
+              gestures: {
+                PinchRecognizer: GestureRecognizerFactoryWithHandlers<PinchRecognizer>(
+                  PinchRecognizer.new,
+                  (r) => r.onUpdate = (d) {
+                    if (d.pointerCount >= 2) scales.add(d.scale);
+                  },
+                ),
+              },
+              child: const SizedBox(width: 300, height: 400),
+            ),
+          ),
+        ),
+      );
+      return (scales: scales, taps: () => taps);
+    }
+
+    testWidgets("un toucher d'un doigt déclenche toujours", (tester) async {
+      final t = await monter(tester);
+      await tester.tapAt(const Offset(150, 200));
+      await tester.pump();
+      expect(t.taps(), 1);
+      expect(t.scales, isEmpty);
+    });
+
+    testWidgets("deux doigts qui s'écartent zooment sans déclencher", (tester) async {
+      final t = await monter(tester);
+      // Le premier doigt reste immobile et le second s'écarte à peine, sous
+      // le seuil d'un pincement ordinaire : sans la réservation du geste, le
+      // premier doigt déclenchait la photo en se levant.
+      final first = await tester.startGesture(const Offset(150, 200), pointer: 1);
+      final second = await tester.startGesture(const Offset(150, 240), pointer: 2);
+      await tester.pump();
+      await second.moveTo(const Offset(150, 250));
+      await tester.pump();
+      await second.up();
+      await first.up();
+      await tester.pump();
+
+      expect(t.taps(), 0);
+      expect(t.scales, isNotEmpty);
+      expect(t.scales.last, greaterThan(1));
+    });
   });
 }

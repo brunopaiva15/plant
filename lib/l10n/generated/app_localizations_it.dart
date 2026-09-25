@@ -55,6 +55,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get openSettings => 'Apri Impostazioni';
 
   @override
+  String get settingsShort => 'Impostazioni';
+
+  @override
   String get skip => 'Salta';
 
   @override
@@ -86,7 +89,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get offlineHint =>
-      'Serve una connessione. I dati già sul dispositivo restano leggibili.';
+      'Serve una connessione. I dati già sul tuo dispositivo restano leggibili.';
 
   @override
   String get offlineActionFailed => 'Offline. Riprova quando la rete torna.';
@@ -104,10 +107,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get offlineIdentification =>
-      'La ricerca online richiede una connessione. Il riconoscimento sul dispositivo no.';
-
-  @override
-  String get offlineSupport => 'L\'acquisto richiede una connessione.';
+      'La ricerca online richiede una connessione; il riconoscimento sul tuo dispositivo no.';
 
   @override
   String get tabToday => 'Oggi';
@@ -136,6 +136,40 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get greetingEveningAnonymous => 'Buonasera';
+
+  @override
+  String todayHeroCare(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'cure oggi',
+      one: 'cura oggi',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String statDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'giorni',
+      one: 'giorno',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String todayHeroWeek(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'cure questa settimana',
+      one: 'cura questa settimana',
+      zero: 'cure questa settimana',
+    );
+    return '$_temp0';
+  }
 
   @override
   String careCount(int count) {
@@ -396,7 +430,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get emptyPlantsTitle => 'Nessuna pianta';
 
   @override
-  String get emptyPlantsSubtitle => 'Aggiungete la prima pianta.';
+  String get emptyPlantsSubtitle => 'Aggiungi la tua prima pianta.';
 
   @override
   String get addPlant => 'Aggiungi una pianta';
@@ -471,6 +505,12 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get choosePhoto => 'Scegli una foto';
+
+  @override
+  String get cameraFlashOn => 'Attiva il flash';
+
+  @override
+  String get cameraFlashOff => 'Disattiva il flash';
 
   @override
   String get withoutPhoto => 'Continua senza foto';
@@ -590,7 +630,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgPickBody =>
-      'Questa pianta si moltiplica in più modi. Il gesto scelto determina i passaggi.';
+      'Questa pianta si moltiplica in più modi. Scegline uno: i passaggi dipendono da quello.';
 
   @override
   String get pgRecommended => 'Consigliato';
@@ -602,7 +642,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String pgIntroBody(int count) {
-    return '$count passaggi. Ognuno è mostrato con un gesto, poi detto in una frase, adattata alla specie quando è nota.';
+    return '$count passaggi, ognuno mostrato con un\'immagine e spiegato in una frase, adattata alla specie quando è nota.';
   }
 
   @override
@@ -636,14 +676,14 @@ class AppLocalizationsIt extends AppLocalizations {
   String get pgVineName => 'Talea di fusto';
 
   @override
-  String get pgVineHint => 'Un nodo, un taglio netto, l’acqua';
+  String get pgVineHint => 'Un nodo, un taglio netto, l\'acqua';
 
   @override
   String get pgVineNodeTitle => 'Il nodo';
 
   @override
   String get pgVineNodeBody =>
-      'Il rigonfiamento da cui parte una foglia, spesso con una radice aerea accanto. La talea ne conserva almeno uno.';
+      'Individua il rigonfiamento da cui parte una foglia, spesso con una radice aerea accanto. Tienine almeno uno sulla talea.';
 
   @override
   String get pgVineNodeNote => 'Nodo e radice aerea';
@@ -653,7 +693,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgVineCutBody =>
-      'Lama pulita, taglio netto un centimetro sotto il nodo. Il nodo resta sulla talea.';
+      'Con una lama pulita, taglia netto 1 cm sotto il nodo: il nodo resta sulla talea.';
 
   @override
   String get pgVineCutNote => 'Tagliare sopra il nodo';
@@ -663,31 +703,31 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgVineClearBody =>
-      'Le foglie che resterebbero sott’acqua vengono tolte. Due o tre foglie in alto nutrono la talea.';
+      'Togli le foglie che resterebbero sott\'acqua. Tienine 2 o 3 in alto: nutrono la talea.';
 
   @override
-  String get pgVineWaterTitle => 'L’acqua';
+  String get pgVineWaterTitle => 'L\'acqua';
 
   @override
   String get pgVineWaterBody =>
-      'Il nodo sotto la superficie, le foglie sopra. Luce viva, senza sole diretto.';
+      'Metti il nodo sotto l\'acqua, le foglie sopra. Posiziona il bicchiere in luce viva, senza sole diretto.';
 
   @override
   String get pgVineRootsTitle => 'Le radici';
 
   @override
   String get pgVineRootsBody =>
-      'Escono dal nodo, non dalla base del fusto. L’acqua si cambia ogni settimana.';
+      'Le radici escono dal nodo, non dalla base del fusto. Cambia l\'acqua ogni settimana.';
 
   @override
-  String get pgVineRootsNote => 'Prime radici in due-sei settimane';
+  String get pgVineRootsNote => 'Prime radici in 2-6 settimane';
 
   @override
   String get pgVinePotTitle => 'Il vaso';
 
   @override
   String get pgVinePotBody =>
-      'A qualche centimetro di radice la talea passa in terriccio leggero. Il nodo resta appena sotto la superficie.';
+      'Quando le radici sono lunghe qualche centimetro, rinvasa la talea in terriccio leggero, con il nodo appena sotto la superficie.';
 
   @override
   String get pgSoftName => 'Talea di getto tenero';
@@ -700,48 +740,48 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgSoftStemBody =>
-      'Un getto giovane e sodo, senza fiori, di una decina di centimetri. Il legno vecchio radica male.';
+      'Scegli un getto giovane e sodo, senza fiori, di circa 10 cm: il legno vecchio radica male.';
 
   @override
   String get pgSoftCutTitle => 'Il taglio';
 
   @override
   String get pgSoftCutBody =>
-      'Lama pulita, taglio appena sotto una coppia di foglie. Le radici partiranno da lì.';
+      'Con una lama pulita, taglia appena sotto una coppia di foglie: le radici partiranno da lì.';
 
   @override
   String get pgSoftStripTitle => 'Le foglie basse';
 
   @override
   String get pgSoftStripBody =>
-      'La coppia più bassa viene tolta: tre o quattro centimetri di fusto restano nudi.';
+      'Togli la coppia più bassa per lasciare nudi 3-4 cm di fusto.';
 
   @override
-  String get pgSoftStripNote => 'Lasciare una foglia sott’acqua';
+  String get pgSoftStripNote => 'Lasciare una foglia sott\'acqua';
 
   @override
   String get pgSoftRootTitle => 'La radicazione';
 
   @override
   String get pgSoftRootBody =>
-      'Il fusto nudo resta in acqua, le foglie all’asciutto. Luce viva, senza sole diretto.';
+      'Metti in acqua il fusto nudo tenendo le foglie all\'asciutto, in luce viva e senza sole diretto.';
 
   @override
   String get pgSoftRootsTitle => 'Le radici';
 
   @override
   String get pgSoftRootsBody =>
-      'Fini e numerose, escono da tutta la parte immersa.';
+      'Le radici sono fini e numerose, ed escono da tutta la parte immersa.';
 
   @override
-  String get pgSoftRootsNote => 'Prime radici in una-tre settimane';
+  String get pgSoftRootsNote => 'Prime radici in 1-3 settimane';
 
   @override
   String get pgSoftPotTitle => 'Il trapianto';
 
   @override
   String get pgSoftPotBody =>
-      'Trapiantata presto, a due o tre centimetri di radice: un getto tenero non regge l\'attesa.';
+      'Trapianta presto, a 2-3 cm di radice: un getto tenero non regge l\'attesa.';
 
   @override
   String get pgLeafName => 'Talea di foglia';
@@ -754,41 +794,41 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgLeafChooseBody =>
-      'Una foglia matura, soda, senza segni. Le foglie giovani non hanno riserve.';
+      'Scegli una foglia matura, soda e senza segni: le foglie giovani non hanno riserve.';
 
   @override
   String get pgLeafCutTitle => 'Il taglio';
 
   @override
   String get pgLeafCutBody =>
-      'Lama pulita, taglio alla base della foglia, a filo del substrato.';
+      'Con una lama pulita, taglia la foglia alla base, a filo del substrato.';
 
   @override
   String get pgLeafSplitTitle => 'I segmenti';
 
   @override
   String get pgLeafSplitBody =>
-      'La foglia si divide in pezzi di cinque-otto centimetri. Una V incisa in basso dice quale estremità va in terra.';
+      'Taglia la foglia in pezzi di 5-8 cm. Incidi una V in basso su ognuno per riconoscere il lato che va in terra.';
 
   @override
   String get pgLeafSplitNote => 'La V indica il basso';
 
   @override
-  String get pgLeafCallusTitle => 'L’asciugatura';
+  String get pgLeafCallusTitle => 'L\'asciugatura';
 
   @override
   String get pgLeafCallusBody =>
-      'I tagli asciugano all’aria, all’ombra, prima di andare nel substrato.';
+      'Lascia asciugare i tagli all\'aria e all\'ombra prima di piantarli.';
 
   @override
-  String get pgLeafCallusNote => 'Uno-due giorni di asciugatura';
+  String get pgLeafCallusNote => '1-2 giorni di asciugatura';
 
   @override
   String get pgLeafPlantTitle => 'Il substrato';
 
   @override
   String get pgLeafPlantBody =>
-      'La V entra per due centimetri in un substrato drenante.';
+      'Infila la V per 2 cm in un substrato drenante.';
 
   @override
   String get pgLeafPlantNote => 'Piantare un segmento al contrario';
@@ -798,37 +838,37 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgLeafGrowthBody =>
-      'Prima arrivano le radici, poi un giovane getto esce dal substrato accanto al segmento.';
+      'Prima arrivano le radici; il getto giovane esce dal substrato accanto al segmento.';
 
   @override
-  String get pgLeafGrowthNote => 'Nuovo getto in due-quattro mesi';
+  String get pgLeafGrowthNote => 'Nuovo getto in 2-4 mesi';
 
   @override
   String get pgDivisionName => 'Divisione';
 
   @override
-  String get pgDivisionHint => 'Rapida e sicura, il cespo si divide';
+  String get pgDivisionHint => 'Rapida e sicura, per le piante a cespo';
 
   @override
   String get pgDivPlantTitle => 'Il cespo';
 
   @override
   String get pgDivPlantBody =>
-      'La pianta esce intera dal vaso. Un substrato bagnato il giorno prima tiene meglio.';
+      'Estrai la pianta intera dal vaso. Un substrato bagnato il giorno prima tiene meglio.';
 
   @override
   String get pgDivUnpotTitle => 'Fuori dal vaso';
 
   @override
   String get pgDivUnpotBody =>
-      'Il vaso scivola via dal pane di terra e la pianta è libera.';
+      'Sfila il vaso dal pane di terra per liberare la pianta.';
 
   @override
   String get pgDivRootsTitle => 'Il pane di terra';
 
   @override
   String get pgDivRootsBody =>
-      'La terra si sbriciola finché si vedono le radici e la base dei getti.';
+      'Sbriciola la terra fino a vedere le radici e la base dei getti.';
 
   @override
   String get pgDivClustersTitle => 'I due gruppi';
@@ -845,7 +885,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgDivSplitBody =>
-      'I gruppi si staccano a mano. La lama serve solo se i colletti resistono.';
+      'Separa i gruppi a mano. Usa la lama solo se i colletti resistono.';
 
   @override
   String get pgDivSplitNote => 'Tagliare un fusto sopra la terra';
@@ -855,7 +895,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgDivRepotBody =>
-      'Ogni divisione va nel suo vaso, alla profondità di prima, e riceve una prima annaffiatura.';
+      'Rinvasa ogni divisione nel suo vaso, alla profondità di prima, poi annaffia una prima volta.';
 
   @override
   String get pgOffsetName => 'Separare un pollone';
@@ -868,7 +908,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgOffSpotBody =>
-      'Un pollone grande un terzo della madre, con foglie proprie, è pronto.';
+      'Un pollone grande un terzo della pianta madre, con foglie proprie, è pronto.';
 
   @override
   String get pgOffSpotNote => 'Pollone già formato';
@@ -878,14 +918,14 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgOffClearBody =>
-      'Il substrato si allontana attorno alla base e il legame con la pianta madre appare.';
+      'Allontana il substrato attorno alla base fino a vedere il legame con la pianta madre.';
 
   @override
   String get pgOffDetachTitle => 'La separazione';
 
   @override
   String get pgOffDetachBody =>
-      'Il pollone si stacca dal legame, con le sue radici. La lama serve solo se il legame è legnoso.';
+      'Stacca il pollone con le sue radici. Usa la lama solo se il legame è legnoso.';
 
   @override
   String get pgOffDetachNote => 'Strappare il pollone senza radici';
@@ -902,30 +942,30 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgOffPotBody =>
-      'Un vaso piccolo, il substrato della specie e una leggera annaffiatura.';
+      'Rinvasa in un vaso piccolo con il substrato della specie, poi annaffia leggermente.';
 
   @override
   String get pgOffSettleTitle => 'La ripresa';
 
   @override
   String get pgOffSettleBody =>
-      'Una foglia nuova al centro dice che il pollone ha attecchito.';
+      'Una foglia nuova al centro segnala che il pollone ha attecchito.';
 
   @override
-  String get pgOffSettleNote => 'Ripresa in tre-sei settimane';
+  String get pgOffSettleNote => 'Ripresa in 3-6 settimane';
 
   @override
   String get pgKeikiName => 'Separare un keiki';
 
   @override
-  String get pgKeikiHint => 'Il pollone dell’orchidea parte con le sue radici';
+  String get pgKeikiHint => 'Il pollone dell\'orchidea parte con le sue radici';
 
   @override
   String get pgKeikiSpotTitle => 'Il keiki';
 
   @override
   String get pgKeikiSpotBody =>
-      'Una giovane pianta nasce su un nodo dello stelo: due foglie e radici aeree la rendono riconoscibile.';
+      'Una giovane pianta nasce su un nodo dello stelo: 2 foglie e radici aeree la rendono riconoscibile.';
 
   @override
   String get pgKeikiSpotNote => 'Pollone già formato';
@@ -935,17 +975,17 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgKeikiWaitBody =>
-      'Le radici si allungano lungo lo stelo. Tre o cinque, lunghe qualche centimetro, e il keiki vivrà da solo.';
+      'Le radici si allungano lungo lo stelo. Con 3-5 radici di qualche centimetro, il keiki può vivere da solo.';
 
   @override
-  String get pgKeikiWaitNote => 'Radici pronte in due o tre mesi';
+  String get pgKeikiWaitNote => 'Radici pronte in 2-3 mesi';
 
   @override
   String get pgKeikiDetachTitle => 'La separazione';
 
   @override
   String get pgKeikiDetachBody =>
-      'Lo stelo si taglia ai due lati del keiki, a uno o due centimetri. Strappare rovinerebbe la base.';
+      'Taglia lo stelo ai due lati del keiki, a 1 o 2 cm. Non tirare: rovineresti la base.';
 
   @override
   String get pgKeikiDetachNote => 'Strappare il keiki';
@@ -955,24 +995,24 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgKeikiRootsBody =>
-      'Il keiki conserva le radici aeree: saranno loro a riprendere nel vaso.';
+      'Conserva le radici aeree del keiki: saranno loro a riprendere nel vaso.';
 
   @override
   String get pgKeikiPotTitle => 'Il vaso';
 
   @override
   String get pgKeikiPotBody =>
-      'Un vaso piccolo con corteccia, la base del keiki a filo del substrato, senza interrarla.';
+      'Rinvasa in un vaso piccolo con corteccia, la base del keiki a filo del substrato, senza interrarla.';
 
   @override
   String get pgKeikiSettleTitle => 'La ripresa';
 
   @override
   String get pgKeikiSettleBody =>
-      'Una foglia nuova al centro dice che il keiki ha attecchito.';
+      'Una foglia nuova al centro segnala che il keiki ha attecchito.';
 
   @override
-  String get pgKeikiSettleNote => 'Ripresa in uno o due mesi';
+  String get pgKeikiSettleNote => 'Ripresa in 1-2 mesi';
 
   @override
   String get pgSegmentName => 'Talea di segmento';
@@ -985,41 +1025,41 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgSegChooseBody =>
-      'Un segmento terminale sodo e senza grinze, di due o tre articoli.';
+      'Scegli un segmento terminale sodo e senza grinze, di 2 o 3 articoli.';
 
   @override
   String get pgSegDetachTitle => 'Il distacco';
 
   @override
   String get pgSegDetachBody =>
-      'Il segmento si stacca all’articolazione, con una torsione. Lama pulita se l’articolo resiste.';
+      'Stacca il segmento all\'articolazione, ruotandolo. Usa una lama pulita se resiste.';
 
   @override
-  String get pgSegDetachNote => 'Tirare e strappare l’articolo';
+  String get pgSegDetachNote => 'Tirare e strappare l\'articolo';
 
   @override
   String get pgSegWoundTitle => 'La ferita';
 
   @override
   String get pgSegWoundBody =>
-      'Il taglio è chiaro e umido. Piantato subito, marcisce.';
+      'Il taglio è chiaro e umido: piantato subito, marcirebbe.';
 
   @override
   String get pgSegCallusTitle => 'La cicatrizzazione';
 
   @override
   String get pgSegCallusBody =>
-      'La ferita asciuga all’aria, all’ombra, fino a formare un callo opaco.';
+      'Lascia asciugare la ferita all\'aria e all\'ombra, fino a formare un callo opaco.';
 
   @override
-  String get pgSegCallusNote => 'Tre-sette giorni di asciugatura';
+  String get pgSegCallusNote => '3-7 giorni di asciugatura';
 
   @override
   String get pgSegPlantTitle => 'Il substrato';
 
   @override
   String get pgSegPlantBody =>
-      'Il callo entra appena un centimetro in un substrato molto drenante.';
+      'Appoggia il callo per appena 1 cm in un substrato molto drenante.';
 
   @override
   String get pgSegPlantNote => 'Interrare il segmento';
@@ -1029,7 +1069,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get pgSegRootsBody =>
-      'Prima arrivano le radici, poi un nuovo articolo. L’annaffiatura aspetta che le radici tengano.';
+      'Prima arrivano le radici, poi un nuovo articolo. Aspetta che le radici tengano per annaffiare.';
 
   @override
   String get parentPlant => 'Pianta madre';
@@ -1442,7 +1482,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get reduceMotionHint =>
-      'Per impostazione predefinita, vale il valore del sistema.';
+      'Per impostazione predefinita, l\'app segue il valore del sistema.';
 
   @override
   String get notifications => 'Notifiche';
@@ -1503,7 +1543,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get localAccount => 'Dati su questo dispositivo';
 
   @override
-  String get localAccountHint => 'I dati restano su questo telefono.';
+  String get localAccountHint => 'I tuoi dati restano su questo telefono.';
 
   @override
   String version(String version) {
@@ -1532,11 +1572,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String get onboardingSubtitle => 'Aggiungetele con o senza foto.';
 
   @override
-  String get onbPlaceTitle => 'La vostra città';
+  String get onbPlaceTitle => 'La tua città';
 
   @override
   String get onbPlaceBody =>
-      'Per il meteo e l\'irrigazione all\'aperto. Basta una città, la posizione esatta non viene salvata.';
+      'Per il meteo e l\'irrigazione all\'aperto. Basta una città: la tua posizione esatta non viene salvata.';
 
   @override
   String get useMyLocation => 'Usa la mia posizione';
@@ -1552,18 +1592,18 @@ class AppLocalizationsIt extends AppLocalizations {
   String get locationUnavailable => 'Posizione non disponibile.';
 
   @override
-  String get onbHomeTitle => 'La vostra casa';
+  String get onbHomeTitle => 'La tua casa';
 
   @override
   String get onbHomeBody =>
-      'I sensori di Casa di Apple e di Google Home danno temperatura e umidità della stanza. Consigli e diagnosi delle piante da interno ne tengono conto. La misura resta nell\'app.';
+      'I sensori Casa di Apple e Google Home danno temperatura e umidità delle tue stanze. Consigli e diagnosi da interno ne tengono conto, e la misura resta nell\'app.';
 
   @override
   String get homeClimate => 'Sensori di casa';
 
   @override
   String get homeClimateHint =>
-      'Temperatura e umidità di un sensore di casa adattano i consigli delle piante da interno e completano le diagnosi. La misura resta nell\'app.';
+      'Un sensore di casa adatta i consigli delle tue piante da interno e completa le diagnosi. La misura resta nell\'app.';
 
   @override
   String get homeClimateApple => 'Casa di Apple';
@@ -1615,7 +1655,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get homeClimateHumidityMissing =>
-      'Umidità non ricevuta da questo sensore. Un altro si sceglie nella riga Umidità.';
+      'Questo sensore non invia l\'umidità. Scegline un altro nella riga Umidità.';
 
   @override
   String get homeClimateNone => 'Nessun sensore';
@@ -1648,15 +1688,15 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get homeClimateDeniedApple =>
-      'Accesso a Casa di Apple rifiutato. Si riattiva in Impostazioni › Privacy › Casa.';
+      'Accesso a Casa di Apple negato. Puoi riattivarlo in Impostazioni › Privacy › Casa.';
 
   @override
   String get homeClimateDeniedGoogle =>
-      'Accesso a Google Home rifiutato. Si riattiva nell\'app Google Home, nelle autorizzazioni.';
+      'Accesso a Google Home negato. Puoi riattivarlo nell\'app Google Home, nelle autorizzazioni.';
 
   @override
   String homeClimateFailedIn(String home) {
-    return '$home non disponibile. Potrai collegare un sensore in Profilo › Sensori di casa.';
+    return '$home non è disponibile. Potrai collegare un sensore in Profilo › Sensori di casa.';
   }
 
   @override
@@ -1675,7 +1715,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get homeClimateDisconnectGoogleHint =>
-      'I sensori di Google Home vengono dimenticati su questo dispositivo. L\'autorizzazione concessa resta nell\'account Google e si revoca da lì.';
+      'I sensori Google Home vengono dimenticati su questo dispositivo. L\'autorizzazione resta nel tuo account Google: revocala da lì.';
 
   @override
   String get homeClimateDisconnectedGoogle => 'Google Home disconnesso.';
@@ -1684,7 +1724,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get homeClimateGoogleAccess => 'Autorizzazioni dell\'account Google';
 
   @override
-  String get homeClimateAtHome => 'Da voi';
+  String get homeClimateAtHome => 'Da te';
 
   @override
   String get homeClimateFits => 'Niente che disturbi questa specie.';
@@ -1703,15 +1743,15 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String homeTipDryAir(String names) {
-    return 'Aria secca: nebulizzare o raggruppare $names.';
+    return 'Aria secca: nebulizza o raggruppa $names.';
   }
 
   @override
-  String get homeTipHumidAir => 'Aria umida: arieggiare la stanza.';
+  String get homeTipHumidAir => 'Aria umida: arieggia la stanza.';
 
   @override
   String homeTipHumidAirPlants(String names) {
-    return 'Aria umida: arieggiare, e lasciare asciugare $names tra due annaffiature.';
+    return 'Aria umida: arieggia, e lascia asciugare $names tra due annaffiature.';
   }
 
   @override
@@ -1721,7 +1761,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String homeTipHot(String names) {
-    return 'Caldo: $names si asciugano più in fretta, controllare la terra.';
+    return 'Caldo: $names si asciugano più in fretta, controlla la terra.';
   }
 
   @override
@@ -1735,7 +1775,7 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get askNameTitle => 'Il vostro nome';
+  String get askNameTitle => 'Il tuo nome';
 
   @override
   String get askNameSubtitle => 'Modificabile in seguito nel profilo.';
@@ -1745,7 +1785,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get onbAccountBody =>
-      'Un account salva i dati e permette di condividere un giardino. Accesso con il vostro ID Apple.';
+      'Un account salva i tuoi dati e ti permette di condividere un giardino. Accedi con il tuo ID Apple.';
 
   @override
   String get notificationAskTitle => 'Promemoria giornaliero';
@@ -2021,6 +2061,10 @@ class AppLocalizationsIt extends AppLocalizations {
       'Consenti l\'accesso alla fotocamera nelle Impostazioni.';
 
   @override
+  String get photoLibraryPermission =>
+      'Consenti l\'accesso alle tue foto nelle Impostazioni.';
+
+  @override
   String get identify => 'Identifica';
 
   @override
@@ -2033,6 +2077,26 @@ class AppLocalizationsIt extends AppLocalizations {
   String get identifyHint => 'Suggerimenti di specie, da confermare';
 
   @override
+  String get identifyChooseHint =>
+      'Tocca il nome della tua pianta, oppure continua senza scegliere.';
+
+  @override
+  String get identifyPreselectedHint =>
+      'L\'app sceglie la più probabile. Tocca un altro nome per cambiarla.';
+
+  @override
+  String get guideAimTip =>
+      'Inquadra tutta la pianta, vaso compreso, poi scatta la foto. L\'app riconosce la specie da questa foto.';
+
+  @override
+  String get guideNameTip =>
+      'Dai un nome alla tua pianta, per esempio «Pothos del soggiorno». La specie regola l\'annaffiatura consigliata.';
+
+  @override
+  String get guideLocationTip =>
+      'Scegli la stanza in cui vive la tua pianta, poi tocca «Fine».';
+
+  @override
   String get searchOnline => 'Cerca online';
 
   @override
@@ -2040,14 +2104,14 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get identifyAnotherPhotoHint =>
-      'Una foglia, un fiore o la pianta intera aiuta a precisare.';
+      'Aggiungi una foglia, un fiore o la pianta intera per precisare.';
 
   @override
   String get identificationUncertainTitle => 'Identificazione incerta';
 
   @override
   String get identificationUncertainBody =>
-      'Anche con le foto disponibili, nessuna specie emerge con sufficiente chiarezza. Puoi cercare online o scegliere manualmente se riconosci la pianta.';
+      'Nessuna specie emerge con sufficiente chiarezza. Cerca online, o scegli tu stesso la specie se riconosci la pianta.';
 
   @override
   String get identificationSuggestionsToCheck => 'Suggerimenti da verificare';
@@ -2067,12 +2131,12 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String identifyOnDevice(String name) {
-    return 'Riconosciuta da $name sul dispositivo. Scegliete la specie';
+    return 'Riconosciuta da $name sul dispositivo. Scegli la specie';
   }
 
   @override
   String get identifyViaPlantNet =>
-      'Riconosciuta online da Pl@ntNet. Scegliete la specie';
+      'Riconosciuta online da Pl@ntNet. Scegli la specie';
 
   @override
   String get identifyPhotoSource =>
@@ -2093,7 +2157,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String identificationHint(String name) {
-    return 'Riconoscimento delle specie sul dispositivo da parte di $name, senza rete. In caso di dubbio, la foto può essere inviata a Pl@ntNet.';
+    return '$name riconosce le specie direttamente sul tuo dispositivo, senza rete. In caso di dubbio, la foto può essere inviata a Pl@ntNet.';
   }
 
   @override
@@ -2107,7 +2171,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String identificationFallbackHint(String name) {
-    return 'In caso di dubbio di $name, la foto viene inviata a Pl@ntNet. Disattivato, tutto resta sul dispositivo.';
+    return 'Quando $name esita, l\'app invia la foto a Pl@ntNet. Disattivato, tutto resta sul tuo dispositivo.';
   }
 
   @override
@@ -2115,7 +2179,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String irisFeedbackHint(String name) {
-    return 'Le foto scattate per identificare e il nome scelto vengono inviati appena una pianta viene nominata, e addestrano le prossime versioni del modello $name. Sono leggibili solo dall\'account che le invia, e la sua eliminazione le cancella. Disattivato, non lasciano il dispositivo.';
+    return 'Dando un nome a una pianta, invii le sue foto e il nome per addestrare le prossime versioni di $name. Solo tu puoi leggerle, ed eliminare il tuo account le cancella. Disattivato, niente lascia il tuo dispositivo.';
   }
 
   @override
@@ -2127,7 +2191,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String irisFeedbackAskBody(String name) {
-    return 'Le foto scattate per identificare e il nome scelto possono essere inviati per addestrare le prossime versioni del modello $name. Sono leggibili solo dall\'account che le invia, e la sua eliminazione le cancella. La scelta si cambia nelle impostazioni di identificazione.';
+    return 'Le tue foto di identificazione e il nome scelto possono addestrare le prossime versioni di $name. Solo tu potrai leggerle, ed eliminare il tuo account le cancellerà. Potrai tornare su questa scelta nelle impostazioni.';
   }
 
   @override
@@ -2143,7 +2207,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String identificationStats(int local, int accepted, int remote) {
-    return '$local analizzate sul dispositivo, $accepted decise qui; $remote inviate online';
+    return '$local analizzate sul tuo dispositivo, $accepted senza invio; $remote inviate online';
   }
 
   @override
@@ -2156,7 +2220,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get irisTagline =>
-      'Riconoscimento delle specie sul telefono, senza rete né account.';
+      'Riconosce le specie sul tuo telefono, senza rete né account.';
 
   @override
   String get irisSpeciesLabel => 'specie';
@@ -2166,14 +2230,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get irisOfflineLabel => 'anche in aereo';
-
-  @override
-  String get irisTwoPhotosTitle => 'Due foto valgono più di una';
-
-  @override
-  String irisTwoPhotosBody(String name) {
-    return 'La pianta intera, poi una foglia da vicino. Con due foto, $name trova la specie giusta due volte su tre, invece di una su due.';
-  }
 
   @override
   String confidence(int percent) {
@@ -2210,7 +2266,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get weatherHint =>
-      'Per le piante all\'aperto: la pioggia caduta vale come annaffiatura, quella prevista la rinvia, e gelo e caldo vengono segnalati. Dati Open-Meteo.';
+      'Per le tue piante all\'aperto: la pioggia caduta vale un\'annaffiatura, quella prevista la rinvia, gelo e caldo sono segnalati (Open-Meteo).';
 
   @override
   String get weatherPlace => 'Luogo';
@@ -2286,7 +2342,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get exportHint =>
-      'Un file ZIP con piante, cronologia, inventario, impostazioni e foto.';
+      'Un file ZIP con le tue piante, la cronologia, l\'inventario, le impostazioni e le foto.';
 
   @override
   String get exporting => 'Preparazione dell\'esportazione…';
@@ -2321,7 +2377,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get signInHint =>
-      'Un account salva i dati, li sincronizza tra dispositivi e permette di condividere un giardino.';
+      'Un account salva i tuoi dati, li sincronizza tra dispositivi e permette di condividere un giardino.';
 
   @override
   String get continueWithApple => 'Continua con Apple';
@@ -2432,7 +2488,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get diagnosisHint =>
-      'Fotografate le foglie, il fusto e la terra, da vicino e per intero. I risultati sono indicativi.';
+      'Fotografa le foglie, il fusto e la terra, da vicino e poi per intero. I risultati sono indicativi.';
 
   @override
   String get diagnosisMoreBelow => 'Più sotto: sintomi e osservazioni';
@@ -2452,7 +2508,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get diagnosisChecksHint =>
-      'Facoltativo: ciò che la foto non mostra affina l\'analisi.';
+      'Facoltativo: aggiungi ciò che la foto non mostra per affinare l\'analisi.';
 
   @override
   String get diagnosisSoil => 'Terra';
@@ -2527,6 +2583,15 @@ class AppLocalizationsIt extends AppLocalizations {
   String get analyzing => 'Analisi in corso…';
 
   @override
+  String analysisTimeLeft(String time) {
+    return 'L\'analisi dura ancora circa $time.';
+  }
+
+  @override
+  String get analysisLongerThanUsual =>
+      'L\'analisi richiede più tempo del solito. Tieni aperta questa schermata.';
+
+  @override
   String get diagnosisError =>
       'Analisi impossibile. Controlla la connessione e riprova.';
 
@@ -2546,11 +2611,11 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get diagnosisUncertain =>
-      'Le foto non bastano per concludere. Le ipotesi qui sotto restano da verificare.';
+      'Le foto non bastano per concludere. Verifica le ipotesi qui sotto.';
 
   @override
   String get diagnosisAnotherPhotoHint =>
-      'Un\'altra foto renderebbe l\'analisi più precisa.';
+      'Un\'altra foto affinerebbe l\'analisi.';
 
   @override
   String get diagnosisQuestionsHint => 'Ciò che manca per decidere.';
@@ -2616,7 +2681,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get diagnosisSettingsHint =>
-      'Le foto sono analizzate da un modello ospitato in Svizzera (AI Services di Infomaniak). Vengono inviate solo quando avvii un\'analisi e non vengono conservate.';
+      'Le tue foto sono analizzate da un modello ospitato in Svizzera (AI Services di Infomaniak). Partono solo quando avvii un\'analisi e non vengono conservate.';
 
   @override
   String get diagnosisEnabled => 'Diagnosi attiva';
@@ -3026,14 +3091,14 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careSupportMossPoleCare =>
-      'Inumidire il tutore a ogni annaffiatura: le radici aeree vi si attaccano.';
+      'Inumidisci il tutore a ogni annaffiatura: le radici aeree vi si attaccano.';
 
   @override
   String get careSupportStakeCare =>
-      'Legare il fusto senza stringere, man mano che sale.';
+      'Lega il fusto senza stringere, man mano che sale.';
 
   @override
-  String get careSupportTrellisCare => 'Guidare i fusti man mano che crescono.';
+  String get careSupportTrellisCare => 'Guida i fusti man mano che crescono.';
 
   @override
   String get careIssues => 'Da tenere d\'occhio';
@@ -3262,7 +3327,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get carePotDormantNote =>
-      'Il rinvaso si fa alla ripresa, alla fine del riposo, non per una radice che esce.';
+      'Rinvasa alla ripresa, alla fine del riposo, non perché esce una radice.';
 
   @override
   String careTempIdeal(int min, int max) {
@@ -3409,7 +3474,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get careToxicUnknown => 'Tossicità non nota';
 
   @override
-  String get careToxicPets => 'Tenere lontano da animali e bambini.';
+  String get careToxicPets => 'Tienila lontano da animali e bambini.';
 
   @override
   String get careToxicityFromSpecies => 'Verificata per questa specie';
@@ -3594,7 +3659,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careWaterCondensateRisk =>
-      'È scorsa su uno scambiatore e in una vasca dove si accumulano polvere, biofilm e batteri, e può portare tracce di metalli. Da riservare alle piante ornamentali, da un apparecchio pulito, mai su ciò che si mangia.';
+      'È scorsa su uno scambiatore e in una vaschetta dove si accumulano polvere e batteri, e può trasportare tracce di metalli. Riservala alle piante ornamentali, da un apparecchio pulito, mai su ciò che si mangia.';
 
   @override
   String get careWaterSoftened => 'Acqua addolcita';
@@ -3710,11 +3775,11 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careGreenhouseAir =>
-      'Arieggiare ogni giorno: l\'aria ferma fa marcire le piante di ambienti secchi.';
+      'Arieggia ogni giorno: l\'aria ferma fa marcire le piante di ambienti secchi.';
 
   @override
   String get careGreenhouseEarly =>
-      'In serra fredda o sotto cassone, le semine partono con quattro-sei settimane di anticipo.';
+      'In serra fredda o sotto cassone, le semine partono con 4-6 settimane di anticipo.';
 
   @override
   String get careBloom => 'Fioritura';
@@ -3732,7 +3797,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careBloomChillBulbNote =>
-      'Conta da dieci a quindici settimane tra 5 e 9 °C al buio, prima di riportare il vaso al caldo e alla luce.';
+      'Conta 10-15 settimane tra 5 e 9 °C al buio, prima di riportare il vaso al caldo e alla luce.';
 
   @override
   String get careBloomFertilizer => 'Un concime da fioritura';
@@ -3746,7 +3811,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careBloomMaturityNote =>
-      'Fiorisce solo dai tre o quattro anni: prima di quell\'età nessuna condizione cambia le cose.';
+      'Fiorisce solo dai 3 o 4 anni: prima di quell\'età nessuna condizione cambia le cose.';
 
   @override
   String get careBloomDeadhead => 'Fiori appassiti tagliati';
@@ -3804,21 +3869,21 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careBloomCoolRestNote =>
-      'Per preparare la fioritura, tienila per circa due mesi tra 10 e 12 °C e riduci molto le annaffiature.';
+      'Per preparare la fioritura, tienila per circa 2 mesi tra 10 e 12 °C e riduci molto le annaffiature.';
 
   @override
   String get careBloomCoolNights => 'Notti fresche';
 
   @override
   String get careBloomCoolNightsNote =>
-      'In autunno, circa tre settimane con notti intorno ai 15 °C possono stimolare lo stelo fiorale.';
+      'In autunno, circa 3 settimane con notti intorno ai 15 °C possono stimolare lo stelo fiorale.';
 
   @override
   String get careBloomShortDays => 'Giorni corti';
 
   @override
   String get careBloomShortDaysNote =>
-      'Per circa sei settimane, notti di almeno 12 ore di buio avviano la formazione dei boccioli.';
+      'Per circa 6 settimane, notti di almeno 12 ore di buio avviano la formazione dei boccioli.';
 
   @override
   String get careBloomDrySpell => 'Un periodo secco';
@@ -4371,7 +4436,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get confirmDeleteAttachment =>
-      'Eliminare questo documento? Il file sarà rimosso dal dispositivo.';
+      'Eliminare questo documento? Il file sarà rimosso dal tuo dispositivo.';
 
   @override
   String get openAttachment => 'Apri';
@@ -4433,7 +4498,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get shareUnlistedHint =>
-      'La pagina chiede ai motori di ricerca di non indicizzarla. Chi ha il link può comunque vederla.';
+      'La pagina chiede ai motori di ricerca di non indicizzarla, ma chi ha il link può vederla.';
 
   @override
   String get shareExpiry => 'Scade il';
@@ -4551,7 +4616,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get deleteGroupHint =>
-      'Gli articoli non vengono eliminati, passano al gruppo scelto.';
+      'Gli articoli non vengono eliminati: passano al gruppo scelto.';
 
   @override
   String get moveItemsTo => 'Sposta gli articoli in';
@@ -4602,7 +4667,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get deleteGroupExplain =>
-      'Gli articoli non vengono eliminati, perdono il gruppo.';
+      'Gli articoli non vengono eliminati: perdono il gruppo.';
 
   @override
   String get newEvent => 'Nuovo evento';
@@ -4693,7 +4758,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get deleteEventCategoryExplain =>
-      'Gli eventi non vengono eliminati, perdono la categoria.';
+      'Gli eventi non vengono eliminati: perdono la categoria.';
 
   @override
   String get noEventCategoriesYet => 'Nessuna categoria.';
@@ -4870,7 +4935,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get backupTitle => 'Backup';
 
   @override
-  String get backupExplain => 'Un file .zip con i dati e le foto.';
+  String get backupExplain => 'Un file .zip con i tuoi dati e le tue foto.';
 
   @override
   String get backupWhatToExport => 'Cosa salvare';
@@ -4980,7 +5045,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get onbGardenBody =>
-      'Ogni annaffiatura, ogni rinvaso è datato e archiviato con la pianta.';
+      'L\'app data ogni annaffiatura e ogni rinvaso, e li archivia con la pianta.';
 
   @override
   String onbIrisTitle(String name) {
@@ -4989,7 +5054,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get onbIrisBody =>
-      'Pianta sconosciuta a Iris: la ricerca continua online.';
+      'Se Iris non conosce la pianta, la ricerca continua online.';
 
   @override
   String get onbPrivacyTitle => 'Tutto resta sul tuo telefono';
@@ -5003,39 +5068,6 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get replayOnboarding => 'Rivedi la presentazione';
-
-  @override
-  String get whatsNewTitle => 'Novità';
-
-  @override
-  String get whatsNewModelUpdate => 'Aggiornamento del modello';
-
-  @override
-  String get whatsNewIrisIntro =>
-      'Il modello integrato è stato riaddestrato: più specie, meno errori, sempre senza rete.';
-
-  @override
-  String whatsNewIrisSpeciesTitle(String count) {
-    return '$count specie riconosciute';
-  }
-
-  @override
-  String get whatsNewIrisSpeciesBody =>
-      'Piante d\'interno più rare si aggiungono al catalogo.';
-
-  @override
-  String get whatsNewIrisOfflineTitle => 'Sempre sul dispositivo';
-
-  @override
-  String get whatsNewIrisOfflineBody =>
-      'Il riconoscimento resta locale: niente esce senza il tuo consenso, e il ripiego online si disattiva con un interruttore.';
-
-  @override
-  String get whatsNewIrisDoubtTitle => 'Dubbio segnalato';
-
-  @override
-  String get whatsNewIrisDoubtBody =>
-      'Due specie che si somigliano: vengono proposte entrambe.';
 
   @override
   String onbStepOf(int current, int total) {
@@ -5079,57 +5111,7 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get supportTitle => 'Auxine è gratuita';
-
-  @override
-  String get supportBody =>
-      'Tutte le funzioni sono accessibili. Nessun abbonamento, nessuna pubblicità, nessun account obbligatorio.';
-
-  @override
-  String get supportOffer =>
-      'Se desiderate comunque aiutare lo sviluppatore, basta un acquisto unico.';
-
-  @override
-  String get supportOnce => 'Una sola volta';
-
-  @override
-  String supportGive(String price) {
-    return 'Sostieni · $price';
-  }
-
-  @override
-  String get supportRestore => 'Ripristina il mio sostegno';
-
-  @override
-  String get supportThanksTitle => 'Grazie';
-
-  @override
-  String get supportThanksBody => 'Il vostro sostegno è stato registrato.';
-
-  @override
-  String get supportUnavailable =>
-      'L\'acquisto non è disponibile su questo dispositivo.';
-
-  @override
-  String get supportFailed => 'L\'acquisto non è andato a buon fine.';
-
-  @override
-  String get supportNothingToRestore => 'Nessun sostegno da ripristinare.';
-
-  @override
-  String get supportSettings => 'Sostieni lo sviluppatore';
-
-  @override
-  String get supportFreeForever => 'Gratuita, senza limiti';
-
-  @override
-  String get supportAlready => 'Grazie per il tuo sostegno';
-
-  @override
-  String get supportNoThanks => 'No grazie';
-
-  @override
-  String get emptyGardenSubtitle => 'Aggiungete la prima pianta.';
+  String get emptyGardenSubtitle => 'Aggiungi la tua prima pianta.';
 
   @override
   String get finderTitle => 'Trovare una pianta';
@@ -5159,7 +5141,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get finderStepEffort => 'Quanta cura?';
 
   @override
-  String get finderStepEffortHint => 'Quanto spesso potete annaffiare.';
+  String get finderStepEffortHint => 'Quanto spesso puoi annaffiare.';
 
   @override
   String get finderEffortForgiving => 'Irrigazione occasionale';
@@ -5175,7 +5157,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get finderStepSafetyHint =>
-      'Molte piante da appartamento sono tossiche se masticate.';
+      'Molte piante da appartamento sono tossiche se un animale o un bambino le mastica.';
 
   @override
   String get finderSafetyYes => 'Sì, solo non tossiche';
@@ -5198,7 +5180,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get finderEmptySubtitle =>
-      'Nessuna specie del catalogo corrisponde a tutti i criteri. Modificate una risposta o ampliate i tipi di pianta.';
+      'Nessuna specie del catalogo soddisfa tutti i criteri. Modifica una risposta o amplia i tipi di pianta.';
 
   @override
   String get finderRestart => 'Ricomincia';
@@ -5308,7 +5290,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get finderAiBody =>
-      'Ricerca oltre il catalogo, partendo dalle sue risposte e da ciò che aggiunge qui.';
+      'Ricerca oltre il catalogo, partendo dalle tue risposte e da ciò che aggiungi qui.';
 
   @override
   String get finderPhotoSource =>
@@ -5318,14 +5300,14 @@ class AppLocalizationsIt extends AppLocalizations {
   String get onbWelcomeTitle => 'Benvenuto in Auxine';
 
   @override
-  String get onbWelcomeBody => 'Il diario di cura delle vostre piante.';
+  String get onbWelcomeBody => 'Il diario di cura delle tue piante.';
 
   @override
   String get careMatchAssisted => 'Completata dall\'IA';
 
   @override
   String get careAssistedNote =>
-      'Specie assente dal catalogo: questi riferimenti vengono dall\'IA. È stato inviato solo il nome scientifico. La tossicità non è indicata.';
+      'Specie assente dal catalogo: questi riferimenti vengono dall\'IA, che ha ricevuto solo il nome scientifico. La tossicità non è indicata.';
 
   @override
   String get careMatchEdited => 'Scheda modificata';
@@ -5350,7 +5332,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careStudioHint =>
-      'Correggi una scheda di cura. La modifica vale su questo dispositivo.';
+      'Correggi una scheda di cura. La tua modifica vale solo su questo dispositivo.';
 
   @override
   String get careStudioSearch => 'Cerca una specie';
@@ -5385,14 +5367,14 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careAssistHint =>
-      'Per una specie assente dal catalogo, il nome scientifico viene inviato all\'IA per completare la scheda. Nient\'altro lascia il dispositivo. La risposta viene conservata.';
+      'Per una specie assente dal catalogo, l\'app invia il nome scientifico all\'IA per completare la scheda. Nient\'altro lascia il tuo dispositivo. La risposta viene conservata.';
 
   @override
   String get gardensTitle => 'I miei giardini';
 
   @override
   String get gardensHint =>
-      'Il giardino aperto è quello mostrato ovunque nell\'app. Il passaggio dall\'uno all\'altro avviene qui.';
+      'Il giardino aperto è quello mostrato ovunque nell\'app. Cambialo qui.';
 
   @override
   String get gardenMine => 'Il mio giardino';
@@ -5438,7 +5420,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get joinGardenHint =>
-      'Inserite il codice ricevuto, o aprite il link d\'invito.';
+      'Inserisci il codice ricevuto, o apri il link d\'invito.';
 
   @override
   String get inviteCodeHint => 'Codice d\'invito';
@@ -5451,7 +5433,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get joinInvalid =>
-      'Questo codice non vale più. Già usato, scaduto o inesistente.';
+      'Questo codice non è più valido: già usato, scaduto o inesistente.';
 
   @override
   String get joinWrongEmail =>
@@ -5461,11 +5443,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String get joinNeedsAccount => 'Serve un account per unirsi a un giardino.';
 
   @override
-  String get joinSignInHint => 'Accesso con il vostro ID Apple.';
+  String get joinSignInHint => 'Accesso con il tuo ID Apple.';
 
   @override
   String joinInvitedBy(String name, String garden) {
-    return '$name vi invita in «$garden»';
+    return '$name ti invita in «$garden»';
   }
 
   @override
@@ -5480,7 +5462,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get joinAsViewer => 'Sola consultazione, senza modifiche.';
 
   @override
-  String get joinAlreadyMember => 'Fate già parte di questo giardino.';
+  String get joinAlreadyMember => 'Fai già parte di questo giardino.';
 
   @override
   String joined(String name) {
@@ -5492,12 +5474,12 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String leaveGardenConfirm(String name) {
-    return 'Non avrete più accesso a «$name».';
+    return 'Non avrai più accesso a «$name».';
   }
 
   @override
   String leftGarden(String name) {
-    return 'Avete lasciato «$name»';
+    return 'Hai lasciato «$name»';
   }
 
   @override
@@ -5505,7 +5487,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String deleteGardenConfirm(String name) {
-    return 'Il giardino «$name», le sue piante e la sua cronologia saranno eliminati, per voi e per le persone invitate.';
+    return 'Il giardino «$name», le sue piante e la sua cronologia saranno eliminati, per te e per le persone invitate.';
   }
 
   @override
@@ -5517,11 +5499,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String get deleteGardenLast => 'Un account conserva almeno un giardino.';
 
   @override
-  String get openGardenTitle => 'I vostri giardini';
+  String get openGardenTitle => 'I tuoi giardini';
 
   @override
   String get openGardenHint =>
-      'Questo account dà accesso a questi giardini. Aprite quello con le vostre piante.';
+      'Questo account dà accesso a questi giardini. Apri quello con le tue piante.';
 
   @override
   String get collaborationNeedsAccount =>
@@ -5549,14 +5531,14 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get inviteShareHint =>
-      'Inviate questo link o codice. L\'app non è necessaria per riceverlo.';
+      'Invia questo link o codice. Per riceverlo non serve l\'app.';
 
   @override
   String get inviteShare => 'Condividi il link';
 
   @override
   String inviteMessage(String link) {
-    return 'Invito a unirvi al mio giardino su Auxine: $link';
+    return 'Invito a unirti al mio giardino su Auxine: $link';
   }
 
   @override
@@ -5584,7 +5566,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get membersHint =>
-      'I membri vedono le stesse piante e possono prendersene cura.';
+      'I membri vedono le tue piante e possono prendersene cura.';
 
   @override
   String get membersGuestHint => 'Giardino condiviso da un altro utente.';
@@ -5659,7 +5641,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get growthEmptySubtitle =>
-      'Aggiungete foto regolarmente per seguire la crescita.';
+      'Aggiungi foto regolarmente per seguire la crescita.';
 
   @override
   String growthSummary(int count, String since) {
@@ -5736,7 +5718,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get strategyWeatherHint =>
-      'L\'intervallo della stagione, accorciato dal caldo secco, allungato da pioggia e freddo.';
+      'L\'intervallo della stagione si accorcia col caldo secco e si allunga con pioggia e freddo.';
 
   @override
   String strategyWeatherNow(String interval) {
@@ -5773,12 +5755,12 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String weatherFrostBody(String names) {
-    return 'Da riparare o coprire: $names.';
+    return 'Ripara o copri $names.';
   }
 
   @override
   String weatherHeatBody(String names) {
-    return 'Da spostare all\'ombra e annaffiare presto: $names.';
+    return 'Sposta $names all\'ombra e annaffia presto.';
   }
 
   @override
@@ -5799,12 +5781,12 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String notifFrost(String when, String names) {
-    return 'Gelo $when · da riparare o coprire: $names.';
+    return 'Gelo $when · ripara o copri $names.';
   }
 
   @override
   String notifHeat(String when, String names) {
-    return 'Caldo $when · da spostare all\'ombra: $names.';
+    return 'Caldo $when · sposta $names all\'ombra.';
   }
 
   @override
@@ -5846,14 +5828,14 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get weatherRainCountsHint =>
-      'Oltre 5 mm in tre giorni, l\'annaffiatura dei luoghi esterni viene registrata come fatta. Disattivato, la schermata del mattino la propone con un tocco. Un vaso riparato dalle foglie riceve meno pioggia.';
+      'Oltre 5 mm in 3 giorni, l\'annaffiatura dei tuoi luoghi esterni viene registrata come fatta. Un vaso sotto le foglie riceve meno pioggia.';
 
   @override
   String get weatherClimate => 'Clima';
 
   @override
   String get weatherClimateHint =>
-      'Le proposte di piante per l\'esterno seguono gli inverni e le estati del luogo.';
+      'Le piante proposte per l\'esterno tengono conto degli inverni e delle estati della tua zona.';
 
   @override
   String weatherClimateZone(String zone) {
@@ -5884,7 +5866,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get encyclopediaHint =>
-      'I problemi della base, le specie del catalogo e il vocabolario delle schede di cura.';
+      'I problemi censiti, le specie del catalogo e il vocabolario delle schede di cura.';
 
   @override
   String get encyclopediaProblems => 'Problemi';
@@ -6012,7 +5994,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get naturalCauseNote =>
-      'Ciò che la pianta fa normalmente e che si scambia per un problema: niente da curare.';
+      'Ciò che la pianta fa normalmente e che si scambia per un problema: non c\'è niente da curare.';
 
   @override
   String get careLightShadeNote =>
@@ -6036,7 +6018,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get careLightFullNote =>
-      'Sei ore di sole diretto o più, in piena giornata.';
+      '6 ore di sole diretto o più, in piena giornata.';
 
   @override
   String get careHumidityLowNote => 'L\'aria di una casa riscaldata basta.';
@@ -6114,11 +6096,11 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get carePropDivisionNote =>
-      'Il cespo si divide in due al rinvaso, radici comprese.';
+      'Un cespo diviso in due al rinvaso, radici comprese.';
 
   @override
   String get carePropOffsetsNote =>
-      'I germogli nati alla base si staccano una volta radicati.';
+      'I giovani getti nati alla base, staccati una volta radicati.';
 
   @override
   String get carePropLayeringNote =>
@@ -6134,14 +6116,14 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get carePropTuberNote =>
-      'Il tubero si taglia in pezzi, ciascuno con una gemma.';
+      'Un tubero tagliato in pezzi, ciascuno con una gemma.';
 
   @override
   String get communityTipsTitle => 'Consigli della comunità';
 
   @override
   String get communityTipsHint =>
-      'Ciò che altre persone hanno osservato coltivando questa specie, fuori dal catalogo.';
+      'Ciò che altre persone hanno osservato coltivando questa specie, fuori catalogo.';
 
   @override
   String get communityTipsEmpty => 'Nessun consiglio su questa specie.';
@@ -6162,7 +6144,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get communityTipPublicNote =>
-      'Il consiglio appare con il tuo nome sulla scheda di questa specie, per tutti.';
+      'Il tuo consiglio sarà visibile a tutti, con il tuo nome, sulla scheda di questa specie.';
 
   @override
   String communityTipLength(int used, int max) {
@@ -6210,7 +6192,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get moderationHint =>
-      'I consigli segnalati, dal più segnalato al meno segnalato.';
+      'I consigli segnalati, dal più al meno segnalato.';
 
   @override
   String get moderationEmpty => 'Nessun consiglio segnalato.';
@@ -6237,38 +6219,37 @@ class AppLocalizationsIt extends AppLocalizations {
       'Ripristinare questo consiglio? Le sue segnalazioni vengono cancellate.';
 
   @override
-  String get roomScan => 'Rilievo della casa';
+  String get roomScan => 'Scansione della casa';
 
   @override
   String get roomScanHint =>
-      'Una stanza rilevata con la fotocamera e il LiDAR restituisce muri, finestre e porte. Da questi si ricava la luce di ogni posto, per dire dove posare una pianta. Il rilievo resta sul dispositivo.';
+      'Scansiona una stanza con la fotocamera e il LiDAR: l\'app individua muri, finestre e porte, poi calcola quanta luce riceve ogni posto e ti dice dove mettere le piante. Tutto resta sul tuo dispositivo.';
 
   @override
-  String get roomScanStart => 'Rilevare una stanza';
+  String get roomScanStart => 'Scansiona una stanza';
 
   @override
-  String get roomScanRooms => 'Stanze rilevate';
+  String get roomScanRooms => 'Stanze scansionate';
 
   @override
-  String get roomScanEmptyTitle => 'Nessuna stanza rilevata';
+  String get roomScanEmptyTitle => 'Nessuna stanza scansionata';
 
   @override
-  String get roomScanEmptySubtitle =>
-      'Il rilievo richiede uno o due minuti per stanza, girando lentamente lungo i muri.';
+  String get roomScanEmptySubtitle => 'Conta 1 o 2 minuti per stanza.';
 
   @override
   String get roomScanNoLidar =>
-      'Questo dispositivo non ha il LiDAR: il rilievo richiede un iPhone Pro o un iPad Pro.';
+      'Questo dispositivo non ha il LiDAR. La scansione richiede un iPhone Pro o un iPad Pro.';
 
   @override
-  String get roomScanBeforeTitle => 'Prima del rilievo';
+  String get roomScanBeforeTitle => 'Prima della scansione';
 
   @override
   String get roomScanBeforeText =>
-      'La fotocamera si apre sulla schermata di rilievo del sistema. Girare lentamente lungo i muri finché la stanza non è disegnata, poi terminare. Nulla lascia il dispositivo.';
+      'La fotocamera apre lo scanner di iOS. Cammina lentamente lungo i muri finché la stanza non è disegnata del tutto, poi tocca Fine.';
 
   @override
-  String get roomScanFailed => 'Il rilievo non è andato a buon fine.';
+  String get roomScanFailed => 'La scansione non è riuscita.';
 
   @override
   String get roomScanDefaultName => 'Stanza';
@@ -6315,18 +6296,18 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get roomScanOrientationHelp =>
-      'La bussola sbaglia di dieci o quindici gradi. L\'orientamento di ogni finestra si corregge qui.';
+      'La bussola sbaglia di 10-15°. Correggi qui l\'orientamento di ogni finestra.';
 
   @override
-  String get roomScanDelete => 'Elimina il rilievo';
+  String get roomScanDelete => 'Elimina la scansione';
 
   @override
   String get roomScanDeleteConfirm =>
-      'Il rilievo e i suoi riferimenti scompaiono dal dispositivo.';
+      'La scansione e i suoi riferimenti saranno eliminati dal tuo dispositivo.';
 
   @override
   String roomScanCapturedOn(String date) {
-    return 'Rilevata il $date';
+    return 'Scansionata il $date';
   }
 
   @override
@@ -6376,15 +6357,15 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get placementHint =>
-      'I posti sono ordinati per la luce che ricevono, confrontata con quella della scheda.';
+      'I posti sono ordinati confrontando la luce che ricevono con quella richiesta dalla scheda.';
 
   @override
   String placementRoomsCount(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count stanze rilevate',
-      one: 'una stanza rilevata',
+      other: '$count stanze scansionate',
+      one: 'una stanza scansionata',
     );
     return '$_temp0';
   }
@@ -6415,7 +6396,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get placementGeneric =>
-      'Scheda generica: senza specie, la luce richiesta non è nota.';
+      'Senza specie, la luce richiesta è sconosciuta: la scheda resta generica.';
 
   @override
   String placementDistanceM(String m) {
@@ -6462,7 +6443,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String placementPlanSemantics(int count) {
-    return 'Pianta della stanza vista dall\'alto, $count posti selezionati.';
+    return 'Planimetria della stanza vista dall\'alto, $count posti selezionati.';
   }
 
   @override
@@ -6470,14 +6451,14 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get roomScanHeatersHelp =>
-      'Il rilievo non vede i termosifoni. Posato sulla planimetria, un termosifone conta come aria secca e calda entro 80 cm.';
+      'La scansione non rileva i termosifoni. Mettili sulla planimetria: entro 80 cm l\'aria conta come secca e calda.';
 
   @override
-  String get roomScanAddHeater => 'Posare un termosifone';
+  String get roomScanAddHeater => 'Aggiungi un termosifone';
 
   @override
   String get roomScanTapForHeater =>
-      'Toccare la pianta dove si trova il termosifone.';
+      'Tocca la planimetria dove si trova il termosifone.';
 
   @override
   String roomScanHeatersCount(int count) {
@@ -6492,14 +6473,14 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get roomScanRemoveHeater => 'Rimuovere questo termosifone';
+  String get roomScanRemoveHeater => 'Rimuovi questo termosifone';
 
   @override
-  String get roomScanFillLocation => 'Compilare la posizione';
+  String get roomScanFillLocation => 'Compila la posizione';
 
   @override
   String roomScanFillLocationDetail(String orientation, String light) {
-    return 'Orientamento $orientation, luce $light, secondo il rilievo. I campi già compilati non cambiano.';
+    return 'Secondo la scansione: orientamento $orientation, luce $light. I campi già compilati non cambiano.';
   }
 
   @override
@@ -6510,14 +6491,14 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get roomScanWhoFitsHint =>
-      'Ogni pianta è valutata in base alla luce della stanza e alla sua scheda.';
+      'Ogni pianta è valutata confrontando la luce della stanza con quella richiesta dalla sua scheda.';
 
   @override
   String get roomScanNoPlantsToRank => 'Nessuna pianta con una specie nota.';
 
   @override
   String get placementShortfallHeater =>
-      'Ogni posto è vicino a un termosifone: aria secca e calda.';
+      'Ogni posto è vicino a un termosifone: l\'aria è secca e calda.';
 
   @override
   String get placementHeaterNote =>
@@ -6527,11 +6508,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String get placementAtHome => 'Sensore della stanza';
 
   @override
-  String get roomScanStartStructure => 'Rilevare tutta la casa';
+  String get roomScanStartStructure => 'Scansiona tutta la casa';
 
   @override
   String get roomScanStructureHint =>
-      'Rilevare tutta la casa procede stanza per stanza: «Stanza successiva» tra una e l\'altra, «Fine» alla fine. Le stanze si collocano l\'una rispetto all\'altra.';
+      'Scansiona le stanze una dopo l\'altra: tocca «Stanza successiva» dopo ognuna e «Fine» alla fine. L\'app le unisce in un\'unica planimetria.';
 
   @override
   String get roomScanNextRoom => 'Stanza successiva';
@@ -6542,27 +6523,27 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get roomScanPlantsOnPlan => 'Piante sulla pianta';
+  String get roomScanPlantsOnPlan => 'Piante sulla planimetria';
 
   @override
   String get roomScanPlantsHelp =>
-      'Una pianta posata sulla planimetria è valutata al suo posto. L\'elenco segnala un posto nettamente migliore.';
+      'Metti le tue piante sulla planimetria: ognuna riceve una valutazione e l\'elenco segnala un posto nettamente migliore.';
 
   @override
-  String get roomScanAddPlant => 'Posare una pianta';
+  String get roomScanAddPlant => 'Aggiungi una pianta';
 
   @override
   String roomScanTapForPlant(String plant) {
-    return 'Toccare la pianta dove si trova $plant.';
+    return 'Tocca la planimetria dove si trova $plant.';
   }
 
   @override
   String roomScanRemovePlant(String plant) {
-    return 'Rimuovere $plant dalla pianta';
+    return 'Rimuovi $plant dalla planimetria';
   }
 
   @override
-  String get roomScanNoPlantToPlace => 'Nessuna pianta da posare.';
+  String get roomScanNoPlantToPlace => 'Nessuna pianta da mettere.';
 
   @override
   String roomScanPlantWellPlaced(String light) {
@@ -6571,18 +6552,18 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String roomScanPlantBetterAt(String light, String place) {
-    return 'Posto attuale $light · meglio $place';
+    return 'Qui $light · meglio $place';
   }
 
   @override
   String get placementAllRooms => 'Tutte le stanze';
 
   @override
-  String get placementChoose => 'Posare qui';
+  String get placementChoose => 'Metti qui';
 
   @override
   String placementChosen(String place) {
-    return 'Posata $place';
+    return 'Messa $place';
   }
 
   @override
@@ -6607,10 +6588,36 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get roomScanCurtainHelp =>
-      'Il rilievo non vede né le tende leggere né le tende. Una tenda leggera dimezza la luce e toglie il sole diretto; una tenda spesso tirata la divide per tre.';
+      'La scansione non rileva le tende. Una tenda leggera dimezza la luce e toglie il sole diretto; una tenda spesso tirata la divide per 3.';
 
   @override
-  String get roomScanPlace => 'Posare';
+  String get roomScanPlace => 'Metti';
+
+  @override
+  String get roomScanAddWindow => 'Aggiungi una finestra';
+
+  @override
+  String get roomScanAddWindowHelp =>
+      'La scansione non vede una finestra dietro una tenda tirata, oppure la scambia per un\'apertura. Aggiungila qui, con la sua misura.';
+
+  @override
+  String get roomScanTapForWindow =>
+      'Tocca la planimetria vicino alla parete che regge la finestra.';
+
+  @override
+  String get roomScanWindowSmall => 'Finestra piccola · 0,6 m';
+
+  @override
+  String get roomScanWindowStandard => 'Finestra · 1,2 m';
+
+  @override
+  String get roomScanWindowWide => 'Portafinestra · 2,2 m';
+
+  @override
+  String get roomScanWindowByHand => 'Aggiunta a mano';
+
+  @override
+  String get roomScanRemoveWindow => 'Rimuovi questa finestra';
 
   @override
   String roomScanRoomsShort(int count) {
@@ -6625,14 +6632,14 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get roomScanThisRoom => 'Rilevare questa stanza';
+  String get roomScanThisRoom => 'Scansiona questa stanza';
 
   @override
   String get roomScanThisRoomHint =>
-      'La planimetria della stanza dà la luce di ogni posto, per scegliere dove posare una pianta.';
+      'La planimetria mostra la luce di ogni posto, per scegliere dove mettere una pianta.';
 
   @override
-  String get roomScanRoomPlan => 'Pianta della stanza';
+  String get roomScanRoomPlan => 'Planimetria della stanza';
 
   @override
   String roomScanPlantsOnPlanCount(int count) {

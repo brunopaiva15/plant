@@ -6,7 +6,7 @@
 #   FORMAT=ipad store/capture_ios.sh     # la même série sur le plus grand iPad
 #   LANGS="fr en" store/capture_ios.sh   # deux langues
 #   DEVICE="iPhone 17 Pro" store/capture_ios.sh
-#   STORE_SCENES=identify,diagnosis LANGS=fr store/capture_ios.sh   # rejouer deux scènes
+#   STORE_SCENES=capture,diagnosis LANGS=fr store/capture_ios.sh   # rejouer deux scènes
 #
 # App Store demande une série par famille d'appareils, et le projet en déclare
 # deux (TARGETED_DEVICE_FAMILY = « 1,2 ») : il faut donc les deux passages,
@@ -78,7 +78,14 @@ UDID="${UDID%%	*}"
 echo "Simulateur : $NAME ($UDID)"
 
 xcrun simctl boot "$UDID" 2>/dev/null || true
-open -a Simulator
+# La fenêtre du simulateur, si la machine en a une : Xcode 26 a remplacé
+# Simulator.app par Device Hub, et les versions d'avant n'ont que l'autre.
+# Elle ne sert qu'à regarder — `simctl` démarre l'appareil et `flutter drive`
+# lui parle sans elle —, donc son absence n'arrête pas les captures.
+open -a Simulator 2>/dev/null ||
+  open -a "Device Hub" 2>/dev/null ||
+  open "$(xcode-select -p)/Applications/Simulator.app" 2>/dev/null ||
+  echo "Aucune fenêtre de simulateur à ouvrir : les captures se prennent quand même." >&2
 xcrun simctl bootstatus "$UDID" -b
 # L'heure d'Apple, batterie pleine : au cas où la capture emporte la barre
 # d'état. L'antenne n'existe que sur le téléphone.

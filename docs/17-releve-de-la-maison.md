@@ -64,6 +64,28 @@ Ce que RoomPlan ne donne pas, et qu'il faut obtenir autrement :
   prenait la largeur qu'on lui donnait et la hauteur qui va avec, ce qui sur
   un iPad mettait « Poser » hors de l'écran. Facultatif, et
   seulement au second palier.
+- **Les fenêtres qu'il manque.** RoomPlan ne voit pas une fenêtre derrière
+  un rideau tiré. La feuille du relevé en ajoute une : on choisit sa taille
+  — petite fenêtre, fenêtre, baie vitrée, chacune avec sa largeur, sa
+  hauteur et son appui —, puis on touche le plan ; elle se couche sur le mur
+  le plus proche, qui lui donne son orientation, et se voit sur le plan
+  avant d'être posée. Elle se range à la suite des fenêtres du relevé, pour
+  que leurs rangs tiennent ; la retirer fait descendre d'un cran les rangs
+  au-dessus, avec ce qui s'y accroche (orientation, rideau).
+- **Les fenêtres qu'il prend pour des vides.** RoomPlan range dans les
+  ouvertures ce qu'il n'a pas reconnu comme fenêtre — un vitrage derrière un
+  rideau, une baie, un jour de travers. Deux réponses. Un vide dont l'appui
+  est à quarante centimètres du sol ou plus ne se traverse pas : la lecture
+  du JSON en fait une fenêtre, à la suite de celles du relevé
+  (`ScannedRoom.windowSillMin`). Un vide qui part du sol, lui, est une baie
+  ou un passage, et c'est la main qui tranche : le doigt qui le vise dans la
+  feuille « Ajouter une fenêtre » y couche la fenêtre — un vide est dans le
+  plan de son mur, viser l'un c'est viser l'autre, et le vide l'emporte là où
+  il perce (`ScannedRoom.openingAt`). Elle en prend les mesures, que le
+  relevé connaît, plutôt que celles de la taille demandée, et le vide lui
+  cède la place : il ne fait plus courant d'air, et dehors il n'éclaire pas
+  une seconde fois. Le plan, enfin, dessine les fenêtres après les vides —
+  sans quoi le trou recouvrait la fenêtre qu'on venait d'y poser.
 - **La lumière réelle.** ARKit donne une estimation d'éclairement
   (`ARFrame.lightEstimate.ambientIntensity`) qui dépend de l'heure et du
   temps qu'il fait : inutilisable seule pour dire ce qu'une place reçoit à
@@ -79,8 +101,14 @@ Pour un point candidat *P* de la pièce, à hauteur de pot, et pour chaque
 fenêtre *W* :
 
 1. **Visibilité.** Le segment *P → centre de W* ne traverse aucun mur de la
-   pièce ni aucun objet plus haut que *P* (une armoire). Une fenêtre qu'on
-   ne voit pas n'éclaire pas.
+   pièce, et aucun meuble ne dépasse la visée. La visée monte : elle part du
+   pot et va au milieu de la vitre, presque toujours plus haut — un bureau,
+   une table, un lit n'arrêtent donc rien, la lumière leur passe au-dessus,
+   là où une armoire la coupe. Un meuble est comparé à la hauteur de la
+   visée là où elle entre dans son empreinte, c'est-à-dire là où elle est le
+   plus basse. Comparer sa hauteur à celle du pot, comme au premier palier,
+   rendait un bureau aussi opaque qu'un mur. Une fenêtre qu'on ne voit pas
+   n'éclaire pas.
 2. **Distance** *d* en mètres, bornée par le bas à 0,5 m, et **angle** *α*
    entre la normale intérieure de la fenêtre et *P − W*.
 3. **Orientation.** Un facteur par point cardinal, miroir dans
@@ -94,7 +122,10 @@ fenêtre *W* :
    vitre est inférieure à la portée de la tache — la hauteur du haut de la
    fenêtre au-dessus du sol, un soleil à 45°, celui d'une mi-saison à nos
    latitudes — et s'il est dans la largeur de l'ouverture, élargie de 15 %
-   de la profondeur parce que le soleil balaie. Le dernier cinquième de la
+   de la profondeur parce que le soleil balaie. Un meuble entre la vitre et le
+   point lui porte son ombre quand il dépasse le rayon qui y descend — un
+   bureau collé à la fenêtre ombre le sol derrière lui, tout en laissant
+   passer la lumière du jour. Le dernier cinquième de la
    portée est le bord de la tache. À l'est et à l'ouest, la tache ne vaut
    que le bord : le soleil n'y passe qu'une partie de la journée. Le second
    palier fait dépendre la portée de la latitude du lieu et de la saison.
@@ -185,8 +216,11 @@ room_markers   id, scan_id, kind (window_orientation | radiator | plant),
 
 `room_markers` porte ce que la personne ajoute au relevé : l'orientation
 confirmée de chaque fenêtre (`window_orientation`, une par fenêtre,
-indexée par son ordre dans le JSON), les radiateurs (palier 2), et la
-position actuelle d'une plante (palier 3). Séparer ce qui vient du capteur
+indexée par son ordre dans le JSON), les radiateurs (palier 2), la
+position actuelle d'une plante (palier 3), et les fenêtres que le relevé a
+manquées (`windowSmall`, `windowStandard`, `windowWide` — la taille est
+dans le genre, comme pour le voilage et le rideau, et la base ne porte
+aucune dimension). Séparer ce qui vient du capteur
 de ce qui vient de la main permet de refaire un relevé sans perdre les
 repères.
 
@@ -251,7 +285,7 @@ pièces et les plantes. Cinq entrées, une par question qu'on se pose :
   qui décrit cet emplacement — son plan avec les plantes posées, ses
   fenêtres, la date —, qui ouvre la feuille du relevé ; et « Renseigner
   l'emplacement » quand le relevé sait l'orientation ou la lumière que le
-  lieu ne dit pas encore. Sans relevé, « Relever cette pièce » lance le
+  lieu ne dit pas encore. Sans relevé, « Scanner cette pièce » lance le
   relevé et le lie d'emblée à l'emplacement. Sur un appareil sans LiDAR,
   la section n'existe pas.
 - **Fiche plante › carte « Sa place »** sous « Comment en prendre soin »
@@ -266,9 +300,9 @@ pièces et les plantes. Cinq entrées, une par question qu'on se pose :
   une pièce est relevée. Le diorama ne change pas : il montre l'idéal, le
   relevé montre le réel (docs/13, « Idéal et réel »). Pour une plante déjà
   posée, la ligne dit sa place.
-- **Profil › Réglages › Relevé de la maison** : la vue d'ensemble — la
+- **Profil › Réglages › Scan de la maison** : la vue d'ensemble — la
   liste des pièces relevées (nom, surface, emplacement lié, date),
-  « Relever une pièce », « Relever l'appartement », et pour chaque pièce :
+  « Scanner une pièce », « Scanner tout le logement », et pour chaque pièce :
   renommer, lier à un emplacement, corriger l'orientation des fenêtres,
   supprimer. Une pièce relevée d'ici se lie d'elle-même à l'emplacement
   qui porte son nom (« Salon » reconnu par RoomPlan, un emplacement
@@ -277,6 +311,12 @@ pièces et les plantes. Cinq entrées, une par question qu'on se pose :
   n'existe pas.
 - **Fiche de la pièce relevée › « Le jardin dans cette pièce »** (palier 2) : les
   plantes du jardin classées par leur score dans cette pièce.
+
+La pièce porte le nom de l'emplacement depuis lequel on la relève : relevée
+depuis la fiche de la Cuisine, elle s'appelle Cuisine ; liée à un emplacement
+depuis sa feuille, elle en prend le nom. L'emplacement retrouvé par son nom,
+lui, ne la renomme pas : le rapprochement tolère la casse, il ne l'impose
+pas. Le type reconnu par RoomPlan nomme la pièce relevée de nulle part.
 
 Le flux du relevé est le même d'où qu'on parte (`room_scan_flow.dart`) ;
 seul change l'emplacement auquel la pièce se lie.
@@ -356,7 +396,7 @@ ne se lirait pas — ; et la pièce se relève une fois pour toutes les fiches
 (`RoomFitAdvisor.survey`, puis `placeIn` par fiche), parce que « Qui
 serait bien ici » juge tout le jardin sur la même grille.
 
-**Palier 3 — l'appartement entier.** « Relever l'appartement » enchaîne
+**Palier 3 — l'appartement entier.** « Scanner tout le logement » enchaîne
 les pièces dans le même repère (`stop(pauseARSession: false)`, puis
 `run` ; « Pièce suivante » entre chaque), `StructureBuilder` les assemble
 au « Terminer », et chaque pièce part dans son fichier sous un même
@@ -372,8 +412,11 @@ soi dans un jardin partagé pose la question de ce qu'on partage, qui
 n'est pas tranchée ici.
 
 **Palier 4 — affiner et garder.** Ce que RoomPlan ne voit pas et que la
-main peut dire : un voilage ou un rideau souvent tiré, par fenêtre
-(`windowSheer`, `windowDrawn` dans `room_markers`) — le voilage divise
+main peut dire : une fenêtre manquée, à sa taille (`windowSmall`,
+`windowStandard`, `windowWide`), couchée sur le mur le plus proche du
+doigt — ou sur le vide qu'il vise, dont elle prend alors les mesures — et
+rangée à la suite des fenêtres du relevé ; un voilage ou un rideau
+souvent tiré, par fenêtre (`windowSheer`, `windowDrawn` dans `room_markers`) — le voilage divise
 l'apport par deux et ne laisse du soleil que le bord, le rideau tiré le
 divise par trois et n'en laisse rien. Le balcon : un relevé lié à un
 emplacement extérieur est lu par `ScannedRoom.asOutdoor()`, ses ouvertures
@@ -394,6 +437,17 @@ existe. **Livré dans ce dépôt.**
 - **Les vitrages.** RoomPlan ne les distingue pas, et le plan ne les
   demande pas : un double vitrage teinté ou un verre dépoli passent pour
   une vitre claire. Les rideaux, eux, se disent depuis le palier 4.
+- **La porte vitrée.** Une porte-fenêtre sort du relevé comme une porte, et
+  une porte n'éclaire pas : la main pose une fenêtre sur un vide, pas encore
+  sur une porte. Le jour où elle le pourra, la porte devra rester un courant
+  d'air tout en éclairant.
+- **Le vide relu comme fenêtre.** Un passage surélevé — un passe-plat vers la
+  cuisine — est lu comme une fenêtre, et éclaire alors une pièce qu'il
+  n'éclaire pas vraiment. Le cas est rare devant celui qu'il répare, et il se
+  corrige par le rideau tiré, faute de pouvoir retirer une fenêtre du relevé.
+  Un relevé qui gagne ainsi une fenêtre décale par ailleurs les rangs des
+  fenêtres ajoutées à la main : leur orientation confirmée et leur rideau
+  tiennent au rang, pas à la fenêtre.
 - **Les étages et les balcons.** Un balcon relevé est une pièce sans mur
   d'un côté ; le modèle le traite comme une fenêtre de la largeur de
   l'ouverture, et la fiche décide du gel comme aujourd'hui. À vérifier au

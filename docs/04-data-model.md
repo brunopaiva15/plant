@@ -96,7 +96,9 @@ projetées à la volée par `CalendarProjector` à partir des routines et de l'h
 room_scans     id, garden_id, location_id?, name, captured_at, north_offset_deg?,
                file_path, floor_area_m2, section_label?, structure_id? (v14),
                created_at, updated_at, deleted_at?
-room_markers   id, scan_id, kind (windowOrientation | heater | plant), x, z,
+room_markers   id, scan_id, kind (windowOrientation | heater | plant |
+               windowSheer | windowDrawn | windowSmall | windowStandard |
+               windowWide), x, z,
                window_index?, orientation?, plant_id?, created_at, updated_at
 ```
 Un relevé est une ligne et un fichier : le JSON du `CapturedRoom` de RoomPlan
@@ -114,7 +116,10 @@ capteur a vu : refaire un relevé ne perd pas les repères.
 son rang dans le JSON ; `heater` un radiateur posé du doigt, collé au mur
 le plus proche ; `plant` la place d'une plante du jardin (`plant_id`), une
 par plante et par relevé ; `windowSheer` et `windowDrawn` ce qui habille
-une fenêtre (`window_index`), un au plus par fenêtre. `structure_id` (v14) réunit les pièces d'un même
+une fenêtre (`window_index`), un au plus par fenêtre ; `windowSmall`,
+`windowStandard` et `windowWide` une fenêtre que le relevé a manquée, posée
+à la main au point (`x`, `z`) et dimensionnée par son genre — elle vient à
+la suite des fenêtres du JSON, et prend donc un rang comme les autres. `structure_id` (v14) réunit les pièces d'un même
 relevé d'appartement, dont les fichiers vivent dans un dossier
 (`rooms/<id>/<n>.json`) et partagent le repère.
 

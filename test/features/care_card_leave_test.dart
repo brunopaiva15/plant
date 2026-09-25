@@ -33,6 +33,9 @@ void main() {
     final pleine = tester.getSize(card).height;
     expect(pleine, greaterThan(40));
 
+    // La tête verte du matin pousse les cartes plus bas : on descend jusqu'au bouton.
+    await tester.ensureVisible(find.text('Arroser'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Arroser'));
     await tester.pump(const Duration(milliseconds: 300));
     expect(find.text('Arrosée'), findsOneWidget);

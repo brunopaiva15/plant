@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """Compose les visuels App Store à partir des captures réelles.
 
-Chaque visuel : un papier crème teinté, avec son grain, un titre tracé en
-Shantell Sans (la police « main » de l'app), un appareil dessiné (bordure,
-barre d'état, île ou œil de caméra) qui montre la capture presque entière,
-et un objet 3D de la série clay posé à son pied, devant lui. L'écran est
-ce qu'on vend : rien ne le recouvre, à part l'objet sur son coin bas. Les
-ombres sont brunes, jamais noires : c'est la lumière de l'atelier, pas celle
-d'un studio.
+Chaque visuel : un aplat d'une couleur vive de l'app, deux grands disques
+pâles qui sortent du cadre — le décor de ses têtes vertes —, un titre en
+Bricolage Grotesque très gras (la police des titres de l'app), un appareil
+dessiné (bordure, barre d'état, île ou œil de caméra) qui montre la capture
+presque entière, et un objet 3D posé à son pied, devant lui. L'écran est ce
+qu'on vend : rien ne le recouvre, à part l'objet sur son coin bas.
 
 Deux gabarits : l'iPhone 6,7 pouces (1290 × 2796) et l'iPad 13 pouces
 (2064 × 2752), les deux séries que demande App Store d'une app universelle.
@@ -23,14 +22,16 @@ import os
 import sys
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.join(HERE, '..')
 FONTS = os.path.join(HERE, 'fonts/inter/extras/ttf')
-HAND = os.path.join(ROOT, 'assets', 'fonts', 'ShantellSans-VF.ttf')
+DISPLAY = os.path.join(ROOT, 'assets', 'fonts', 'BricolageGrotesque-VF.ttf')
 CLAY = os.path.join(ROOT, 'assets', 'onboarding')
-ICON = os.path.join(ROOT, 'assets', 'icon', 'icon_ios_foreground.png')
+# Le pot de l'icône, entier, tel que l'ouverture de l'app le montre
+# (tool/render_app_icon.py).
+POT = os.path.join('assets', 'icon', 'rendu', 'lancement.png')
 INTER_ZIP = 'https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip'
 
 # --- les deux gabarits --------------------------------------------------------
@@ -49,9 +50,7 @@ FORMATS = {
         'margin': 96, 'text_top': 200, 'text_width': 1110,
         'title_max': 136, 'title_min': 96, 'title_line': 1.18,
         'sub_size': 54, 'sub_line': 66, 'sub_gap': 22, 'tilt': 1.0,
-        # Les formes du fond : le rayon des trois taches, puis la lumière.
-        'blobs': (900, 1020, 880), 'radial': ((240, 1250), 880),
-        # L'appareil tient en entier dans le cadre, écran complet : sa largeur,
+            # L'appareil tient en entier dans le cadre, écran complet : sa largeur,
         # le vide entre le sous-titre et lui (où l'objet d'argile dépasse), et
         # la taille de l'objet.
         'phone_width': 850, 'phone_gap': 170, 'phone_clay': 500,
@@ -59,7 +58,7 @@ FORMATS = {
         # coins, le cadre, l'île (ou, sans elle, l'œil de la caméra).
         'device': {'px': 3, 'status': 54, 'radius': 55, 'bezel': 12, 'island': (126, 37), 'camera': 0, 'cellular': True},
         'cover': {
-            'title': 296, 'plant': 900, 'plant_dx': 40, 'plant_overlap': 130,
+            'title': 296, 'plant_h': 760, 'plant_dx': 28, 'plant_overlap': 80,
             'card_h': 860, 'card_gap': 86, 'radius': 72, 'pad': 76,
             'name': 88, 'species': 54, 'species_y': 118, 'rows_y': 234,
             'rows': 'liste', 'row_h': 132, 'row_gap': 26, 'row_icon': 88, 'row_x': 126, 'row_label': 54, 'row_value': 58,
@@ -74,11 +73,10 @@ FORMATS = {
         # L'iPad est presque carré : incliné comme un téléphone, il déborderait
         # par le bas. Le même geste, aux deux tiers.
         'tilt': 0.7,
-        'blobs': (1400, 1580, 1360), 'radial': ((390, 1230), 1340),
         'phone_width': 1310, 'phone_gap': 115, 'phone_clay': 620,
         'device': {'px': 2, 'status': 24, 'radius': 26, 'bezel': 20, 'island': None, 'camera': 5, 'cellular': False},
         'cover': {
-            'title': 320, 'plant': 950, 'plant_dx': 30, 'plant_overlap': 170,
+            'title': 320, 'plant_h': 690, 'plant_dx': 26, 'plant_overlap': 74,
             'card_h': 980, 'card_gap': 90, 'radius': 90, 'pad': 100,
             'name': 116, 'species': 70, 'species_y': 156, 'rows_y': 420,
             # Trois soins côte à côte : sur une fiche presque carrée, une liste
@@ -102,7 +100,7 @@ def use(fmt):
 
 def ensure_fonts():
     """Inter (SIL OFL) n'est pas dans le dépôt : on la télécharge au besoin.
-    Shantell Sans, elle, est celle de l'app (assets/fonts)."""
+    Bricolage Grotesque, elle, est celle de l'app (assets/fonts)."""
     if os.path.isdir(FONTS):
         return
     import io
@@ -114,97 +112,63 @@ def ensure_fonts():
 
 
 # La palette de l'app (design_system/tokens/colors.dart), en clair.
-CANVAS = (246, 239, 228)
-SURFACE = (251, 246, 238)
-SURFACE_MUTED = (239, 228, 212)
-INK = (74, 53, 40)
-INK2 = (111, 90, 78)
-INK3 = (154, 133, 119)
-SHADOW = (94, 44, 20)
-SAGE = (47, 127, 83)
+CANVAS = (255, 251, 244)
+SURFACE = (255, 251, 244)
+SURFACE_MUTED = (237, 227, 212)
+INK = (28, 23, 18)
+INK2 = (102, 89, 77)
+INK3 = (140, 128, 116)
+SHADOW = (0, 0, 0)
+SAGE = (42, 116, 71)
+BRAND = (53, 131, 84)
+WHITE = (255, 255, 255)
+# Le fond de chaque fiche, l'encre de son titre et celle de son sous-titre :
+# le vert de la marque et le brun de nuit portent du blanc, les accents vifs
+# portent l'encre, comme dans l'app.
 TINTS = {
-    'sage': ((47, 127, 83), (228, 239, 230)),
-    'water': ((74, 130, 188), (220, 231, 243)),
-    'sun': ((196, 144, 58), (243, 227, 194)),
-    'terracotta': ((189, 88, 54), (242, 217, 203)),
-    'rose': ((196, 86, 106), (245, 221, 224)),
-    'earth': ((122, 76, 48), (236, 222, 208)),
-    'lavender': ((110, 96, 168), (226, 222, 240)),
+    'sage': (BRAND, WHITE, (226, 240, 230)),
+    'water': ((93, 183, 255), INK, (28, 23, 18)),
+    'sun': ((255, 225, 77), INK, (28, 23, 18)),
+    'terracotta': ((255, 123, 69), INK, (28, 23, 18)),
+    'rose': ((255, 143, 171), INK, (28, 23, 18)),
+    'night': ((23, 19, 15), WHITE, (214, 204, 192)),
+    'lavender': ((185, 163, 255), INK, (28, 23, 18)),
 }
+# L'encre du titre et du sous-titre de la fiche en cours : `background()` les
+# règle, `draw_text_block()` les lit.
+TEXT, TEXT2 = INK, INK2
 
 
 def font(name, size):
     return ImageFont.truetype(os.path.join(FONTS, f'Inter-{name}.ttf'), size)
 
 
-def hand(size, weight=700):
-    """Shantell Sans est une police variable : la graisse se règle par axe."""
-    f = ImageFont.truetype(HAND, size)
-    f.set_variation_by_axes([weight, 0, 0, 0])
+def display(size, weight=800):
+    """Bricolage Grotesque est une police variable : taille optique et
+    graisse se règlent par axe, dans cet ordre."""
+    f = ImageFont.truetype(DISPLAY, size)
+    f.set_variation_by_axes([96, weight])
     return f
 
 
 # --- fond -------------------------------------------------------------------
 
-def radial(size, center, radius, color, alpha):
-    """Une tache de couleur sans bord, à poser en fondu."""
-    w, h = size
-    y, x = np.mgrid[0:h, 0:w]
-    d = np.sqrt((x - center[0]) ** 2 + (y - center[1]) ** 2) / radius
-    a = np.clip(1 - d, 0, 1) ** 1.6 * alpha
-    layer = np.zeros((h, w, 4), dtype=np.uint8)
-    layer[..., :3] = color
-    layer[..., 3] = (a * 255).astype(np.uint8)
-    return Image.fromarray(layer)
-
-
-def blob(center, radius, color, alpha, seed=0, wobble=0.2):
-    """Une forme organique, comme celles peintes derrière les fiches : un
-    cercle dont le rayon ondule sur trois harmoniques, adouci au bord. Chaque
-    fiche tire les siennes d'une graine différente : la famille est la même,
-    aucune ne se répète."""
-    rng = np.random.default_rng(seed)
-    phases = rng.uniform(0, 2 * np.pi, 3)
-    amps = rng.uniform(0.5, 1.0, 3) * wobble
-    pts = []
-    for i in range(320):
-        a = 2 * np.pi * i / 320
-        r = radius * (1 + sum(amps[k] * np.sin((k + 2) * a + phases[k]) for k in range(3)))
-        pts.append((center[0] + r * np.cos(a), center[1] + r * np.sin(a)))
-    mask = Image.new('L', (W, H), 0)
-    ImageDraw.Draw(mask).polygon(pts, fill=int(255 * alpha))
-    mask = mask.filter(ImageFilter.GaussianBlur(radius * 0.05))
-    layer = Image.new('RGBA', (W, H), color + (0,))
-    layer.putalpha(mask)
-    return layer
-
-
-def grain(img, strength=0.045, seed=7):
-    """Le grain du papier, comme dans l'app : un bruit très fin qui module
-    la lumière, sans toucher aux couleurs."""
-    rng = np.random.default_rng(seed)
-    noise = rng.normal(0, 1, (H, W, 1)).astype(np.float32)
-    a = np.asarray(img.convert('RGB')).astype(np.float32)
-    a = np.clip(a * (1 + noise * strength), 0, 255).astype(np.uint8)
-    return Image.fromarray(a).convert('RGBA')
-
-
 def background(tint, seed=0):
-    """Le papier de l'app, teinté, avec deux ou trois formes organiques qui
-    sortent du cadre. C'est ce qui fait qu'une fiche ne se lit pas comme un
-    aplat, et le même système sur les huit fait tenir la série."""
-    strong, soft = TINTS[tint]
-    # Le pastel plein de la teinte, pas sa version laiteuse : a cote d'une
-    # fiche du magasin, un fond trop clair passe pour un blanc rate.
-    base = tuple(int(a * 0.74 + b * 0.26) for a, b in zip(soft, strong))
-    r1, r2, r3 = L['blobs']
-    light, light_r = L['radial']
+    """Un aplat de la couleur de la fiche, et les deux disques pâles des têtes
+    vertes de l'app en haut à droite. Pas de grain, pas de papier : les
+    couleurs vives s'y tiennent franches, comme à l'écran."""
+    global TEXT, TEXT2
+    base, TEXT, TEXT2 = TINTS[tint]
     img = Image.new('RGBA', (W, H), base + (255,))
-    img.alpha_composite(blob((W * 1.02, H * 0.06), r1, strong, 0.34, seed=seed))
-    img.alpha_composite(blob((-W * 0.06, H * 0.66), r2, strong, 0.26, seed=seed + 11))
-    img.alpha_composite(blob((W * 0.62, H * 1.06), r3, strong, 0.22, seed=seed + 23))
-    img.alpha_composite(radial((W, H), light, light_r, (255, 253, 248), 0.40))
-    return grain(img)
+    # Tracés sur un calque à part puis fondus : dessinés droit sur l'image,
+    # ils remplaceraient ses pixels au lieu de s'y mêler.
+    discs = Image.new('RGBA', (W, H), (255, 255, 255, 0))
+    d = ImageDraw.Draw(discs)
+    big, small = W * 0.54, W * 0.33
+    d.ellipse((W + big * 0.12 - big, big * 0.2 - big, W + big * 0.12 + big, big * 0.2 + big), fill=(255, 255, 255, 18))
+    d.ellipse((W - small * 0.15 - small, small * 0.55 - small, W - small * 0.15 + small, small * 0.55 + small), fill=(255, 255, 255, 14))
+    img.alpha_composite(discs)
+    return img
 
 
 # --- texte --------------------------------------------------------------------
@@ -230,7 +194,7 @@ def title_size(titles, width=None):
     draw = ImageDraw.Draw(Image.new('RGB', (10, 10)))
     size = L['title_max']
     lines = [l for t in titles for l in t.split('\n')]
-    while size > L['title_min'] and max(draw.textlength(l, font=hand(size, 800)) for l in lines) > width:
+    while size > L['title_min'] and max(draw.textlength(l, font=display(size)) for l in lines) > width:
         size -= 2
     return size
 
@@ -242,14 +206,14 @@ def draw_text_block(img, title, subtitle, size, x=None, y=None, width=None):
     width = L['text_width'] if width is None else width
     draw = ImageDraw.Draw(img)
     lines = title.split('\n')
-    t_font = hand(size, 800)
+    t_font = display(size)
     for line in lines:
-        draw.text((x, y), line, font=t_font, fill=INK)
+        draw.text((x, y), line, font=t_font, fill=TEXT)
         y += int(size * L['title_line'])
     y += L['sub_gap']
     s_font = font('Medium', L['sub_size'])
     for line in wrap(draw, subtitle, s_font, width - 40):
-        draw.text((x + 4, y), line, font=s_font, fill=INK2)
+        draw.text((x + 4, y), line, font=s_font, fill=TEXT2)
         y += L['sub_line']
     return y
 
@@ -306,9 +270,13 @@ def phone(shot, scrim=0.0, sheet=None, device=False):
         screen = Image.new('RGBA', (sw, sh + top))
         screen.paste(shot, (0, top))
     strip = shot.crop((0, 0, sw, top))
-    if max(abs(a - b) for a, b in zip(strip.getpixel((sw // 2, 6)), CANVAS)) < 24:
-        # Le papier de l'app : la barre d'état est du même papier.
-        bar = status_bar(sw, top, strip.getpixel((sw // 2, 6)), INK, u, dev['cellular'])
+    haut = strip.getpixel((sw // 2, 6))
+    if max(abs(a - b) for a, b in zip(haut, CANVAS)) < 24:
+        # La feuille de l'app : la barre d'état est de la même feuille.
+        bar = status_bar(sw, top, haut, INK, u, dev['cellular'])
+    elif max(abs(a - b) for a, b in zip(haut, BRAND)) < 24:
+        # La tête verte : l'heure y est blanche, sans voile.
+        bar = status_bar(sw, top, haut, WHITE, u, dev['cellular'])
     else:
         # Une photo en tête de page : elle continue sous la barre d'état
         # (en miroir et un peu floue quand la capture s'arrête au bord),
@@ -321,7 +289,7 @@ def phone(shot, scrim=0.0, sheet=None, device=False):
     screen.paste(bar, (0, 0))
     sh = screen.height - top
     if scrim:
-        # La barrière modale, brune comme les ombres
+        # La barrière modale, comme celle d'iOS
         screen.alpha_composite(Image.new('RGBA', screen.size, SHADOW + (int(255 * scrim),)))
     if sheet is not None:
         screen.alpha_composite(sheet, (0, screen.height - sheet.height))
@@ -353,7 +321,7 @@ def phone(shot, scrim=0.0, sheet=None, device=False):
 # --- argile -------------------------------------------------------------------
 
 def paste_with_shadow(canvas, layer, pos, blur=40, offset=(0, 30), alpha=0.28):
-    """Pose un calque avec son ombre portée, brune comme dans l'app. L'ombre
+    """Pose un calque avec son ombre portée, neutre et douce. L'ombre
     est floutée dans un calque plus grand que l'élément : floutée à sa
     taille exacte, elle serait coupée net sur ses bords et laisserait un
     rectangle translucide derrière lui."""
@@ -367,25 +335,9 @@ def paste_with_shadow(canvas, layer, pos, blur=40, offset=(0, 30), alpha=0.28):
 
 
 def clay_shape(mask, color=SURFACE):
-    """Une pièce d'argile à la forme donnée : l'aplat, un reflet en haut à
-    gauche, une ombre en bas à droite, rognés à la forme. Le calque rendu est
-    transparent hors de la pièce ; l'ombre portée se pose à part."""
-    w, h = mask.size
-    layer = Image.new('RGBA', (w, h), color + (255,))
-
-    def rim(dx, dy, blur):
-        shifted = Image.new('L', (w, h), 0)
-        shifted.paste(mask, (dx, dy))
-        m = Image.fromarray(np.clip(np.asarray(mask).astype(int) - np.asarray(shifted).astype(int), 0, 255).astype(np.uint8))
-        return m.filter(ImageFilter.GaussianBlur(blur))
-
-    unit = max(1.0, min(w, h) / 160)
-    light = Image.new('RGBA', (w, h), (255, 255, 255, 0))
-    light.putalpha(rim(int(4 * unit), int(4 * unit), 6 * unit).point(lambda v: int(v * 0.85)))
-    layer.alpha_composite(light)
-    shade = Image.new('RGBA', (w, h), tuple(int(c * 0.7) for c in color) + (0,))
-    shade.putalpha(rim(-int(5 * unit), -int(6 * unit), 8 * unit).point(lambda v: int(v * 0.16)))
-    layer.alpha_composite(shade)
+    """Une pièce à la forme donnée : un aplat, comme dans l'app. L'ombre
+    portée se pose à part."""
+    layer = Image.new('RGBA', mask.size, color + (255,))
     layer.putalpha(mask)
     return layer
 
@@ -425,7 +377,7 @@ def place_phone(canvas, shot, y, width=None, angle=0.0, **modal):
 def place_object(canvas, name, size, corner, box):
     """L'objet d'argile, pose devant le telephone et jamais derriere : il
     mord sur un coin bas de l'ecran, entier, a sa taille native."""
-    obj = crisp(os.path.join('assets', 'onboarding', name), box=size)
+    obj = crisp(name if '/' in name else os.path.join('assets', 'onboarding', name), box=size)
     x, y, w, h = box
     px = x - obj.width // 3 if corner == 'left' else x + w - obj.width * 2 // 3
     # Entier dans le cadre : un objet coupe par le bord n'est plus un objet.
@@ -564,11 +516,11 @@ COVER = {
         'name': 'Monstera deliciosa',
         'species': 'Faux philodendron',
         'rows': [
-            ('assets/onboarding/onboarding_3.png', 'Arrosage', 'Tous les 8 jours'),
+            ('assets/objects/arrosoir.webp', 'Arrosage', 'Tous les 8 jours'),
             ('assets/problems/clay_abiotique.webp', 'Lumière', 'Vive indirecte'),
-            ('assets/onboarding/onboarding_2.png', 'Dernier soin', 'Il y a 2 jours'),
+            ('assets/onboarding/collection_semis.webp', 'Dernier soin', 'Il y a 2 jours'),
         ],
-        'footer': 'Gratuite, sans compte, sans publicité',
+        'footer': 'Sans compte, sans publicité',
     },
     'en': {
         'title': 'Auxine',
@@ -576,11 +528,11 @@ COVER = {
         'name': 'Monstera deliciosa',
         'species': 'Swiss cheese plant',
         'rows': [
-            ('assets/onboarding/onboarding_3.png', 'Watering', 'Every 8 days'),
+            ('assets/objects/arrosoir.webp', 'Watering', 'Every 8 days'),
             ('assets/problems/clay_abiotique.webp', 'Light', 'Bright indirect'),
-            ('assets/onboarding/onboarding_2.png', 'Last care', '2 days ago'),
+            ('assets/onboarding/collection_semis.webp', 'Last care', '2 days ago'),
         ],
-        'footer': 'Free, no account, no ads',
+        'footer': 'No account, no ads',
     },
     'de': {
         'title': 'Auxine',
@@ -588,11 +540,11 @@ COVER = {
         'name': 'Monstera deliciosa',
         'species': 'Fensterblatt',
         'rows': [
-            ('assets/onboarding/onboarding_3.png', 'Gießen', 'Alle 8 Tage'),
+            ('assets/objects/arrosoir.webp', 'Gießen', 'Alle 8 Tage'),
             ('assets/problems/clay_abiotique.webp', 'Licht', 'Hell, indirekt'),
-            ('assets/onboarding/onboarding_2.png', 'Letzte Pflege', 'Vor 2 Tagen'),
+            ('assets/onboarding/collection_semis.webp', 'Letzte Pflege', 'Vor 2 Tagen'),
         ],
-        'footer': 'Kostenlos, ohne Konto, ohne Werbung',
+        'footer': 'Ohne Konto, ohne Werbung',
     },
     'it': {
         'title': 'Auxine',
@@ -600,55 +552,21 @@ COVER = {
         'name': 'Monstera deliciosa',
         'species': 'Monstera',
         'rows': [
-            ('assets/onboarding/onboarding_3.png', 'Annaffiatura', 'Ogni 8 giorni'),
+            ('assets/objects/arrosoir.webp', 'Annaffiatura', 'Ogni 8 giorni'),
             ('assets/problems/clay_abiotique.webp', 'Luce', 'Viva indiretta'),
-            ('assets/onboarding/onboarding_2.png', 'Ultima cura', '2 giorni fa'),
+            ('assets/onboarding/collection_semis.webp', 'Ultima cura', '2 giorni fa'),
         ],
-        'footer': 'Gratuita, senza account, senza pubblicità',
+        'footer': 'Senza account, senza pubblicità',
     },
 }
 
-SAGE_SOLID = (44, 119, 78)
-CREAM = (250, 245, 236)
-TERRACOTTA = (156, 72, 44)
+TERRACOTTA_POP = (255, 123, 69)
 
 
 def rounded_mask(size, radius):
     mask = Image.new('L', size, 0)
     ImageDraw.Draw(mask).rounded_rectangle((0, 0, size[0] - 1, size[1] - 1), radius=radius, fill=255)
     return mask
-
-
-def glass(img, box, radius=72, blur=70, alpha=0.46):
-    """Une plaque de verre dépoli posée sur la fiche.
-
-    Le verre n'a rien à montrer s'il n'y a rien dessous : on reprend ce que
-    la fiche porte déjà à cet endroit, on le floute, on l'éclaircit d'un
-    souffle, et on pose un voile blanc dessus. Un liseré clair sur le
-    pourtour et une lumière qui glisse du haut font le reste — c'est ce
-    liseré qui donne son épaisseur à la plaque."""
-    x, y, w, h = box
-    region = img.crop((x, y, x + w, y + h)).convert('RGB').filter(ImageFilter.GaussianBlur(blur))
-    region = ImageEnhance.Brightness(region).enhance(1.05)
-    pane = region.convert('RGBA')
-    pane.alpha_composite(Image.new('RGBA', (w, h), (255, 253, 250, int(255 * alpha))))
-    # La lumière du haut, qui s'éteint vers le bas.
-    grad = np.zeros((h, w, 4), dtype=np.uint8)
-    grad[..., :3] = 255
-    grad[..., 3] = np.clip(np.linspace(86, 0, h) ** 1.2, 0, 255).astype(np.uint8)[:, None]
-    pane.alpha_composite(Image.fromarray(grad))
-    d = ImageDraw.Draw(pane)
-    d.rounded_rectangle((1, 1, w - 2, h - 2), radius=radius, outline=(255, 255, 255, 150), width=3)
-    d.rounded_rectangle((4, 4, w - 5, h - 5), radius=radius - 3, outline=(255, 255, 255, 60), width=2)
-    pane.putalpha(Image.fromarray(np.minimum(np.asarray(pane.split()[-1]), np.asarray(rounded_mask((w, h), radius)))))
-    # L'ombre portée, brune et très douce : la plaque flotte, elle ne colle pas.
-    pad = 90
-    sh = Image.new('L', (w + 2 * pad, h + 2 * pad), 0)
-    sh.paste(rounded_mask((w, h), radius).point(lambda v: int(v * 0.22)), (pad, pad + 26))
-    shadow = Image.new('RGBA', sh.size, SHADOW + (0,))
-    shadow.putalpha(sh.filter(ImageFilter.GaussianBlur(46)))
-    img.alpha_composite(shadow, (x - pad, y - pad))
-    img.alpha_composite(pane, (x, y))
 
 
 def crisp(path, height=None, width=None, box=None):
@@ -672,8 +590,8 @@ def crisp(path, height=None, width=None, box=None):
 def cover(lang, size):
     """La fiche d'ouverture entre dans le même gabarit que les sept autres :
     même fond, même titre au même endroit, même sous-titre. À la place de
-    l'appareil, la plante de l'icône, la carte de ce que l'app dit d'une
-    plante en verre dépoli, et la carte pleine de terre cuite."""
+    l'appareil, le pot de l'icône sur le vert, la carte crème de ce que l'app
+    dit d'une plante, et la carte orange vif."""
     t, c, m = COVER[lang], L['cover'], L['margin']
     img = background('sage', seed=1)
     # Le nom de l'app n'est pas un titre de fiche : il se lit de loin, dans la
@@ -687,12 +605,14 @@ def cover(lang, size):
     gw, gh = W - 2 * m, c['card_h']
     gx, gy = m, by - c['card_gap'] - gh
 
-    # Sur l'iPhone la plante est au milieu, au-dessus de la carte ; sur l'iPad,
-    # ou le titre ne prend que la moitie de la largeur, elle passe a sa droite.
-    plant = crisp('assets/icon/icon_ios_foreground.png', width=c['plant'])
+    # Le pot de l'icône, au milieu, posé derrière la carte : elle n'en cache
+    # que la base, ses yeux restent bien au-dessus. Il est plus haut que large,
+    # c'est donc sa hauteur qui se règle ; et c'est le corps du pot qu'on
+    # centre, pas ses feuilles, qui partent à droite (plant_dx).
+    plant = crisp(POT, height=c['plant_h'])
     paste_with_shadow(img, plant, ((W - plant.width) // 2 + c['plant_dx'], gy + c['plant_overlap'] - plant.height), blur=64, offset=(16, 46), alpha=0.28)
 
-    glass(img, (gx, gy, gw, gh), radius=c['radius'], blur=56, alpha=0.58)
+    paste_with_shadow(img, clay_card((gw, gh), c['radius']), (gx, gy), blur=56, offset=(0, 30), alpha=0.18)
     d = ImageDraw.Draw(img)
     pad = c['pad']
     d.text((gx + pad, gy + pad - 6), t['name'], font=font('Bold', c['name']), fill=INK)
@@ -704,7 +624,7 @@ def cover(lang, size):
         for i, (icon, label, value) in enumerate(t['rows']):
             cx = gx + pad + cw * i + cw // 2
             if i:
-                d.line((cx - cw // 2, yy + 20, cx - cw // 2, yy + row_h - 40), fill=(255, 255, 255, 160), width=3)
+                d.line((cx - cw // 2, yy + 20, cx - cw // 2, yy + row_h - 40), fill=SURFACE_MUTED, width=3)
             obj = crisp(icon, box=icon_box)
             img.alpha_composite(obj, (cx - obj.width // 2, yy + (icon_box - obj.height) // 2))
             d = ImageDraw.Draw(img)
@@ -713,7 +633,7 @@ def cover(lang, size):
     else:
         for i, (icon, label, value) in enumerate(t['rows']):
             if i:
-                d.line((gx + pad + c['row_x'], yy, gx + gw - pad, yy), fill=(255, 255, 255, 160), width=3)
+                d.line((gx + pad + c['row_x'], yy, gx + gw - pad, yy), fill=SURFACE_MUTED, width=3)
             yy += c['row_gap']
             obj = crisp(icon, box=icon_box)
             img.alpha_composite(obj, (gx + pad + (icon_box - obj.width) // 2, yy + (icon_box + 10 - obj.height) // 2))
@@ -722,9 +642,9 @@ def cover(lang, size):
             d.text((gx + gw - pad, yy + row_h // 2 - 17), value, font=font('Bold', c['row_value']), fill=INK, anchor='rm')
             yy += row_h
 
-    # La carte pleine de terre cuite : dans l'app, c'est celle qui compte.
-    paste_with_shadow(img, clay_card((gw, bar_h), c['radius'], color=TERRACOTTA), (m, by), blur=52, offset=(12, 36), alpha=0.28)
-    ImageDraw.Draw(img).text((W // 2, by + bar_h // 2), t['footer'], font=font('Bold', c['footer']), fill=CREAM, anchor='mm')
+    # La carte orange vif : dans l'app, c'est la couleur de ce qui compte.
+    paste_with_shadow(img, clay_card((gw, bar_h), c['radius'], color=TERRACOTTA_POP), (m, by), blur=52, offset=(0, 30), alpha=0.18)
+    ImageDraw.Draw(img).text((W // 2, by + bar_h // 2), t['footer'], font=font('Bold', c['footer']), fill=INK, anchor='mm')
     return img
 
 
@@ -735,52 +655,54 @@ def cover(lang, size):
 COPY = {
     'fr': [
         ("Chaque matin,\nl'état des plantes", 'les soins qui viennent, à cocher'),
+        ('Quelle est\ncette plante ?', 'une photo suffit, même sans réseau'),
         ('Toutes vos plantes,\nau même endroit', 'avec leur photo, leur espèce et leur pièce'),
         ('Chaque plante\na sa page', 'photos, prochains soins, journal'),
         ("Une fiche d'entretien\npour chaque espèce", 'arrosage, lumière, engrais, rempotage'),
-        ('Quelle est\ncette plante ?', 'une photo suffit, même sans réseau'),
         ('Lieux, calendrier,\ninventaire', 'pour un appartement ou un jardin entier'),
         ('Un diagnostic\nsur photo', 'plus de 200 troubles, ravageurs, maladies'),
     ],
     'en': [
         ('Each morning,\nwhere things stand', 'upcoming care, to tick off'),
+        ('What plant\nis this?', 'one photo is enough, even offline'),
         ('All your plants,\nin one place', 'with their photo, species and room'),
         ('Every plant\nhas its page', 'photos, upcoming care, journal'),
         ('A care guide\nfor every species', 'watering, light, feeding, repotting'),
-        ('What plant\nis this?', 'one photo is enough, even offline'),
         ('Rooms, calendar,\ninventory', 'for a whole flat or garden'),
         ('A diagnosis\nfrom a photo', '200+ disorders, pests and diseases'),
     ],
     'de': [
         ('Jeden Morgen,\nder Stand der Dinge', 'die anstehende Pflege, zum Abhaken'),
+        ('Welche Pflanze\nist das?', 'ein Foto genügt, auch ohne Netz'),
         ('Alle Pflanzen,\nan einem Ort', 'mit Foto, Art und Zimmer'),
         ('Jede Pflanze\nhat ihre Seite', 'Fotos, nächste Pflege, Tagebuch'),
         ('Ein Pflegeblatt\nfür jede Art', 'Gießen, Licht, Dünger, Umtopfen'),
-        ('Welche Pflanze\nist das?', 'ein Foto genügt, auch ohne Netz'),
         ('Orte, Kalender,\nBestand', 'für eine Wohnung oder einen ganzen Garten'),
         ('Eine Diagnose\nnach Foto', 'über 200 Störungen, Schädlinge, Krankheiten'),
     ],
     'it': [
         ('Ogni mattina,\nlo stato delle piante', 'le cure in arrivo, da spuntare'),
+        ('Che pianta\nè questa?', 'basta una foto, anche senza rete'),
         ('Tutte le piante,\nnello stesso posto', 'con foto, specie e stanza'),
         ('Ogni pianta\nha la sua pagina', 'foto, prossime cure, diario'),
         ('Una scheda di cura\nper ogni specie', 'annaffiatura, luce, concime, rinvaso'),
-        ('Che pianta\nè questa?', 'basta una foto, anche senza rete'),
         ('Luoghi, calendario,\ninventario', 'per un appartamento o un giardino intero'),
         ('Una diagnosi\nda una foto', 'oltre 200 disturbi, parassiti, malattie'),
     ],
 }
 
 SCENES = [
-    ('today', 'water', 'onboarding_2.png', -3.5, 'right'),
-    ('plants', 'sage', 'collection_monstera.webp', 3.0, 'left'),
-    ('plant', 'terracotta', 'collection_ronde.webp', -3.0, 'right'),
-    ('care', 'sun', 'onboarding_3.png', 3.5, 'left'),
-    ('identify', 'earth', 'collection_caoutchouc.webp', -3.0, 'right'),
-    ('garden-calendar', 'lavender', 'onboarding_7.png', 3.0, 'left'),
-    ('diagnosis', 'rose', 'collection_sansevieria.webp', -3.5, 'right'),
+    ('today', 'sun', 'assets/objects/arrosoir.webp', -3.5, 'right'),
+    ('capture', 'lavender', 'collection_ronde.webp', 3.0, 'left'),
+    ('plants', 'water', 'collection_monstera.webp', -3.0, 'right'),
+    ('plant', 'terracotta', 'collection_caoutchouc.webp', 3.5, 'left'),
+    ('care', 'sage', 'collection_sansevieria.webp', -3.0, 'right'),
+    ('garden-calendar', 'rose', 'collection_semis.webp', 3.0, 'left'),
+    ('diagnosis', 'night', 'collection_monstera.webp', -3.5, 'right'),
 ]
-# Chaque visuel : la capture, la teinte du papier, l'objet d'argile qui dépasse.
+# Chaque visuel : la capture, la couleur du fond, l'objet 3D qui dépasse. Un
+# objet ne se pose jamais sur sa propre couleur : l'arrosoir bleu sur le
+# jaune, le pot orange sur le bleu.
 
 
 def build(shots, out, lang, fmt='iphone'):
@@ -796,17 +718,24 @@ def build(shots, out, lang, fmt='iphone'):
         bottom = draw_text_block(img, title, subtitle, size)
         shot = os.path.join(shots, f'{name}.png')
         modal = {'device': device}
-        if name == 'identify' and not os.path.exists(shot) and fmt == 'iphone':
-            # Pas de modèle sur le web : la feuille « Espèce » est redessinée
-            # sur la fiche du Ficus, avec les vrais résultats. Le repli est
-            # taillé pour une capture de téléphone ; sur iPad, mieux vaut pas
-            # de visuel qu'une feuille aux mauvaises proportions.
+        if name == 'capture' and not os.path.exists(shot) and fmt == 'iphone':
+            # Ni caméra ni modèle sur le web : l'étape photo ne s'y prend pas.
+            # Le repli montre l'autre façon d'identifier — la feuille
+            # « Espèce » redessinée sur la fiche du Ficus, avec les vrais
+            # résultats. Il est taillé pour une capture de téléphone ; sur
+            # iPad, mieux vaut pas de visuel qu'une feuille aux mauvaises
+            # proportions.
             shot = os.path.join(shots, 'plant-ficus.png')
             modal.update(scrim=0.36, sheet=ident_sheet(lang))
         if isinstance(shot, str) and not os.path.exists(shot):
-            # Une capture manquée ne bloque pas les autres : le visuel
-            # précédent reste en place, et on le dit.
-            print(f'{i}.png : pas de capture « {name} » dans {shots}, visuel laissé tel quel', file=sys.stderr)
+            # Une capture manquée ne bloque pas les autres. Mais le visuel
+            # d'avant ne reste pas en place : il vient d'une autre série, parfois
+            # d'un autre style, et il partirait au magasin sans que personne ne
+            # le voie — c'est ce qui était arrivé à la troisième fiche iPad.
+            ancien = os.path.join(out, f'{i}.png')
+            if os.path.exists(ancien):
+                os.remove(ancien)
+            print(f'{i}.png : pas de capture « {name} » dans {shots} — visuel retiré, rejouez la scène', file=sys.stderr)
             continue
         box = place_phone(img, shot, y=bottom + L['phone_gap'], angle=angle, **modal)
         place_object(img, clay, L['phone_clay'], corner, box)

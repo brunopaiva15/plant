@@ -34,7 +34,7 @@ class SectionHeader extends StatelessWidget {
               scale: 0.95,
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: Space.xxs),
-                child: Text(actionLabel!, style: context.text.callout.copyWith(color: context.colors.sage, fontWeight: FontWeight.w600)),
+                child: Text(actionLabel!, style: context.text.callout.copyWith(color: context.colors.sage, fontWeight: FontWeight.w700)),
               ),
             ),
         ],

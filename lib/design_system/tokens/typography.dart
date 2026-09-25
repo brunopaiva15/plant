@@ -2,13 +2,15 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-/// Hiérarchie typographique. Les grands titres et les titres de section sont
-/// en Shantell Sans, une police à la main ; tout le reste — listes, boutons,
-/// champs — garde la police du système (SF Pro sur iOS, Roboto sur Android).
-/// C'est ce partage qui donne le côté fait-main sans tomber dans le carnet
-/// d'enfant sur quarante écrans.
+/// Hiérarchie typographique. Les grands titres, les titres de section et les
+/// chiffres sont en Bricolage Grotesque, très gras et serré ; tout le reste —
+/// listes, boutons, champs — garde la police du système (SF Pro sur iOS,
+/// Roboto sur Android). Le contraste entre les deux fait le caractère : une
+/// voix forte pour ce qui se voit de loin, la police du téléphone pour ce qui
+/// se lit.
 ///
-/// Sept styles seulement : trop de tailles nuit à la cohérence.
+/// Sept styles de texte, et deux de chiffres ([hero], [stat]) : trop de
+/// tailles nuit à la cohérence.
 class FloraTypography {
   const FloraTypography._(this._ink, this._secondary, this._boost);
 
@@ -30,43 +32,69 @@ class FloraTypography {
   /// laissait les grands titres exactement comme avant.
   FloraTypography get bolder => FloraTypography._(_ink, _secondary, 100);
 
-  /// La police à la main des titres. Fonte variable : le poids se règle
-  /// par [FontVariation], le [FontWeight] sert de repli.
-  static const String handFamily = 'ShantellSans';
+  /// La police des titres. Les titres restent sous la graisse maximale de la
+  /// fonte (800) pour que « Texte en gras » ait encore de la marge ; seuls les
+  /// chiffres y sont d'emblée. Fonte variable : le poids et la taille optique se
+  /// règlent par [FontVariation], le [FontWeight] sert de repli.
+  static const String displayFamily = 'BricolageGrotesque';
 
-  List<FontVariation> _wght(double weight) => [FontVariation('wght', math.min(800, weight + _boost))];
+  /// La taille optique suit la taille du texte, dans les bornes de la fonte :
+  /// les petits titres s'ouvrent, les grands chiffres se resserrent.
+  List<FontVariation> _axes(double weight, double size) => [
+        FontVariation('wght', math.min(800, weight + _boost)),
+        FontVariation('opsz', size.clamp(12, 96).toDouble()),
+      ];
 
-  List<FontVariation> get _bold => _wght(700);
+  /// Le grand chiffre d'une tête d'écran : trois soins, huit plantes.
+  TextStyle get hero => TextStyle(
+        fontFamily: displayFamily,
+        fontVariations: _axes(800, 96),
+        fontSize: 96,
+        height: 0.9,
+        fontWeight: FontWeight.w800,
+        letterSpacing: -4,
+        color: _ink,
+      );
 
-  List<FontVariation> get _semibold => _wght(600);
+  /// Un chiffre de carte : la hauteur d'une plante, les jours avant
+  /// l'arrosage.
+  TextStyle get stat => TextStyle(
+        fontFamily: displayFamily,
+        fontVariations: _axes(800, 34),
+        fontSize: 34,
+        height: 1,
+        fontWeight: FontWeight.w800,
+        letterSpacing: -1,
+        color: _ink,
+      );
 
   TextStyle get display => TextStyle(
-        fontFamily: handFamily,
-        fontVariations: _bold,
+        fontFamily: displayFamily,
+        fontVariations: _axes(720, 34),
         fontSize: 34,
-        height: 1.15,
+        height: 1.1,
         fontWeight: FontWeight.w700,
-        letterSpacing: -0.3,
+        letterSpacing: -0.8,
         color: _ink,
       );
 
   TextStyle get title1 => TextStyle(
-        fontFamily: handFamily,
-        fontVariations: _bold,
+        fontFamily: displayFamily,
+        fontVariations: _axes(720, 28),
         fontSize: 28,
-        height: 1.2,
+        height: 1.15,
         fontWeight: FontWeight.w700,
-        letterSpacing: -0.2,
+        letterSpacing: -0.5,
         color: _ink,
       );
 
   TextStyle get title2 => TextStyle(
-        fontFamily: handFamily,
-        fontVariations: _semibold,
+        fontFamily: displayFamily,
+        fontVariations: _axes(650, 22),
         fontSize: 22,
-        height: 1.25,
+        height: 1.2,
         fontWeight: FontWeight.w600,
-        letterSpacing: -0.1,
+        letterSpacing: -0.3,
         color: _ink,
       );
 

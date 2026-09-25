@@ -37,9 +37,7 @@ final _ok = jsonEncode({
 Future<File> _tmpImage() => File('${Directory.systemTemp.path}/flora-diag-${DateTime.now().microsecondsSinceEpoch}.jpg').writeAsBytes([1, 2, 3]);
 
 InfomaniakDiagnoser _diagnoser(http.Client client) => InfomaniakDiagnoser(
-      apiKey: 'tok',
-      productId: '12345',
-      model: 'Qwen/Qwen3.5-397B-A17B-FP8',
+      endpoint: Uri.parse('https://relais.test/ai'),
       client: client,
       // Les renvois ne font pas attendre les tests.
       retryPause: Duration.zero,
@@ -328,10 +326,13 @@ void main() {
       await tmp.delete();
 
       expect(result.summary, 'ok');
-      expect(captured.url.toString(), 'https://api.infomaniak.com/2/ai/12345/openai/v1/chat/completions');
-      expect(captured.headers['authorization'], 'Bearer tok');
+      expect(captured.url.toString(), 'https://relais.test/ai');
       final body = jsonDecode(captured.body) as Map<String, dynamic>;
-      expect(body['model'], 'Qwen/Qwen3.5-397B-A17B-FP8');
+      // Le modèle ne part pas d'ici : le relais le choisit, et en changer ne
+      // doit pas demander de repasser par l'App Store.
+      expect(body.containsKey('model'), isFalse);
+      // La clé non plus : elle n'est plus dans le binaire.
+      expect(captured.headers.containsKey('authorization'), isFalse);
       expect(body['response_format'], {'type': 'json_object'});
       final messages = body['messages'] as List;
       expect(messages.first['role'], 'system');
@@ -425,7 +426,6 @@ void main() {
 
     test('la passe de repli emporte aussi les réponses', () {
       final body = InfomaniakDiagnoser.buildFallbackRequest(
-        model: 'm',
         language: 'fr',
         answers: const [DiagnosisAnswer(question: 'Rempotée quand ?', answer: 'Au printemps')],
       );
@@ -548,9 +548,9 @@ void main() {
       }
     });
 
-    test('sans clé ou sans produit, ne part pas', () {
-      expect(InfomaniakDiagnoser(apiKey: '', productId: '1', model: 'm').isConfigured, isFalse);
-      expect(InfomaniakDiagnoser(apiKey: 'k', productId: '', model: 'm').isConfigured, isFalse);
+    test('sans relais, ne part pas', () {
+      expect(InfomaniakDiagnoser(endpoint: Uri.parse('')).isConfigured, isFalse);
+      expect(InfomaniakDiagnoser(endpoint: Uri.parse('https://relais.test/ai')).isConfigured, isTrue);
     });
   });
 
@@ -570,6 +570,23 @@ void main() {
 
       expect(result.summary, 'ok');
       expect(appels, 2);
+    });
+
+    test('un modèle que le relais a attendu deux minutes ne se redemande pas', () async {
+      // 504 : le relais a coupé après 120 s sans réponse. La même question
+      // réfléchirait aussi longtemps ; la reposer doublerait l'attente.
+      var appels = 0;
+      final client = MockClient((_) async {
+        appels++;
+        return _reponse('', 504);
+      });
+      final tmp = await _tmpImage();
+      await expectLater(
+        _diagnoser(client).diagnose(images: [tmp], language: 'fr'),
+        throwsA(predicate((e) => e is DiagnosisException && e.message == 'busy')),
+      );
+      await tmp.delete();
+      expect(appels, 1);
     });
 
     test('un réseau coupé se redemande, puis se dit tel quel', () async {
@@ -746,7 +763,6 @@ void main() {
 
     test('la demande de rattachement ne contient que la liste et les pistes', () {
       final body = InfomaniakDiagnoser.buildMappingRequest(
-        model: 'm',
         candidates: _pistes,
         causes: const [DiagnosisCause(title: 'Toile fine', likelihood: Likelihood.possible, explanation: 'sous les feuilles', actions: [])],
         language: 'fr',

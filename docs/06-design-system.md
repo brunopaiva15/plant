@@ -1,30 +1,57 @@
 # F. Design system
 
-Identité : **argile, terre cuite, fait main**. L'app ressemble à l'atelier
-d'un potier : fond de papier crème, cartes qui semblent modelées, grands titres
-tracés à la main. Le vert reste l'accent du soin, la terre cuite celui de
-l'urgence.
+Identité : **franche, vive, tenue**. Chaque onglet s'ouvre sur le vert de
+l'icône, un grand titre blanc en Bricolage Grotesque et un grand chiffre ; une
+feuille crème remonte dessus et porte le contenu en aplats. Trois couleurs
+vives — l'orange, le jaune, le bleu — marquent ce qu'il y a à faire, et les
+objets 3D de l'icône se posent sur le vert. Les barres, les menus, les
+feuilles et les alertes restent ceux d'iOS : seul le contenu dessous change.
 
-Ce qu'on garde du design précédent : la grille, les cartes très arrondies, la
-tab bar en pilule, les pastels par type de soin. Ce qui change : la matière.
+La direction précédente, en argile — papier grainé, cartes modelées, titres à
+la main en Shantell Sans —, a laissé son nom à `ClayBox` et `ClayPainter`,
+et sa matière aux illustrations qui n'ont pas encore été refaites (les
+problèmes de santé, les fiches d'entretien, la motte de chargement).
 
-## Matière : le clay (`design_system/components/clay.dart`)
-Chaque surface est un `ClayBox`, peint par `ClayPainter` :
-- une **ombre portée teintée** (brun terre en clair, noir en sombre), décalée
-  en bas à droite ;
-- un **reflet intérieur** blanc en haut à gauche et une **ombre intérieure** en
-  bas à droite : c'est ce qui donne le relief modelé.
-Tout est proportionné au plus petit côté (`unit`), donc une tuile de 56 px et
-un héros de 300 px ont le même rendu.
+## Matière : des aplats (`design_system/components/clay.dart`)
+Chaque surface est un `ClayBox`, peint par `ClayPainter` : un **aplat franc**,
+sans reflet ni ombre logée. La couleur fait le relief — une carte crème sur la
+feuille, un accent vif sur la carte. Sous le doigt, l'aplat fonce d'un cran
+(`press`) pendant que `Pressable` le resserre. Le nom vient de la première
+direction, en argile ; il est resté pour ne pas toucher cent appels.
 
 - `ClayShape.rounded(r)` (cartes), `.pill()` (boutons, tab bar, barre de
-  sélection, toast), `.blob(variant)` : quatre jeux de coins elliptiques,
-  choisis par index pour que deux tuiles voisines ne soient jamais identiques
-  (tuiles d'emoji, actions rapides).
-- `ClayDepth.light` (cartes) · `deep` (boutons principaux, héros, éléments
-  flottants).
-- `GrainOverlay` : `assets/textures/grain.png` répété par-dessus l'app à 7 %
-  (10 % en sombre). C'est le grain du papier ; il est ignoré par le pointeur.
+  sélection, toast), `.blob()` : une tuile aux coins arrondis au tiers de son
+  petit côté (tuiles d'emoji, actions rapides, avatars).
+- `floating: true` ajoute la seule ombre qui reste : neutre, droite sous la
+  pièce, pour ce qui flotte au-dessus du contenu (toast, barre de sélection,
+  barre d'onglets Flutter).
+- `ClayDepth` ne change plus le dessin ; il dit encore aux appelants qu'une
+  pièce est franche (bouton principal, carte de couleur).
+- Plus de grain : l'aplat crème se suffit, et le grain grisait les couleurs
+  vives. `assets/textures/grain.png` ne sert plus qu'à l'aperçu de partage.
+
+### La tête verte (`brand.dart`)
+L'écran d'un onglet s'ouvre sur le vert de l'icône et se poursuit sur une
+feuille crème qui remonte dessus :
+
+- `BrandHeader` : l'aplat `brand`, deux disques blancs à 5–6 % qui sortent du
+  cadre en haut à droite, et un texte et des icônes en `onBrand` d'office. Il
+  descend de `Radii.xl` sous la feuille qui suit.
+- `BrandSheet` : la feuille, `canvas`, coins hauts à `Radii.xl` (36), remontée
+  d'autant sur le vert.
+- `HeroNumber` : le grand chiffre (`text.hero`, 112 à 132 pt) et ce qu'il
+  compte, lus d'un tenant.
+- `GlassChip` : une pastille de verre sur le vert (blanc à 14 %, filet à
+  26 %), blanche et pleine quand elle est choisie.
+- `PopCard` : une carte d'accent vif (`terracottaPop`, `sunPop`, `waterPop`),
+  encre `onPop`, un objet 3D qui peut s'y poser à droite.
+- `StatBlock` : un libellé, un chiffre (`text.stat`), son unité ; en blanc sur
+  `brand` pour le chiffre principal d'une rangée (`large`).
+- `FloraButton(pop: …)` passe un bouton sur un accent vif : « Arroser » en
+  `waterPop`, « Fertiliser » en `sunPop`.
+
+Les barres restent celles d'iOS : la tête verte est du contenu, sous la barre
+de navigation native, jamais une barre dessinée en Flutter.
 
 Une `FloraChip` accepte une pièce dessinée devant son libellé (`leading`) plutôt
 qu'un emoji : c'est ce qui porte les illustrations d'argile des problèmes de
@@ -38,9 +65,8 @@ lumière d'une plante, son cycle de vie, la forme et l'origine d'un engrais.
 `FloraAvatar`, la pastille d'`EmptyState`, `SelectionBar` et le toast reposent
 tous sur `ClayBox` : un composant ne dessine jamais sa propre ombre.
 
-La pastille d'un état vide et celle d'un avatar sont des `blob` : leur forme
-est tirée de l'emoji ou du nom, donc stable d'un écran à l'autre et différente
-d'une personne à l'autre. Une pièce modelée, pas un rond.
+Une `FloraChip` choisie passe à l'encre pleine (`ink`, libellé `canvas`) ;
+les autres sont des aplats `surface`, sans filet.
 
 ### Chargement : la motte (`clay_loader.dart`)
 Pas de roue qui tourne. `ClayLoader` est une motte d'argile animée image par
@@ -117,22 +143,33 @@ reculent au tiers pour la même raison.
 ## Couleurs (`design_system/tokens/colors.dart`)
 | Token | Clair | Sombre | Usage |
 |---|---|---|---|
-| `canvas` | #F6EFE4 | #221A15 | papier crème / terre sombre |
-| `surface` | #FBF6EE | #2E2219 | cartes, sheets |
-| `surfaceMuted` | #EFE4D4 | #3A2C22 | chips, champs |
-| `surfaceElevated` | #FFFBF5 | #443428 | éléments flottants |
-| `ink` | #4A3528 | #F6EFE4 | texte principal : un brun franc, jamais noir |
-| `inkSecondary` | #6F5A4E | #C2AE9C | texte secondaire |
-| `inkTertiary` | #746256 | #A69485 | captions, placeholders |
-| `line` | #E6D9C8 | #4A3A2E | séparateurs (rares) |
-| `sage` | #2C774E | #6DC48D | accent, boutons principaux |
-| `sageSoft` | #E4EFE6 | #2C3D31 | fond positif, chip active |
-| `terracotta` / `terracottaSoft` | #9C482C / #F2D9CB | #E59A70 / #4A2E22 | retard, héros du matin |
-| `water` / `waterSoft` | #39689A / #DCE7F3 | #8FB8E4 / #2B3644 | arrosage |
-| `sun` / `sunSoft` | #966E2C / #F3E3C2 | #E7C15C / #45391F | lumière, engrais |
-| `rose` / `roseSoft` | #C64A61 / #F5DDE0 | #EC8A9B / #4A2C31 | favoris, santé |
-| `danger` | #C0392B | #E47064 | destructif |
-| `shadow` | #5E2C14 à 14 % | — | ombre portée du clay |
+| `canvas` | #FFFBF4 | #17130F | la feuille crème / brun de nuit |
+| `surface` | #F4ECE0 | #261F19 | cartes posées sur la feuille |
+| `surfaceMuted` | #EDE3D4 | #31281F | chips, champs |
+| `surfaceElevated` | #FFFFFF | #3A3027 | éléments flottants |
+| `ink` | #1C1712 | #F6EFE4 | texte principal : un noir chaud |
+| `inkSecondary` | #66594D | #BCAC9C | texte secondaire |
+| `inkTertiary` | #66594D | #AE9E8F | captions, placeholders |
+| `line` | #E8DDCC | #3A3027 | séparateurs (rares) |
+| `sage` | #2A7447 | #74CF95 | accent de texte, boutons principaux |
+| `sageSoft` | #DDF0E2 | #1F3527 | fond positif, chip active |
+| `terracotta` / `terracottaSoft` | #9A3E1A / #FFE0D2 | #FF9A6E / #45251A | retard, rempotage |
+| `water` / `waterSoft` | #1B5E96 / #D9EEFF | #8CCBFF / #1B3247 | arrosage |
+| `sun` / `sunSoft` | #7A5F00 / #FFF4B8 | #FFD84D / #3D3414 | lumière, engrais |
+| `rose` / `roseSoft` | #B83A55 / #FFDDE4 | #F58CA0 / #45222B | favoris, santé |
+| `danger` | #B8321F | #FF8373 | destructif |
+| `brand` / `onBrand` | #358354 / #FFFFFF | idem | la tête verte d'un écran, le vert de l'icône |
+| `terracottaPop` | #FF7B45 | idem | accent vif : la carte du prochain soin |
+| `sunPop` | #FFE14D | idem | accent vif : l'engrais |
+| `waterPop` | #5DB7FF | idem | accent vif : « Arroser » |
+| `onPop` | #1C1712 | idem | l'encre posée sur un accent vif |
+| `shadow` | #3A2A1A à 12 % | — | ombre portée |
+
+Deux familles d'accents. Les **accents de texte** (`sage`, `terracotta`,
+`water`, `sun`, `rose`, `danger`) écrivent sur la feuille et sur leur pastel ;
+ils sont sombres en clair, clairs en sombre. Les **accents vifs** (`brand` et
+les trois `*Pop`) sont des aplats : ils gardent leur éclat dans les deux thèmes,
+le blanc va sur `brand`, l'encre `onPop` sur les trois autres.
 
 ### Le contrat de contraste
 Un accent sert tantôt de texte sur un pastel (la pastille « 💧 Dans 2 j »),
@@ -151,19 +188,21 @@ exécution :
 - **`onAccent`** — ce qu'on pose sur un accent employé comme fond — **≥ 4.5:1**
   sur chacun d'eux. Une seule valeur par thème suffit : les accents sont tous
   sombres en clair, tous clairs en sombre. Ne jamais écrire `Colors.white` en
-  dur là-dessus : sur l'ocre du thème sombre, cela donnait 1,7:1.
+  dur là-dessus : sur l'ocre du thème sombre, cela donnait 1,7:1 ;
+- `onBrand` sur `brand` et `onPop` sur les accents vifs : **≥ 4.5:1** (7:1 en
+  contraste élevé, où `brand` fonce et les accents vifs s'éclaircissent).
 
-C'est cette dernière règle qui fixe la clarté des accents, et qui a assombri
-la terre cuite, le bleu et l'ocre par rapport aux premières maquettes.
+C'est la règle d'`onAccent` qui fixe la clarté des accents de texte ; les
+accents vifs, eux, restent clairs et portent l'encre.
 
 ### Les commandes posées sur une image (`OnMedia`)
-La galerie dans un coin du viseur, la croix d'une vue de plus : sous elles il
-n'y a pas un fond du thème mais un cadrage. Elles sont donc hors du contrat,
-comme la marque d'Iris — pastille blanche (`OnMedia.tile`, #FFFFFF à 85 %) et
-encre figée (`OnMedia.ink`, #4A3528) dans les quatre palettes. Prendre `ink`
+La galerie dans un coin du viseur, le flash, la croix d'une vue de plus : sous
+elles il n'y a pas un fond du thème mais un cadrage.
+Elles sont donc hors du contrat, comme la marque d'Iris — pastille blanche (`OnMedia.tile`, #FFFFFF à 85 %) et
+encre figée (`OnMedia.ink`, #1C1712) dans les quatre palettes. Prendre `ink`
 de la palette du moment, comme la première version, faisait tourner l'icône au
 crème en thème sombre : elle s'effaçait dans sa pastille, à 1,2:1. L'encre
-figée tient 8:1 sur la pastille au pire du fondu.
+figée tient 12:1 sur la pastille au pire du fondu.
 
 ### Contraste élevé
 `FloraColors.lightHighContrast` / `darkHighContrast`, servies par
@@ -173,20 +212,26 @@ Mêmes teintes, seule la clarté bouge : le texte vise AAA (7:1), les icônes
 qu'attend qui active ce réglage.
 
 ## Typographie (`typography.dart`)
-Deux voix : la **main** pour ce qui est grand (Shantell Sans, police variable
-sous licence OFL, `assets/fonts/`), le **système** pour tout ce qui se lit
-(SF sur iOS, Roboto sur Android). La graisse de Shantell se règle par
-`FontVariation('wght', …)`, pas par `fontWeight`.
+Deux voix : une voix **forte** pour ce qui se voit de loin (Bricolage
+Grotesque, police variable sous licence OFL, `assets/fonts/`, réduite à la
+chasse normale), le **système** pour tout ce qui se lit (SF sur iOS, Roboto sur
+Android). Graisse et taille optique se règlent par `FontVariation('wght', …)`
+et `FontVariation('opsz', …)`, pas par `fontWeight`. Les titres restent à 720
+pour que « Texte en gras » puisse les pousser à 800, le maximum de la fonte ;
+les chiffres y sont d'emblée.
 
 | Style | Police | Taille / poids | Usage |
 |---|---|---|---|
-| Display | Shantell | 34 / 700 | grand titre d'onglet, chiffre du héros |
-| Title1 | Shantell | 28 / 700 | nom de plante (fiche) |
-| Title2 | Shantell | 22 / 600 | sections |
+| Hero | Bricolage | 96 / 800 | le grand chiffre d'une tête d'écran |
+| Stat | Bricolage | 34 / 800 | un chiffre de carte |
+| Display | Bricolage | 34 / 720 | grand titre d'onglet |
+| Title1 | Bricolage | 28 / 720 | nom de plante (fiche) |
+| Title2 | Bricolage | 22 / 650 | sections |
 | Title3 | système | 17 / 600 | titres de cartes |
 | Body | système | 17 / 400 | texte |
 | Callout | système | 15 / 400 | secondaire |
 | Caption | système | 13 / 500 | métadonnées |
+
 Dynamic Type : toutes les tailles suivent `MediaQuery.textScaler`, et la mise
 en page suit le texte — hauteurs planchers plutôt que fixes, libellés qui
 plient sur deux lignes plutôt que de se faire couper. La barre d'onglets
@@ -199,8 +244,8 @@ nécessaire — Flutter épaissit tout seul les styles à `fontWeight`, mais la
 fonte variable des titres n'écoute que `FontVariation`.
 
 ## Spacing (`spacing.dart`) : 4 · 8 · 12 · 16 · 20 · 24 · 32 · 40 · 48
-## Radius (`radius.dart`) : small 10 · medium 16 · large 24 (cartes) · xl 32 (sheets, héros) · full (boutons, chips, tab bar)
-## Élévation : c'est le clay qui fait le relief (voir *Matière*). `shadows.dart` ne sert plus qu'aux rares éléments hors design system.
+## Radius (`radius.dart`) : small 10 · medium 16 · large 26 (cartes) · xl 36 (feuilles, sheets) · full (boutons, chips, tab bar)
+## Élévation : c'est la couleur qui fait le relief (voir *Matière*) ; seule une pièce `floating` porte une ombre. `shadows.dart` ne sert plus qu'aux rares éléments hors design system.
 ## Motion (`motion.dart`)
 - Durées : 150 (micro) · 250 (standard) · 400 (emphase). Courbes : `easeOutCubic`, `Curves.easeInOutCubicEmphasized` pour les sheets.
 - `reduced motion` : durées → 0, pas de translation, uniquement fondu.
@@ -350,6 +395,93 @@ dès que le grand titre glisse *sous* la barre.
 Ailleurs — Android, et iOS avant que la chrome ne soit passée au natif — la
 `CupertinoSliverNavigationBar` et son repli restent ce qu'ils étaient.
 
+### La barre sur la tête verte (`LargeTitlePage(brand: true)`)
+Une page d'onglet peut s'ouvrir sur la tête verte : le grand titre passe en
+blanc sur `brand`, suivi de ce que la page pose en `hero` (un grand chiffre,
+des pastilles), puis du bord arrondi de la feuille crème. La barre du système
+reste celle d'UIKit — ses boutons, ses menus, son titre replié —, seul son
+**ton** change :
+
+| ton | quand | la barre | l'heure |
+|---|---|---|---|
+| `brand` | le vert est encore sous la barre | transparente, titre et boutons blancs | blanche |
+| `plain` | le vert est passé | le flou ordinaire d'iOS, boutons au vert `sage` | celle du thème |
+
+Le ton voyage avec les boutons (`publishActions(brand: …)`, clé `tone`) et
+UIKit le pose sur l'élément de navigation de l'hôte (`standardAppearance`,
+`scrollEdgeAppearance`) : il suit la page et se fond d'une page à l'autre.
+Ce qui décide, c'est le **bord haut de la feuille** (`_BordDeFeuille`) : tant
+qu'il est plus bas que la barre, il reste du vert dessous. Sa place dans la
+liste se relève après chaque image — au moment où la position change, la
+liste n'a pas encore été remise en page, et l'écran dirait où le bord
+*était* ; la première version restait ainsi bloquée sur le vert.
+
+Tirée vers le bas, la page ne découvre pas de crème au-dessus du titre : un
+aplat vert suit le rebond (`_FondDeMarque`).
+
+L'heure suit la barre. `NavigationDOnglet` la veut blanche au ton `brand` ;
+sans barre, il laisse décider la page — Flutter, par ce qu'il déclare sous
+l'heure —, et `OngletsDAuxine` laisse décider l'onglet ouvert. Avant, le
+contrôleur d'onglets tranchait seul, et une photo en tête de fiche gardait
+l'heure noire.
+
+Le titre replié est en Bricolage (720, 17 pt, qui suit le texte agrandi) :
+UIKit déclare la police depuis le fichier que Flutter embarque déjà
+(`FlutterDartProject.lookupKey(forAsset:)`), sans copie dans le projet Xcode.
+La fenêtre est teinte au `sage` : les boutons de barre, l'onglet choisi et
+les menus quittent le bleu du système.
+
+`test/design_system/brand_page_test.dart` tient le trajet : transparente en
+haut, ordinaire une fois le vert passé, rendue au retour.
+
+### Les écrans à tête verte
+Les quatre onglets s'ouvrent sur la tête verte (`brand: true`) :
+
+- **Aujourd'hui** : la date, puis en grand le nombre de soins du jour
+  (« 3 » et « soins aujourd'hui », `todayHeroCare`) ; la journée faite, il
+  passe aux soins des sept jours qui viennent (`todayHeroWeek`). Jamais au
+  nombre de plantes : il change à peine d'un jour à l'autre et ne dit pas
+  quoi faire — c'est le premier retour reçu sur la tête verte. Un pot 3D se pose à
+  droite, la météo et l'air de la maison suivent en pilules de verre. La
+  carte de terre cuite du matin est partie : le chiffre est dans la tête.
+- **Plantes** : le champ de recherche de verre, puis le nombre de plantes.
+- **Jardin** et **Profil** : le titre seul, en blanc.
+
+Posées sur le vert, les pièces ordinaires se font de verre d'elles-mêmes
+(`OnBrand`) : `FloraPill`, `FloraIconButton`. Un écran pose la même pièce
+qu'ailleurs, et elle s'accorde.
+
+Les boutons de soin prennent les accents vifs (`CareKindColors.popFor`) :
+« Arroser » en `waterPop`, « Fertiliser » en `sunPop`, « Rempoter » en
+`terracottaPop`, encre `onPop` ; les autres soins gardent leur accent de
+texte et `onAccent`.
+
+La fiche d'une plante garde sa photo en tête. Son nom passe en Bricolage
+40, et une rangée de chiffres le suit (`_Stats`) : le prochain arrosage en
+grand sur le vert (jours restants, puis le rythme ou le retard), la
+dernière hauteur et le nombre de feuilles relevés. Rien quand il n'y a rien
+à compter.
+
+### Le nom d'une plante dans la barre de sa fiche
+La fiche n'a pas de grand titre : son en-tête est une photo, et le nom se lit
+dessous. Défilée, la barre restait donc nue — plus rien ne disait quelle
+plante on regardait.
+
+Le nom y monte maintenant au moment où il passe sous la barre, et la quitte au
+retour en haut. C'est le même guetteur
+(`CollapsedTitleWatcher`, `design_system/components/collapsed_title.dart`),
+à ceci près que le seuil d'une fiche se compte : l'en-tête se replie d'abord —
+la hauteur de la photo moins celle de la barre —, puis la première ligne du
+nom glisse dessous. Le nom est donc dans la barre dès qu'il cesse d'être
+lisible en dessous, jamais avant.
+
+Le porteur est un `ValueNotifier` tenu par l'état de la fiche : elle se
+redessine à chaque soin enregistré, et la barre garde son titre. UIKit
+l'affiche là où il tient la barre ; ailleurs, c'est la case de la
+`SliverAppBar`, où le nom paraît en fondu. Les deux ne coexistent jamais :
+la case de Flutter reste vide dès que le système porte le titre.
+`test/features/plant_detail_title_test.dart` tient le trajet complet.
+
 ### La bande du système, et qui la retire
 Sur un pliable, la bande de la caméra et de l'heure occupe un bord entier —
 quatre-vingt-quatre points sur l'iPhone Duo — et change de côté avec la
@@ -361,7 +493,7 @@ une fois, et une seule.**
 | `LargeTitlePage` | la page, dans ses `SliverPadding` |
 | `FloraPage` | le `SafeArea` de son corps — ne rien ajouter par-dessus |
 | la fiche d'une plante | un `SliverPadding` qui couvre tout, **photo comprise** |
-| une feuille | `_MargesLaterales`, parce que la feuille d'iOS les efface — et c'est sa **surface** qui s'écarte, pas seulement son contenu |
+| une feuille | `_MargesLaterales`, parce que la feuille d'iOS les efface — c'est son **contenu** qui s'écarte ; son fond passe sous la bande (`SheetFill`), sinon on y voyait la page d'en dessous |
 
 La deuxième ligne a coûté un aller-retour : ajouter la marge à `FloraPage`
 donnait 188 points au lieu de 104, le `SafeArea` l'ayant déjà retirée. Le test
@@ -553,32 +685,70 @@ trahir, et il évite un `saveLayer` par-dessus un viseur de caméra. Les pages
 sans barre du bas s'en passent : leur contenu touche déjà le bord de l'écran.
 
 ## Les textes (`lib/l10n/*.arb`)
-Le ton est celui d'un outil, pas d'un assistant : sobre, factuel, court.
-- Une phrase dit une chose, à l'indicatif. Un titre est un nom, pas une
-  question : « Nom », « Emplacement », « Aperçu », et non « Comment
-  s'appelle-t-elle ? ». Seuls les questionnaires (le chercheur de plantes)
-  posent des questions, c'est leur rôle.
-- L'application ne parle pas d'elle-même et ne se prête pas d'intentions :
-  pas de « nos propositions », « Auxine regarde la pluie », « il sait dire
-  qu'il hésite ». On décrit ce qui se passe : « Propositions », « l'arrosage
-  est reporté les jours de pluie », « Doute signalé ».
-- On n'interpelle pas la personne : pas de « personne ne vous juge »,
-  « s'il vous plaît », « avec plaisir », « pas de panique », pas de point
-  d'exclamation. Pas de réassurance ni de justification qui ne change rien à
-  ce qu'elle va faire.
-- Notifications et erreurs sont des constats : « Monstera : arrosage prévu
-  aujourd'hui », « Code invalide, expiré ou déjà utilisé. », et non « a
-  probablement besoin d'eau », « ce code ne vaut plus rien ».
-- Les conseils d'entretien (`careTip…`) gardent le registre du jardinage :
-  « elle pardonne les oublis » y est admis, nulle part ailleurs.
-- Les trois autres langues suivent le français, dans le même ton.
+Le ton est celui d'un outil, pas d'un assistant : sobre, factuel, court. Sobre
+ne veut pas dire impersonnel — un mode d'emploi sans personne dedans devient
+une description, et une description ne dit pas quoi faire.
+
+1. **On s'adresse à la personne.** Une consigne est à l'impératif, deuxième
+   personne : « Scannez la pièce », et non « Tourner lentement » ni « La pièce
+   se scanne ». Ce qui lui appartient se dit « votre » : vos plantes, votre
+   appareil. Un libellé de bouton reste à l'infinitif — « Ajouter une plante »,
+   « Supprimer le scan » —, c'est la forme française d'une commande.
+2. **Chaque phrase a un sujet nommé.** Quand c'est le logiciel qui agit, on le
+   dit : « l'application calcule la lumière de chaque endroit ». Décrire un
+   traitement n'est pas se personnifier ; ce qui reste interdit, c'est de prêter
+   à l'application des intentions ou des états d'âme (« nos propositions »,
+   « Auxine regarde la pluie », « il sait dire qu'il hésite »).
+3. **Une aide dit une chose.** Deux phrases et 140 signes au plus, 220 pour un
+   chapeau d'écran. Trois phrases sont réservées au consentement et à la
+   confidentialité, où chaque phrase porte une garantie distincte. Ce qui est
+   déjà dit ailleurs ne se répète pas : « rien ne quitte l'appareil » se dit une
+   fois, là où la question se pose.
+4. **Un titre est un nom, pas une question** : « Nom », « Emplacement »,
+   « Aperçu », et non « Comment s'appelle-t-elle ? ». Seuls les questionnaires
+   (le chercheur de plantes) posent des questions, c'est leur rôle.
+5. **On n'interpelle pas la personne pour ne rien dire** : pas de « personne ne
+   vous juge », « s'il vous plaît », « avec plaisir », « pas de panique », pas
+   de point d'exclamation. S'adresser à quelqu'un pour lui dire quoi faire, oui ;
+   le rassurer ou se justifier, non.
+6. **Notifications et erreurs sont des constats**, suivis de ce qu'on peut y
+   faire : « Monstera : arrosage prévu aujourd'hui », « Ce code n'est plus
+   valable : il a déjà servi, a expiré, ou n'existe pas. », et non « a
+   probablement besoin d'eau ».
+7. **Le mot courant l'emporte sur le mot juste** : un *endroit*, pas une
+   *place* ; un *scan*, pas un *relevé* ; *placer* une plante, pas la *poser*.
+   « Emplacement » reste réservé aux `Location` du jardin. Les termes de
+   botanique (nœud, keiki, sphaigne, cal) restent : c'est le vocabulaire du sujet.
+8. **Les nombres s'écrivent en chiffres, les unités en abrégé** : « 5 à 8 cm »,
+   « 10 à 15 semaines », « 2 fois sur 3 ». Un texte d'interface se lit en
+   diagonale ; un chiffre s'y voit.
+9. **Les conseils d'entretien (`careTip…`) gardent le registre du jardinage** :
+   « elle pardonne les oublis » y est admis, nulle part ailleurs.
+10. **Chaque langue s'écrit depuis l'intention, pas depuis le français.** On part
+   de ce que la chaîne doit faire comprendre et on l'écrit dans la langue ; une
+   tournure française sans équivalent idiomatique se perd, elle ne se transpose
+   pas. Registres : « vous » en français, *you* en anglais, *du* en allemand,
+   *tu* en italien — un seul par langue.
 
 `test/l10n/arb_tone_test.dart` verrouille la part mécanique : pas de point
-d'exclamation, pas de titre en forme de question, et une liste de tournures
-interdites par langue. Une tournure à bannir de plus s'ajoute là.
+d'exclamation, pas de titre en forme de question, une liste de tournures
+interdites par langue, les mêmes marqueurs ICU d'une langue à l'autre,
+l'apostrophe droite, la longueur maximale d'une aide et un seul registre par
+langue. Une tournure à bannir de plus s'ajoute là.
+
+Deux réserves que le test assume, parce qu'aucune machine ne les lève : en
+allemand, un « Sie » ou un « Ihre » en tête de phrase désigne aussi bien la
+plante (« Sie wächst in Erde ») que la personne ; en italien, une terminaison
+en -ate est autant un participe (« Modificate ») qu'un impératif de politesse.
+Le test ne verrouille donc que les marques sûres — celles dont le participe
+est irrégulier, ou qui n'ont pas d'homographe. `tool/audit_textes.py` signale
+les cas ambigus sous `registre-a-verifier`, à relire à l'œil. `tool/audit_textes.py` relève ce qui
+demande un œil : consigne à l'infinitif, pronominal impersonnel, passif sans
+agent, nombre en toutes lettres, phrase trop longue, registre mêlé. Le chantier
+de réécriture et ses lots sont dans `docs/18-clarte-des-textes.md`.
 
 ## Composants (`design_system/components/`)
-Button · IconButton · PressableScale · ClayBox · ClayLoader · Appear · Card · ActionTile · PlantCard · CareCard · PaperSheet · ActionChip · Pill · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · Slider (natif) · StepDots · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · IrisMark · PhotoGrid · PhotoViewer · QuantityStepper · DatePicker (natif) · PlantPicker · PhotoPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader · ScrollFade · WhatsNewWindow
+Button · IconButton · PressableScale · ClayBox · ClayLoader · Appear · Card · ActionTile · PlantCard · CareCard · PaperSheet · ActionChip · Pill · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · Slider (natif) · StepDots · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · IrisMark · PhotoGrid · PhotoViewer · QuantityStepper · DatePicker (natif) · PlantPicker · PhotoPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader · ScrollFade
 
 ## L'écran du matin (`features/today/`)
 Le grand titre salue : « Bonjour Paul » jusqu'à dix-huit heures, « Bonsoir
@@ -606,8 +776,8 @@ mesure demeure sur la pilule. La teinte dit le sujet — bleu poussière pour
 la pluie, ocre pour l'air de la maison, sauge pour les rappels — et la
 carte de repos, « Tout est en ordre », reste crème. Sur une carte teintée,
 la tuile reste `surface`. `TodayNoticeSlot` pose la marge commune et fond
-la carte quand elle disparaît, sans laisser de vide. La carte du jour, en
-terre cuite, reste à part : c'est le chiffre du matin, pas un avis.
+la carte quand elle disparaît, sans laisser de vide. Le chiffre du matin, lui,
+n'est pas un avis : il est dans la tête verte.
 
 ## La fiche d'entretien (`features/species/presentation/care_guide_screen.dart`)
 La page suit le chemin réel d'entretien, en sections titrées : **ce qu'elle
@@ -626,10 +796,9 @@ lecture ; une carte se retrouve à sa couleur.
 `design_system/components/paper.dart`) : un cran plus claire que le canvas,
 une ombre droite — la lumière vient du dessus, pas d'un coin —, un filet, et
 un coin corné en bas à droite qui emporte l'ombre du coin avec lui. Les
-cartes d'argile restent des pièces posées sur la feuille : deux matières, et
-c'est leur écart qui dit que la fiche est un objet. Les titres de sections
-passent à la main (`SectionHeader`, Shantell 22), comme écrits sur la
-feuille, et la provenance se tamponne au pied : le libellé de
+cartes restent des aplats posés sur la feuille : deux matières, et c'est leur
+écart qui dit que la fiche est un objet. Les titres de sections
+sont en Bricolage (`SectionHeader`, 22), et la provenance se tamponne au pied : le libellé de
 `careMatchLabel` — « Fiche de l'espèce », « Repères généraux », « Complétée
 par l'IA » — dans un cadre d'encre posé de travers. L'aperçu du dénicheur
 garde la surface de sa sheet (`CareGuideBody(paper: false)`) : une feuille
@@ -829,161 +998,156 @@ une ligne du compte rendu.
 enregistrer dans le journal. `test/features/diagnosis_screen_test.dart` tient
 le formulaire.
 
-## La fenêtre des nouveautés (`features/whats_new/`)
-Ce que l'application montre après une mise à jour : un bandeau teinté qui
-s'éteint dans le fond de la page, la marque posée au centre sur une médaille
-d'argile qui respire, un titre en Shantell, trois points forts, et un bouton
-qui reste sous les yeux pendant que la page défile.
-
-- **Présentation native, dessin commun.** `showFloraScrollableFlow` : la sheet
-  empilée d'iOS d'un côté, le dialogue plein écran de Material 3 de l'autre.
-- **Le contenu défile parce qu'il emprunte le `ScrollController` de la sheet.**
-  La sheet d'iOS arme un `VerticalDragGestureRecognizer` par-dessus tout son
-  contenu ; sans ce contrôleur, elle remporte chaque geste vertical et la page
-  reste figée pendant que la sheet descend. Avec lui, la liste défile tant
-  qu'elle n'est pas en haut, et referme la sheet une fois en haut. Un flow à
-  plusieurs pages défilantes ne peut pas s'en servir — d'où `showFloraFlow`,
-  qui reste à côté.
-- **La médaille est `surface`, pas la teinte** du bandeau : la marque d'Iris a
-  ses couleurs figées, garanties lisibles sur les quatre fonds de carte et
-  sur rien d'autre.
-- **L'accent ne porte que des icônes** — pastilles des points forts, lueur du
-  bandeau. Titres et corps restent à l'encre : c'est ce qui autorise l'ocre et
-  le rose, qui ne tiennent que 3:1.
-- **Contenu = données.** Une version est une entrée de `releaseNotes()` et ses
-  clés dans les quatre `.arb`. Aucune image à livrer.
-- Quand elle s'ouvre : voir docs/03, *Après une mise à jour*.
-
-## La page du soutien (`features/support/`)
-« Auxine est gratuite » demande sans rien vendre, et elle n'est pas une page :
-c'est **un objet qu'on tend**. Une seule pièce d'argile porte tout — le titre,
-ce qui est ouvert, le montant, le bouton — et la plante n'y est pas rangée :
-elle est **posée dessus**, débordant du coin haut droit, comme on laisse une
-plante sur un coin de table. C'est ce débordement qui sépare un objet d'une
-carte à image.
-
-- **La pièce** est en argile crue — `surfaceMuted`, un cran sous le papier —,
-  relief franc, rayon `xl`. Elle a été en terre cuite pâle, et c'était une
-  erreur de sens autant que de goût : dans cette application la terre cuite
-  est la couleur du retard et de l'urgence, et un grand aplat rouge derrière
-  une demande se lit comme un avertissement. `surfaceMuted` ne dit rien que
-  la matière, laisse ressortir le vert du bouton et la terre cuite du
-  montant, et rentre dans le contrat de contraste — les trois encres y
-  tiennent 4,5:1, ce que le pastel de terre cuite ne faisait pas.
-- **La plante** est celle de l'icône, avec sa pousse et sa respiration. Le
-  `Stack` ne rogne pas (`Clip.none`) : ce qui dépasse pousse la pièce vers le
-  bas, ce qui y entre creuse sa marge haute, pour que le titre ne lui passe
-  pas dessous.
-- **Le texte** est rangé à gauche dans la pièce, comme celui des écrans de
-  l'onboarding — un titre d'affiche, pas une légende. Sous le titre, deux
-  phrases reprises mot pour mot de `store/listing.md` : ce que l'auteur écrit
-  déjà de l'application, plutôt qu'une reformulation. Une première version
-  tenait en une seule phrase, un deux-points et quatre compléments — la
-  cadence d'une machine, et un deux-points qui n'annonçait pas une valeur
-  mais une énumération. Les deux-points de l'application servent ailleurs à
-  nommer un champ (« Dernier : {date} ») ; celui-là ne nommait rien.
-- **La porte**, en pleine encre, entre ce qu'on a reçu et ce qu'on demande :
-  « Si vous souhaitez néanmoins aider le développeur, un achat unique
-  suffit. » Tout le travail est dans « néanmoins » — le paragraphe au-dessus
-  vient de dire que rien n'est dû, celui-ci ouvre quand même une possibilité
-  sans rien exiger. Elle nomme aussi la seule chose qui puisse motiver le
-  geste : l'argent va à une personne, pas à une société. Rien n'y est
-  supposé du lecteur ni promis en échange — c'est un constat, comme le reste
-  des textes, et il disparaît une fois le soutien versé.
-- **Le montant est dans le bouton** (« Soutenir · CHF 5.00 »), et nulle part
-  ailleurs. Écrit en grand et à la main au-dessus, il tenait la moitié du bas
-  de la pièce et le bouton n'en était plus que la conclusion ; dans le
-  bouton, ce qu'on lit est ce qu'on va faire et ce que cela coûte, d'un seul
-  tenant. Dessous, centré et en encre tertiaire, ce que le bouton ne dit
-  pas — « Une seule fois ». Centré parce qu'il appartient au bouton, pas au
-  paragraphe rangé à gauche au-dessus.
-- **Rien d'autre ne se lit après le bouton.** Une mention y a
-  traîné — « le soutien ne déverrouille rien » —, et c'était un avertissement
-  juste avant le geste : la phrase du haut dit déjà que tout est ouvert, donc
-  qu'il n'y a rien à déverrouiller.
-- **Sur le papier, sous la pièce**, ne reste que ce qui ne lui appartient
-  pas : retrouver un soutien déjà versé n'est pas l'accepter.
-- **Une fois versé**, un sceau d'argile se pose au ressort contre le pot, et
-  c'est la phrase du haut qui revient au bas de la pièce en plus petit : elle
-  se ferme sur ce qu'elle est venue dire plutôt que sur un blanc.
-
-**Deux versions ont échoué avant celle-ci**, et pour la même raison. La
-première empilait une pastille en capitales, une grille de quatre tuiles à
-icônes et une carte de prix : la page d'accueil de n'importe quel service. La
-seconde a tout dégraissé — illustration, titre, phrase, trait, bouton — et
-restait le squelette de tous les écrans du monde, simplement plus propre. Ce
-n'était pas la densité qui clochait, c'était la structure. La revue de design
-ci-dessous demande « ressemble-t-il à un template ? » ; la question se repose
-à chaque ajout, et enlever n'y répond pas à soi seul.
-
-**Ce que l'App Store demande** (règles 3.1.1 et 3.2.2(iv)) :
-
-- l'achat est un **non consommable**, donc restaurable : « Restaurer mon
-  soutien » est offert **partout où l'achat l'est**, onboarding compris.
-  C'est là qu'il sert le plus — quelqu'un qui change de téléphone repasse par
-  l'onboarding avant de voir les réglages ;
-- le prix vient du magasin, déjà mis en forme dans la monnaie de la personne
-  (`SupportOffer.price`), et se lit en entier avant le bouton ;
-- rien ne laisse croire à une contrepartie, et ce sont les phrases du haut
-  qui s'en chargent — tout est déjà accessible, il n'y a rien à vendre. Le
-  mot *don* est
-  évité — un pourboire au développeur passe par l'achat intégré (3.1.1), une
-  collecte pour une cause est interdite dans l'app (3.2.2(iv)), et les deux ne
-  doivent pas se confondre ;
-- là où le magasin n'existe pas, une phrase remplace le bouton.
-
-**Dans l'onboarding**, `SupportPitch` se rend en version courte (`compact`) :
-seule la scène rapetisse, la page y partageant sa hauteur avec les points de
-progression. « Non merci » n'appartient pas à la proposition mais à
-l'étape, qui le dessine elle-même avec le bouton discret de l'onboarding,
-celui de « Plus tard » : sous « Restaurer mon soutien », qui est vert, deux
-fantômes de la même couleur ne disaient plus lequel était la sortie.
-
-Les pièces se posent l'une après l'autre (`Appear`).
-`test/features/support_screen_test.dart` tient l'ordre — ce qui est ouvert
-avant le montant —, le montant qui ne paraît que là où le magasin le propose,
-et la page qui ne redemande rien une fois le soutien versé.
-
 ## Design review (par écran)
 Est-ce beau ? évident ? Peut-on retirer quelque chose ? L'action principale est-elle visible sans scroller ? Trop de texte ? Moins de taps possible ? Cohérent ? Ressemble-t-il à un template ? → si oui, retravailler.
 
 ## Icône de l'application
-Le logo est la monstera en papier découpé, dans son pot terracotta, sur
-fond blanc.
+Le logo est un pot de terre cuite d'où sort une pousse à deux feuilles, en
+argile mate, rendu en 3D sur un dégradé sauge. Le pot a deux yeux, sans
+bouche ni joues : c'est un personnage, pas une mascotte qui parle. Le cadre
+le coupe par le bas, et la pousse porte l'icône.
 
-- Source détourée : `assets/icon/plant.png`. C'est le master : tout le
-  reste en dérive.
-- `icon.png` / `icon_dark.png` : la plante à 92 % sur blanc. Sans alpha :
-  l'App Store la refuse.
-- `icon_ios_foreground.png` : la même plante à 92 %, fond transparent. iOS
+**Couleurs.** Terre cuite orange vif, verts francs, fond pris sur `sage`
+(#2F7D52 → #5FA87A). Elles sont plus saturées que la palette de l'interface,
+exprès : une icône se lit parmi d'autres sur un écran d'accueil, et une
+argile trop pâle s'y éteint. La matière reste mate, sans vernis.
+
+**Les yeux sont strictement identiques.** Chaque œil est un seul maillage —
+la bille et ses deux reflets — tourné face à la caméra, et son noir ne
+réagit pas aux lampes. Deux billes éclairées par les mêmes lampes n'ont
+jamais le même reflet, et c'est ce qu'on voit en premier sur un visage.
+
+La scène entière est décrite par `tool/app_icon_scene.py`, sans fichier
+`.blend`, et `tool/render_app_icon.py` la rend calque par calque dans
+`assets/icon/rendu/` :
+
+- `icone.png` : l'icône entière. C'est le master de toutes les tailles.
+- `avant_plan.png` : le pot seul, au même cadrage, fond transparent. iOS
   pose lui-même le fond du mode nuit et la teinte du mode teinté.
-- `icon_foreground.png` : plante à 62 %, fond transparent. Le XML adaptatif
-  d'Android ajoute un retrait de 16 %, d'où la marge apparemment large.
-- `icon_monochrome.png` : la même silhouette en noir, pour les icônes
-  thématiques d'Android 13+.
+- `avant_plan_adaptatif.png` : le pot seul, champ élargi d'un tiers. Le
+  lanceur d'Android ne montre que les deux tiers centraux de l'avant-plan :
+  ils reprennent ainsi le cadrage de l'icône, et le pot continue sous le
+  masque au lieu de s'arrêter net. Pas de retrait dans `ic_launcher.xml`.
+- `fond.png` : le dégradé seul, fond de l'icône adaptative.
+- `lancement.png` : le pot raccourci (`POT_BAS`), à peine plus long que ce
+  qu'en montre l'icône, entier, caméra baissée sur son milieu, fond
+  transparent. C'est lui qu'on voit à l'ouverture (voir *L'ouverture*).
+- `lancement_clin_50`, `_85`, `_100` : au même cadrage, l'œil de droite
+  qui se ferme, découpé dans la zone `OEIL`.
 
-La plante occupe 92 % de la largeur, comme sur les icônes système : c'est
-elle qui doit se lire sur la grille, pas le blanc autour. Les pointes de
-feuilles s'arrêtent à 4 % des bords, loin du rayon d'angle du squircle
-d'iOS — 22 % du côté, qui n'entame que les coins. Seules les icônes web
-« maskable » descendent à 72 % : leur zone de sûreté est un disque de 80 %
-du côté, et tout ce qui déborde peut être rogné.
+Les rendus sont reproductibles : même graine pour Cycles et pour le grain,
+si bien qu'une image du clin d'œil se pose sur l'icône sans raccord.
 
-Régénérer après toute modification :
+Régénérer les tailles, sans Blender ni chaîne Flutter :
 ```
 python3 tool/build_app_icon.py
 ```
-Le script compose les cinq sources depuis le master, puis toutes les
-déclinaisons d'iOS, d'Android et du web, sans chaîne Flutter installée.
-`dart run flutter_launcher_icons` fait le même travail depuis
-`flutter_launcher_icons.yaml`, à deux réserves près : il rééchantillonne
-autrement, et il retaille les « maskable » comme les autres.
+Le script écrit les sources de `assets/icon/`, les déclinaisons d'iOS,
+d'Android et du web, le logo des écrans de lancement et les images de
+l'ouverture. Refaire les rendus, seulement pour changer le dessin (deux
+minutes par calque sur quatre cœurs ; `--seulement` en choisit quelques-uns) :
+```
+python3 tool/render_app_icon.py --blender /chemin/vers/blender
+```
+`dart run flutter_launcher_icons` sait aussi composer les icônes depuis
+`flutter_launcher_icons.yaml`, mais ni le logo de lancement ni l'ouverture.
+
+`assets/icon/plant.png`, la monstera en papier découpé de l'ancienne icône,
+reste là : la page web de partage la montre encore.
+
+## L'ouverture (`app/launch_splash.dart`)
+À l'ouverture à froid, le pot cligne de l'œil, puis joue l'ouverture de
+Twitter : sa silhouette se ramasse, puis s'ouvre sur l'application comme une
+fenêtre qui s'agrandit. 1,64 seconde en tout.
+
+**Tout l'écran est au sauge de l'icône** (#459765, le milieu de son
+dégradé), en clair comme en sombre, et le pot y est posé entier, sur une
+ombre de contact : il ne se détache d'aucun cadre. Ce pot est raccourci : à
+peine plus long que ce qu'en montre l'icône, il en garde la silhouette
+trapue, là où le pot de l'icône montré en entier paraissait un gobelet.
+L'icône elle-même ne convenait pas — son dégradé et son pot coupé par le bas auraient laissé voir
+un carré au milieu de l'écran. L'ombre est dessinée à la composition et non
+par Blender : la lampe principale l'allonge hors du cadre, et une ombre
+coupée au bord de l'image se verrait sur le fond uni.
+
+| Temps | Ce qui se passe |
+|---|---|
+| 0–200 ms | le pot tel que l'a laissé l'écran natif |
+| 200–640 ms | le clin d'œil : trois images en 40 ms, l'œil fermé en arc tenu 160 ms, les mêmes à rebours ; le pot s'écrase sur sa base en fermant l'œil et se relève d'un rebond élastique |
+| 640–1640 ms | l'ouverture de Twitter |
+
+**L'ouverture de Twitter est reprise valeur pour valeur**, d'après
+« Implementing Twitter's App Loading Animation in React Native » (blog de
+React Native, 2018). Une avancée de 0 à 100, menée en une seconde par la
+courbe par défaut d'`Animated.timing` (`Easing.inOut(Easing.ease)`), et
+trois interpolations linéaires par morceaux :
+
+- la silhouette : 1 → 0,8 entre 0 et 10, puis 0,8 → 70 jusqu'à 100 ;
+- l'application dans la silhouette : invisible jusqu'à 15, en fondu jusqu'à
+  30 ;
+- l'application elle-même : 110 → 100 % tout du long.
+
+Chez Twitter, on voit au travers du masque une couche blanche, nette à toutes
+les tailles. Ici, le pot s'efface entre 10 et 15 — le temps que la
+silhouette reparte — et laisse un aplat du fond de l'application (`canvas`),
+que celle-ci recouvre ensuite en fondu. Agrandie cinq à seize fois pendant
+ce fondu, l'image du pot n'était plus qu'une tache floue et translucide.
+
+Les deux premières versions n'étaient pas celles de Twitter : la première
+faisait grossir le pot en fondu pendant que tout le fond s'effaçait d'un
+bloc, et paraissait raide ; la seconde avait sa propre chronologie, avec une
+inspiration avant l'élan.
+
+**La fenêtre est un tracé**, pas une image découpée. La deuxième version
+perçait le fond avec l'image du pot et un mode de fusion (`BlendMode.dstOut`)
+dans une couche à part : juste dans le moteur des tests, mais sur l'iPhone
+la découpe se remplissait de noir, et l'application ne paraissait qu'une
+fois l'ouverture finie. Le fond est maintenant un rectangle percé du contour
+du pot, rempli en pair-impair — ce que tout moteur dessine de la même façon.
+Le contour (`app/launch_silhouette.dart`, environ 300 points) est tiré du
+rendu par `tool/build_app_icon.py` : suivi pixel à pixel, puis simplifié.
+L'ombre au pied du pot n'en fait pas partie.
+
+**Le premier cadre est l'écran natif.** iOS (`LaunchScreen.storyboard`) et
+Android (`launch_background.xml`, puis `values-v31` à partir d'Android 12)
+montrent le même pot de 160 points au centre, sur le même sauge.
+`LaunchSplash` reprend exactement cette image : on ne voit pas la relève.
+Pour ce faire, il retient le premier cadre (`deferFirstFrame`) le temps de
+décoder ses images — une seconde au plus —, sinon le fond paraîtrait seul un
+instant. Android 12 ne montre qu'un disque de 192 dp au centre de l'icône de
+lancement : le pot, feuilles comprises, y tient largement à 160 dp.
+
+**Les barres natives d'iOS sont voilées tant qu'elle dure**
+(`NativeShell.setLaunching`). Elles sont posées par-dessus Flutter, et rien
+de ce que Flutter dessine ne les couvre : la barre d'onglets et celle du
+haut paraissaient sur l'écran vert dès que la coquille se déclarait. Voiler
+et non effacer, pour que la page garde leur place. Mais au lancement elles
+n'ont encore jamais paru, et leur place ne se mesurait pas : le natif les
+pose donc un instant, transparentes, le temps d'une mise en page, pour la
+mesurer (`mesurerLaChrome`), avant de les cacher.
+
+**L'application garde sa place dans l'arbre** du premier au dernier cadre.
+La première version la sortait de la pile une fois l'ouverture finie, et
+l'application entière se reconstruisait.
+
+**Le clin d'œil** ne rejoue pas la 3D : ce sont trois vignettes de l'œil de
+droite, rendues dans la même scène et posées sur le pot, pleines au centre
+et fondues sur les bords.
+
+- **Un toucher** saute le clin d'œil : l'ouverture part aussitôt.
+- **Réduire les animations** : ni clin d'œil ni zoom. Le pot reste 300 ms,
+  puis s'efface en 250.
+- Seul `main` la demande (`FloraApp(splash: true)`) : les tests construisent
+  l'application sans elle. `test/app/launch_splash_test.dart` tient la
+  chronologie, le toucher, le mouvement réduit, le voile des barres natives
+  et l'application qui ne se reconstruit pas.
 
 ## La page web de partage (`supabase/functions/share/`)
 Un lien d'invitation ou de plante ouvre une page dans un navigateur, souvent
 avant que l'application soit installée : c'est le premier Auxine que voit la
-personne invitée. Elle porte donc la même identité — papier crème grainé,
-pièces d'argile, titres à la main.
+personne invitée. Elle porte l'identité de la direction précédente — papier
+crème grainé, pièces d'argile, titres à la main — et n'a pas encore suivi la
+refonte : c'est la prochaine pièce à reprendre, avec sa vignette.
 
 - `page.ts` tient la feuille de style et la coquille ; `index.ts` route et
   interroge. La page se rend donc sans Supabase, ce qui permet de la

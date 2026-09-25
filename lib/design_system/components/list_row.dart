@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 
 import '../theme/flora_theme.dart';
 import '../tokens/spacing.dart';
-import 'clay.dart';
 import 'pressable.dart';
 
 /// Ligne de liste : leading (emoji ou icône), titre, sous-titre, trailing.
@@ -138,35 +137,31 @@ class FloraListRow extends StatelessWidget {
   }
 }
 
-/// Tuile d'emoji en argile pastel, aux coins irréguliers, pour les leading
-/// de listes et cartes. [variant] varie la forme d'une tuile à l'autre.
+/// L'emoji en tête d'une ligne de liste ou d'une carte, posé seul, sans
+/// tuile : c'est l'emoji qui fait la couleur. Il occupe la place d'une tuile
+/// de [size] points, pour que les libellés restent alignés d'une ligne à
+/// l'autre, et la remplit presque.
 class EmojiTile extends StatelessWidget {
-  const EmojiTile({
-    super.key,
-    required this.emoji,
-    this.size = side,
-    this.background,
-    this.variant = 0,
-  });
+  const EmojiTile({super.key, required this.emoji, this.size = side});
 
-  /// Côté de la tuile. Il ne suit pas la taille du texte : une mise en page
-  /// qui mesure la hauteur d'une ligne de liste le compte tel quel.
+  /// La place réservée. Elle ne suit pas la taille du texte : une mise en
+  /// page qui mesure la hauteur d'une ligne de liste la compte telle quelle.
   static const double side = 40;
 
   final String emoji;
   final double size;
-  final Color? background;
-  final int variant;
 
   @override
   Widget build(BuildContext context) {
-    return ClayBox(
-      width: size,
-      height: size,
-      color: background ?? context.colors.surfaceMuted,
-      shape: ClayShape.blob(variant),
-      alignment: Alignment.center,
-      child: Text(emoji, style: TextStyle(fontSize: size * 0.48, height: 1)),
+    return SizedBox.square(
+      dimension: size,
+      child: Center(
+        child: Text(
+          emoji,
+          textScaler: TextScaler.noScaling,
+          style: TextStyle(fontSize: size * 0.78, height: 1),
+        ),
+      ),
     );
   }
 }

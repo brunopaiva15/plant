@@ -9,7 +9,7 @@ import '../../../domain/room/scanned_room.dart';
 import 'room_plan_painter.dart';
 
 /// Ce qu'on pose sur le plan.
-enum RoomMarkerPlacement { heater, plant }
+enum RoomMarkerPlacement { heater, plant, window }
 
 /// Le glissement du plan, qui ne cède pas la main à la feuille.
 ///
@@ -33,27 +33,33 @@ class _GlissementDuPlan extends PanGestureRecognizer {
 /// le repère sous le doigt — il se déplace tant qu'on n'a pas validé —, puis
 /// « Poser ». Rend le point choisi, ou rien.
 ///
-/// Un radiateur se colle au mur le plus proche du doigt ; une plante reste
-/// là où on l'a posée.
+/// Un radiateur se colle au mur le plus proche du doigt ; une fenêtre se
+/// couche sur ce mur, à la taille demandée — ou sur le vide qu'on vise,
+/// dont elle prend les mesures —, et se voit sur le plan avant d'être
+/// posée ; une plante reste là où on l'a posée.
 Future<RoomPoint?> showRoomMarkerPlacer(
   BuildContext context, {
   required ScannedRoom room,
   required List<RoomMarker> markers,
   required RoomMarkerPlacement kind,
   String? plantName,
+  HandWindow? windowSize,
 }) =>
     showFloraSheet<RoomPoint>(
       context,
-      builder: (ctx) => _PlacerBody(room: room, markers: markers, kind: kind, plantName: plantName),
+      builder: (ctx) => _PlacerBody(room: room, markers: markers, kind: kind, plantName: plantName, windowSize: windowSize),
     );
 
 class _PlacerBody extends StatefulWidget {
-  const _PlacerBody({required this.room, required this.markers, required this.kind, this.plantName});
+  const _PlacerBody({required this.room, required this.markers, required this.kind, this.plantName, this.windowSize});
 
   final ScannedRoom room;
   final List<RoomMarker> markers;
   final RoomMarkerPlacement kind;
   final String? plantName;
+
+  /// La taille de la fenêtre qu'on pose, choisie avant d'ouvrir la feuille.
+  final HandWindow? windowSize;
 
   @override
   State<_PlacerBody> createState() => _PlacerBodyState();
@@ -62,7 +68,24 @@ class _PlacerBody extends StatefulWidget {
 class _PlacerBodyState extends State<_PlacerBody> {
   RoomPoint? _pending;
 
+  /// La fenêtre sous le doigt, couchée sur le mur le plus proche : le plan
+  /// la dessine comme les autres, et le doigt la promène le long des murs.
+  RoomSurface? get _window {
+    final at = _pending;
+    if (widget.kind != RoomMarkerPlacement.window || at == null) return null;
+    return widget.room.handWindowAt(at, widget.windowSize ?? HandWindow.standard);
+  }
+
   void _tap(RoomPoint at) {
+    // Une fenêtre va au mur le plus proche, d'où qu'on touche : viser un mur
+    // du doigt, c'est souvent viser juste à côté de la pièce. Un vide que le
+    // relevé a pris pour un trou la porte aussi, et à ses mesures.
+    if (widget.kind == RoomMarkerPlacement.window) {
+      if (widget.room.walls.isEmpty && widget.room.openings.isEmpty) return;
+      Haptics.light();
+      setState(() => _pending = at);
+      return;
+    }
     final p = widget.kind == RoomMarkerPlacement.heater ? widget.room.snapToWall(at) : at;
     if (!widget.room.contains(p)) return;
     Haptics.light();
@@ -74,8 +97,17 @@ class _PlacerBodyState extends State<_PlacerBody> {
     final l10n = context.l10n;
     final c = context.colors;
     final heater = widget.kind == RoomMarkerPlacement.heater;
-    final title = heater ? l10n.roomScanAddHeater : l10n.roomScanAddPlant;
-    final hint = heater ? l10n.roomScanTapForHeater : l10n.roomScanTapForPlant(widget.plantName ?? '·');
+    final window = _window;
+    final title = switch (widget.kind) {
+      RoomMarkerPlacement.heater => l10n.roomScanAddHeater,
+      RoomMarkerPlacement.plant => l10n.roomScanAddPlant,
+      RoomMarkerPlacement.window => l10n.roomScanAddWindow,
+    };
+    final hint = switch (widget.kind) {
+      RoomMarkerPlacement.heater => l10n.roomScanTapForHeater,
+      RoomMarkerPlacement.plant => l10n.roomScanTapForPlant(widget.plantName ?? '·'),
+      RoomMarkerPlacement.window => l10n.roomScanTapForWindow,
+    };
     return Padding(
       padding: const EdgeInsets.fromLTRB(Space.page, 0, Space.page, Space.lg),
       child: Column(
@@ -93,48 +125,57 @@ class _PlacerBodyState extends State<_PlacerBody> {
           // a que la hauteur de l'écran, et la colonne débordait par le bas.
           // Le bouton « Poser » se retrouvait hors de l'écran, sans rien pour
           // défiler jusqu'à lui.
-          Center(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.42),
-              child: FloraCard(
-                padding: EdgeInsets.zero,
-                clip: true,
-                child: AspectRatio(
-                  aspectRatio: 1.1,
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      final size = Size(constraints.maxWidth, constraints.maxHeight);
-                      final geometry = RoomPlanGeometry(room: widget.room, size: size);
-                      return RawGestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        gestures: {
-                          TapGestureRecognizer: GestureRecognizerFactoryWithHandlers<TapGestureRecognizer>(
-                            TapGestureRecognizer.new,
-                            (r) {
-                              r.onTapUp = (d) => _tap(geometry.toRoom(d.localPosition));
-                            },
+          //
+          // Il cède aussi la hauteur que prend la consigne : celle d'une
+          // fenêtre tient une ligne de plus que celle d'un radiateur, et la
+          // colonne débordait de treize points sur un téléphone.
+          Flexible(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height * 0.42),
+                child: FloraCard(
+                  padding: EdgeInsets.zero,
+                  clip: true,
+                  child: AspectRatio(
+                    aspectRatio: 1.1,
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final size = Size(constraints.maxWidth, constraints.maxHeight);
+                        // Le cadre reste celui de la pièce : une fenêtre de plus
+                        // ne déplace pas ses murs, et le plan ne saute pas sous
+                        // le doigt.
+                        final geometry = RoomPlanGeometry(room: widget.room, size: size);
+                        return RawGestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          gestures: {
+                            TapGestureRecognizer: GestureRecognizerFactoryWithHandlers<TapGestureRecognizer>(
+                              TapGestureRecognizer.new,
+                              (r) {
+                                r.onTapUp = (d) => _tap(geometry.toRoom(d.localPosition));
+                              },
+                            ),
+                            _GlissementDuPlan: GestureRecognizerFactoryWithHandlers<_GlissementDuPlan>(
+                              _GlissementDuPlan.new,
+                              (r) {
+                                r.onStart = (d) => _tap(geometry.toRoom(d.localPosition));
+                                r.onUpdate = (d) => _tap(geometry.toRoom(d.localPosition));
+                              },
+                            ),
+                          },
+                          child: CustomPaint(
+                            size: size,
+                            painter: RoomPlanPainter(
+                              room: window == null ? widget.room : widget.room.withWindows([window]),
+                              heaters: [...heaterPoints(widget.markers), if (heater && _pending != null) _pending!],
+                              plants: plantPoints(widget.markers).values.toList(),
+                              current: widget.kind == RoomMarkerPlacement.plant ? _pending : null,
+                              colors: c,
+                              numberStyle: context.text.caption,
+                            ),
                           ),
-                          _GlissementDuPlan: GestureRecognizerFactoryWithHandlers<_GlissementDuPlan>(
-                            _GlissementDuPlan.new,
-                            (r) {
-                              r.onStart = (d) => _tap(geometry.toRoom(d.localPosition));
-                              r.onUpdate = (d) => _tap(geometry.toRoom(d.localPosition));
-                            },
-                          ),
-                        },
-                        child: CustomPaint(
-                          size: size,
-                          painter: RoomPlanPainter(
-                            room: widget.room,
-                            heaters: [...heaterPoints(widget.markers), if (heater && _pending != null) _pending!],
-                            plants: plantPoints(widget.markers).values.toList(),
-                            current: !heater ? _pending : null,
-                            colors: c,
-                            numberStyle: context.text.caption,
-                          ),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -143,7 +184,11 @@ class _PlacerBodyState extends State<_PlacerBody> {
           const SizedBox(height: Space.md),
           FloraButton(
             label: l10n.roomScanPlace,
-            icon: heater ? CupertinoIcons.flame : CupertinoIcons.leaf_arrow_circlepath,
+            icon: switch (widget.kind) {
+              RoomMarkerPlacement.heater => CupertinoIcons.flame,
+              RoomMarkerPlacement.plant => CupertinoIcons.leaf_arrow_circlepath,
+              RoomMarkerPlacement.window => CupertinoIcons.square_split_2x2,
+            },
             expand: true,
             onPressed: _pending == null ? null : () => Navigator.of(context).pop(_pending),
           ),

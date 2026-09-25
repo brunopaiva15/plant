@@ -441,9 +441,23 @@ totaux se lisent sur l'écran caché décrit plus bas.
 
 ## Sécurité de la clé
 
-`OPENROUTER_API_KEY` fournie via `--dart-define` est embarquée dans le binaire et ne doit pas être considérée comme un secret pour une distribution publique.
+`OPENROUTER_API_KEY` a d'abord été fournie par `--dart-define`, donc embarquée
+dans le binaire, donc extractible par qui en démonte le paquet. Ce n'était pas
+tenable pour une diffusion publique : ces clés-là sont activement cherchées, et
+elles ouvrent du crédit.
 
-Avant une diffusion large, l'appel OpenRouter doit passer par un backend contrôlé par Auxine avec authentification, quotas, rate limiting et possibilité de révoquer la clé sans republier l'application.
+Elle est maintenant dans la fonction Edge `relay`, avec les deux autres clés de
+l'éditeur. `JevDecisionService` ne connaît qu'une adresse et n'envoie que
+l'état et les questions ; le modèle lui-même est choisi côté relais, si bien
+qu'en changer ne demande pas de repasser par l'App Store. Le relais
+n'ouvre sa route `decide` qu'à un appareil qui s'est fait attester par App
+Attest, et compte ce que chacun consomme : 60 décisions par appareil et par
+jour, 4 000 en tout. La clé se révoque d'un `supabase secrets set`, sans
+republier l'application.
+
+Le détail — ce qui est vérifié, ce que ça ne prouve pas, et ce qui reste à
+faire (Play Integrity côté Android) — est dans
+[docs/19-relais-des-cles.md](19-relais-des-cles.md).
 
 
 ## Pannes Jev et diagnostic caché

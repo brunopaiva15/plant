@@ -10,8 +10,8 @@ import '../application/room_scan_providers.dart';
 import 'room_scan_detail_sheet.dart';
 import 'room_scan_flow.dart';
 
-/// Profil › Relevé de la maison : les pièces relevées, et de quoi en relever
-/// une. Chaque ligne s'ouvre sur la feuille du relevé — nom, emplacement,
+/// Profil › Scan de la maison : les pièces scannées, et de quoi en scanner
+/// une. Chaque ligne s'ouvre sur la feuille du scan — nom, emplacement,
 /// fenêtres, suppression. La même pièce se relève aussi depuis la fiche de
 /// son emplacement, dans Jardin ; ici, c'est la vue d'ensemble.
 class RoomScanSettingsScreen extends ConsumerWidget {

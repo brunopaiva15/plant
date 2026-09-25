@@ -43,8 +43,14 @@ class PreferencesService {
 
   /// L'utilisateur a-t-il déjà soutenu le développeur ? Ne déverrouille rien :
   /// sert seulement à ne plus lui proposer, et à dire merci.
-  bool get hasSupported => _prefs.getBool('has_supported') ?? false;
-  Future<void> setSupported(bool value) => _prefs.setBool('has_supported', value);
+
+  /// Ce que dure un diagnostic sur cet appareil, en secondes, lissé sur les
+  /// derniers aboutis. L'attente s'en sert pour dire combien de temps il
+  /// reste : la durée dépend du modèle que le relais a choisi, et de la
+  /// connexion — une valeur écrite dans le code aurait été fausse dès le
+  /// premier changement de modèle.
+  int? get diagnosisSeconds => _prefs.getInt('diagnosis_seconds');
+  Future<void> setDiagnosisSeconds(int value) => _prefs.setInt('diagnosis_seconds', value);
 
   /// Repli vers Pl@ntNet quand le modèle local hésite. Coupé, tout reste
   /// sur l'appareil.
@@ -78,6 +84,14 @@ class PreferencesService {
   /// Guides de bouturage précisés par l'IA, par espèce et par langue, en JSON.
   String? get cuttingGuides => _prefs.getString('cutting_guides');
   Future<void> setCuttingGuides(String json) => _prefs.setString('cutting_guides', json);
+
+  /// L'identifiant de la clé attestée auprès d'Apple, gardé d'un lancement à
+  /// l'autre. Pas un secret — c'est le condensé d'une clé publique — mais il
+  /// doit durer : Apple refuse d'attester deux fois la même clé, et en
+  /// refaire une à chaque lancement butera sur ses limites.
+  String? get appAttestKeyId => _prefs.getString('app_attest_key_id');
+  Future<void> setAppAttestKeyId(String? value) =>
+      value == null ? _prefs.remove('app_attest_key_id') : _prefs.setString('app_attest_key_id', value);
 
   /// Compteurs de la cascade d'identification, en JSON.
   String? get identificationMetrics => _prefs.getString('identification_metrics');
@@ -247,18 +261,4 @@ class PreferencesService {
   bool get notificationPromptShown => _prefs.getBool('notification_prompt_shown') ?? false;
   Future<void> setNotificationPromptShown() => _prefs.setBool('notification_prompt_shown', true);
 
-  // Nouveautés (« What's New »)
-
-  /// Version de l'application au dernier lancement.
-  ///
-  /// `null` tant qu'aucun lancement ne l'a écrite : installation neuve, ou
-  /// mise à jour depuis une version antérieure au mécanisme. Dans les deux
-  /// cas on ne sait pas d'où vient l'utilisateur, et `WhatsNew` se tait.
-  String? get lastRunVersion => _prefs.getString('last_run_version');
-  Future<void> setLastRunVersion(String value) => _prefs.setString('last_run_version', value);
-
-  /// Identifiants des nouveautés déjà présentées. La liste ne se vide pas :
-  /// elle pèse un identifiant par version livrée.
-  Set<String> get seenReleaseNotes => (_prefs.getStringList('seen_release_notes') ?? const <String>[]).toSet();
-  Future<void> setSeenReleaseNotes(Set<String> ids) => _prefs.setStringList('seen_release_notes', ids.toList());
 }

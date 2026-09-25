@@ -8,16 +8,17 @@ lib/
 │   ├── router.dart                go_router, shell 4 onglets, routes plein écran
 │   └── providers.dart             providers racine (db, repos, services)
 ├── core/
-│   ├── config/app_config.dart     APP_NAME, identifiant du soutien, réglages produit
+│   ├── config/app_config.dart     APP_NAME, réglages produit
+│   ├── config/relay_config.dart   adresse du relais des clés d'API (docs/19) — plus aucune clé de tiers dans le binaire
 │   ├── haptics.dart
 │   ├── observability/             Analytics / CrashReporter (interfaces + no-op)
 │   ├── l10n/                      helpers (relative dates, pluriels)
-│   ├── network/                   état du réseau (sonde, garde `ref.online`, délais)
+│   ├── network/                   état du réseau (sonde, garde `ref.online`, délais) ; RelayClient et AppAttest, qui ouvrent le relais (docs/19)
 │   └── utils/                     date helpers, extensions
 ├── design_system/
-│   ├── tokens/                    colors, typography (Shantell Sans + système), spacing, radius, motion
+│   ├── tokens/                    colors, typography (Bricolage Grotesque + système), spacing, radius, motion
 │   ├── theme/                     ThemeData clair / sombre, FloraTheme extension
-│   └── components/                composants réutilisables ; clay.dart = ClayBox / ClayPainter / GrainOverlay, shutter.dart = le déclencheur posé sur un viseur
+│   └── components/                composants réutilisables ; clay.dart = ClayBox / ClayPainter, brand.dart = la tête verte et ses pièces, shutter.dart = le déclencheur posé sur un viseur
 ├── domain/
 │   ├── models/                    Plant, Location, PlantAction, CareSchedule, PlantPhoto, ActionType, Tag…
 │   ├── repositories/              interfaces
@@ -59,7 +60,6 @@ lib/
 │   ├── account/                   compte, membres, rôles
 │   ├── export/                    export ZIP
 │   ├── archive/
-│   ├── whats_new/                 catalogue des nouveautés, règle d'ouverture, fenêtre native
 │   └── profile/                   settings, appearance, notifications, action types, about
 └── l10n/
     ├── app_fr.arb (template) · app_en.arb · app_de.arb · app_it.arb
@@ -77,10 +77,16 @@ test/
 ├── domain/species_tip_test.dart                bornes d'un conseil et ordre de lecture
 ├── features/encyclopedia_test.dart             les trois rayons, sur la vraie base des 200 problèmes
 ├── core/connectivity_test.dart                 état du réseau, garde des appels
+├── core/relay_client_test.dart                 la poignée de main du relais : attestation, jeton, ce qui se répare
 ├── core/reachability_test.dart                 la sonde, sur de vraies connexions
 ├── features/shared_links_offline_test.dart     hors ligne, l'écran le dit au lieu de tourner
 ├── assets/propagation_sequences_test.dart      chaque étape de chaque archétype est là, et s'anime
 └── l10n/arb_tone_test.dart       ton des textes, sur les quatre ARB
+supabase/
+├── schema.sql                     tables, RLS, fonctions security definer, et celles du relais
+└── functions/
+    ├── share/                     page publique d'un lien de partage ou d'une invitation (docs/08)
+    └── relay/                     le relais des clés d'API : App Attest, quotas, passe-plat (docs/19)
 docs/                              cette documentation
 ```
 

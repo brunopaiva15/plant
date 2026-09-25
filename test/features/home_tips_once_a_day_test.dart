@@ -21,7 +21,7 @@ void main() {
   const sensor = HomeSensor(id: 'T', name: 'Thermostat', roomName: 'Salon');
   final reading = HomeReading(at: DateTime(2026, 9, 14, 23), temperatureC: 25, sensor: sensor);
   const hot = HomeClimateTip(kind: HomeClimateTipKind.hot, value: 25, plantNames: ['Monstera', 'Pilea']);
-  const body = 'Chaleur : Monstera et Pilea sèchent plus vite, vérifier la terre.';
+  const body = 'Chaleur : Monstera et Pilea sèchent plus vite, vérifiez la terre.';
 
   /// Une séance : l'écran du matin avec la carte, sur les réglages donnés.
   Future<void> pump(WidgetTester tester, PreferencesService prefs) async {

@@ -397,4 +397,9 @@ abstract class RoomScanRepository {
   /// Pose un repère — un radiateur, la place d'une plante — au point donné.
   Future<RoomMarker> addMarker(String scanId, RoomMarkerKind kind, {required double x, required double z, String? plantId, int? windowIndex});
   Future<void> removeMarker(String id);
+
+  /// Retire une fenêtre ajoutée à la main : son repère, ce qui la décrivait
+  /// à son rang — orientation, rideau —, et les rangs au-dessus qui
+  /// descendent d'un cran pour suivre les fenêtres qui restent.
+  Future<void> removeWindow(String markerId, {required String scanId, required int windowIndex});
 }

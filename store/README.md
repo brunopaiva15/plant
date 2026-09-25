@@ -6,11 +6,11 @@ Le projet Xcode déclare les deux familles (`TARGETED_DEVICE_FAMILY = "1,2"`)
 et App Store en réclame alors une série chacune. Le
 premier ne montre pas un écran, mais il en suit la mise en page : la marge
 de page de l'app, un grand titre en haut à gauche, puis des cartes en
-colonne. Une bande sauge porte le nom tracé à la main et la revendication
-en gras ; la plante de l'icône se pose sur son bord ; une carte de verre
-dépoli mord sur la bande et porte ce que l'app dit d'une plante ; une
-carte pleine de terre cuite dit ce qui est gratuit. L'espèce montrée est la
-monstera, celle que tout le monde reconnaît et celle de l'icône ; son
+colonne. Sur le vert de la marque, le nom en Bricolage blanc et la
+revendication ; le pot de l'icône, entier, se pose sur une carte crème qui
+porte ce que l'app dit d'une plante ; une carte orange vif dit ce que l'app
+n'impose pas — ni compte, ni publicité. Le mot « gratuit » n'y figure plus : l'app ne le sera pas.
+L'espèce montrée est la monstera, celle que tout le monde reconnaît ; son
 arrosage et sa lumière sont ceux de son profil de soin
 (`data/species/care_profiles.dart`), son nom courant celui du catalogue
 livré. Rien de plus — une
@@ -18,15 +18,16 @@ fiche chargée ne se lit pas dans une grille de vignettes.
 
 Les sept autres montrent une capture réelle de l'app dans un appareil
 dessiné, légèrement incliné, l'écran complet : c'est l'écran qu'on vend,
-rien ne le recouvre. Au-dessus, un titre tracé en Shantell Sans (la police
-« main » de l'app) et une ligne qui le précise.
+rien ne le recouvre. Au-dessus, un titre en Bricolage Grotesque très gras
+(la police des titres de l'app) et une ligne qui le précise.
 
-La série tient par deux règles communes. Le fond est le pastel plein de la
-teinte, avec deux ou trois formes organiques qui sortent du cadre — jamais
-un aplat, jamais une version laiteuse : à côté d'une fiche du magasin, un
-fond trop clair passe pour un blanc raté. Et un objet de l'onboarding se
-pose devant l'appareil, sur un coin bas, entier et à sa taille native —
-jamais derrière, jamais coupé. Le titre, lui, reste seul : un second objet
+La série tient par deux règles communes. Le fond est un aplat d'une couleur
+de l'app — le vert de la marque, l'orange, le jaune, le bleu, le rose, un
+lilas, le brun de nuit —, avec les deux grands disques pâles de ses têtes
+vertes en haut à droite ; le titre est blanc sur le vert et le brun, à
+l'encre sur les couleurs vives, comme dans l'app. Et un objet 3D se pose
+devant l'appareil, sur un coin bas, entier et à sa taille native — jamais
+derrière, jamais coupé, jamais sur sa propre couleur. Le titre, lui, reste seul : un second objet
 posé en marge faisait deux fois le même geste sur la même fiche.
 
 Le nom de l'application, sur la première fiche, a sa taille à lui
@@ -43,16 +44,40 @@ ni île ni antenne — un œil de caméra au milieu du bord haut, l'heure, le
 wifi, la batterie. Sur sa fiche d'ouverture, les trois soins passent côte à
 côte : en colonne, ils laisseraient la moitié droite vide.
 
-Le sixième montre l'identification sur l'appareil : sur le simulateur,
-c'est la feuille « Espèce » de l'app, le modèle ayant regardé la photo du
-Ficus lyrata de la démo. Sur le web, où le modèle ne tourne pas,
-`compose.py` la redessine sur la fiche du Ficus assombrie — celle-là même
-qu'elle recouvre dans l'app —, avec des résultats vrais : la photo est une observation iNaturalist en CC0
-(`ident/ficus-lyrata.jpg`, observation 359128431, photo 655212161), absente
-du jeu d'entraînement, et les trois propositions avec leur cran de
-confiance sont la réponse du modèle livré, obtenue par `ident/score.py`,
-lue avec les seuils de l'app. Après chaque nouveau modèle : relancer
-`score.py`, reporter ses résultats dans `IDENT_RESULTS`, régénérer.
+Le troisième, juste après l'écran du matin, montre l'identification là où
+elle commence : l'étape « Aperçu » de la création, la photo prise, les trois
+premiers noms qu'Iris pose dessus —
+nom courant en gras, nom scientifique dessous, la première proposition
+cernée de sauge. Le modèle tourne vraiment, sur la photo du Ficus lyrata de
+la démo. Le simulateur n'a pas de caméra : c'est « Choisir une photo » qui
+sert de prise de vue, et le magasin de photos de la démo
+(`lib/core/demo/demo_photo_storage.dart`) rend ce Ficus au lieu d'ouvrir
+une photothèque vide. Rien d'autre n'est simulé — l'écran, le modèle et les
+noms sont ceux de l'app.
+
+Sans Mac, le même écran se prend par un banc de test
+(`test/store/identification_capture_test.dart`) : l'écran de l'app, la
+photo CC0 du Ficus de `ident/`, et la réponse que le modèle livré donne sur
+elle (`ident/score.py`), les noms courants du catalogue dans chaque langue.
+
+```bash
+STORE_CAPTURE=1 flutter test test/store/identification_capture_test.dart
+```
+
+Il écrit `store/shots-<langue>/capture.png` ; hors de cette variable, il ne
+fait rien, et la suite de tests le saute. Après un nouveau modèle, ses
+scores se reportent là aussi.
+
+S'il manque, `compose.py` montre l'autre façon d'identifier, la feuille
+« Espèce »
+redessinée sur la fiche du Ficus assombrie — celle-là même qu'elle recouvre
+dans l'app —, avec des résultats vrais : la photo est une observation
+iNaturalist en CC0 (`ident/ficus-lyrata.jpg`, observation 359128431, photo
+655212161), absente du jeu d'entraînement, et les trois propositions avec
+leur cran de confiance sont la réponse du modèle livré, obtenue par
+`ident/score.py`, lue avec les seuils de l'app. Après chaque nouveau
+modèle : relancer `score.py`, reporter ses résultats dans `IDENT_RESULTS`,
+régénérer.
 
 Sur la page d'une plante, la photo continue sous la barre d'état dessinée
 (en miroir, floue, assombrie), et les icônes passent en blanc.
@@ -112,12 +137,18 @@ lancement, le test règle les préférences d'un téléphone déjà en usage
 captures, que
 `test_driver/integration_test.dart` écrit dans `store/shots-<langue>/`
 (`store/shots-ipad-<langue>/` pour l'iPad).
-L'identification par Iris et le diagnostic rouvert depuis le journal sont
-ceux de l'app. Une scène qui échoue est signalée dans la sortie de
+Les noms posés sur la photo par Iris et le diagnostic rouvert depuis le
+journal sont ceux de l'app. Une scène qui échoue est signalée dans la sortie de
 `flutter drive` (avec ce qu'on lisait à l'écran, et une capture
 `<scène>-echec.png`), les autres se prennent quand même ; le visuel de la
 scène manquée reste tel quel. Pour rejouer quelques scènes seulement :
-`STORE_SCENES=identify,diagnosis LANGS=fr store/capture_ios.sh`.
+`STORE_SCENES=capture,diagnosis LANGS=fr store/capture_ios.sh`. Ce sont les
+noms des scènes du test, pas ceux des captures : la scène « garden » en
+prend quatre.
+
+Une capture qui manque retire le visuel correspondant au lieu de le
+laisser en place : un visuel d'une série précédente partirait sinon au
+magasin sans que personne ne le voie.
 
 Les captures d'appareil sont l'écran entier, avec la place de la barre
 d'état en haut (marqueur `.device` dans le dossier) : `compose.py` y
@@ -155,12 +186,14 @@ python3 store/compose.py store/shots-de store/de de
 python3 store/compose.py store/shots-it store/it it
 ```
 
-Sans capture `identify.png`, `compose.py` redessine la feuille « Espèce »
-sur `plant-ficus.png`, avec les résultats mesurés par `ident/score.py`.
+Sans capture `capture.png` — l'étape photo demande une photo, que le web ne
+sait pas fournir —, `compose.py` redessine la feuille « Espèce » sur
+`plant-ficus.png`, avec les résultats mesurés par `ident/score.py`. Le
+troisième visuel montre alors la feuille plutôt que l'étape photo : les deux
+disent la même chose de l'app, l'une après l'autre dans le parcours.
 
-L'étape Photo de la création n'est capturée nulle part : son viseur porte
-son déclencheur, et ni le web ni le simulateur n'ont de caméra — la capture
-ne montrerait que le repli sans viseur, deux boutons sur un cadre vide.
+Le viseur lui-même n'est capturé nulle part : ni le web ni le simulateur
+n'ont de caméra, et la capture ne montrerait qu'un cadre vide.
 
 `capture.mjs` demande Playwright (`npm i playwright`) ; la variable `CHROMIUM`
 peut pointer un binaire précis. Les emojis de l'app sont fournis par Flutter
@@ -168,7 +201,7 @@ web depuis Google Fonts : quand le navigateur ne peut pas y aller directement,
 le script relaie ces requêtes par `curl`, qui suit le proxy de la machine.
 
 `compose.py` télécharge la police Inter (SIL OFL) dans `store/fonts/` au
-premier lancement ; Shantell Sans vient de `assets/fonts/`. Les captures et les polices ne sont pas versionnées.
+premier lancement ; Bricolage Grotesque vient de `assets/fonts/`. Les captures et les polices ne sont pas versionnées.
 
 L'iPhone Duo a sa propre taille de visuel — 2007 × 2853 pour l'écran
 intérieur —, mais App Store Connect n'en accepte pas encore le dépôt : la

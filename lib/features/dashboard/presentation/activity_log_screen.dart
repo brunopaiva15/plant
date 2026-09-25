@@ -61,7 +61,6 @@ class ActivityRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final c = context.colors;
     final types = ref.watch(actionTypeByKeyProvider);
     final custom = entry.typeKey == null ? null : types[entry.typeKey!];
 
@@ -86,7 +85,7 @@ class ActivityRow extends ConsumerWidget {
     return FloraListRow(
       leading: entry.thumbPath != null
           ? ClipRRect(borderRadius: BorderRadius.circular(10), child: SizedBox(width: 32, height: 32, child: PlantImage(relativePath: entry.thumbPath, cacheWidth: 96)))
-          : EmojiTile(emoji: emoji, size: 32, background: c.surfaceMuted),
+          : EmojiTile(emoji: emoji, size: 32),
       title: entry.plantName ?? title,
       subtitle: parts.join(' · '),
       trailing: entry.thumbPath == null ? null : Text(emoji, style: const TextStyle(fontSize: 16)),

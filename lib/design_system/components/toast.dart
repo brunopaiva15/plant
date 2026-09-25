@@ -19,12 +19,16 @@ import 'tab_bar.dart';
 /// Toast avec action d'annulation. Un seul toast à la fois ; le suivant
 /// remplace le précédent (et déclenche son expiration).
 class ToastData {
-  ToastData({required this.message, this.undoLabel, this.onUndo, this.emoji = '✓'});
+  ToastData({required this.message, this.undoLabel, this.onUndo, this.emoji = '✓', this.actionIcon = CupertinoIcons.arrow_uturn_left});
 
   final String message;
   final String? undoLabel;
   final Future<void> Function()? onUndo;
   final String emoji;
+
+  /// L'icône du bouton : l'annulation, le plus souvent ; les Réglages quand
+  /// le toast y envoie.
+  final IconData actionIcon;
   final int id = DateTime.now().microsecondsSinceEpoch;
 }
 
@@ -127,6 +131,7 @@ class _ToastCard extends StatelessWidget {
         color: c.ink,
         shape: const ClayShape.pill(),
         depth: ClayDepth.deep,
+        floating: true,
         padding: const EdgeInsets.fromLTRB(Space.md, Space.sm, Space.sm, Space.sm),
         child: Row(
           children: [
@@ -145,7 +150,7 @@ class _ToastCard extends StatelessWidget {
               child: Text(
                 data.message,
                 style: context.text.callout.copyWith(color: c.canvas, fontWeight: FontWeight.w500),
-                maxLines: 2,
+                maxLines: 3,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -159,7 +164,7 @@ class _ToastCard extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(CupertinoIcons.arrow_uturn_left, size: 14, color: c.canvas),
+                      Icon(data.actionIcon, size: 14, color: c.canvas),
                       const SizedBox(width: 4),
                       Text(
                         data.undoLabel!,

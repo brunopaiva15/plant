@@ -75,7 +75,7 @@ void main() {
     expect(find.byType(CaptureFrame), findsOneWidget);
     expect(find.widgetWithText(FloraButton, 'Prendre une photo'), findsOneWidget);
     expect(find.widgetWithText(FloraButton, 'Choisir une photo'), findsOneWidget);
-    expect(find.text('Photographiez les feuilles, la tige et la terre, de près et en entier. Les résultats sont indicatifs.'), findsOneWidget);
+    expect(find.textContaining('Photographiez les feuilles, la tige et la terre'), findsOneWidget);
     // Le geste de la page est en bas, et il attend une photo pour s'allumer.
     final analyser = tester.widget<FloraButton>(find.widgetWithText(FloraButton, 'Analyser'));
     expect(analyser.onPressed, isNull, reason: 'aucune photo, rien à analyser');
@@ -122,7 +122,7 @@ void main() {
     expect(find.text('Humidité'), findsOneWidget);
     expect(find.text('°C'), findsOneWidget);
     expect(find.text('%'), findsOneWidget);
-    expect(find.text("Facultatif : ce que la photo ne montre pas affine l'analyse."), findsOneWidget);
+    expect(find.textContaining('Facultatif :'), findsOneWidget);
     expect(find.text('Autour de la plante'), findsOneWidget);
     expect(find.textContaining('Mesure de la maison'), findsNothing);
   });

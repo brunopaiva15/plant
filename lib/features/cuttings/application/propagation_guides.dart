@@ -13,7 +13,7 @@ enum PropagationNoteKind {
   /// L'erreur courante — « Couper au-dessus du nœud ».
   avoid,
 
-  /// L'ordre de grandeur — « Premières racines en deux à six semaines ».
+  /// L'ordre de grandeur — « Premières racines en 2 à 6 semaines ».
   usual,
 
   /// Le milieu d'enracinement, qui ne vient pas du guide mais de la fiche

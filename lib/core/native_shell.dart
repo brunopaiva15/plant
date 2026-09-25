@@ -136,6 +136,7 @@ abstract final class NativeShell {
     overlay.value = 0;
     _barreDemandee = false;
     _voilee = false;
+    _ouverture = false;
     _coquilleDeclaree = false;
   }
 
@@ -171,25 +172,31 @@ abstract final class NativeShell {
   /// rien.
   static Future<void> publish({required List<NativeTab> tabs, required int selected}) async {
     if (!isSupported) return;
+    // Les onglets d'abord, la barre ensuite. Le contrôleur natif démarre avec
+    // un onglet de service — un rond sans nom —, et le montrer le temps d'une
+    // image suffit à le faire voir. Un canal de méthode livre dans l'ordre où
+    // on lui confie : la barre ne reparaît donc qu'une fois remplie.
+    final declaration = [for (final t in tabs) t.toMap()].toString();
+    Future<void>? envoi;
+    if (declaration != _derniers) {
+      _derniers = declaration;
+      _dernierChoisi = selected;
+      envoi = _invoke('setTabs', {'tabs': [for (final t in tabs) t.toMap()], 'selected': selected});
+    } else if (selected != _dernierChoisi) {
+      _dernierChoisi = selected;
+      envoi = _invoke('setSelected', selected);
+    }
     if (!_coquilleDeclaree) {
       _coquilleDeclaree = true;
       _appliquerChrome();
     }
-    final declaration = [for (final t in tabs) t.toMap()].toString();
-    if (declaration != _derniers) {
-      _derniers = declaration;
-      _dernierChoisi = selected;
-      await _invoke('setTabs', {'tabs': [for (final t in tabs) t.toMap()], 'selected': selected});
-      return;
-    }
-    if (selected == _dernierChoisi) return;
-    _dernierChoisi = selected;
-    await _invoke('setSelected', selected);
+    if (envoi != null) await envoi;
   }
 
   static String? _dernieresActions;
 
-  /// Déclare le titre et les boutons de la page ouverte.
+  /// Déclare le titre et les boutons de la page ouverte, et le ton de la
+  /// barre qui les porte ([brand] : posée sur la tête verte).
   ///
   /// Une déclaration identique à la précédente n'est pas renvoyée : une page
   /// se reconstruit souvent, et UIKit refait ses boutons chaque fois qu'on
@@ -198,10 +205,14 @@ abstract final class NativeShell {
     String? title,
     List<NativeAction> leading = const [],
     List<NativeAction> actions = const [],
+    bool brand = false,
   }) async {
     if (!isSupported) return;
     final charge = {
       'title': title ?? '',
+      // Sur la tête verte, la barre est transparente et écrit en blanc ;
+      // ailleurs, c'est la barre ordinaire d'iOS.
+      'tone': brand ? 'brand' : 'plain',
       'leading': [for (final a in leading) a.toMap()],
       'actions': [for (final a in actions) a.toMap()],
     };
@@ -215,6 +226,7 @@ abstract final class NativeShell {
   static int _profondeur = 0;
   static bool _barreDemandee = false;
   static bool _voilee = false;
+  static bool _ouverture = false;
   /// La coquille a-t-elle dit ses onglets ?
   ///
   /// Au premier lancement, l'accueil s'ouvre sans elle : sans ce verrou, le
@@ -240,6 +252,20 @@ abstract final class NativeShell {
       // À chaque changement d'étage, la barre est à reconquérir.
       _barreDemandee = false;
     }
+    _appliquerChrome();
+  }
+
+  /// L'animation d'ouverture (`LaunchSplash`) couvre l'écran : la chrome se
+  /// voile le temps qu'elle dure.
+  ///
+  /// Les barres natives sont posées par-dessus Flutter, et rien de ce que
+  /// Flutter dessine ne les cache : sans cela, la barre d'onglets et celle du
+  /// haut paraissaient sur l'écran de lancement dès que la coquille se
+  /// déclarait. Voiler, et non effacer : la page garde leur place, et ne
+  /// saute pas quand elles reviennent.
+  static void setLaunching(bool value) {
+    if (_ouverture == value) return;
+    _ouverture = value;
     _appliquerChrome();
   }
 
@@ -279,7 +305,7 @@ abstract final class NativeShell {
       'tabs': _coquilleDeclaree && _profondeur == 0,
       // Voiler plutôt qu'effacer : une barre retirée rend sa place au
       // contenu, et la page glisse sous le menu qui vient de s'ouvrir.
-      'veil': _voilee,
+      'veil': _voilee || _ouverture,
     };
     final empreinte = charge.toString();
     if (empreinte == _derniereChrome) return;
@@ -289,7 +315,7 @@ abstract final class NativeShell {
     // de la page d'en dessous le jour où l'effacement échouerait.
     if (charge['bar'] == false) {
       _dernieresActions = null;
-      unawaited(_invoke('setActions', const {'title': '', 'leading': [], 'actions': []}));
+      unawaited(_invoke('setActions', const {'title': '', 'leading': [], 'actions': [], 'tone': 'plain'}));
     }
     unawaited(_invoke('setChrome', charge));
   }

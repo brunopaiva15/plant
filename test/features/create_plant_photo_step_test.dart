@@ -10,7 +10,9 @@ import 'package:flora/data/services/preferences_service.dart';
 import 'package:flora/design_system/design_system.dart';
 import 'package:flora/domain/identification/identification_context.dart';
 import 'package:flora/domain/identification/plant_identifier.dart';
+import 'package:flora/domain/repositories/repositories.dart';
 import 'package:flora/features/plants/presentation/create_plant_flow.dart';
+import 'package:flora/features/species/presentation/species_field.dart';
 import 'package:flora/l10n/generated/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -142,6 +144,22 @@ class _InstantIris implements PlantIdentifier {
       ];
 }
 
+/// Trois noms, aucun au seuil : Iris hésite.
+class _UnsureIris implements PlantIdentifier {
+  const _UnsureIris();
+
+  @override
+  bool get isConfigured => true;
+
+  @override
+  Future<List<IdentificationCandidate>> identify(List<File> images,
+          {String? language, IdentificationContext context = IdentificationContext.unknown}) async => const [
+        IdentificationCandidate(scientificName: 'Epipremnum aureum', commonName: 'Pothos', score: 0.40, source: IdentificationSource.local),
+        IdentificationCandidate(scientificName: 'Ficus benjamina', commonName: 'Figuier pleureur', score: 0.30, source: IdentificationSource.local),
+        IdentificationCandidate(scientificName: 'Mandevilla sanderi', commonName: 'Dipladénia', score: 0.20, source: IdentificationSource.local),
+      ];
+}
+
 void main() {
   late Directory temp;
   late _FakeStorage storage;
@@ -156,7 +174,7 @@ void main() {
     if (await temp.exists()) await temp.delete(recursive: true);
   });
 
-  Future<void> pumpFlow(WidgetTester tester, {PlantIdentifier identifier = const _Iris()}) async {
+  Future<void> pumpFlow(WidgetTester tester, {PlantIdentifier identifier = const _Iris(), bool withPlant = false}) async {
     tester.view.physicalSize = const Size(1170, 2532);
     tester.view.devicePixelRatio = 3;
     addTearDown(tester.view.reset);
@@ -174,6 +192,7 @@ void main() {
       plantIdentifierProvider.overrideWithValue(identifier),
     ]);
     addTearDown(container.dispose);
+    if (withPlant) await container.read(plantRepositoryProvider).create(const NewPlant(name: 'Monstera'));
     await tester.pumpWidget(UncontrolledProviderScope(
       container: container,
       child: MaterialApp(
@@ -184,6 +203,9 @@ void main() {
         home: const CreatePlantFlow(),
       ),
     ));
+    // Le compte des plantes, qui décide du guide, vient de la base : il
+    // répond en temps réel, hors de l'horloge simulée.
+    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 50)));
     await tester.pumpAndSettle();
   }
 
@@ -366,5 +388,80 @@ void main() {
     expect(find.textContaining('depuis sa fiche'), findsOneWidget);
     expect(find.text('La plante'), findsNothing);
     expect(find.text('Une feuille de près'), findsNothing);
+  });
+
+  String species(WidgetTester tester) => tester.widget<EditableText>(find.descendant(of: find.byType(SpeciesField), matching: find.byType(EditableText))).controller.text;
+
+  testWidgets("une candidate « probable » est retenue d'office, sans qu'on ait à choisir", (tester) async {
+    await pumpFlow(tester, identifier: const _InstantIris());
+    await tester.tap(find.widgetWithText(FloraButton, 'Choisir une photo'));
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining("L'application retient la plus probable"), findsOneWidget);
+    expect(find.byIcon(CupertinoIcons.checkmark_circle_fill), findsOneWidget, reason: 'le badge retenu porte la coche');
+
+    await tester.tap(find.widgetWithText(FloraButton, 'Continuer'));
+    await tester.pumpAndSettle();
+    expect(species(tester), 'Goeppertia zebrina');
+    expect(find.byWidgetPredicate((w) => w is EditableText && w.controller.text == 'Calathéa zébré'), findsOneWidget);
+  });
+
+  testWidgets('quand Iris hésite, rien n’est retenu et la consigne dit quoi faire', (tester) async {
+    await pumpFlow(tester, identifier: const _UnsureIris());
+    await tester.tap(find.widgetWithText(FloraButton, 'Choisir une photo'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Touchez le nom de votre plante, ou continuez sans choisir.'), findsOneWidget);
+    expect(find.byIcon(CupertinoIcons.checkmark_circle_fill), findsNothing);
+
+    await tester.tap(find.widgetWithText(FloraButton, 'Continuer'));
+    await tester.pumpAndSettle();
+    expect(species(tester), isEmpty);
+  });
+
+  testWidgets('« Reprendre » efface l’espèce et le nom retenus d’office', (tester) async {
+    await pumpFlow(tester, identifier: const _InstantIris());
+    await tester.tap(find.widgetWithText(FloraButton, 'Choisir une photo'));
+    await tester.pumpAndSettle();
+    expect(find.byIcon(CupertinoIcons.checkmark_circle_fill), findsOneWidget);
+
+    await tester.tap(find.text('Reprendre'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FloraButton, 'Continuer sans photo'));
+    await tester.pumpAndSettle();
+    expect(species(tester), isEmpty);
+    expect(find.byWidgetPredicate((w) => w is EditableText && w.controller.text == 'Calathéa zébré'), findsNothing);
+  });
+
+  testWidgets('le nom suit la candidate tant que personne ne l’a changé', (tester) async {
+    await pumpFlow(tester, identifier: const _InstantIris());
+    await tester.tap(find.widgetWithText(FloraButton, 'Choisir une photo'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Maranta'));
+    await tester.pumpAndSettle();
+    expect(species(tester), 'Maranta leuconeura');
+    expect(find.byWidgetPredicate((w) => w is EditableText && w.controller.text == 'Maranta'), findsOneWidget);
+  });
+
+  testWidgets('la première plante est guidée, étape par étape', (tester) async {
+    await pumpFlow(tester, identifier: const _UnsureIris());
+    expect(find.textContaining('Cadrez toute la plante, pot compris'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(FloraButton, 'Choisir une photo'));
+    await tester.pumpAndSettle();
+    // L'aperçu n'a pas de bulle : sa consigne est son sous-titre.
+    expect(find.byIcon(CupertinoIcons.lightbulb), findsNothing);
+    expect(find.text('Touchez le nom de votre plante, ou continuez sans choisir.'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(FloraButton, 'Continuer'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Donnez un nom à votre plante'), findsOneWidget);
+  });
+
+  testWidgets('ensuite, plus de guide', (tester) async {
+    await pumpFlow(tester, withPlant: true);
+    expect(find.textContaining('Cadrez toute la plante, pot compris'), findsNothing);
+    expect(find.byIcon(CupertinoIcons.lightbulb), findsNothing);
   });
 }

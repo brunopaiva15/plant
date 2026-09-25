@@ -66,7 +66,7 @@ void main() {
     expect(fake.calls, 0, reason: 'rien à arbitrer, donc rien à demander');
   });
 
-  test('sans clé, la règle locale répond seule', () async {
+  test('sans relais, la règle locale répond seule', () async {
     final fake = FakeJev(answer('show_result'));
     final policy = JevDiagnosisPolicy(service: fake, configured: false);
 

@@ -41,7 +41,7 @@ Règle : les widgets ne connaissent ni drift ni la plateforme ; ils consomment d
 ## État du réseau (`core/network/`)
 Le jardin, les soins et le journal vivent sur l'appareil et ne demandent rien à
 personne. Une poignée de fonctions, elles, n'existent que sur le réseau :
-liens de partage, collaboration, diagnostic, recherche GBIF, achat de soutien.
+liens de partage, collaboration, diagnostic, recherche GBIF.
 Sans connexion, leurs requêtes ne partaient pas *et ne revenaient pas* — un
 écran tournait indéfiniment plutôt que de dire ce qui manquait.
 
@@ -263,11 +263,16 @@ redessiner — rien ne la forcerait à le faire. « Visible » se lit sur deux
 choses : la route est-elle celle du dessus, et sa branche d'onglet est-elle
 éveillée (`TickerMode`).
 
-**Le titre reste à Flutter.** La barre native n'en porte pas : le grand titre
-en argile — le « Bonsoir » arrondi — est la signature d'Auxine, et « fini les
-menus » ne dit rien des titres. Deux titres empilés seraient une faute ; c'est
-donc le natif qui se tait. À rouvrir si la bande horizontale que la barre
-garde en haut se révèle trop chère.
+**Le grand titre reste à Flutter.** Le « Bonsoir » arrondi est la signature
+d'Auxine, et « fini les menus » ne dit rien des titres : tant qu'il se lit
+dans la page, la barre native n'en porte pas. Deux titres empilés seraient une
+faute ; c'est donc le natif qui se tait.
+
+Ce qu'il porte, c'est le **titre replié** — celui qui prend la place du grand
+une fois qu'il est passé sous la barre : « Auxine » sur l'écran du matin, le
+nom de la plante sur sa fiche. Il voyage par `NativeActions.titleListenable`,
+qu'un `CollapsedTitleWatcher` alimente depuis la position de défilement
+(docs/06, « Le grand titre là où la barre est celle d'UIKit »).
 
 Le bouton de tête d'une page part avec les autres — le tableau de bord
 d'« Aujourd'hui » —, à gauche de la barre, là où iOS met la navigation. Pas le
@@ -297,35 +302,80 @@ canal de méthode livre dans l'ordre où on lui confie ; il suffit de lui
 confier les deux à la suite. `test/core/native_shell_test.dart` tient l'ordre,
 et échoue sur la version qui attendait.
 
-**La barre d'onglets se masque par son contrôleur.** `tabBar.isHidden` et
-`tabBar.alpha` portent sur la vue que le contrôleur possède ; il la remet
-comme il l'entend à chaque mise en page, et sur l'iPhone Duo c'est lui, non
-elle, qui décide de ce que le système range dans la bande verticale. La barre
-reparaissait donc par-dessus une feuille, trois tentatives de suite.
-`setTabBarHidden(_:animated:)` est l'API faite pour ça, depuis iOS 18 ; en
-deçà on retombe sur la vue, faute de mieux.
+**Les deux barres se masquent par leur contrôleur.** `isHidden` et `alpha`
+portent sur des vues que `UITabBarController` et `UINavigationController`
+possèdent ; ils les remettent comme ils l'entendent à chaque mise en page, et
+sur l'iPhone Duo ce sont eux, non leurs barres, qui décident de ce que le
+système range dans la bande verticale. La barre d'onglets reparaissait
+par-dessus une feuille, trois tentatives de suite ;
+`setTabBarHidden(_:animated:)` est l'API faite pour ça, depuis iOS 18 (en deçà
+on retombe sur la vue, faute de mieux). La barre du haut, elle, était encore
+voilée par son opacité, et l'a appris à son tour : ouvrir une pièce du relevé
+donnait une feuille coiffée du titre et du retour de la page d'en dessous,
+poignée cachée et titre lu au travers. C'est `setNavigationBarHidden` qui la
+retire.
 
-**La chrome n'existe pas avant la coquille.** Au premier lancement, l'accueil
-s'ouvre sans elle : sans verrou, le contrôleur d'onglets montrait son onglet
-de départ — un rond sans nom — par-dessus, et une barre vide avec. Les deux
-barres restent donc effacées tant que la coquille n'a pas déclaré ses onglets.
+**La chrome n'existe pas avant la coquille.** Au premier lancement,
+l'introduction s'ouvre sans elle : sans verrou, le contrôleur d'onglets
+montrait son onglet de départ — un rond sans nom — par-dessus, et une barre
+vide avec. Les deux barres restent donc effacées tant que la coquille n'a pas
+déclaré ses onglets.
+
+Le verrou tient des deux côtés, et il a fallu les deux. Côté Dart, la coquille
+dit ses onglets **avant** de rendre la barre : un canal livre dans l'ordre, et
+la barre ne reparaît donc que remplie. Côté natif, les deux barres partent
+cachées — le rond sans nom se voyait pendant toute l'introduction, parce que
+Dart, lui, n'avait encore rien dit du tout. L'état demandé est gardé, parce que
+`rebatir` refait les contrôleurs de navigation : neufs, ils arrivent avec leur
+barre visible, et Dart ne redit pas une chrome qui n'a pas changé.
 
 **Une page et une surcouche ne se valent pas.** Un menu d'action, une alerte,
-ne prennent pas la place de la page : elles se posent dessus le temps d'un
-choix. Les effacer pour de bon rendrait leur place au contenu, la marge sûre
-changerait, et la page glisserait sous le menu qui vient de s'ouvrir — ce
-qu'elle faisait. Ces routes-là ne font donc que **voiler** la chrome :
-`alpha` à zéro, intouchable, et toujours là où elle était. L'observateur les
-compte à part (`PageRoute` ou non).
+une feuille à hauteur de contenu ne prennent pas la place de la page : elles
+se posent dessus le temps d'un choix. Les effacer pour de bon rendrait leur
+place au contenu, la marge sûre changerait, et la page glisserait sous le menu
+qui vient de s'ouvrir — ce qu'elle faisait. Ces routes-là ne font donc que
+**voiler** la chrome. L'observateur les compte à part (`PageRoute` ou non).
+
+Voiler, c'est retirer la barre **et lui garder sa place** : elle part par son
+contrôleur, seule façon qu'elle s'en aille pour de bon, et
+`additionalSafeAreaInsets` tient la marge qu'elle occupait le temps de la
+surcouche. Cette place se mesure pendant que la chrome est encore là — une
+fois partie, elle ne dit plus ce qu'elle prenait —, comme la différence entre
+ce que la vue de Flutter reçoit et ce que la fenêtre réserve d'elle-même, et
+dans les quatre sens : une barre rangée dans la bande verticale ne prend pas
+la sienne en haut. Une chrome déjà effacée mesure zéro, et une surcouche posée
+sur une page plein écran n'a donc rien à compenser.
 
 **Et la chrome s'efface quand une page la couvre.** UIKit ne sait rien de la
 navigation de Flutter : une fiche de plante, un scanner de QR code, une
 feuille d'ajout sont des routes que go_router pose par-dessus la coquille, et
 les barres natives restaient là — sur la page ouverte, avec les boutons de
 celle d'en dessous. `app/native_chrome_observer.dart` observe le navigateur
-racine : tant qu'il reste une route au-dessus de la première, les deux barres
-s'effacent. Les pages des branches d'onglets ne passent pas par là, elles ont
-leur propre navigateur, et c'est bien la coquille qu'on regarde alors.
+racine : il tient la liste des pages vivantes, et tout ce qui se trouve
+au-dessus de la plus basse efface les deux barres. Les pages des branches
+d'onglets ne passent pas par là, elles ont leur propre navigateur, et c'est
+bien la coquille qu'on regarde alors.
+
+**Les branches ne comptent pas, et il faut le dire deux fois.** go_router
+renvoie par défaut aux observateurs de la racine ce qui se passe dans les
+navigateurs de branche (`notifyRootObserver`), et la page d'un onglet y arrive
+avec `previousRoute` à `null` : comptée comme une page posée sur la coquille,
+elle effaçait les deux barres dès le premier écran — plus de menu du tout, au
+lancement comme après l'introduction. Le routeur coupe donc ce renvoi, et
+l'observateur s'en tient de son côté au navigateur de sa première route, qui
+est forcément la racine. Ce qu'un test à la main ne voit pas :
+`test/app/native_chrome_boot_test.dart` monte l'application entière et lit ce
+qui part sur le canal.
+
+**Une liste, et non un compteur.** Le compteur ignorait la page du bas — elle
+n'a rien en dessous, donc c'est la coquille — et se trompait à la fin de
+l'introduction : `context.go` pose la coquille **par-dessus** l'introduction,
+puis retire celle-ci d'en dessous. Le premier mouvement comptait une page de
+trop, le second ne la retirait pas faute de route en dessous, et l'application
+restait sans aucune barre jusqu'au lancement suivant — c'est le redémarrage qui
+la rendait, puisque la coquille y est la première page. Une liste dit ce qui
+reste debout quel que soit l'ordre des deux mouvements, et
+`test/app/native_chrome_observer_test.dart` rejoue la séquence.
 
 Le **bouton retour** part avec le reste : c'était déjà un `FloraIconButton` à
 chevron, il se décrit comme les autres et va à gauche. Le geste de balayage
@@ -343,7 +393,7 @@ Trois gabarits cèdent désormais leur barre :
 |---|---|
 | `LargeTitlePage` | le bouton de tête, le retour, les actions. Le grand titre reste à Flutter |
 | `FloraPage` | le retour, l'action, **et le titre** — il était centré et petit, c'est exactement ce qu'`UINavigationItem.title` dessine |
-| la fiche plante | le retour, le cœur, le menu. Ils flottaient sur la photo ; ce sont des commandes, et iOS les range comme telles |
+| la fiche plante | le retour, le cœur, le menu. Ils flottaient sur la photo ; ce sont des commandes, et iOS les range comme telles. **Et le nom de la plante**, une fois qu'il est passé sous la barre |
 
 Ce qui reste : les pages qui dessinent leur propre chrome sans passer par ces
 gabarits — un scanner, une feuille —, et qui gardent leurs boutons. Elles

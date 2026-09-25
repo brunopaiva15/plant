@@ -127,7 +127,7 @@ void main() {
       expect(find.text('Continuer'), findsNothing);
       await tester.tap(find.text('Suivant'));
       await tester.pumpAndSettle();
-      for (final titre in ['Le nœud', 'La coupe', 'Le nœud dégagé', 'L\u2019eau', 'Les racines']) {
+      for (final titre in ['Le nœud', 'La coupe', 'Le nœud dégagé', "L'eau", 'Les racines']) {
         expect(find.bySemanticsLabel(titre), findsOneWidget);
         expect(find.text('Créer la bouture'), findsNothing);
         await tester.tap(find.text('Continuer'));
@@ -155,7 +155,9 @@ void main() {
       await tester.tap(find.text('Suivant'));
       await tester.pumpAndSettle();
       expect(t.refiner.demandes, isEmpty);
-      expect(find.textContaining('Le renflement'), findsOneWidget);
+      // Le mot seul, et non la phrase : le texte local se réécrit, le
+      // renflement du nœud reste ce que cette étape nomme.
+      expect(find.textContaining('renflement'), findsOneWidget);
     });
 
     testWidgets('« Passer » crée la plante sans lire', (tester) async {
@@ -214,7 +216,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(t.refiner.demandes, ['fr|stemNodeVine|Epipremnum aureum']);
       expect(find.text(_precis[0]), findsOneWidget);
-      expect(find.textContaining('Le renflement'), findsNothing);
+      expect(find.textContaining('renflement'), findsNothing);
       // La réponse est gardée sous le geste : la prochaine fois, rien ne part.
       final store = PreferencesService(await SharedPreferences.getInstance());
       expect(PropagationGuideStore.decode(store.cuttingGuides)['fr|stemNodeVine|epipremnum aureum']?.steps, _precis);
@@ -225,7 +227,9 @@ void main() {
       await tester.tap(find.text('Suivant'));
       await tester.pumpAndSettle();
       expect(t.refiner.demandes, isEmpty);
-      expect(find.textContaining('Le renflement'), findsOneWidget);
+      // Le mot seul, et non la phrase : le texte local se réécrit, le
+      // renflement du nœud reste ce que cette étape nomme.
+      expect(find.textContaining('renflement'), findsOneWidget);
     });
 
     testWidgets('une réponse déjà obtenue se lit sans réseau', (tester) async {
@@ -242,7 +246,7 @@ void main() {
       await _pump(tester, species: 'Epipremnum aureum', reponse: const PropagationRefinement());
       await tester.tap(find.text('Suivant'));
       await tester.pumpAndSettle();
-      expect(find.textContaining('Le renflement'), findsOneWidget);
+      expect(find.textContaining('renflement'), findsOneWidget);
     });
   });
 
@@ -263,7 +267,7 @@ void main() {
       await _pump(tester, species: 'Epipremnum aureum', reponse: const PropagationRefinement());
       await _parcourt(tester, 4);
       expect(find.text('Enracinement'), findsOneWidget);
-      expect(find.text('Dans l’eau'), findsOneWidget);
+      expect(find.text("Dans l'eau"), findsOneWidget);
     });
   });
 

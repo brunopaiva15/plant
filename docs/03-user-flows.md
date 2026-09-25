@@ -25,6 +25,7 @@ Plantes ─[tap +]⟶ Sheet plein écran
 - Routines par défaut créées automatiquement (arrosage 7 j, engrais 30 j) → « Plus d'options » pour ajuster.
 - Étape « Identification » (P2) s'insère entre 1 et 2 uniquement si la fonction est activée et une photo existe.
 - Le viseur ne tourne qu'à l'étape 1, tant qu'il reste un emplacement libre. Sans lui — autorisation refusée, appareil sans caméra — le cadre garde son invite, les gestes reviennent en boutons ([Prendre une photo] · [Choisir une photo]) et un emplacement libre ouvre l'appareil ou la galerie du système.
+- Le viseur porte le flash et le zoom, comme à l'ajout d'une photo et au diagnostic (`InlineCameraControls`). Le flash, niché dans le repère de cadrage en haut à droite, est éteint par défaut — iOS partait sinon en automatique et déclenchait dans la pénombre — et n'apparaît pas sur un appareil qui n'en a pas ; le choix tient d'une photo à l'autre. Deux doigts zooment et dézooment, de l'objectif le plus large jusqu'à 8× au plus : au-delà, Iris ne recevrait qu'un agrandissement de pixels. Le zoom n'a aucune commande ni indication à l'écran : rien ne recouvre la plante. Dès que le second doigt se pose, le geste est un pincement : ni le déclenchement ni le défilement de la page ne le reçoivent.
 - Quand l'application passe derrière (multitâche, appel), le système reprend la caméra : le viseur est *suspendu*, pas absent. Le cadre garde ses commandes et la page sa mise en page, et l'aperçu revient au retour. La carte du multitâche montre donc la même étape.
 - Reprendre efface la photo et les vues prises avec elle : elles montraient le même sujet. Les vues ne sont proposées que si un moteur d'identification est configuré, et ne sont jamais gardées.
 
@@ -153,8 +154,9 @@ montre déjà ce chiffre.
 
 ## 6. Première expérience (onboarding)
 ```
-Bienvenue ⟶ la plante de l'icône pousse : terre nue, fuseau, feuilles qui
-  s'ouvrent et se découpent, jusqu'à l'icône.
+Bienvenue ⟶ le pot de l'icône, qui vous regarde, voit sa pousse sortir de
+  terre : une tige, puis deux feuilles repliées qui s'ouvrent, jusqu'au pot
+  de l'ouverture.
 Toutes vos plantes ⟶ cinq plantes différentes qui gravitent, chacune à son
   rythme. Puis les autres présentations.
 Iris ⟶ la marque du modèle embarqué : « Iris reconnaît vos plantes hors
@@ -164,9 +166,8 @@ Où sont vos plantes ? ⟶ [Utiliser ma position] · Plus tard
 Comment vous appelez-vous ? ⟶ [Ajouter ma première plante] · Plus tard
 Et si vous changez de téléphone ? ⟶ deux phrases (sauvegarde, jardin partagé,
   l'identifiant Apple suffit), puis [Continuer avec Apple] · Plus tard. L'étape
-  n'existe que sur iOS avec un backend : ailleurs, le prénom mène droit au
-  soutien.
-Auxine est gratuite ⟶ soutien facultatif, [Non merci]
+  n'existe que sur iOS avec un backend : ailleurs, le prénom mène droit à
+  l'app. C'est la dernière étape.
   ⟶ Flow création (identique au 1)
   ⟶ Fiche plante : « 💧 Arrosage recommandé dans 7 jours » [Arroser maintenant]
   ⟶ Notification proposée après la première action (permission demandée en contexte)
@@ -210,37 +211,9 @@ Plantes ─[tap 💡]⟶ | Plantes (vide) ─[Trouver une plante]⟶ | Choisir u
   élargit alors hors catalogue, avec le texte libre en plus — appel réseau seulement
   sur ce geste, propositions marquées « à vérifier avant d'acheter ».
 
-## 9. Après une mise à jour (fenêtre des nouveautés)
-1. L'application s'ouvre sur l'onglet du jour ; `WhatsNewGate`, posé autour de
-   la coquille à onglets, interroge la règle une fois, après la première image.
-2. La règle (`WhatsNew.take`) ne dit oui que si l'onboarding est fait **et** que
-   l'appareil a déjà enregistré une version : une installation neuve ne se voit
-   pas raconter ce qu'elle n'a jamais connu, elle note seulement son point de
-   départ. Le lancement qui suit une mise à jour, lui, montre la plus récente
-   des nouveautés jamais vues — une seule, même si deux versions ont été
-   sautées.
-3. La fenêtre s'ouvre (sheet native iOS / dialogue plein écran Android), se
-   ferme par « Continuer », par la croix, ou — sur iOS, une fois la page
-   revenue en haut — d'un glissement vers le bas. Un lien discret peut mener au
-   réglage concerné, ouvert après fermeture.
-4. Elle est marquée comme vue **avant** d'être affichée : une application tuée
-   en cours de lecture ne la rouvre pas au lancement suivant.
-5. Pas de porte d'entrée manuelle pour l'instant : les réglages n'ont pas de
-   ligne « Nouveautés » tant que le catalogue ne contient que l'exemple, dont
-   les chiffres sont inventés. Rouvrir cette ligne à la première vraie
-   livraison est une FloraListRow — la marche à suivre est dans
-   `profile_screen.dart`.
-
-Ajouter une version = une entrée dans `releaseNotes()` et ses clés dans les
-quatre `.arb`. Un identifiant de nouveauté ne se renomme ni ne se réemploie :
-le renommer rouvre la fenêtre chez tous ceux qui l'avaient fermée, le
-réemployer avale en silence celle qui devait s'ouvrir. L'identifiant de
-l'exemple (`iris-8`) est déjà dépensé sur tout appareil ayant lancé cette
-version — la vraie livraison d'Iris 8 en prendra donc un autre.
-
-## 10. Relever une pièce, puis poser une plante (iPhone et iPad à LiDAR)
+## 9. Relever une pièce, puis poser une plante (iPhone et iPad à LiDAR)
 ```
-Jardin ─[tap Salon]⟶ Fiche emplacement ─[tap « Relever cette pièce »]⟶ une phrase
+Jardin ─[tap Salon]⟶ Fiche emplacement ─[tap « Scanner cette pièce »]⟶ une phrase
   (ce qui va se passer, rien ne quitte l'appareil)
     ⟶ le relevé du système (RoomPlan, coaching) ─[Terminer]⟶ feuille du relevé,
       déjà liée au Salon : plan vu de dessus, nom (proposé d'après le type de
@@ -249,8 +222,8 @@ Jardin ─[tap Salon]⟶ Fiche emplacement ─[tap « Relever cette pièce »]�
       Salon n'a ni orientation ni lumière
   ⟶ la fiche du Salon montre son plan, ses fenêtres, les plantes posées ;
     [tap] rouvre la feuille du relevé
-Profil ─[tap « Relevé de la maison »]⟶ la même chose pour toutes les pièces,
-  et « Relever l'appartement » ; une pièce reconnue (« Salon ») se lie d'elle-même
+Profil ─[tap « Scan de la maison »]⟶ la même chose pour toutes les pièces,
+  et « Scanner tout le logement » ; une pièce reconnue (« Salon ») se lie d'elle-même
   à l'emplacement qui porte ce nom
 Fiche plante ─ carte « Où la poser · Salon · à 1 m de la fenêtre sud » sous
   « Comment en prendre soin », dès que son emplacement est relevé ─[tap]⟶ Où la poser

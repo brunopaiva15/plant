@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart' show compute;
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
 
+import '../../core/config/relay_config.dart';
 import '../../core/network/network_failure.dart';
 import '../../core/utils/search_text.dart';
 import '../../domain/diagnosis/diagnosis_observations.dart';
@@ -23,16 +24,15 @@ import '../../domain/problems/plant_problem.dart';
 /// le prix. Rien n'est stocké côté service au-delà de la requête.
 class InfomaniakDiagnoser implements PlantDiagnoser {
   InfomaniakDiagnoser({
-    required this.apiKey,
-    required this.productId,
-    required this.model,
+    Uri? endpoint,
     http.Client? client,
     this.retryPause = const Duration(seconds: 2),
-  }) : _client = client ?? http.Client();
+  })  : endpoint = endpoint ?? RelayConfig.route('ai'),
+        _client = client ?? http.Client();
 
-  final String apiKey;
-  final String productId;
-  final String model;
+  /// Le relais, qui tient la clé et choisit le modèle. Les quatre appels aux
+  /// AI Services passent par la même route : même amont, même corps.
+  final Uri endpoint;
   final http.Client _client;
 
   /// Ce qu'on laisse passer avant de renvoyer la même demande. Multiplié par
@@ -57,14 +57,14 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
 
   /// Ce qu'on attend d'une réponse, et combien de fois on repose la question.
   ///
-  /// Une minute suffisait à trois photos réduites, téléversement compris —
-  /// les photos partent plus grandes depuis qu'un dégât d'un millimètre doit
-  /// y survivre ([maxSide]), et quarante secondes se jouaient alors sur la
-  /// qualité du réseau. Le modèle réfléchit avant d'écrire, et cette
-  /// réflexion prend le temps qu'elle prend ([_answerTokens]) : une minute
-  /// et demie la laisse aller au bout d'une photo difficile. Au-delà, c'est
-  /// que la demande s'est perdue, et la reposer vaut mieux que de l'attendre.
-  static const _callTimeout = Duration(seconds: 90);
+  /// Le délai suit celui du relais, qui laisse 120 secondes au modèle avant
+  /// de rendre un 504 (`RELAY_TIMEOUT_AI`), et le dépasse d'un souffle : c'est
+  /// toujours le relais qui répond le premier. À quatre-vingt-dix secondes,
+  /// l'application abandonnait une réponse qui arrivait à quatre-vingt-
+  /// quatorze et reposait la même question — deux secondes avant que la
+  /// première revienne, pour la jeter et repartir de zéro. Les journaux du
+  /// relais l'ont montré sur un diagnostic de quatre minutes.
+  static const _callTimeout = Duration(seconds: 125);
   static const _attempts = 3;
 
   /// Jetons laissés à la réponse, et ce qu'on redonne quand elle est revenue
@@ -83,13 +83,20 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
   /// On garde la réflexion — c'est elle qui lit le motif avant de nommer —
   /// et on lui laisse la place. Le plafond ne coûte rien tant qu'il n'est
   /// pas atteint : seuls les jetons écrits se facturent.
-  static const _answerTokens = 5000;
-  static const _wideTokens = 9000;
-
-  Uri get endpoint => Uri.parse('https://api.infomaniak.com/2/ai/$productId/openai/v1/chat/completions');
+  ///
+  /// Cinq mille ne suffisaient plus. Relevé dans les journaux du relais sur
+  /// trois photos : deux appels à 5000 jetons, arrêtés net (`length`) sans
+  /// un mot de réponse après 94 et 69 secondes de réflexion, puis un
+  /// troisième à 9000 qui aboutissait avec 5574 jetons écrits. Quatre
+  /// minutes pour un compte rendu, dont deux et demie payées pour rien. Le
+  /// premier appel a maintenant de quoi finir du premier coup, et le second
+  /// ne sert plus qu'aux photos vraiment difficiles. Le relais plafonne au
+  /// même chiffre que [_wideTokens].
+  static const _answerTokens = 8000;
+  static const _wideTokens = 12000;
 
   @override
-  bool get isConfigured => apiKey.trim().isNotEmpty && productId.trim().isNotEmpty;
+  bool get isConfigured => endpoint.hasAuthority;
 
   @override
   Future<Diagnosis> diagnose({
@@ -138,7 +145,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       },
     ];
     Future<http.Response> ask({required bool constrainJson, int maxTokens = _answerTokens}) =>
-        _send(buildRequest(model: model, parts: parts, language: language, constrainJson: constrainJson, maxTokens: maxTokens));
+        _send(buildRequest(parts: parts, language: language, constrainJson: constrainJson, maxTokens: maxTokens));
 
     // Le format JSON contraint n'est pas garanti par tous les modèles : si
     // le service le refuse, on renvoie la même demande sans lui — la consigne
@@ -217,7 +224,6 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
   }) async {
     try {
       final body = buildFallbackRequest(
-        model: model,
         language: language,
         plantName: plantName,
         species: species,
@@ -260,7 +266,6 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
 
   /// Corps de la passe de repli (exposé pour les tests).
   static Map<String, Object?> buildFallbackRequest({
-    required String model,
     required String language,
     String? plantName,
     String? species,
@@ -272,7 +277,6 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     List<DiagnosisAnswer> answers = const [],
   }) =>
       {
-        'model': model,
         // Le modèle réfléchit avant d'écrire, et sa réflexion se paie sur
         // ce budget ([_answerTokens]) : neuf cents jetons n'y suffisaient pas.
         'max_tokens': 3000,
@@ -326,7 +330,6 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     if (orphelines.isEmpty) return diagnosis;
     try {
       final body = buildMappingRequest(
-        model: model,
         candidates: candidates,
         causes: [for (final i in orphelines) diagnosis.causes[i]],
         language: language,
@@ -365,13 +368,11 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
 
   /// Corps de la deuxième passe (exposé pour les tests).
   static Map<String, Object?> buildMappingRequest({
-    required String model,
     required List<PlantProblem> candidates,
     required List<DiagnosisCause> causes,
     required String language,
   }) =>
       {
-        'model': model,
         // Trois cents jetons suffisaient à la réponse, pas à la réflexion
         // qui la précède ([_answerTokens]) : la passe échouait en silence.
         'max_tokens': 1500,
@@ -444,7 +445,11 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
 
   /// Les codes qui ne disent rien de la demande : le service est occupé,
   /// pas fâché.
-  static bool _worthAnotherTry(int code) => code == 408 || code == 429 || code >= 500;
+  ///
+  /// Sauf le 504 : c'est le relais qui a attendu le modèle deux minutes sans
+  /// réponse. La même question reposée réfléchirait aussi longtemps, et la
+  /// personne attendrait deux minutes de plus pour le même échec.
+  static bool _worthAnotherTry(int code) => code == 408 || code == 429 || (code >= 500 && code != 504);
 
   /// Ce que vaut un code de retour, une fois les renvois épuisés. Chaque
   /// famille a sa phrase à l'écran : une clé refusée ne se réessaie pas, un
@@ -468,7 +473,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       );
 
   Future<http.Response> _post(Map<String, Object?> body, {Duration timeout = const Duration(minutes: 2)}) => _client
-      .post(endpoint, headers: {'content-type': 'application/json', 'authorization': 'Bearer ${apiKey.trim()}'}, body: jsonEncode(body))
+      .post(endpoint, headers: const {'content-type': 'application/json'}, body: jsonEncode(body))
       .timeout(timeout);
 
   /// La photo telle qu'elle part : JPEG, grand côté à [maxSide] au plus.
@@ -493,14 +498,12 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
 
   /// Corps de requête, au format OpenAI (exposé pour les tests).
   static Map<String, Object?> buildRequest({
-    required String model,
     required List<Map<String, Object?>> parts,
     required String language,
     required bool constrainJson,
     int maxTokens = _answerTokens,
   }) =>
       {
-        'model': model,
         'max_tokens': maxTokens,
         'temperature': 0.2,
         if (constrainJson) 'response_format': {'type': 'json_object'},

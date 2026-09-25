@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart' show Scrollable;
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:flora/app/providers.dart';
 import 'package:flora/data/db/mappers.dart';
@@ -40,13 +41,20 @@ void main() {
       }
     });
     await harness.pumpApp(tester, container);
+    // La tête verte du matin pousse la grille sous le pli : on la ramène à
+    // l'écran, juste assez pour voir sa première rangée.
+    await tester.scrollUntilVisible(find.text('Beta'), 120, scrollable: find.byType(Scrollable).first);
+    await tester.ensureVisible(find.ancestor(of: find.text('Beta'), matching: find.byType(UpcomingTile)));
+    await tester.pumpAndSettle();
 
     // La grille est paresseuse : seules les tuiles à l'écran sont construites.
     // C'est justement ce qui rendait le saut visible — la troisième prenait la
     // case de la deuxième.
+    // Les deux premières cases : c'est leur contenu qui ne doit pas sauter.
     List<String> ordre() => tester
         .widgetList<UpcomingTile>(find.byType(UpcomingTile))
         .map((t) => t.task.summary.plant.name)
+        .take(2)
         .toList();
 
     expect(ordre(), ['Alpha', 'Beta']);

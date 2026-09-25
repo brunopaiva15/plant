@@ -194,6 +194,9 @@ void main() {
     expect(find.text('Monstera'), findsWidgets);
     expect(find.text('Arroser'), findsOneWidget);
 
+    // La tête verte du matin pousse les cartes plus bas : on descend jusqu'au bouton.
+    await tester.ensureVisible(find.text('Arroser'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Arroser'));
     await tester.pump(const Duration(milliseconds: 300));
     // La carte reste visible en état « Arrosée » le temps de l'animation.
@@ -404,35 +407,6 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets("sur un écran court, la sortie de l'étape de soutien reste visible", (tester) async {
-    // L'écran extérieur du Duo : 678 points de haut. La pièce du soutien et
-    // ses deux boutons n'y tiennent plus, et « Non merci » passait sous le
-    // pli — dans une page qui n'avait l'air de rien cacher, les points
-    // d'étape en bas la faisant paraître complète.
-    final container = await boot(tester, onboardingDone: false);
-    await pumpApp(tester, container, settleAfter: false, size: const Size(466, 678));
-    await step(tester);
-    await tester.tap(find.text('Passer'));
-    await step(tester);
-    await skipLater(tester);
-    await skipLater(tester);
-    expect(find.text('Votre prénom'), findsOneWidget);
-    await tester.enterText(find.byType(EditableText), 'Bruno');
-    await skipLater(tester);
-    expect(find.text('Auxine est gratuite'), findsOneWidget);
-
-    // Visible sans défiler : le bouton est dans la fenêtre, et on peut le
-    // toucher sans l'y amener d'abord.
-    final sortie = find.text('Non merci');
-    expect(sortie, findsOneWidget);
-    final rect = tester.getRect(sortie);
-    expect(rect.bottom, lessThanOrEqualTo(678), reason: '« Non merci » passe sous le pli');
-    expect(rect.top, greaterThanOrEqualTo(0));
-    await tester.tap(sortie);
-    await settle(tester);
-    expect(container.read(preferencesProvider).onboardingDone, isTrue);
-  });
-
   testWidgets('onboarding leads to Today after entering a name', (tester) async {
     final container = await boot(tester, onboardingDone: false);
     await pumpApp(tester, container, settleAfter: false);
@@ -451,10 +425,8 @@ void main() {
     await skipLater(tester);
     expect(find.text('Votre prénom'), findsOneWidget);
     await tester.enterText(find.byType(EditableText), 'Bruno');
+    // Le prénom est la dernière étape (sans compte à proposer) : l'app suit.
     await skipLater(tester);
-    // La dernière étape propose de soutenir le développeur, sans obliger.
-    expect(find.text('Auxine est gratuite'), findsOneWidget);
-    await tester.tap(find.text('Non merci'));
     await settle(tester);
     // Le salut suit l'heure de la machine qui fait tourner le test, comme il
     // suit celle de l'appareil : « Bonsoir » à partir de dix-huit heures.

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flora/domain/care/care_profile.dart';
 import 'package:flora/domain/room/room_light_model.dart';
 import 'package:flora/domain/room/room_plan_parser.dart';
+import 'package:flora/domain/room/room_scan.dart';
 import 'package:flora/domain/room/scanned_room.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -87,7 +88,7 @@ void main() {
     expect(RoomLightModel.lightAt(walled, const RoomPoint(-1.0, 0.5)), LightNeed.fullSun);
   });
 
-  test("un meuble haut cache la fenêtre, un meuble bas non", () {
+  test("une armoire cache la fenêtre, un bureau non", () {
     ScannedRoom withObject(double height) => ScannedRoom(
           walls: room.walls,
           windows: room.windows,
@@ -97,7 +98,127 @@ void main() {
           northOffsetDeg: 90,
         );
     expect(RoomLightModel.lightAt(withObject(2.0), const RoomPoint(0.16, 0.3)), LightNeed.shade);
+    // La visée monte du pot au milieu de la vitre : un bureau de 75 cm
+    // passe dessous, et la lumière lui passe au-dessus.
+    expect(RoomLightModel.lightAt(withObject(0.75), const RoomPoint(0.16, 0.3)), LightNeed.brightIndirect);
     expect(RoomLightModel.lightAt(withObject(0.2), const RoomPoint(0.16, 0.3)), LightNeed.brightIndirect);
+    // Le même bureau, collé à la vitre, la cache : là, la visée est haute.
+    final against = ScannedRoom(
+      walls: room.walls,
+      windows: room.windows,
+      doors: const [],
+      openings: const [],
+      objects: [RoomObject(category: 'storage', center: const RoomPoint(-1.9, 0.3), along: const RoomPoint(0, 1), width: 1.0, length: 0.4, height: 1.6, bottomY: 0)],
+      northOffsetDeg: 90,
+    );
+    expect(RoomLightModel.lightAt(against, const RoomPoint(0.16, 0.3)), LightNeed.shade);
+  });
+
+  test("un bureau collé à la vitre ombre le sol derrière lui, sans le noircir", () {
+    // Un bureau de 75 cm contre la fenêtre, et un pot à un mètre d'elle :
+    // le jour lui arrive toujours — la visée passe au-dessus du bureau —,
+    // mais le rayon du soleil, lui, s'arrête sur le bureau.
+    final desk = ScannedRoom(
+      walls: room.walls,
+      windows: room.windows,
+      doors: const [],
+      openings: const [],
+      objects: [RoomObject(category: 'table', center: const RoomPoint(-1.8, 0.4), along: const RoomPoint(0, 1), width: 1.0, length: 0.4, height: 0.75, bottomY: 0)],
+      northOffsetDeg: 90,
+    );
+    const behind = RoomPoint(-1.1, 0.45);
+    expect(RoomLightModel.lightAt(room, behind), LightNeed.fullSun);
+    expect(RoomLightModel.lightAt(desk, behind), LightNeed.brightIndirect);
+  });
+
+  test("une fenêtre ajoutée à la main éclaire comme celles du relevé", () {
+    // La même pièce dont le relevé aurait manqué la fenêtre — un rideau
+    // tiré devant : sans elle, le fond de la pièce est dans l'ombre.
+    final missed = ScannedRoom(walls: room.walls, windows: const [], doors: const [], openings: const [], objects: const [], northOffsetDeg: 90);
+    expect(RoomLightModel.lightAt(missed, slots[LightNeed.fullSun]!), LightNeed.shade);
+    final added = missed.handWindowAt(const RoomPoint(-2.0, 0.3), HandWindow.wide);
+    expect(added, isNotNull);
+    // Elle se couche sur le mur le plus proche, à sa largeur, et prend son
+    // orientation : le mur −x du diorama donne au sud.
+    expect(added!.center.x, closeTo(-2.1, 1e-9));
+    expect(added.center.z, closeTo(0.3, 1e-9));
+    expect(added.width, closeTo(2.2, 1e-9));
+    expect(added.byHand, isTrue);
+    final fixed = missed.withWindows([added]);
+    expect(fixed.windows, hasLength(1));
+    expect(fixed.windowDirection(added), CardinalDirection.south);
+    expect(RoomLightModel.lightAt(fixed, slots[LightNeed.fullSun]!), LightNeed.fullSun);
+    expect(RoomLightModel.lightAt(fixed, slots[LightNeed.shade]!).index, greaterThan(LightNeed.shade.index));
+  });
+
+  test("une fenêtre posée sur un vide en prend les mesures, et le vide lui cède la place", () {
+    // Le relevé a pris la baie du mur −x pour un vide : au ras du sol, il
+    // n'est pas relu comme une fenêtre, et c'est la main qui le dit. Le
+    // doigt vise le vide, la fenêtre s'y couche à ses mesures — pas à
+    // celles de la taille demandée —, et le trou cesse d'être un trou.
+    const bay = RoomSurface(
+      kind: RoomSurfaceKind.opening,
+      center: RoomPoint(-2.1, 0.3),
+      along: RoomPoint(0, 1),
+      normal: RoomPoint(1, 0),
+      width: 2.4,
+      height: 2.2,
+      bottomY: 0,
+      id: 'BAY',
+      parentId: 'WALL_LEFT',
+    );
+    final missed = ScannedRoom(walls: room.walls, windows: const [], doors: const [], openings: const [bay], objects: const [], northOffsetDeg: 90);
+    expect(RoomLightModel.isDrafty(missed, const RoomPoint(-1.5, 0.3)), isTrue);
+    final added = missed.handWindowAt(const RoomPoint(-2.0, 0.3), HandWindow.standard);
+    expect(added, isNotNull);
+    expect(added!.width, 2.4);
+    expect(added.height, 2.2);
+    expect(added.bottomY, 0);
+    expect(added.byHand, isTrue);
+    final fixed = missed.withWindows([added]);
+    expect(fixed.windows.single.id, 'BAY');
+    expect(fixed.openings, isEmpty);
+    expect(RoomLightModel.isDrafty(fixed, const RoomPoint(-1.5, 0.3)), isFalse);
+    expect(RoomLightModel.lightAt(fixed, slots[LightNeed.fullSun]!), LightNeed.fullSun);
+    // Dehors, le vide n'éclaire pas une seconde fois.
+    expect(fixed.asOutdoor().windows, hasLength(1));
+  });
+
+  test("le doigt qui vise le mur plein pose une fenêtre à sa taille", () {
+    const bay = RoomSurface(
+      kind: RoomSurfaceKind.opening,
+      center: RoomPoint(-2.1, 1.2),
+      along: RoomPoint(0, 1),
+      normal: RoomPoint(1, 0),
+      width: 0.9,
+      height: 2.2,
+      bottomY: 0,
+      id: 'BAY',
+    );
+    final missed = ScannedRoom(walls: room.walls, windows: const [], doors: const [], openings: const [bay], objects: const [], northOffsetDeg: 90);
+    // Le même mur, mais à un mètre et demi du vide : c'est le mur qui porte.
+    final added = missed.handWindowAt(const RoomPoint(-2.0, -0.6), HandWindow.small);
+    expect(added, isNotNull);
+    expect(added!.width, HandWindow.small.width);
+    expect(added.center.z, closeTo(-0.6, 1e-9));
+    expect(added.bottomY, closeTo(HandWindow.small.sill, 1e-9));
+    expect(missed.withWindows([added]).openings, hasLength(1));
+  });
+
+  test("les fenêtres de la main viennent après celles du relevé", () {
+    final now = DateTime(2026);
+    RoomMarker window(String id, RoomMarkerKind kind, double x) =>
+        RoomMarker(id: id, scanId: 's', kind: kind, x: x, z: 0.3, createdAt: now, updatedAt: now);
+    final markers = [window('a', RoomMarkerKind.windowWide, -2.0), window('b', RoomMarkerKind.windowSmall, 2.0)];
+    final full = room.withWindows(handWindows(room, markers));
+    expect(full.windows, hasLength(3));
+    expect(full.windows.map((w) => w.byHand), [false, true, true]);
+    // Le rang d'une fenêtre du relevé ne bouge pas : son orientation et son
+    // rideau restent les siens.
+    expect(windowDirections(full, markers), [CardinalDirection.south, CardinalDirection.south, CardinalDirection.north]);
+    expect(handWindowMarkerAt(full, markers, 0), isNull);
+    expect(handWindowMarkerAt(full, markers, 1)?.id, 'a');
+    expect(handWindowMarkerAt(full, markers, 2)?.id, 'b');
   });
 
   test('la latitude allonge ou raccourcit la tache de soleil', () {

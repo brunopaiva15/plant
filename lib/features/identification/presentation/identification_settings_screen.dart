@@ -32,7 +32,7 @@ class IdentificationSettingsScreen extends ConsumerWidget {
           FloraCard(
             child: Row(
               children: [
-                EmojiTile(emoji: configured ? '🔬' : '🔒', background: configured ? context.colors.sageSoft : null),
+                EmojiTile(emoji: configured ? '🔬' : '🔒'),
                 const SizedBox(width: Space.sm),
                 Expanded(child: Text(configured ? l10n.identificationEnabled : l10n.identificationDisabled, style: context.text.title3)),
               ],
@@ -177,28 +177,6 @@ class _IrisSection extends StatelessWidget {
                   ),
                   _IrisFact(value: l10n.irisOfflineValue, label: l10n.irisOfflineLabel),
                 ],
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: Space.sm),
-        // Quatorze points de top-1 pour zéro milliseconde de calcul
-        // (§ 6.7 de docs/09-plant-recognition.md).
-        FloraCard(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const EmojiTile(emoji: '📷', variant: 2),
-              const SizedBox(width: Space.sm),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(l10n.irisTwoPhotosTitle, style: context.text.title3),
-                    const SizedBox(height: Space.xxs),
-                    Text(l10n.irisTwoPhotosBody(AppConfig.modelName), style: context.text.callout),
-                  ],
-                ),
               ),
             ],
           ),

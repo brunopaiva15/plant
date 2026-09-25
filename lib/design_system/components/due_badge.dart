@@ -72,4 +72,14 @@ extension CareKindColors on FloraColors {
         CareKind.photo || CareKind.note || CareKind.measurement => inkSecondary,
         null => rose,
       };
+
+  /// Le fond plein d'un bouton de soin, et l'encre qui va dessus : les
+  /// accents vifs pour l'eau, l'engrais et le rempotage — ce qu'on fait le
+  /// plus —, l'accent de texte pour les autres.
+  (Color, Color) popFor(String typeKey) => switch (CareKind.fromKey(typeKey)) {
+        CareKind.watering => (waterPop, onPop),
+        CareKind.fertilizing => (sunPop, onPop),
+        CareKind.repotting => (terracottaPop, onPop),
+        _ => (strongFor(typeKey), onAccent),
+      };
 }

@@ -3,55 +3,40 @@ import 'package:flutter/material.dart';
 import '../theme/flora_theme.dart';
 import 'pressable.dart';
 
-/// Profondeur du relief : léger pour une carte crème, franc pour un bouton
-/// plein ou une carte de couleur.
+/// Profondeur : légère pour une carte posée sur la feuille, franche pour un
+/// bouton plein ou une carte de couleur. Les pièces sont désormais des
+/// aplats ; la profondeur ne décide plus que de ce que les appelants en
+/// font (une carte franche prend un accent vif).
 enum ClayDepth { light, deep }
 
-/// La forme d'une pièce d'argile : coins ronds réguliers, pilule, ou pâte
-/// aux coins irréguliers — quatre variantes, pour que deux tuiles voisines
-/// ne soient jamais identiques.
+/// La forme d'une pièce : coins ronds réguliers, pilule, ou tuile.
 class ClayShape {
   const ClayShape.rounded(this.radius) : blob = -1;
 
   const ClayShape.pill() : radius = 999, blob = -1;
 
-  /// Une forme de pâte. [variant] choisit parmi quatre gabarits ; passer un
-  /// index de liste suffit à varier les tuiles d'une rangée.
+  /// Une tuile : un carré aux coins francs, arrondis au tiers de son petit
+  /// côté. [variant] ne change plus la forme — les pâtes irrégulières de la
+  /// première direction sont parties avec l'argile —, il reste pour les
+  /// appelants qui variaient les tuiles d'une rangée.
   const ClayShape.blob([int variant = 0]) : radius = 0, blob = variant;
 
   final double radius;
   final int blob;
 
-  /// Rayons des pâtes, en fractions de la largeur et de la hauteur : coin
-  /// haut gauche, haut droit, bas droit, bas gauche, chacun (x, y).
-  static const _blobs = <List<double>>[
-    [0.45, 0.50, 0.55, 0.45, 0.50, 0.55, 0.50, 0.50],
-    [0.55, 0.45, 0.45, 0.55, 0.50, 0.50, 0.50, 0.50],
-    [0.40, 0.50, 0.60, 0.45, 0.55, 0.55, 0.45, 0.50],
-    [0.50, 0.55, 0.50, 0.45, 0.40, 0.55, 0.60, 0.45],
-  ];
-
   RRect toRRect(Rect rect) {
     if (blob < 0) return RRect.fromRectAndRadius(rect, Radius.circular(radius));
-    final b = _blobs[blob % _blobs.length];
-    final w = rect.width, h = rect.height;
-    return RRect.fromRectAndCorners(
-      rect,
-      topLeft: Radius.elliptical(w * b[0], h * b[1]),
-      topRight: Radius.elliptical(w * b[2], h * b[3]),
-      bottomRight: Radius.elliptical(w * b[4], h * b[5]),
-      bottomLeft: Radius.elliptical(w * b[6], h * b[7]),
-    ).scaleRadii();
+    return RRect.fromRectAndRadius(rect, Radius.circular(rect.shortestSide * 0.32));
   }
 }
 
-/// Une pièce d'argile : une couleur pleine, un bord clair en haut à gauche,
-/// une ombre logée en bas à droite, et une ombre portée dans sa teinte.
+/// Une pièce : un aplat de couleur franche dans sa forme, qui fonce d'un
+/// cran sous le doigt. [floating] lui donne une ombre portée, pour ce qui
+/// flotte au-dessus du contenu.
 ///
-/// C'est la matière de l'app : cartes, boutons, tuiles, barre d'onglets.
-/// Le relief est peint, pas simulé par une ombre plate ; les deux ombres
-/// intérieures sont ce qui fait la pâte. Le contenu est rogné à la forme
-/// quand [clip] est vrai.
+/// C'est la matière de l'app : cartes, boutons, tuiles. Le nom vient de la
+/// première direction, en argile ; le dessin, lui, est devenu plat. Le
+/// contenu est rogné à la forme quand [clip] est vrai.
 class ClayBox extends StatelessWidget {
   const ClayBox({
     super.key,
@@ -65,6 +50,7 @@ class ClayBox extends StatelessWidget {
     this.height,
     this.minHeight,
     this.alignment,
+    this.floating = false,
   });
 
   final Color color;
@@ -81,6 +67,9 @@ class ClayBox extends StatelessWidget {
   /// l'utilisateur agrandit le texte, par exemple.
   final double? minHeight;
   final AlignmentGeometry? alignment;
+
+  /// Une ombre portée, pour une pièce qui flotte au-dessus du contenu.
+  final bool floating;
 
   @override
   Widget build(BuildContext context) {
@@ -100,13 +89,13 @@ class ClayBox extends StatelessWidget {
     return RepaintBoundary(
       child: press == null
           ? CustomPaint(
-              painter: ClayPainter(color: color, shape: shape, depth: depth, dark: c.isDark),
+              painter: ClayPainter(color: color, shape: shape, depth: depth, dark: c.isDark, floating: floating),
               child: content,
             )
           : AnimatedBuilder(
               animation: press,
               builder: (context, child) => CustomPaint(
-                painter: ClayPainter(color: color, shape: shape, depth: depth, dark: c.isDark, press: press.value.clamp(0.0, 1.0)),
+                painter: ClayPainter(color: color, shape: shape, depth: depth, dark: c.isDark, floating: floating, press: press.value.clamp(0.0, 1.0)),
                 child: child,
               ),
               child: content,
@@ -139,15 +128,16 @@ class _ShapeClipper extends CustomClipper<Path> {
   bool shouldReclip(_ShapeClipper old) => old.shape.radius != shape.radius || old.shape.blob != shape.blob;
 }
 
-/// Le peintre de l'argile, exposé pour les décors qui ne passent pas par
+/// Le peintre des pièces, exposé pour les décors qui ne passent pas par
 /// [ClayBox].
 class ClayPainter extends CustomPainter {
-  const ClayPainter({required this.color, required this.shape, required this.depth, required this.dark, this.press = 0});
+  const ClayPainter({required this.color, required this.shape, required this.depth, required this.dark, this.floating = false, this.press = 0});
 
   final Color color;
   final ClayShape shape;
   final ClayDepth depth;
   final bool dark;
+  final bool floating;
 
   /// De 0 (au repos) à 1 (enfoncée sous le doigt).
   final double press;
@@ -155,94 +145,35 @@ class ClayPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final rect = Offset.zero & size;
-    paintClay(canvas, Path()..addRRect(shape.toRRect(rect)), bounds: rect, color: color, depth: depth, dark: dark, press: press);
+    paintClay(canvas, Path()..addRRect(shape.toRRect(rect)), bounds: rect, color: color, depth: depth, dark: dark, dropShadow: floating, press: press);
   }
 
   @override
-  bool shouldRepaint(ClayPainter old) => old.color != color || old.shape.radius != shape.radius || old.shape.blob != shape.blob || old.depth != depth || old.dark != dark || old.press != press;
+  bool shouldRepaint(ClayPainter old) => old.color != color || old.shape.radius != shape.radius || old.shape.blob != shape.blob || old.depth != depth || old.dark != dark || old.floating != floating || old.press != press;
 }
 
-/// La recette de l'argile, sur n'importe quel [path] : ombre portée teintée
-/// (sauf si [dropShadow] est faux), aplat, reflet en haut à gauche, ombre en
-/// bas à droite. [bounds] sert à proportionner le relief et à rogner les
-/// ombres intérieures.
+/// La recette d'une pièce, sur n'importe quel [path] : un aplat franc, sans
+/// reflet ni ombre logée — la couleur fait le relief. [bounds] proportionne
+/// l'ombre portée.
 ///
-/// [press], de 0 à 1, enfonce la pièce : elle se rapproche de son ombre
-/// portée, son reflet pâlit et son ombre intérieure se creuse. C'est le même
-/// dessin, sous le doigt — pas une autre pièce.
-void paintClay(Canvas canvas, Path path, {required Rect bounds, required Color color, required ClayDepth depth, required bool dark, bool dropShadow = true, double press = 0}) {
-  final deep = depth == ClayDepth.deep;
-  // Le relief s'accorde à la taille : une tuile de 40 points n'a pas
-  // l'ombre d'une carte de 300.
-  final unit = (bounds.shortestSide / 48).clamp(0.6, 1.6);
-  final shade = Color.lerp(color, Colors.black, 0.3)!;
-  // Enfoncée, la pièce se rapproche de la surface : son ombre portée se
-  // resserre et s'éclaircit.
-  final lift = 1 - 0.55 * press;
-
-  // L'ombre portée, dans la teinte de la pièce, décalée en bas à droite :
-  // la lumière vient d'un coin.
+/// L'ombre portée ne reste qu'aux pièces qui flottent au-dessus du contenu
+/// ([dropShadow]) : un toast, une barre de sélection. Posée sur la feuille,
+/// une carte n'en a pas besoin, son aplat la détache déjà.
+///
+/// [press], de 0 à 1, enfonce la pièce : l'aplat fonce d'un cran sous le
+/// doigt. C'est le même dessin, sous le doigt — pas une autre pièce.
+void paintClay(Canvas canvas, Path path, {required Rect bounds, required Color color, required ClayDepth depth, required bool dark, bool dropShadow = false, double press = 0}) {
   if (dropShadow) {
-    final drop = (deep ? (dark ? 0.32 : 0.24) : (dark ? 0.28 : 0.14)) * (1 - 0.30 * press);
+    final unit = (bounds.shortestSide / 48).clamp(0.6, 1.6);
     canvas.drawPath(
-      path.shift(Offset(5 * unit * lift, 7 * unit * lift)),
+      path.shift(Offset(0, 8 * unit * (1 - 0.5 * press))),
       Paint()
-        ..color = (dark ? Colors.black : shade).withValues(alpha: drop)
-        ..maskFilter = MaskFilter.blur(BlurStyle.normal, 9 * unit * lift),
+        ..color = Colors.black.withValues(alpha: dark ? 0.40 : 0.14)
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, 14 * unit),
     );
   }
   canvas.drawPath(path, Paint()..color = color);
-
-  // Les ombres intérieures : tout ce qui est hors de la forme, décalé et
-  // flouté, rogné à la forme. Décalé vers le bas à droite, le trou laisse
-  // une lumière en haut à gauche ; vers le haut à gauche, une ombre en
-  // bas à droite. Sous le doigt, le reflet cède et le creux gagne.
-  final outside = bounds.inflate(bounds.shortestSide + 16);
-  Path rim(Offset by) => Path.combine(PathOperation.difference, Path()..addRect(outside), path.shift(by));
-  canvas.save();
-  canvas.clipPath(path);
-  canvas.drawPath(
-    rim(Offset(3 * unit, 3 * unit)),
-    Paint()
-      ..color = Colors.white.withValues(alpha: (deep ? (dark ? 0.22 : 0.30) : (dark ? 0.10 : 0.75)) * (1 - 0.55 * press))
-      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 5 * unit),
-  );
-  canvas.drawPath(
-    rim(Offset(-4 * unit, -5 * unit)),
-    Paint()
-      ..color = shade.withValues(alpha: ((deep ? (dark ? 0.40 : 0.28) : (dark ? 0.35 : 0.10)) * (1 + 0.9 * press)).clamp(0.0, 1.0))
-      ..maskFilter = MaskFilter.blur(BlurStyle.normal, 7 * unit),
-  );
-  canvas.restore();
-}
-
-/// Le grain du papier : un bruit très léger posé par-dessus l'écran, comme
-/// une feuille sous la lumière. Il ne touche pas au contraste du texte.
-class GrainOverlay extends StatelessWidget {
-  const GrainOverlay({super.key, required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.colors;
-    return Stack(
-      fit: StackFit.passthrough,
-      children: [
-        child,
-        Positioned.fill(
-          child: IgnorePointer(
-            child: Opacity(
-              opacity: c.isDark ? 0.10 : 0.07,
-              child: const DecoratedBox(
-                decoration: BoxDecoration(
-                  image: DecorationImage(image: AssetImage('assets/textures/grain.png'), repeat: ImageRepeat.repeat, filterQuality: FilterQuality.none),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
+  if (press > 0) {
+    canvas.drawPath(path, Paint()..color = (dark ? Colors.white : Colors.black).withValues(alpha: 0.08 * press));
   }
 }

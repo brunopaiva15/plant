@@ -16,6 +16,7 @@ import 'core/config/supabase_config.dart';
 import 'core/network/connectivity.dart';
 import 'core/native_shell.dart';
 import 'core/window_regions.dart';
+import 'core/demo/demo_photo_storage.dart';
 import 'core/demo/demo_seed.dart';
 import 'data/auth/local_auth_repository.dart';
 import 'data/auth/supabase_auth_repository.dart';
@@ -88,6 +89,10 @@ Future<void> main() async {
     // La vraie sonde de réseau se branche ici : l'application peut alors dire
     // « hors ligne » plutôt que de faire tourner un écran sans fin.
     reachabilityProvider.overrideWithValue(const SocketReachability()),
+    // En démo, l'appareil photo et la photothèque rendent une plante du jeu
+    // de démo : un simulateur n'a ni caméra ni photothèque garnie, et
+    // l'étape photo de la création n'aurait rien à montrer.
+    if (DemoSeed.requested) photoStorageProvider.overrideWithValue(DemoPhotoStorage()),
   ]);
 
   // Emplacements de départ, dans la langue de l'appareil.
@@ -124,5 +129,5 @@ Future<void> main() async {
   }, fireImmediately: true);
   AppLifecycleListener(onResume: () => container.invalidate(todayWidgetSnapshotProvider));
 
-  runApp(UncontrolledProviderScope(container: container, child: const FloraApp()));
+  runApp(UncontrolledProviderScope(container: container, child: const FloraApp(splash: true)));
 }

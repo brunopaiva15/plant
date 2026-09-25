@@ -5,11 +5,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/config/app_config.dart';
 import '../core/l10n/l10n.dart';
 import '../design_system/design_system.dart';
+import 'launch_splash.dart';
 import 'providers.dart';
 import 'router.dart';
 
 class FloraApp extends ConsumerWidget {
-  const FloraApp({super.key});
+  const FloraApp({super.key, this.splash = false});
+
+  /// Joue l'animation d'ouverture ([LaunchSplash]). Seul `main` la demande :
+  /// les tests construisent l'application sans elle.
+  final bool splash;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -40,12 +45,13 @@ class FloraApp extends ConsumerWidget {
         final reduce = prefs.reduceMotion ?? media.disableAnimations;
         // Material transparent à la racine : fournit le DefaultTextStyle aux
         // pages Cupertino (sans lui, iOS souligne les textes en jaune).
+        final app = Material(
+          type: MaterialType.transparency,
+          child: ToastHost(child: child ?? const SizedBox.shrink()),
+        );
         return MediaQuery(
           data: media.copyWith(disableAnimations: reduce),
-          child: Material(
-            type: MaterialType.transparency,
-            child: GrainOverlay(child: ToastHost(child: child ?? const SizedBox.shrink())),
-          ),
+          child: splash ? LaunchSplash(child: app) : app,
         );
       },
     );

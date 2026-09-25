@@ -56,8 +56,11 @@ class _PlantsScreenState extends ConsumerState<PlantsScreen> {
         ? CupertinoSearchTextField(
             controller: _search,
             placeholder: l10n.searchPlants,
-            backgroundColor: c.surfaceMuted,
-            style: context.text.body,
+            // Posé sur la tête verte : un champ de verre, encre blanche.
+            backgroundColor: OnBrand.glass,
+            style: context.text.body.copyWith(color: c.onBrand),
+            placeholderStyle: context.text.body.copyWith(color: c.onBrand.withValues(alpha: 0.8)),
+            itemColor: c.onBrand,
             onChanged: ref.read(plantFilterProvider.notifier).setQuery,
           )
         : FloraTextField(
@@ -94,6 +97,22 @@ class _PlantsScreenState extends ConsumerState<PlantsScreen> {
         LargeTitlePage(
           title: l10n.plantsTitle,
           searchField: searchField,
+          brand: true,
+          hero: total == 0
+              ? null
+              : Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Expanded(
+                      child: HeroNumber(
+                        value: '$total',
+                        label: l10n.plantCount(total).replaceFirst(RegExp(r'^\d+\s*'), ''),
+                        size: 104,
+                      ),
+                    ),
+                    const ExcludeSemantics(child: Image(image: AssetImage('assets/onboarding/collection_ronde.webp'), width: 112)),
+                  ],
+                ),
           // Une liste, pas une `Row` : le haut de page les met côte à côte,
           // et le menu debout du pliable les reprend en colonne.
           actions: [

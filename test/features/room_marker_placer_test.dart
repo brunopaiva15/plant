@@ -25,7 +25,7 @@ void main() {
     room = RoomPlanParser.parse(Map<String, Object?>.from(json), northOffsetDeg: 90);
   });
 
-  Future<void> ouvrir(WidgetTester tester, Size fenetre) async {
+  Future<void> ouvrir(WidgetTester tester, Size fenetre, {RoomMarkerPlacement kind = RoomMarkerPlacement.heater, HandWindow? windowSize}) async {
     await tester.binding.setSurfaceSize(fenetre);
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(MaterialApp(
@@ -37,7 +37,7 @@ void main() {
           body: Center(
             child: FloraButton(
               label: 'Ouvrir',
-              onPressed: () => showRoomMarkerPlacer(context, room: room, markers: const [], kind: RoomMarkerPlacement.heater),
+              onPressed: () => showRoomMarkerPlacer(context, room: room, markers: const [], kind: kind, windowSize: windowSize),
             ),
           ),
         ),
@@ -49,17 +49,21 @@ void main() {
   }
 
   // Un téléphone debout, une fenêtre large et basse : la feuille tient dans
-  // les deux, et c'est la seconde qui débordait.
+  // les deux, et c'est la seconde qui débordait. La consigne de la fenêtre
+  // tient une ligne de plus que celle du radiateur : elle débordait le
+  // téléphone à son tour.
   for (final (nom, taille) in [('un téléphone', Size(393, 852)), ('une fenêtre large', Size(1024, 768))]) {
-    testWidgets('la feuille du repère tient dans $nom', (tester) => _surIOS(() async {
-          await ouvrir(tester, taille);
-          expect(find.text('Place'), findsOneWidget);
-          // Un débordement de mise en page lève une exception du rendu, que
-          // `flutter_test` remonte ici.
-          expect(tester.takeException(), isNull);
-          final feuille = tester.getRect(find.byType(FloraCard).first);
-          expect(feuille.bottom, lessThanOrEqualTo(taille.height), reason: 'le plan dépasse du bas');
-        }));
+    for (final (quoi, kind) in [('du repère', RoomMarkerPlacement.heater), ('de la fenêtre', RoomMarkerPlacement.window)]) {
+      testWidgets('la feuille $quoi tient dans $nom', (tester) => _surIOS(() async {
+            await ouvrir(tester, taille, kind: kind, windowSize: HandWindow.wide);
+            expect(find.text('Place'), findsOneWidget);
+            // Un débordement de mise en page lève une exception du rendu, que
+            // `flutter_test` remonte ici.
+            expect(tester.takeException(), isNull);
+            final feuille = tester.getRect(find.byType(FloraCard).first);
+            expect(feuille.bottom, lessThanOrEqualTo(taille.height), reason: 'le plan dépasse du bas');
+          }));
+    }
   }
 
   testWidgets('un toucher sur le plan pose le repère', (tester) => _surIOS(() async {
@@ -83,7 +87,39 @@ void main() {
         expect(find.text('Place'), findsOneWidget, reason: 'le glissement ne doit pas refermer la feuille');
         expect(tester.widget<FloraButton>(find.widgetWithText(FloraButton, 'Place')).onPressed, isNotNull, reason: 'le repère a suivi le doigt');
       }));
+
+  testWidgets("une fenêtre se pose d'un toucher, même à côté de la pièce", (tester) => _surIOS(() async {
+        await ouvrir(tester, const Size(393, 852), kind: RoomMarkerPlacement.window, windowSize: HandWindow.wide);
+        expect(find.text('Add a window'), findsOneWidget);
+        // La consigne de la fenêtre tient une ligne de plus que celle du
+        // radiateur : la feuille ne doit pas déborder pour autant.
+        expect(tester.takeException(), isNull);
+        expect(tester.widget<FloraButton>(find.widgetWithText(FloraButton, 'Place')).onPressed, isNull);
+
+        final plan = tester.getRect(find.byType(FloraCard).first);
+        await tester.tapAt(_horsDesMurs(plan));
+        await tester.pumpAndSettle();
+
+        expect(tester.widget<FloraButton>(find.widgetWithText(FloraButton, 'Place')).onPressed, isNotNull);
+      }));
+
+  testWidgets('une plante, elle, ne se pose pas hors des murs', (tester) => _surIOS(() async {
+        await ouvrir(tester, const Size(393, 852), kind: RoomMarkerPlacement.plant);
+
+        final plan = tester.getRect(find.byType(FloraCard).first);
+        await tester.tapAt(_horsDesMurs(plan));
+        await tester.pumpAndSettle();
+
+        expect(tester.widget<FloraButton>(find.widgetWithText(FloraButton, 'Place')).onPressed, isNull,
+            reason: 'ce coin du cadre tombe bien hors de la pièce');
+      }));
 }
+
+/// Un point du cadre hors des murs de la pièce : le haut du plan, à huit
+/// points du bord. Le cadre garde au moins quatorze points de marge autour de
+/// la pièce, quelle qu'elle soit, et le milieu du bord est loin des arrondis —
+/// un toucher sur l'arrondi ne passe pas le rognage et n'atteint pas le plan.
+Offset _horsDesMurs(Rect plan) => plan.topCenter + const Offset(0, 8);
 
 /// La plateforme se pose dans le corps du test : la reposer ailleurs fait
 /// échouer la vérification d'invariants de `flutter_test`.

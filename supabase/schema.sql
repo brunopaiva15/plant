@@ -1022,3 +1022,145 @@ revoke all on function species_tip_row(uuid) from public;
 -- Supabase le relit de lui-même sur les changements de schéma ; le dire ici
 -- rend le rejeu de ce fichier effectif tout de suite, sans attendre.
 notify pgrst, 'reload schema';
+
+-- ============================================================
+-- Le relais des clés (docs/19-relais-des-cles.md)
+-- ============================================================
+-- Trois clés d'éditeur — Pl@ntNet, les AI Services d'Infomaniak, OpenRouter —
+-- ne sont plus dans le binaire : la fonction Edge `relay` les tient, et
+-- l'application ne parle qu'à elle. Restent deux questions, et ces tables y
+-- répondent : à qui le relais accepte de parler, et combien il laisse
+-- consommer.
+--
+-- Aucune politique n'est déclarée ici, et aucun droit n'est donné à `anon` ni
+-- à `authenticated` : rien de tout cela ne se lit depuis l'application.
+-- Seule la fonction Edge, qui se présente avec la clé de service, y touche.
+
+-- Un appareil dont l'attestation App Attest a tenu. `key_id` est ce que
+-- `DCAppAttestService` a rendu : le condensé de la clé publique, que la
+-- Secure Enclave ne peut pas fabriquer deux fois.
+create table if not exists relay_devices (
+  key_id text primary key,
+  -- Le point de la courbe, en base64 : PostgREST rend un `bytea` sous une
+  -- forme qui demande d'être défaite des deux côtés, et cette clé n'est pas
+  -- un secret — c'est la partie publique.
+  public_key text not null,
+  -- Le compteur de signatures de l'enclave. Il ne redescend jamais ; une
+  -- assertion qui ne le fait pas monter est un rejeu.
+  counter bigint not null default 0,
+  environment text not null,
+  -- Le reçu d'Apple, gardé tel quel : il ouvre le service de risque d'Apple,
+  -- que le relais n'interroge pas encore.
+  receipt text,
+  created_at timestamptz not null default now(),
+  last_seen_at timestamptz not null default now()
+);
+
+-- Les défis en cours. On n'y range que leur condensé : la table n'a pas
+-- besoin de savoir ce qui a été envoyé, seulement de reconnaître ce qui
+-- revient — et une fois.
+create table if not exists relay_challenges (
+  id text primary key,
+  created_at timestamptz not null default now(),
+  expires_at timestamptz not null
+);
+create index if not exists relay_challenges_expiry on relay_challenges (expires_at);
+
+-- Ce que chaque appareil a consommé, par jour et par route. C'est la seule
+-- chose qui borne la facture le jour où quelqu'un contourne l'attestation.
+create table if not exists relay_usage (
+  device text not null,
+  day date not null,
+  route text not null,
+  calls int not null default 0,
+  primary key (device, day, route)
+);
+create index if not exists relay_usage_day on relay_usage (day, route);
+
+alter table relay_devices enable row level security;
+alter table relay_challenges enable row level security;
+alter table relay_usage enable row level security;
+
+do $$ declare t text; begin
+  foreach t in array array['relay_devices', 'relay_challenges', 'relay_usage'] loop
+    execute format('revoke all on table %I from anon, authenticated', t);
+    execute format('grant all on table %I to service_role', t);
+  end loop;
+end $$;
+
+-- Un défi ne vaut qu'une fois, et le prouver demande que la lecture et
+-- l'effacement soient le même geste : deux requêtes laisseraient la place
+-- d'un rejeu entre les deux.
+create or replace function relay_claim_challenge(p_id text)
+returns boolean language plpgsql security definer set search_path = public as $$
+declare v_claimed boolean;
+begin
+  delete from relay_challenges where id = p_id and expires_at > now() returning true into v_claimed;
+  return coalesce(v_claimed, false);
+end $$;
+
+-- Le compteur ne monte que s'il monte. La condition est dans le `where` pour
+-- que deux assertions arrivées ensemble ne puissent pas passer toutes les
+-- deux : la seconde ne trouvera plus de ligne à mettre à jour.
+create or replace function relay_bump_counter(p_key_id text, p_counter bigint)
+returns boolean language plpgsql security definer set search_path = public as $$
+declare v_bumped boolean;
+begin
+  update relay_devices set counter = p_counter, last_seen_at = now()
+    where key_id = p_key_id and counter < p_counter
+    returning true into v_bumped;
+  return coalesce(v_bumped, false);
+end $$;
+
+-- Un appel, compté et pesé contre deux plafonds : celui de l'appareil, et
+-- celui de la journée tous appareils confondus. Le second est le vrai filet —
+-- il tient même si quelqu'un trouve le moyen de se faire passer pour mille
+-- appareils.
+--
+-- Le verrou consultatif sérialise les appels d'une même route. Sans lui, deux
+-- requêtes simultanées liraient le même total avant de l'écrire, et le
+-- plafond se franchirait de quelques appels ; à ce volume, le verrou ne coûte
+-- rien et la borne devient exacte.
+create or replace function relay_consume(p_device text, p_route text, p_limit int, p_global int)
+returns table(allowed boolean, device_calls int, route_calls int)
+language plpgsql security definer set search_path = public as $$
+declare
+  v_day date := (now() at time zone 'utc')::date;
+  v_device int;
+  v_route int;
+begin
+  perform pg_advisory_xact_lock(hashtext('relay_consume:' || p_route));
+  select coalesce(sum(calls), 0) into v_route from relay_usage where day = v_day and route = p_route;
+  select coalesce(calls, 0) into v_device from relay_usage
+    where device = p_device and day = v_day and route = p_route;
+
+  if v_device >= p_limit or v_route >= p_global then
+    return query select false, v_device, v_route;
+    return;
+  end if;
+
+  insert into relay_usage (device, day, route, calls) values (p_device, v_day, p_route, 1)
+    on conflict (device, day, route) do update set calls = relay_usage.calls + 1
+    returning calls into v_device;
+  return query select true, v_device, v_route + 1;
+end $$;
+
+-- Ce qui n'a plus à être gardé. Les défis expirent en minutes ; l'usage, lui,
+-- sert à lire une tendance et à retrouver un abus, trois mois suffisent. À
+-- appeler depuis un cron Supabase, ou à la main.
+create or replace function relay_purge()
+returns void language sql security definer set search_path = public as $$
+  delete from relay_challenges where expires_at < now() - interval '1 hour';
+  delete from relay_usage where day < (now() at time zone 'utc')::date - 90;
+$$;
+
+do $$ declare f text; begin
+  foreach f in array array[
+    'relay_claim_challenge(text)', 'relay_bump_counter(text,bigint)',
+    'relay_consume(text,text,int,int)', 'relay_purge()'] loop
+    execute format('revoke all on function %s from public, anon, authenticated', f);
+    execute format('grant execute on function %s to service_role', f);
+  end loop;
+end $$;
+
+notify pgrst, 'reload schema';

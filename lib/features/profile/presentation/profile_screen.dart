@@ -35,6 +35,7 @@ class ProfileScreen extends ConsumerWidget {
 
     return LargeTitlePage(
       title: l10n.profileTitle,
+      brand: true,
       slivers: [
         SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: Space.page),
@@ -182,21 +183,6 @@ class ProfileScreen extends ConsumerWidget {
               const SizedBox(height: Space.lg),
               FloraGroup(
                 children: [
-                  FloraListRow(
-                    leading: Icon(CupertinoIcons.heart_fill, size: 20, color: c.rose),
-                    title: l10n.supportSettings,
-                    subtitle: prefs.hasSupported ? l10n.supportAlready : l10n.supportFreeForever,
-                    onTap: () => context.push(Routes.support),
-                  ),
-                  // Pas de ligne « Nouveautés » ici : le catalogue ne contient
-                  // encore que l'exemple de `releaseNotes()`, dont les chiffres
-                  // sont inventés, et il n'a rien à faire sous les yeux de
-                  // quiconque. La fenêtre, elle, est en place et s'ouvrira
-                  // d'elle-même à la première vraie livraison. Pour rendre la
-                  // relecture possible ce jour-là : une FloraListRow sur
-                  // `showWhatsNew(context, note)`, avec
-                  // `ref.watch(whatsNewProvider).latest(releaseNotes(l10n))`
-                  // et la clé `whatsNewTitle`, gardée au chaud dans les `.arb`.
                   FloraListRow(leading: const Text('✨', style: TextStyle(fontSize: 18)), title: l10n.replayOnboarding, onTap: () => context.push(Routes.onboarding)),
                   FloraListRow(leading: Icon(CupertinoIcons.info, size: 20, color: c.inkSecondary), title: l10n.aboutSources, onTap: () => context.push(Routes.about)),
                 ],

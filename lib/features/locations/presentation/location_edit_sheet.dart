@@ -83,7 +83,7 @@ class _LocationEditBodyState extends ConsumerState<_LocationEditBody> {
           SheetHeader(title: widget.existing == null ? l10n.newLocationTitle : l10n.editLocation),
           Row(
             children: [
-              EmojiTile(emoji: _icon, size: 52, background: c.sageSoft),
+              EmojiTile(emoji: _icon, size: 52),
               const SizedBox(width: Space.sm),
               Expanded(
                 child: FloraTextField(

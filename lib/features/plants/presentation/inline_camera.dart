@@ -1,12 +1,16 @@
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:camera/camera.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 
 import '../../../app/window.dart';
-import '../../../design_system/components/scanning_overlay.dart';
+import '../../../core/l10n/l10n.dart';
+import '../../../core/system_settings.dart';
+import '../../../design_system/design_system.dart';
 
 /// Où en est le viseur intégré.
 enum InlineCameraStatus {
@@ -57,6 +61,29 @@ class InlineCameraController extends ChangeNotifier with WidgetsBindingObserver 
   /// n'est ouvert. Voir [_alignCaptureToPage].
   bool? _captureLocked;
 
+  /// Le flash demandé. C'est un choix de la personne, pas un état du flux :
+  /// il tient d'une ouverture à l'autre, retour d'arrière-plan et « Reprendre »
+  /// compris, et se redit au plugin à chaque nouveau flux.
+  bool _flash = false;
+
+  /// L'objectif ouvert a un flash. Faux tant que rien n'est ouvert.
+  bool _hasFlash = false;
+
+  /// Les bornes du zoom de l'objectif ouvert. `1` et `1` : pas de zoom.
+  double _minZoom = 1;
+  double _maxZoom = 1;
+
+  /// Le zoom demandé, et celui qui attend son tour pendant qu'un autre est en
+  /// route vers le plugin. Voir [setZoom].
+  final ValueNotifier<double> _zoom = ValueNotifier<double>(1);
+  double? _pendingZoom;
+  bool _zoomInFlight = false;
+
+  /// Au-delà, le zoom n'est plus qu'un agrandissement de pixels : la photo
+  /// part à Iris, qui n'y verrait qu'un flou. Un iPhone annonce jusqu'à
+  /// 100×, un Android souvent 10×.
+  static const double maxUsefulZoom = 8;
+
   /// Le contrôleur du plugin, quand le flux est ouvert.
   CameraController? get camera => _camera;
 
@@ -66,6 +93,10 @@ class InlineCameraController extends ChangeNotifier with WidgetsBindingObserver 
   /// cadre vide qui n'attendrait rien.
   bool get permissionDenied => _permissionDenied;
 
+  /// Refusé, et le système sait mener aux Réglages : toucher le cadre y va,
+  /// plutôt que d'ouvrir un appareil photo qui refusera aussi.
+  bool get opensSettings => _permissionDenied && SystemSettings.isSupported;
+
   /// Le flux est ouvert et peut prendre une photo.
   bool get isReady => _status == InlineCameraStatus.ready && (_camera?.value.isInitialized ?? false);
 
@@ -74,6 +105,24 @@ class InlineCameraController extends ChangeNotifier with WidgetsBindingObserver 
   /// l'aperçu n'est pas encore à l'écran.
   bool get hasViewfinder =>
       _status == InlineCameraStatus.starting || _status == InlineCameraStatus.ready || _status == InlineCameraStatus.suspended;
+
+  /// Le flash est demandé pour la prochaine photo.
+  bool get flash => _flash;
+
+  /// Le flux est ouvert et son objectif a un flash : le bouton se montre.
+  /// Un iPad sans flash le dit à l'ouverture, et le bouton ne vient pas.
+  bool get hasFlash => isReady && _hasFlash;
+
+  /// Le zoom en cours, écouté à part : un pincement en produit des dizaines
+  /// par seconde, et personne d'autre n'a à se redessiner.
+  ValueListenable<double> get zoom => _zoom;
+
+  /// L'objectif ouvert sait zoomer.
+  bool get canZoom => isReady && _maxZoom > _minZoom;
+
+  /// Le zoom de repos, celui d'un viseur qui s'ouvre : `1×`, ramené dans les
+  /// bornes de l'objectif.
+  double get baseZoom => 1.0.clamp(_minZoom, _maxZoom).toDouble();
 
   /// Un viseur intégré n'existe que sur téléphone et tablette. Ailleurs — le
   /// web, le bureau, les tests — l'appelant garde l'appareil du système.
@@ -127,6 +176,96 @@ class InlineCameraController extends ChangeNotifier with WidgetsBindingObserver 
       return null;
     } finally {
       _capturing = false;
+    }
+  }
+
+  /// Allume ou éteint le flash de la prochaine photo.
+  ///
+  /// Le bouton change tout de suite ; si le plugin refuse, il revient à ce
+  /// qu'il était, plutôt que d'annoncer un flash qui ne partira pas.
+  Future<void> toggleFlash() async {
+    final camera = _camera;
+    if (camera == null || !hasFlash) return;
+    final wanted = !_flash;
+    _flash = wanted;
+    notifyListeners();
+    try {
+      await camera.setFlashMode(wanted ? FlashMode.always : FlashMode.off);
+    } catch (_) {
+      if (_disposed || _camera != camera || _flash != wanted) return;
+      _flash = !wanted;
+      notifyListeners();
+    }
+  }
+
+  /// Zoome à [level], ramené dans les bornes de l'objectif.
+  ///
+  /// Un pincement appelle ceci à chaque image. Le plugin, lui, répond à son
+  /// rythme : un seul ordre part à la fois, et pendant qu'il est en route
+  /// seul le dernier demandé attend. L'aperçu suit le doigt sans que les
+  /// ordres s'empilent derrière lui.
+  void setZoom(double level) {
+    if (!canZoom) return;
+    final clamped = level.clamp(_minZoom, _maxZoom).toDouble();
+    if (clamped == _zoom.value) return;
+    _zoom.value = clamped;
+    _pendingZoom = clamped;
+    if (!_zoomInFlight) _flushZoom();
+  }
+
+  Future<void> _flushZoom() async {
+    _zoomInFlight = true;
+    try {
+      while (_pendingZoom != null) {
+        final level = _pendingZoom!;
+        _pendingZoom = null;
+        final camera = _camera;
+        if (_disposed || camera == null) break;
+        try {
+          await camera.setZoomLevel(level);
+        } catch (_) {
+          // Refusé : l'ordre suivant, s'il vient, repartira de zéro.
+        }
+      }
+    } finally {
+      _zoomInFlight = false;
+    }
+  }
+
+  /// Lit ce que l'objectif sait faire, et lui redit ce que la personne avait
+  /// choisi : le flash, le zoom. Rien ici n'empêche le viseur de s'ouvrir.
+  Future<void> _prepareControls(CameraController controller) async {
+    try {
+      _minZoom = await controller.getMinZoomLevel();
+      _maxZoom = math.min(await controller.getMaxZoomLevel(), maxUsefulZoom);
+      if (_maxZoom < _minZoom) _maxZoom = _minZoom;
+    } catch (_) {
+      _minZoom = 1;
+      _maxZoom = 1;
+    }
+    // Un flux neuf part du zoom de repos, sauf si la personne avait zoomé :
+    // entre deux photos, le cadrage qu'elle avait choisi reste le sien.
+    var zoom = (_zoom.value == 1 ? baseZoom : _zoom.value).clamp(_minZoom, _maxZoom).toDouble();
+    if (zoom != 1) {
+      try {
+        await controller.setZoomLevel(zoom);
+      } catch (_) {
+        zoom = 1;
+      }
+    }
+    // La page a pu partir pendant ces allers-retours : le compteur n'est
+    // alors plus là pour être mis à jour.
+    if (_disposed) return;
+    _zoom.value = zoom;
+    // Le flash est dit explicitement, éteint compris : sans cela, iOS part en
+    // automatique et déclenche dans la pénombre sans qu'on l'ait demandé.
+    // Un appareil sans flash refuse jusqu'à l'extinction, et c'est ainsi
+    // qu'on le sait.
+    try {
+      await controller.setFlashMode(_flash ? FlashMode.always : FlashMode.off);
+      _hasFlash = true;
+    } catch (_) {
+      _hasFlash = false;
     }
   }
 
@@ -185,6 +324,7 @@ class InlineCameraController extends ChangeNotifier with WidgetsBindingObserver 
     _camera?.dispose();
     _camera = null;
     _captureLocked = null;
+    _zoom.dispose();
     super.dispose();
   }
 
@@ -218,6 +358,7 @@ class InlineCameraController extends ChangeNotifier with WidgetsBindingObserver 
       // `ios/Runner/Info.plist` et le manifeste Android le déclarent — et la
       // capture s'aligne donc sur elle.
       await _alignCaptureToPage(controller);
+      await _prepareControls(controller);
       // La page a pu partir, ou changer d'étape, pendant l'ouverture : le
       // flux n'a alors plus personne devant lui.
       if (_disposed || !_wanted || _status != InlineCameraStatus.starting) {
@@ -318,21 +459,153 @@ class InlineCameraPreview extends StatelessWidget {
         }
         // L'overlay est volontairement hors de l'OverflowBox : ses repères
         // suivent le cadre visible, pas la taille réelle du flux recadré.
-        return Stack(
-          fit: StackFit.expand,
-          children: [
-            ClipRect(
-              child: OverflowBox(
-                maxWidth: double.infinity,
-                maxHeight: double.infinity,
-                alignment: Alignment.center,
-                child: SizedBox(width: width, height: height, child: CameraPreview(camera)),
+        return _PinchToZoom(
+          controller: controller,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              ClipRect(
+                child: OverflowBox(
+                  maxWidth: double.infinity,
+                  maxHeight: double.infinity,
+                  alignment: Alignment.center,
+                  child: SizedBox(width: width, height: height, child: CameraPreview(camera)),
+                ),
               ),
-            ),
-            if (scanningOverlay) const ScanningOverlay(),
-          ],
+              if (scanningOverlay) const ScanningOverlay(),
+            ],
+          ),
         );
       },
+    );
+  }
+}
+
+/// Le pincement du viseur : deux doigts qui s'écartent zooment, qui se
+/// rapprochent dézooment.
+///
+/// Le zoom suit le rapport des écartements depuis le début du geste, pas
+/// leur différence : c'est ce qui le rend régulier de bout en bout, de 1× à
+/// 2× comme de 4× à 8×. Un doigt qui se lève en cours de route ne fait pas
+/// sauter l'image : le geste repart de là où il en était.
+class _PinchToZoom extends StatefulWidget {
+  const _PinchToZoom({required this.controller, required this.child});
+
+  final InlineCameraController controller;
+  final Widget child;
+
+  @override
+  State<_PinchToZoom> createState() => _PinchToZoomState();
+}
+
+class _PinchToZoomState extends State<_PinchToZoom> {
+  /// Le zoom au moment où le geste a pris sa forme actuelle.
+  double _base = 1;
+
+  @override
+  Widget build(BuildContext context) {
+    return RawGestureDetector(
+      behavior: HitTestBehavior.opaque,
+      gestures: {
+        PinchRecognizer: GestureRecognizerFactoryWithHandlers<PinchRecognizer>(
+          () => PinchRecognizer(debugOwner: this),
+          (recognizer) => recognizer
+            // Le recognizer redonne un départ chaque fois qu'un doigt se pose
+            // ou se lève, avec une échelle remise à 1.
+            ..onStart = (_) {
+              _base = widget.controller.zoom.value;
+            }
+            ..onUpdate = (details) {
+              if (details.pointerCount < 2) return;
+              widget.controller.setZoom(_base * details.scale);
+            },
+        ),
+      },
+      child: widget.child,
+    );
+  }
+}
+
+/// Le pincement, qui se réserve le geste dès que le second doigt se pose.
+///
+/// Le cadre se touche pour déclencher, et il vit parfois dans une page qui
+/// défile. Laisser le pincement attendre son seuil, c'était laisser le
+/// premier doigt, resté presque immobile, déclencher la photo en se levant,
+/// ou la page défiler sous les deux doigts. À deux doigts, le geste est un
+/// pincement, et rien d'autre ne le reçoit. À un doigt, rien ne change : un
+/// toucher déclenche, un glissé fait défiler.
+@visibleForTesting
+class PinchRecognizer extends ScaleGestureRecognizer {
+  PinchRecognizer({super.debugOwner});
+
+  final Set<int> _pointers = {};
+
+  @override
+  void addAllowedPointer(PointerDownEvent event) {
+    super.addAllowedPointer(event);
+    _pointers.add(event.pointer);
+    if (_pointers.length >= 2) resolve(GestureDisposition.accepted);
+  }
+
+  @override
+  void handleEvent(PointerEvent event) {
+    if (event is PointerUpEvent || event is PointerCancelEvent) _pointers.remove(event.pointer);
+    super.handleEvent(event);
+  }
+
+  @override
+  void rejectGesture(int pointer) {
+    _pointers.remove(pointer);
+    super.rejectGesture(pointer);
+  }
+
+  @override
+  void didStopTrackingLastPointer(int pointer) {
+    _pointers.clear();
+    super.didStopTrackingLastPointer(pointer);
+  }
+}
+
+/// Les commandes posées sur le viseur : le flash en haut à droite, niché
+/// dans le repère de cadrage. Le zoom, lui, n'a pas de commande à l'écran :
+/// il passe par le pincement de l'aperçu, et rien ne vient recouvrir la
+/// plante.
+///
+/// À poser par-dessus l'aperçu — et par-dessus ce qui le recouvre, comme le
+/// calque de la photo précédente. Ne dessine rien tant que le flux n'est pas
+/// prêt, et rien de ce que l'objectif ne sait pas faire : pas de flash sur
+/// un iPad qui n'en a pas.
+class InlineCameraControls extends StatelessWidget {
+  const InlineCameraControls({super.key, required this.controller});
+
+  final InlineCameraController controller;
+
+  /// Le bouton du flash tient dans le coin du repère de cadrage : les 18
+  /// points du repère, puis 10 d'écart.
+  static const double _nest = 28;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) => Stack(
+        fit: StackFit.expand,
+        children: [
+          if (controller.hasFlash)
+            Positioned(
+              top: _nest,
+              right: _nest,
+              child: FloraIconButton(
+                icon: controller.flash ? CupertinoIcons.bolt_fill : CupertinoIcons.bolt_slash,
+                semanticLabel: controller.flash ? l10n.cameraFlashOff : l10n.cameraFlashOn,
+                background: OnMedia.tile,
+                color: OnMedia.ink,
+                onPressed: controller.toggleFlash,
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

@@ -13,6 +13,8 @@
 // qui échoue est dite, pas fatale : les autres captures se prennent quand même.
 import 'package:flora/app/app.dart';
 import 'package:flora/app/router.dart';
+import 'package:flora/core/native_shell.dart';
+import 'package:flora/design_system/design_system.dart';
 import 'package:flora/l10n/generated/app_localizations.dart';
 import 'package:flora/main.dart' as app;
 import 'package:flutter/widgets.dart';
@@ -117,6 +119,51 @@ void main() {
       await wait(tester, 2500);
     }
 
+    /// Un bouton de la barre, retrouvé par son nom — ou, avec [item], une
+    /// entrée de son menu. Sur iOS, c'est UIKit qui dessine la barre : ses
+    /// boutons n'existent pas dans l'arbre de Flutter, et les chercher par
+    /// leur étiquette ne trouve rien. On appelle alors ce que leur toucher
+    /// appellerait. Ailleurs, la barre est en argile, et on la touche.
+    Future<void> tapBar(String label, {String? item}) async {
+      final entries = [
+        for (final w in tester.widgetList<NativeActions>(find.byType(NativeActions))) ...[...w.leading, ...w.actions],
+      ].where((e) => e.action.title == label).toList();
+      if (!NativeShell.isSupported || entries.isEmpty) {
+        await tapLabel(label);
+        if (item != null) await tapText(item);
+        return;
+      }
+      final entry = entries.last;
+      if (item == null) {
+        entry.onPressed!();
+      } else {
+        final j = entry.action.menu.indexWhere((m) => m.title == item);
+        if (j < 0) throw StateError('« $item » absent du menu « $label »');
+        entry.menu[j]();
+      }
+      await wait(tester, 2500);
+    }
+
+    /// Le bouton nommé [label], pressé sans doigt : son geste est appelé
+    /// directement. Pour un bouton qu'un toucher n'atteint pas à coup sûr —
+    /// celui de la galerie, que le viseur réduit à une icône quand le
+    /// simulateur annonce une caméra.
+    Future<void> press(String label) async {
+      VoidCallback? gesture;
+      for (var i = 0; i < 20 && gesture == null; i++) {
+        gesture = [
+          for (final b in tester.widgetList<FloraButton>(find.byType(FloraButton)))
+            if (b.label == label) b.onPressed,
+          for (final b in tester.widgetList<FloraIconButton>(find.byType(FloraIconButton)))
+            if (b.semanticLabel == label) b.onPressed,
+        ].nonNulls.firstOrNull;
+        if (gesture == null) await wait(tester, 500);
+      }
+      if (gesture == null) throw StateError('aucun bouton « $label » à l’écran');
+      gesture();
+      await wait(tester, 2500);
+    }
+
     /// Fait défiler la page jusqu'à ce que [finder] soit touchable, par des
     /// glissements au milieu de l'écran.
     ///
@@ -188,7 +235,9 @@ void main() {
     await scene('schedule', () async {
       await go(Routes.plants);
       await tapText(basil);
-      await tapText(l10n.schedule);
+      // Par le menu « Plus » : le lien « Planning » de la fiche tombe sous le
+      // pli sur iPad, le menu est là quelle que soit la taille.
+      await tapBar(l10n.more, item: l10n.schedule);
       await shot('schedule');
       await dismiss();
     });
@@ -219,13 +268,41 @@ void main() {
       await shot('profile');
     });
 
+    // L'étape photo de la création, une fois la photo prise : Iris a posé ses
+    // trois premiers noms dessus, et ils y restent jusqu'à « Continuer ».
+    // C'est l'écran que vend le visuel « Quelle est cette plante ? ».
+    //
+    // « Choisir une photo » passe par le magasin de photos de la démo, qui
+    // rend le Ficus lyrata (core/demo/demo_photo_storage.dart).
+    await scene('capture', () async {
+      await go(Routes.today);
+      await tapBar(l10n.addPlant);
+      // Le simulateur peut annoncer une caméra : l'étape montre alors le
+      // viseur, et la galerie n'y est plus qu'une icône à côté du
+      // déclencheur. Son geste est le même dans les deux cas.
+      await press(l10n.choosePhoto);
+      // Le champ d'analyse tient deux secondes au minimum, le modèle prend le
+      // reste : les noms n'arrivent qu'après, un par un.
+      await wait(tester, 8000);
+      // Une photo sans noms ne vaut pas un visuel : c'est la scène qu'il faut
+      // réparer, pas le visuel qu'il faut livrer. Le chapeau de l'étape ne
+      // dit « Suggestions d'espèce » qu'une fois les noms posés — il dit
+      // « Analyse en cours… » tant que le modèle cherche, et « Aucune
+      // correspondance fiable » quand la photo n'a pas été servie.
+      if (find.text(l10n.identifyHint).evaluate().isEmpty) throw StateError('les noms d’Iris ne sont pas arrivés sur la photo');
+      await shot('capture');
+      await dismiss();
+    });
+
     // L'identification par Iris, sur la photo du Ficus lyrata : le modèle
     // tourne vraiment, la feuille « Espèce » est celle de l'app.
     await scene('identify', () async {
       await go(Routes.plants);
+      // La tête verte pousse la grille : le Ficus, en deuxième rangée, peut
+      // finir sous la barre d'onglets.
+      await reveal(find.text('Ficus lyrata'));
       await tapText('Ficus lyrata');
-      await tapLabel(l10n.more);
-      await tapText(l10n.identify);
+      await tapBar(l10n.more, item: l10n.identify);
       await wait(tester, 8000);
       // Une feuille vide ne vaut pas un visuel : sans fichier à lire, Iris
       // ne répond rien, et c'est la scène qu'il faut réparer.
@@ -252,6 +329,9 @@ void main() {
     // recouvre, et le repli du web la redessine par-dessus.
     await scene('plant-ficus', () async {
       await go(Routes.plants);
+      // La tête verte pousse la grille : le Ficus, en deuxième rangée, peut
+      // finir sous la barre d'onglets.
+      await reveal(find.text('Ficus lyrata'));
       await tapText('Ficus lyrata');
       await shot('plant-ficus');
     });

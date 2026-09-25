@@ -7,6 +7,7 @@ import '../../../app/providers.dart';
 import '../../../app/router.dart';
 import '../../../app/sync_coordinator.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/utils/dates.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_engine.dart';
 import '../../../domain/models/models.dart';
@@ -97,12 +98,18 @@ class TodayScreen extends ConsumerWidget {
     final upcoming = all.where((t) => statusOf(t) == DueStatus.upcoming).toList();
     final dueTasks = ref.watch(dueTasksProvider);
     final dueCount = live.where((t) => statusOf(t) != DueStatus.upcoming).length + dueTasks.length;
+    // Les soins des sept jours qui viennent : ce que la tête montre quand la
+    // journée est faite.
+    final weekCount = live.where((t) => statusOf(t) == DueStatus.upcoming && t.dueAt != null && now.daysUntil(t.dueAt!) <= 7).length;
 
     return LargeTitlePage(
       title: greeting,
       // Replié, le salut ne dit plus où l'on est : c'est le nom de
       // l'application qui reste dans la barre.
       collapsedTitle: l10n.appName,
+      // La tête verte : le jour, et en grand ce qu'il y a à faire.
+      brand: true,
+      hero: _TodayHero(dueCount: tasks.hasValue ? dueCount : null, weekCount: weekCount, plantCount: plantCount),
       leading: FloraIconButton(
         icon: CupertinoIcons.chart_bar,
         semanticLabel: l10n.dashboardTitle,
@@ -117,18 +124,6 @@ class TodayScreen extends ConsumerWidget {
               onPressed: () => startCreatePlantFlow(context, ref),
             ),
       slivers: [
-        // Le jour, et ce qu'il fait : la date, puis le temps dehors et l'air
-        // de la maison sur une même rangée de pilules.
-        const SliverToBoxAdapter(child: _DayHeader()),
-        // La carte du jour : la seule pièce de terre cuite pleine de l'écran,
-        // celle qui compte. Elle s'efface quand tout est fait.
-        if (plantCount > 0 && dueCount > 0)
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(Space.page, Space.sm, Space.page, 0),
-              child: _DueHero(count: dueCount),
-            ),
-          ),
         // Le gel et la canicule d'abord : ils ont une échéance, la pluie non.
         const SliverToBoxAdapter(child: OutdoorAlertCard()),
         const SliverToBoxAdapter(child: WeatherAdviceCard()),
@@ -176,14 +171,27 @@ class TodayScreen extends ConsumerWidget {
   }
 }
 
-/// La date, et dessous le temps qu'il fait et l'air de la maison, chacun
-/// sur sa pilule. Une seule rangée : les deux lectures se tiennent côte à
-/// côte, et il n'y a rien quand il n'y a rien à lire.
-class _DayHeader extends ConsumerWidget {
-  const _DayHeader();
+/// La tête verte du matin : la date, le nombre de soins du jour en grand,
+/// puis le temps qu'il fait et l'air de la maison sur une rangée de pilules.
+///
+/// Le chiffre dit toujours ce qu'il y a à faire, jamais ce qu'on possède :
+/// le nombre de plantes change à peine d'un jour à l'autre, et ne dit pas
+/// quoi faire. La journée faite, il passe aux soins des sept jours qui
+/// viennent.
+class _TodayHero extends ConsumerWidget {
+  const _TodayHero({required this.dueCount, required this.weekCount, required this.plantCount});
+
+  /// `null` tant que les soins ne sont pas lus : pas de chiffre provisoire.
+  final int? dueCount;
+
+  /// Les soins à venir dans les sept jours.
+  final int weekCount;
+  final int plantCount;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final c = context.colors;
     final weather = ref.watch(todayWeatherProvider);
     final hasOutdoor = ref.watch(outdoorLocationIdsProvider).isNotEmpty;
     final reading = ref.watch(homeReadingProvider).value;
@@ -191,14 +199,41 @@ class _DayHeader extends ConsumerWidget {
       if (weather != null && hasOutdoor) WeatherPill(weather: weather),
       if (reading != null && !reading.isEmpty) HomeClimatePill(reading: reading),
     ];
+    final due = dueCount;
+    final (String, String)? chiffre = due == null || plantCount == 0
+        ? null
+        : due > 0
+            ? ('$due', l10n.todayHeroCare(due))
+            : ('$weekCount', l10n.todayHeroWeek(weekCount));
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(Space.page, 0, Space.page, Space.xs),
-          child: Text(Dates.longDate(context, DateTime.now()), style: context.text.callout),
-        ),
-        if (pills.isNotEmpty) _PillStrip(children: pills),
+        Text(Dates.longDate(context, DateTime.now()), style: context.text.callout.copyWith(color: c.onBrand, fontWeight: FontWeight.w600)),
+        if (chiffre != null) ...[
+          const SizedBox(height: Space.sm),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Expanded(child: HeroNumber(value: chiffre.$1, label: chiffre.$2, size: 120)),
+              const ExcludeSemantics(child: Image(image: AssetImage('assets/objects/arrosoir.webp'), width: 140)),
+            ],
+          ),
+        ],
+        if (pills.isNotEmpty) ...[
+          const SizedBox(height: Space.md),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            clipBehavior: Clip.none,
+            child: Row(
+              children: [
+                for (final (i, pill) in pills.indexed) ...[
+                  if (i > 0) const SizedBox(width: Space.xs),
+                  pill,
+                ],
+              ],
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -388,35 +423,6 @@ class _RecentActivity extends ConsumerWidget {
             child: FloraGroup(children: [for (final e in entries.take(4)) ActivityRow(entry: e)]),
           ),
           const SizedBox(height: Space.lg),
-        ],
-      ),
-    );
-  }
-}
-
-/// « 3 soins » en grand, sur la terre cuite : le chiffre du matin.
-class _DueHero extends StatelessWidget {
-  const _DueHero({required this.count});
-
-  final int count;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final c = context.colors;
-    // La chaîne pluralisée porte le nombre ; on le met à part, en grand.
-    final label = l10n.careCount(count).replaceFirst(RegExp(r'^\d+\s*'), '');
-    final fg = c.onAccent;
-    return ClayBox(
-      color: c.terracotta,
-      shape: const ClayShape.rounded(28),
-      depth: ClayDepth.deep,
-      padding: const EdgeInsets.fromLTRB(Space.lg, Space.md, Space.lg, Space.md),
-      child: Row(
-        children: [
-          Text('$count', style: context.text.display.copyWith(fontSize: 52, height: 1, color: fg)),
-          const SizedBox(width: Space.md),
-          Expanded(child: Text(label, style: context.text.title3.copyWith(color: fg, fontWeight: FontWeight.w700))),
         ],
       ),
     );

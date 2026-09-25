@@ -13,6 +13,7 @@ import '../../../domain/models/models.dart';
 import '../../../domain/repositories/repositories.dart';
 import '../../plants/application/plant_providers.dart';
 import '../../plants/presentation/create_plant_flow.dart';
+import '../../plants/presentation/photo_error.dart';
 import '../../plants/presentation/plant_card.dart';
 import '../../actions/application/care_actions.dart';
 import '../../attachments/presentation/attachments_section.dart' show showRenameSheet;
@@ -87,7 +88,7 @@ class LocationDetailScreen extends ConsumerWidget {
           ],
           Row(
             children: [
-              EmojiTile(emoji: location.icon, size: 56, background: c.sageSoft),
+              EmojiTile(emoji: location.icon, size: 56),
               const SizedBox(width: Space.md),
               Expanded(
                 child: Column(
@@ -150,8 +151,16 @@ Future<void> _careAll(BuildContext context, WidgetRef ref, List<String> plantIds
 Future<void> _photoMenu(BuildContext context, WidgetRef ref, Location location) async {
   final l10n = context.l10n;
   Future<void> pick(PhotoSource source) async {
-    final stored = await ref.read(photoStorageProvider).pick(source);
-    if (stored == null) return;
+    final StoredPhoto stored;
+    try {
+      final picked = await ref.read(photoStorageProvider).pick(source);
+      if (picked == null) return;
+      stored = picked;
+    } catch (e, st) {
+      ref.read(crashReporterProvider).report(e, st, context: 'location.photo');
+      ref.read(toastProvider.notifier).show(photoErrorToast(l10n, e));
+      return;
+    }
     // L'ancienne photo est effacée : un emplacement n'en garde qu'une.
     final previous = location.photoPath;
     final previousThumb = location.thumbPath;

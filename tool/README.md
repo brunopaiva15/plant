@@ -93,31 +93,33 @@ espèces témoins.
 
 # La plante qui pousse (écran de bienvenue)
 
-`build_monstera.py` construit l'icône de l'application : la scène, les
-matériaux « pâte à modeler », la caméra orthographique et l'éclairage studio.
-`grow_monstera.py` reprend tout cela et rend la même plante à quarante âges,
-de la terre nue à l'adulte ; `pack_growth.py` en fait l'image animée que joue
-le premier écran de l'onboarding. Seule la plante change d'une image à
-l'autre — la dernière est exactement l'icône.
+`app_icon_scene.py` construit l'icône de l'application : le pot d'argile à
+deux yeux et sa pousse (voir docs/06, *Icône de l'application*). Sa variable
+`AGE` rend la pousse à un âge donné, de la terre nue (0) à l'adulte (1) ;
+`render_app_icon.py --pousse 40` en rend quarante, au cadrage du pot de
+l'ouverture, et `pack_growth.py` en fait l'image animée que joue le premier
+écran de l'onboarding. Seule la pousse change d'une image à l'autre — la
+dernière est exactement le pot de l'ouverture.
 
-Ce qui bouge entre deux images vient de la vraie plante : les feuilles sortent
-l'une après l'autre, la plus vieille d'abord ; chacune émerge en fuseau
-presque vertical, étroite et entière ; elle s'allonge, s'écarte, s'élargit,
-puis se découpe — fentes d'abord, fenestrations ensuite. Une jeune feuille de
-Monstera n'a ni fente ni trou, ils viennent avec l'âge.
+La tige sort de terre et monte ; les deux feuilles la suivent, étroites et
+repliées en gouttière l'une contre l'autre, puis s'ouvrent, s'élargissent et
+s'étalent.
 
 Le fond est transparent et sans ombre portée : l'ombre au sol et le
 flottement sont dessinés par l'application, qui les accorde à son thème.
 
 ```bash
-# ~15 min sur quatre cœurs (Cycles, CPU)
-blender -b -noaudio -P tool/grow_monstera.py -- 40 1024 40 /tmp/pousse
-python3 tool/pack_growth.py /tmp/pousse assets/onboarding/pousse.webp --fps 14
+# ~20 min sur quatre cœurs (Cycles, CPU), quarante échantillons par image
+python3 tool/render_app_icon.py --blender /chemin/vers/blender --seulement --pousse 40
 ```
 
-La caméra est cadrée une fois pour toutes sur la plante adulte : sans cela,
-le cadrage automatique suivrait la plante qui grandit et elle semblerait
-immobile pendant que le monde rétrécit autour d'elle.
+La caméra est cadrée une fois pour toutes sur la pousse adulte : sans cela,
+le cadrage suivrait la plante qui grandit et elle semblerait immobile
+pendant que le monde rétrécit autour d'elle.
+
+`build_monstera.py` et `grow_monstera.py` rendaient l'ancienne icône, la
+monstera en papier découpé ; `clay_scene.py`, qu'ils partagent, sert encore
+aux autres objets d'argile.
 
 # La collection qui gravite (« Toutes vos plantes, ici »)
 
@@ -135,6 +137,23 @@ blender -b -noaudio -P tool/build_collection.py -- 640 48 /tmp/collection
 python3 -c "from PIL import Image; import glob, os
 for f in glob.glob('/tmp/collection/*.png'):
     Image.open(f).convert('RGBA').save('assets/onboarding/' + os.path.basename(f)[:-4] + '.webp', quality=92, method=6)"
+```
+
+Les pots sont aux couleurs vives de la palette (orange, bleu, jaune, rose),
+rendus en « Standard » plutôt qu'en AgX : AgX, fait pour la photo, les
+ramenait au pastel. Les teintes de départ sont un cran plus soutenues que
+celles de la palette, pour qu'elles y reviennent à l'image.
+
+# Les objets des têtes vertes
+
+`build_objects.py` rend ce qui se pose à côté du grand chiffre d'une tête
+verte. Pour l'instant l'arrosoir du matin, bleu `waterPop`, pomme jaune.
+Même argile, même studio que la collection, même rendu « Standard ».
+
+```bash
+blender -b -noaudio -P tool/build_objects.py -- 640 64 /tmp/objets
+python3 -c "from PIL import Image
+Image.open('/tmp/objets/arrosoir.png').convert('RGBA').save('assets/objects/arrosoir.webp', quality=92, method=6)"
 ```
 
 # Les guides de multiplication (sept archétypes)

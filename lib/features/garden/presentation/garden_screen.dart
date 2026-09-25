@@ -49,6 +49,7 @@ class GardenScreen extends ConsumerWidget {
           };
     return LargeTitlePage(
       title: l10n.gardenTitle,
+      brand: true,
       trailing: trailing,
       slivers: [
         SliverToBoxAdapter(
@@ -155,7 +156,7 @@ class _LocationCard extends StatelessWidget {
       child: Column(
         children: [
           FloraListRow(
-            leading: EmojiTile(emoji: node.location.icon, background: c.sageSoft),
+            leading: EmojiTile(emoji: node.location.icon),
             title: node.location.name,
             subtitle: l10n.plantCount(node.totalPlantCount),
             onTap: () => context.push(Routes.location(node.location.id)),
