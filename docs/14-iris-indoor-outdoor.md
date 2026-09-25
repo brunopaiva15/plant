@@ -1925,7 +1925,8 @@ plus de pas que le bras cosinus. Le calendrier de taux avait rapporté quatre
 
 **L'outdoor est à 0,4 point d'Iris 9. L'indoor reste à 10,7 points**, et
 aucune des images ajoutées n'est une photo d'intérieur : ce n'est pas plus
-d'images qui comblera cet écart.
+d'images *de plein air* qui comblera cet écart. Des photos d'intérieur, en
+revanche, n'ont pas encore été essayées.
 
 ### Ce qu'on en fait
 
@@ -1937,7 +1938,14 @@ d'images qui comblera cet écart.
   passe finale, sur les trois corpus, le vérifiera ;
 - **le prochain levier vise l'indoor**, dans la recette et pas dans les
   données : les *hard negatives* (§ 19 bis, point 3), ou la résolution
-  d'entrée, aujourd'hui de 224 px.
+  d'entrée, aujourd'hui de 224 px ;
+- **les photos d'intérieur de Pl@ntNet restent le levier de données à
+  essayer** (§ 15 de `docs/09`) : ~28 800 photos « propres » et ~14 800
+  « à filtrer » de plantes en pot, 62 et 38 espèces absentes du modèle. Pour
+  la distillation, les étiquettes fausses du § 15.4 ne coûtent rien, puisque
+  le student n'en lit aucune ; elles ne comptent que pour les références et
+  le banc. Les trois gardes du § 20 quater s'appliquent. L'accès attend
+  l'autorisation écrite de Pl@ntNet.
 
 ## 20 quinquies. La résolution d'entrée, 224 → 320 px — 25 septembre 2026
 
