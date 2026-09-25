@@ -5034,66 +5034,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get replayOnboarding => 'Revoir la présentation';
 
   @override
-  String get whatsNewTitle => 'Nouveautés';
-
-  @override
-  String get whatsNewModelUpdate => 'Mise à jour du modèle';
-
-  @override
-  String get whatsNewIrisIntro =>
-      'Le modèle embarqué a été réentraîné : plus d\'espèces, moins d\'erreurs, toujours sans réseau.';
-
-  @override
-  String whatsNewIrisSpeciesTitle(String count) {
-    return '$count espèces reconnues';
-  }
-
-  @override
-  String get whatsNewIrisSpeciesBody =>
-      'Le catalogue accueille des plantes d\'intérieur plus rares.';
-
-  @override
-  String get whatsNewIrisOfflineTitle => 'Toujours sur l\'appareil';
-
-  @override
-  String get whatsNewIrisOfflineBody =>
-      'La reconnaissance reste locale : rien ne part sans votre accord, et vous pouvez couper le repli en ligne.';
-
-  @override
-  String get whatsNewIrisDoubtTitle => 'Doute signalé';
-
-  @override
-  String get whatsNewIrisDoubtBody =>
-      'Deux espèces qui se ressemblent : les deux sont proposées.';
-
-  @override
-  String get whatsNewRoomsIntro =>
-      'Cette version ajoute le scan de la maison, sépare l\'intérieur de l\'extérieur dans Iris et élargit l\'encyclopédie.';
-
-  @override
-  String get whatsNewRoomScanBody =>
-      'Scannez vos pièces au LiDAR : l\'application calcule la lumière de chaque endroit. Sur iPhone Pro et iPad Pro.';
-
-  @override
-  String get whatsNewIndoorOutdoorTitle => 'Intérieur et extérieur';
-
-  @override
-  String get whatsNewIndoorOutdoorBody =>
-      'Iris reconnaît les deux dans un seul modèle. L\'application ne propose alors que les espèces du lieu de la plante.';
-
-  @override
-  String get whatsNewDiagnosisQuestionsBody =>
-      'L\'application demande ce qui manque pour trancher : une observation, ou une photo sous un autre angle.';
-
-  @override
-  String get whatsNewNaturalBody =>
-      'L\'encyclopédie recense 32 phénomènes sans gravité : guttation, nectar extrafloral, moisissure blanche du terreau.';
-
-  @override
-  String get whatsNewCareSourcesBody =>
-      'La fiche indique la source de chaque repère : la RHS, l\'habitat d\'origine ou une règle de culture.';
-
-  @override
   String onbStepOf(int current, int total) {
     return 'Étape $current sur $total';
   }

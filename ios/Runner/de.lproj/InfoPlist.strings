@@ -1,0 +1,8 @@
+/* Texte der Berechtigungsabfragen, auf Deutsch. Siehe fr.lproj/InfoPlist.strings. */
+
+"NSLocationWhenInUseUsageDescription" = "Auxine verwendet deinen Standort einmal, um die Stadt für dein Wetter zu finden. Die App speichert und teilt ihn nicht.";
+"NSLocationAlwaysAndWhenInUseUsageDescription" = "Auxine verwendet deinen Standort einmal, während die App geöffnet ist, um die Stadt für dein Wetter zu finden. Die App verfolgt ihn nicht im Hintergrund, speichert ihn nicht und teilt ihn nicht.";
+"NSHomeKitUsageDescription" = "Auxine liest Temperatur und Luftfeuchtigkeit deiner Apple Home-Sensoren, um Tipps und Diagnosen für deine Zimmerpflanzen anzupassen. Die App schreibt nichts in dein Zuhause, und nichts verlässt das Gerät.";
+"NSCameraUsageDescription" = "Auxine verwendet die Kamera, um deine Pflanzen zu fotografieren und auf deinen Wunsch einen Raum deines Zuhauses zu erfassen. Die Erfassung bleibt auf dem Gerät.";
+"NSPhotoLibraryUsageDescription" = "Auxine greift auf deine Fotos zu, um deine Pflanzen zu bebildern.";
+"NSPhotoLibraryAddUsageDescription" = "Auxine kann Fotos deiner Pflanzen in deiner Mediathek speichern.";

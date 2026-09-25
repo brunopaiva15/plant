@@ -1,8 +1,13 @@
-# Uncomment this line to define a global platform for your project
-# platform :ios, '15.0'
+# La cible de déploiement du projet Runner.
+platform :ios, '17.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+# Les téléchargements de pods passent par curl, qui lit alors curl/.curlrc :
+# HTTP/1.1, relance sur toute erreur, arrêt d'un transfert figé. Voir ce
+# fichier pour la panne qui l'a motivé.
+ENV['CURL_HOME'] = File.join(File.dirname(File.realpath(__FILE__)), 'curl')
 
 project 'Runner', {
   'Debug' => :debug,

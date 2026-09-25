@@ -5007,65 +5007,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get replayOnboarding => 'Replay the intro';
 
   @override
-  String get whatsNewTitle => 'What\'s new';
-
-  @override
-  String get whatsNewModelUpdate => 'Model update';
-
-  @override
-  String get whatsNewIrisIntro =>
-      'The on-device model has been retrained: more species, fewer errors, still no network needed.';
-
-  @override
-  String whatsNewIrisSpeciesTitle(String count) {
-    return '$count species recognised';
-  }
-
-  @override
-  String get whatsNewIrisSpeciesBody => 'Rarer houseplants join the catalogue.';
-
-  @override
-  String get whatsNewIrisOfflineTitle => 'Still on your device';
-
-  @override
-  String get whatsNewIrisOfflineBody =>
-      'Recognition stays local: nothing leaves without your say-so, and you can turn the online fallback off.';
-
-  @override
-  String get whatsNewIrisDoubtTitle => 'Doubt flagged';
-
-  @override
-  String get whatsNewIrisDoubtBody =>
-      'Two species that look alike: both are offered.';
-
-  @override
-  String get whatsNewRoomsIntro =>
-      'This version adds the home scan, separates indoor from outdoor in Iris and widens the encyclopedia.';
-
-  @override
-  String get whatsNewRoomScanBody =>
-      'Scan your rooms with LiDAR: the app calculates the light at each spot. On iPhone Pro and iPad Pro.';
-
-  @override
-  String get whatsNewIndoorOutdoorTitle => 'Indoors and outdoors';
-
-  @override
-  String get whatsNewIndoorOutdoorBody =>
-      'Iris recognises both from a single model. The app then offers only the species that suit the spot.';
-
-  @override
-  String get whatsNewDiagnosisQuestionsBody =>
-      'The app asks for what is missing: an observation, or a photo from another angle.';
-
-  @override
-  String get whatsNewNaturalBody =>
-      'The encyclopedia lists 32 harmless phenomena: guttation, extrafloral nectar, white mould on the potting soil.';
-
-  @override
-  String get whatsNewCareSourcesBody =>
-      'The care guide names the source of each figure: the RHS, the native habitat, or a cultivation rule.';
-
-  @override
   String onbStepOf(int current, int total) {
     return 'Step $current of $total';
   }
