@@ -33,6 +33,7 @@ import '../../network/presentation/offline_notice.dart';
 import '../../plants/application/plant_providers.dart';
 import '../../plants/presentation/inline_camera.dart';
 import '../../plants/presentation/photo_capture_flow.dart';
+import '../../plants/presentation/quick_capture_screen.dart';
 import '../../plants/presentation/photo_error.dart';
 import '../../weather/application/weather_providers.dart';
 import 'analysis_eta.dart';
@@ -285,17 +286,25 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
     if (mounted) _symptomsFocus.requestFocus();
   }
 
-  /// Demander la photo qui manque, par l'appareil ou la galerie.
-  void _chooseSource({bool thenAnalyze = false}) {
+  /// La photo que le compte rendu demande, dans le même viseur que celui du
+  /// haut de la page — flash, zoom et repères de cadrage compris — plutôt que
+  /// dans l'appareil photo du système. Elle relance l'analyse entière.
+  Future<void> _requestedPhoto() async {
+    if (_picking || _full) return;
     final l10n = context.l10n;
-    showAdaptiveActionSheet(
+    final view = _result?.suggestedView;
+    final stored = await showQuickCapture(
       context,
-      cancelLabel: l10n.cancel,
-      actions: [
-        SheetAction(label: l10n.camera, icon: CupertinoIcons.camera, onPressed: () => _addPhoto(PhotoSource.camera, thenAnalyze: thenAnalyze)),
-        SheetAction(label: l10n.gallery, icon: CupertinoIcons.photo, onPressed: () => _addPhoto(PhotoSource.gallery, thenAnalyze: thenAnalyze)),
-      ],
+      title: l10n.photoNextTitle,
+      subtitle: view == null ? l10n.diagnosisAnotherPhotoHint : l10n.diagnosisAnotherPhotoView(l10n.diagnosisViewLabel(view)),
     );
+    if (stored == null) return;
+    // Page quittée entre-temps, ou limite atteinte : la photo ne sert à rien.
+    if (!mounted || _full) {
+      unawaited(_storage.deleteFiles(stored.filePath, stored.thumbPath));
+      return;
+    }
+    _accept(stored, thenAnalyze: true);
   }
 
   Future<void> _analyze() async {
@@ -839,7 +848,7 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
           const SizedBox(height: Space.lg),
           AnotherPhotoCard(
             view: _result!.suggestedView,
-            onAdd: () => _chooseSource(thenAnalyze: true),
+            onAdd: _requestedPhoto,
           ),
         ],
       ],

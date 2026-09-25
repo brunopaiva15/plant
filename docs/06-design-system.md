@@ -988,7 +988,10 @@ tranche, ce qui manque se propose après les pistes, jamais à leur place
 (docs/16) : d'abord les une à trois questions que le service a posées — une
 carte ocre, un champ par question, « Reprendre l'analyse » dessous —, et la
 photo de plus quand il n'en a posé aucune. Une seule des deux, et jamais sur
-un compte rendu net. Répondre refait l'analyse entière ; les réponses
+un compte rendu net. La photo de plus se prend dans le même viseur que celui
+du haut de la page, en plein écran (`showQuickCapture`) : flash, zoom au
+pincement, repères de cadrage, la galerie en dessous. L'appareil photo du
+système n'en est plus que le repli, sans viseur intégré. Répondre refait l'analyse entière ; les réponses
 rejoignent ensuite les symptômes et les observations dans le compte rendu
 gardé. Le même corps sert à la réouverture depuis le journal, à ceci près
 que l'incertitude, elle, ne se relit pas : c'est une décision du moment, pas
