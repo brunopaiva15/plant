@@ -120,6 +120,39 @@ void main() {
       expect(d.causes.map((c) => c.problemId), ['002', '060', '126', null, null]);
     });
 
+    group('le numéro recopié dans le titre', () {
+      // Vu avec Mistral Small : la liste soumise nomme chaque entrée
+      // « N01 Nectar extrafloral », et le modèle recopie l'entrée entière
+      // dans le titre. L'écran affichait « N14 Traces de calcaire ».
+      test('ne s’affiche pas, et rattache la piste quand il est seul à le dire', () {
+        final body = _completion(jsonEncode({
+          'summary': '…',
+          'causes': [
+            {'title': 'N01 Nectar extrafloral', 'problem': 'N01', 'natural': true, 'likelihood': 'unlikely'},
+            {'title': 'N02 - Guttation', 'likelihood': 'unlikely'},
+            {'title': '060: Tétranyques', 'likelihood': 'possible'},
+            {'title': 'n 1 Nectar extrafloral'},
+          ],
+        }));
+        final d = InfomaniakDiagnoser.parseResponse(body, allowed: const {'060'}, allowedNatural: const {'N01', 'N02'});
+        // Les pistes se rangent par vraisemblance : on les lit par titre.
+        expect(d.causes.map((c) => c.title), unorderedEquals(['Nectar extrafloral', 'Guttation', 'Tétranyques', 'Nectar extrafloral']));
+        final parTitre = {for (final c in d.causes) c.title: c};
+        expect(parTitre['Nectar extrafloral']!.naturalId, 'N01');
+        expect(parTitre['Guttation']!.naturalId, 'N02');
+        expect(parTitre['Tétranyques']!.problemId, '060');
+        expect(d.causes.where((c) => c.naturalId == 'N01'), hasLength(2));
+      });
+
+      test('un titre qui commence par un nombre ordinaire reste entier', () {
+        expect(InfomaniakDiagnoser.titleWithoutCode('2 feuilles jaunes'), '2 feuilles jaunes');
+        expect(InfomaniakDiagnoser.titleWithoutCode('100 % des feuilles tachées'), '100 % des feuilles tachées');
+        expect(InfomaniakDiagnoser.titleWithoutCode('1234 Autre'), '1234 Autre');
+        expect(InfomaniakDiagnoser.titleWithoutCode('Nectar extrafloral'), 'Nectar extrafloral');
+        expect(InfomaniakDiagnoser.titleWithoutCode('N01'), 'N01');
+      });
+    });
+
     group('le filet de rattrapage par le nom', () {
       final noms = InfomaniakDiagnoser.namesOf([
         _probleme('027', ProblemKind.disorder, 'Magnesium deficiency', fr: 'Carence en magnésium'),
