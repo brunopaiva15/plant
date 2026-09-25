@@ -4447,9 +4447,13 @@ modèle, tous éteints par défaut. Pour chacun d'allumé :
   inférences simultanées se partageraient le processeur, Iris dépasserait le
   délai de la cascade et partirait en ligne — la comparaison fausserait ce
   qu'elle mesure ;
-- la feuille d'identification montre ses cinq premières propositions sous
-  celles d'Iris, dans une section « Propositions de … ». Elles se
-  choisissent comme les autres ;
+- ses propositions s'affichent sous celles d'Iris, dans une section
+  « Propositions de … », **aux deux endroits où l'on identifie** : l'étape
+  « Nom » de l'ajout d'une plante (trois propositions, comme Iris) et la
+  feuille « Espèce » d'une fiche (cinq). Elles se choisissent comme les
+  autres. Le composant est partagé (`model_comparison.dart`) : la première
+  version ne l'avait mis que dans la feuille, et la comparaison restait
+  invisible là où l'on identifie le plus ;
 - toutes les listes affichent le **score brut** à côté du cran de
   confiance. Tout éteint, rien ne change : un pourcentage se lit comme une
   certitude qu'il n'est pas ;

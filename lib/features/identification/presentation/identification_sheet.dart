@@ -28,6 +28,7 @@ import 'identification_photos.dart';
 import 'identification_source_note.dart';
 import 'genus_row.dart';
 import 'identification_uncertainty.dart';
+import 'model_comparison.dart';
 
 /// Lance l'identification et laisse l'utilisateur choisir. Retourne le
 /// candidat retenu, ou `null`.
@@ -163,24 +164,10 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
     return iris;
   }
 
-  /// Les modèles de comparaison allumés, sur les photos du moment : chacun
-  /// attend que le précédent — Iris d'abord — ait répondu ou échoué.
-  Map<ComparisonModel, Future<List<IdentificationCandidate>>> _compareAfter(Future<Object?> iris) {
-    final files = _files;
-    final language = _language;
-    final out = <ComparisonModel, Future<List<IdentificationCandidate>>>{};
-    Future<Object?> previous = iris;
-    for (final model in ComparisonModel.values) {
-      final comparison = ref.read(comparisonIdentifierProvider(model));
-      if (comparison == null) continue;
-      final next = previous
-          .then<void>((_) {}, onError: (Object _) {})
-          .then((_) => comparison.identify(files, language: language, context: widget.place));
-      out[model] = next;
-      previous = next;
-    }
-    return out;
-  }
+  /// Les modèles de comparaison allumés, sur les photos du moment, une fois
+  /// Iris servie.
+  Map<ComparisonModel, Future<List<IdentificationCandidate>>> _compareAfter(Future<Object?> iris) =>
+      startModelComparisons(ref, after: iris, photos: _files, language: _language, place: widget.place);
 
   /// Retient la réponse pour que la relance suivante ait quelque chose à
   /// montrer pendant qu'elle calcule.
@@ -603,73 +590,9 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
               );
             },
           ),
-          for (final entry in _compare.entries)
-            _ComparisonSection(
-              model: entry.key,
-              future: entry.value,
-              maxCandidates: maxCandidates,
-              onUse: _use,
-            ),
+          ModelComparisonSections(comparisons: _compare, maxCandidates: maxCandidates, onUse: _use),
         ],
       ),
-    );
-  }
-}
-
-/// Les propositions d'un modèle de comparaison, sous celles d'Iris, pour les
-/// comparer sur la même photo (§ 15 de docs/09). Elles se choisissent comme les
-/// autres : une comparaison qui obligerait à recopier le bon nom à la main ne
-/// servirait pas longtemps.
-class _ComparisonSection extends ConsumerWidget {
-  const _ComparisonSection(
-      {required this.model, required this.future, required this.maxCandidates, required this.onUse});
-
-  final ComparisonModel model;
-  final Future<List<IdentificationCandidate>> future;
-  final int maxCandidates;
-  final void Function(IdentificationCandidate candidate) onUse;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = context.l10n;
-    final name = model.displayName;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        SectionHeader(
-          title: l10n.modelComparisonSuggestions(name),
-          padding: const EdgeInsets.only(top: Space.lg, bottom: Space.sm),
-        ),
-        FutureBuilder<List<IdentificationCandidate>>(
-          future: future,
-          builder: (context, snap) {
-            if (snap.connectionState != ConnectionState.done) {
-              return Text(l10n.identifying, style: context.text.caption);
-            }
-            final results = (snap.data ?? const <IdentificationCandidate>[]).take(maxCandidates).toList();
-            // Un modèle qui ne s'est pas chargé ne « reconnaît aucune
-            // plante » : il n'a rien regardé. Le dire comme les réglages le
-            // disent pour Iris, erreur native comprise — c'est elle qui
-            // distingue un asset absent d'un runtime trop ancien.
-            final error = ref.read(comparisonPlantModelProvider(model)).loadError;
-            if (results.isEmpty && error != null) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.modelMissing(name), style: context.text.caption),
-                  SelectableText(error, style: context.text.caption),
-                ],
-              );
-            }
-            if (results.isEmpty) return Text(l10n.modelComparisonNone(name), style: context.text.caption);
-            return FloraGroup(
-              children: [
-                for (final c in results) CandidateRow(candidate: c, onUse: () => onUse(c), showScore: true),
-              ],
-            );
-          },
-        ),
-      ],
     );
   }
 }

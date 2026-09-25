@@ -16,6 +16,7 @@ import '../../../core/observability/observability.dart';
 import '../../../data/services/photo_storage_service.dart';
 import '../../../data/services/jev_identification_policy.dart';
 import '../../../domain/identification/cascade_identifier.dart';
+import '../../../domain/identification/comparison_model.dart';
 import '../../../domain/identification/iris_feedback.dart';
 import '../../identification/presentation/iris_feedback_prompt.dart';
 import '../../identification/presentation/genus_row.dart';
@@ -30,6 +31,7 @@ import '../../../domain/identification/identification_policy.dart';
 import '../../identification/presentation/identification_photos.dart';
 import '../../identification/presentation/identification_sheet.dart';
 import '../../identification/presentation/identification_uncertainty.dart';
+import '../../identification/presentation/model_comparison.dart';
 import '../../cuttings/presentation/propagation_guide_sheet.dart';
 import '../../account/application/membership_providers.dart';
 import '../../../core/l10n/care_labels.dart';
@@ -99,6 +101,10 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
   bool _picking = false;
   bool _saving = false;
   Future<List<IdentificationCandidate>>? _identification;
+
+  /// Ce que voient les modèles de comparaison allumés sur les mêmes photos,
+  /// après Iris (§ 15 de docs/09) ; vide quand aucun ne l'est.
+  Map<ComparisonModel, Future<List<IdentificationCandidate>>> _comparisons = const {};
 
   /// La première analyse reste visible au moins une demi-seconde, même si
   /// Iris répond plus vite. Les noms peuvent apparaître dès que le modèle les
@@ -266,6 +272,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
       _reviewSource = source;
       _reviewSourceOwned = owned;
       _identification = null;
+      _comparisons = const {};
       _primaryPreviewCandidates = const [];
       _primaryIdentificationDone = false;
       _primaryScanMinimumElapsed = false;
@@ -284,6 +291,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
         _photo = null;
         _identificationPaths.clear();
         _identification = null;
+        _comparisons = const {};
         _primaryPreviewCandidates = const [];
         _primaryIdentificationDone = false;
         _primaryScanMinimumElapsed = true;
@@ -322,6 +330,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
         ..clear()
         ..add(path);
       _identification = null;
+      _comparisons = const {};
       _primaryPreviewCandidates = const [];
       _primaryIdentificationDone = false;
       _primaryScanMinimumElapsed = false;
@@ -348,6 +357,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
       _reviewSourceOwned = false;
       _identificationPaths.clear();
       _identification = null;
+      _comparisons = const {};
       _primaryPreviewCandidates = const [];
       _primaryIdentificationDone = false;
       _primaryScanMinimumElapsed = true;
@@ -412,6 +422,8 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     // sans rien dire, là où la version publiée passait.
     setState(() {
       _identification = pending;
+      _comparisons = startModelComparisons(ref,
+          after: pending, photos: [for (final p in _identificationPaths) File(p)], language: lang, place: _place);
     });
   }
 
@@ -960,7 +972,14 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
               onOnlineSearchAsked: _noteJevOnlineSearch,
               genus: _identificationGenus,
               selectedScientificName: _chosen?.scientificName,
+              showScores: _comparisons.isNotEmpty,
             ),
+          ModelComparisonSections(
+            comparisons: _comparisons,
+            maxCandidates: _IdentificationSuggestions.maxCandidates,
+            onUse: _applyCandidate,
+            selectedScientificName: _chosen?.scientificName,
+          ),
           const SizedBox(height: Space.lg),
           Pressable(
             onTap: () => setState(() => _more = !_more),
@@ -1093,7 +1112,11 @@ class _IdentificationSuggestions extends StatelessWidget {
     this.onOnlineSearchAsked,
     this.genus,
     this.selectedScientificName,
+    this.showScores = false,
   });
+
+  /// Les propositions montrées sous la photo.
+  static const int maxCandidates = 3;
 
   final Future<List<IdentificationCandidate>> future;
   final ValueChanged<IdentificationCandidate> onPick;
@@ -1133,6 +1156,10 @@ class _IdentificationSuggestions extends StatelessWidget {
   /// affiché directement sur la photo.
   final String? selectedScientificName;
 
+  /// Le score brut à côté du cran, quand un modèle de comparaison tourne :
+  /// c'est ce qui se compare d'une liste à l'autre.
+  final bool showScores;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -1152,7 +1179,7 @@ class _IdentificationSuggestions extends StatelessWidget {
           );
         }
         final all = snap.data ?? const <IdentificationCandidate>[];
-        final results = all.take(3).toList();
+        final results = all.take(maxCandidates).toList();
         if (results.isEmpty) return const SizedBox.shrink();
         final evaluationFuture =
             results.first.source == IdentificationSource.local
@@ -1186,6 +1213,7 @@ class _IdentificationSuggestions extends StatelessWidget {
                       candidate: c,
                       selected: c.scientificName == selectedScientificName,
                       onUse: () => pick(c),
+                      showScore: showScores,
                     ),
                 ],
               ),
@@ -1265,6 +1293,7 @@ class _IdentificationSuggestions extends StatelessWidget {
                       candidate: c,
                       selected: c.scientificName == selectedScientificName,
                       onUse: () => pick(c),
+                      showScore: showScores,
                     ),
                 ],
               ),

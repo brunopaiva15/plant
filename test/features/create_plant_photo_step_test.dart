@@ -8,8 +8,10 @@ import 'package:flora/data/db/database.dart';
 import 'package:flora/data/services/photo_storage_service.dart';
 import 'package:flora/data/services/preferences_service.dart';
 import 'package:flora/design_system/design_system.dart';
+import 'package:flora/domain/identification/comparison_model.dart';
 import 'package:flora/domain/identification/identification_context.dart';
 import 'package:flora/domain/identification/plant_identifier.dart';
+import 'package:flora/features/identification/presentation/identification_sheet.dart';
 import 'package:flora/features/plants/presentation/create_plant_flow.dart';
 import 'package:flora/l10n/generated/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
@@ -142,6 +144,24 @@ class _InstantIris implements PlantIdentifier {
       ];
 }
 
+/// Pl@ntNet-300K sous le banc d'essai : une proposition fixe, et le compte
+/// des appels.
+class _PlantNet300k implements PlantIdentifier {
+  int calls = 0;
+
+  @override
+  bool get isConfigured => true;
+
+  @override
+  Future<List<IdentificationCandidate>> identify(List<File> images,
+      {String? language, IdentificationContext context = IdentificationContext.unknown}) async {
+    calls++;
+    return const [
+      IdentificationCandidate(scientificName: 'Kalanchoe blossfeldiana', score: 0.47, source: IdentificationSource.local),
+    ];
+  }
+}
+
 void main() {
   late Directory temp;
   late _FakeStorage storage;
@@ -156,7 +176,7 @@ void main() {
     if (await temp.exists()) await temp.delete(recursive: true);
   });
 
-  Future<void> pumpFlow(WidgetTester tester, {PlantIdentifier identifier = const _Iris()}) async {
+  Future<void> pumpFlow(WidgetTester tester, {PlantIdentifier identifier = const _Iris(), PlantIdentifier? plantNet}) async {
     tester.view.physicalSize = const Size(1170, 2532);
     tester.view.devicePixelRatio = 3;
     addTearDown(tester.view.reset);
@@ -172,6 +192,8 @@ void main() {
       gardenIdProvider.overrideWithValue(auth.gardenId),
       photoStorageProvider.overrideWithValue(storage),
       plantIdentifierProvider.overrideWithValue(identifier),
+      comparisonIdentifierProvider(ComparisonModel.plantNet300k).overrideWithValue(plantNet),
+      comparisonIdentifierProvider(ComparisonModel.plantClef2024).overrideWithValue(null),
     ]);
     addTearDown(container.dispose);
     await tester.pumpWidget(UncontrolledProviderScope(
@@ -366,5 +388,36 @@ void main() {
     expect(find.textContaining('depuis sa fiche'), findsOneWidget);
     expect(find.text('La plante'), findsNothing);
     expect(find.text('Une feuille de près'), findsNothing);
+  });
+
+  // L'ajout d'une plante est l'endroit où l'on identifie le plus : la
+  // comparaison y avait d'abord été oubliée, visible seulement dans la
+  // feuille « Espèce » d'une fiche.
+  testWidgets('allumée, la comparaison s\'affiche aussi à l\'étape « Nom »', (tester) async {
+    final plantNet = _PlantNet300k();
+    await pumpFlow(tester, identifier: const _InstantIris(), plantNet: plantNet);
+    await tester.tap(find.widgetWithText(FloraButton, 'Choisir une photo'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FloraButton, 'Continuer'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Nom'), findsOneWidget);
+    expect(plantNet.calls, 1);
+    await tester.scrollUntilVisible(find.text('Propositions de Pl@ntNet-300K'), 200,
+        scrollable: find.byType(Scrollable).first);
+    expect(find.text('Propositions de Pl@ntNet-300K'), findsOneWidget);
+    expect(find.textContaining(RegExp(r'47\s%')), findsOneWidget);
+
+    await tester.ensureVisible(find.text('Kalanchoe blossfeldiana'));
+    await tester.tap(find.descendant(
+      of: find.ancestor(of: find.text('Kalanchoe blossfeldiana'), matching: find.byType(CandidateRow)),
+      matching: find.byType(FloraButton),
+    ));
+    await tester.pumpAndSettle();
+    expect(
+      find.byWidgetPredicate((w) => w is EditableText && w.controller.text == 'Kalanchoe blossfeldiana'),
+      findsOneWidget,
+      reason: 'une proposition de la comparaison se retient comme celles d\'Iris',
+    );
   });
 }
