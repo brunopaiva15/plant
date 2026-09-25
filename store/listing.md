@@ -263,42 +263,43 @@ Scaricate Auxine per sapere ogni mattina quali piante annaffiare.
 ## Nouveautés de la 1.0.1
 
 Le champ « Nouveautés » de chaque langue, en quatre lignes sans termes
-techniques. Le détail, avec les commits, est dans [CHANGELOG.md](../CHANGELOG.md).
+techniques. Chaque ligne dit si c'est une nouveauté ou une correction.
+Le détail, avec les commits, est dans [CHANGELOG.md](../CHANGELOG.md).
 
-### Français (287 / 4000 caractères)
-
-```
-- L'application choisit pour vous l'espèce la plus probable de votre plante.
-- L'application vous guide pour ajouter votre première plante.
-- Si l'appareil photo est bloqué, l'application vous montre comment l'autoriser.
-- Tous les messages s'affichent dans la langue de votre téléphone.
-```
-
-### Deutsch (250 / 4000 caractères)
+### Français (359 / 4000 caractères)
 
 ```
-- Die App wählt für dich die wahrscheinlichste Art deiner Pflanze.
-- Die App hilft dir beim Anlegen deiner ersten Pflanze.
-- Ist die Kamera gesperrt, zeigt dir die App, wie du sie freigibst.
-- Alle Meldungen erscheinen in der Sprache deines Telefons.
+- Nouveau : l'application choisit désormais pour vous l'espèce la plus probable de votre plante.
+- Nouveau : l'application vous guide pour ajouter votre première plante.
+- Corrigé : si l'appareil photo est bloqué, l'application vous montre maintenant comment l'autoriser.
+- Corrigé : tous les messages s'affichent maintenant dans la langue de votre téléphone.
 ```
 
-### English (219 / 4000 caractères)
+### Deutsch (296 / 4000 caractères)
 
 ```
-- The app picks the most likely species of your plant for you.
-- The app helps you add your first plant.
-- If the camera is blocked, the app shows you how to allow it.
-- All messages now appear in your phone's language.
+- Neu: Die App wählt jetzt für dich die wahrscheinlichste Art deiner Pflanze.
+- Neu: Die App hilft dir beim Anlegen deiner ersten Pflanze.
+- Behoben: Ist die Kamera gesperrt, zeigt dir die App jetzt, wie du sie freigibst.
+- Behoben: Alle Meldungen erscheinen jetzt in der Sprache deines Telefons.
 ```
 
-### Italiano (242 / 4000 caractères)
+### English (251 / 4000 caractères)
 
 ```
-- L'app sceglie per te la specie più probabile della tua pianta.
-- L'app ti aiuta ad aggiungere la tua prima pianta.
-- Se la fotocamera è bloccata, l'app ti mostra come autorizzarla.
-- Tutti i messaggi compaiono nella lingua del tuo telefono.
+- New: the app now picks the most likely species of your plant for you.
+- New: the app helps you add your first plant.
+- Fixed: if the camera is blocked, the app now shows you how to allow it.
+- Fixed: all messages now appear in your phone's language.
+```
+
+### Italiano (288 / 4000 caractères)
+
+```
+- Nuovo: l'app ora sceglie per te la specie più probabile della tua pianta.
+- Nuovo: l'app ti aiuta ad aggiungere la tua prima pianta.
+- Corretto: se la fotocamera è bloccata, l'app ora ti mostra come autorizzarla.
+- Corretto: tutti i messaggi ora compaiono nella lingua del tuo telefono.
 ```
 
 ## Politique de confidentialité
