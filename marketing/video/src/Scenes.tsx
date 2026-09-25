@@ -1,73 +1,49 @@
 import React from 'react';
-import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame, Easing } from 'remotion';
+import { AbsoluteFill, Img, OffthreadVideo, Sequence, interpolate, staticFile, useCurrentFrame, Easing } from 'remotion';
 import { Pot } from './Pot';
 import { TEMPS, t } from './temps';
 import { C, Entree, Fond, Mots, Objet, Pastille, Telephone, geometrie, phrase, titre, useRessort } from './outils';
 
 const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
 
-// --- 1. Les photos ---------------------------------------------------------------
-// Huit plantes de la démo tombent une par temps, pendant que « Le carnet de
-// vos plantes. » s'écrit mot par mot sur les mêmes temps.
-const PHOTOS: [string, number, number, number][] = [
-  ['basilic', 300, 790, -8],
-  ['calathea', 770, 760, 7],
-  ['hoya', 520, 1010, -3],
-  ['pilea', 250, 1230, 6],
-  ['monstera', 820, 1180, -6],
-  ['ficus', 430, 1470, 4],
-  ['pothos', 760, 1450, -5],
-  ['olivier', 560, 1240, 2],
+// --- 1. Les plans réels ------------------------------------------------------------
+// Trois plans filmés en intérieur (Pexels), coupés sur les temps : un
+// téléphone qui photographie des plantes, des succulentes vues de dessus, des
+// mains autour d'un pot. « Le carnet de vos plantes. » s'écrit par-dessus.
+const PLANS_ACCROCHE: [string, number, number][] = [
+  ['7872725', 0, 3],
+  ['4507878', 3, 6],
+  ['7421678', 6, 9],
 ];
 
-export const ScenePhotos: React.FC = () => {
+/** Un plan réel, plein cadre, qui avance d'un léger zoom. */
+export const Plan: React.FC<{ id: string; debut: number; fin: number }> = ({ id, debut, fin }) => {
   const frame = useCurrentFrame();
-  // Sur la fin de la deuxième mesure, le tas se resserre : la montée.
-  const serre = interpolate(frame, [t(6.4), t(8)], [0, 1], { ...clamp, easing: Easing.in(Easing.cubic) });
+  if (frame < debut || frame >= fin) return null;
+  const k = interpolate(frame, [debut, fin], [1.08, 1], clamp);
   return (
-    <Fond couleur={C.soleil}>
-      <Mots texte={'Le carnet\nde vos plantes.'} debut={-5} taille={124} style={{ position: 'absolute', left: 80, top: 190 }} />
-      {PHOTOS.map(([nom, x, y, r], i) => (
-        <Photo key={nom} nom={nom} x={x} y={y} r={r} debut={t(i) - 5} serre={serre} />
-      ))}
-    </Fond>
+    <AbsoluteFill style={{ overflow: 'hidden' }}>
+      <Sequence from={debut} layout="none">
+        <OffthreadVideo src={staticFile(`plan-${id}.mp4`)} muted style={{ width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${k})` }} />
+      </Sequence>
+    </AbsoluteFill>
   );
 };
 
-const Photo: React.FC<{ nom: string; x: number; y: number; r: number; debut: number; serre: number }> = ({
-  nom,
-  x,
-  y,
-  r,
-  debut,
-  serre,
-}) => {
-  const s = useRessort(debut, 240, 13);
-  const frame = useCurrentFrame();
-  if (frame < debut) return null;
-  const cote = 380;
-  const cx = x + (540 - x) * serre * 0.35;
-  const cy = y + (1080 - y) * serre * 0.35;
-  return (
-    <div
-      style={{
-        position: 'absolute',
-        left: cx - cote / 2,
-        top: cy - cote / 2,
-        width: cote,
-        height: cote,
-        borderRadius: 44,
-        border: `14px solid ${C.creme}`,
-        overflow: 'hidden',
-        boxShadow: '0 30px 40px rgba(20,14,8,0.22)',
-        transform: `rotate(${r * (2 - s) + serre * r}deg) scale(${(1.7 - 0.7 * s) * (1 - serre * 0.12)})`,
-        opacity: Math.min(1, s * 2.5),
-      }}
-    >
-      <Img src={staticFile(`photo-${nom}.jpg`)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-    </div>
-  );
-};
+/** Le voile du haut, pour que le titre se lise sur une image. */
+const Voile: React.FC = () => (
+  <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(10,8,6,0.62) 0%, rgba(10,8,6,0.25) 30%, rgba(10,8,6,0) 45%)' }} />
+);
+
+export const ScenePhotos: React.FC = () => (
+  <AbsoluteFill style={{ backgroundColor: C.nuit }}>
+    {PLANS_ACCROCHE.map(([id, a, b]) => (
+      <Plan key={id} id={id} debut={t(a)} fin={t(b) + 16} />
+    ))}
+    <Voile />
+    <Mots texte={'Le carnet\nde vos plantes.'} debut={-5} taille={124} couleur={C.blanc} style={{ position: 'absolute', left: 80, top: 190 }} />
+  </AbsoluteFill>
+);
 
 // --- 2. Le pot --------------------------------------------------------------------
 // Le premier temps fort : le pot de l'icône se pose, cligne de l'œil, et le
@@ -122,53 +98,67 @@ const ORIGINE_NOM = `${((APERCU.x + APERCU.nom[0]) / APERCU.w) * 100}% ${((APERC
 
 export const SceneIris: React.FC = () => {
   const frame = useCurrentFrame();
-  const monte = useRessort(0, 150, 16);
-  const balayage = interpolate(frame, [t(2), t(4.8)], [0, 1], { ...clamp, easing: Easing.inOut(Easing.cubic) });
-  const approche = interpolate(frame, [t(6.13), t(7.87)], [0, 1], { ...clamp, easing: Easing.inOut(Easing.cubic) });
+  // Deux mesures : le plan réel jusqu'au déclenchement (temps 4), puis l'app.
+  const coupe = t(4);
+  const monte = useRessort(coupe, 170, 16);
+  const balayage = interpolate(frame, [t(4.4), t(6.2)], [0, 1], { ...clamp, easing: Easing.inOut(Easing.cubic) });
+  const approche = interpolate(frame, [t(6.5), t(7.9)], [0, 1], { ...clamp, easing: Easing.inOut(Easing.cubic) });
+  const eclair = interpolate(frame, [coupe, coupe + 5], [0.9, 0], clamp);
   const p = PHOTO_APERCU;
   const ligne = p.y + balayage * p.h;
+  const reel = frame < coupe;
   return (
     <Entree type="haut">
       <Fond couleur={C.lavande}>
-        <Mots texte={'Quelle est\ncette plante ?'} debut={6} taille={124} style={{ position: 'absolute', left: 80, top: 190 }} />
-        <Telephone
-          nom="capture"
-          largeur={800}
-          x={140}
-          y={560 + (1 - monte) * 1100}
-          rotation={-3 + 3 * approche}
-          echelle={1 + 0.55 * approche}
-          origine={ORIGINE_NOM}
-        >
-          {/* Le flou, sous le trait : il ne couvre que ce que le trait n'a pas encore passé. */}
-          <div
-            style={{
-              position: 'absolute',
-              left: p.x,
-              top: ligne,
-              width: p.l,
-              height: Math.max(0, p.y + p.h - ligne),
-              backdropFilter: 'blur(26px) saturate(0.7)',
-              background: 'rgba(28,23,18,0.18)',
-              borderBottomLeftRadius: p.rayon,
-              borderBottomRightRadius: p.rayon,
-            }}
-          />
-          {balayage > 0 && balayage < 1 && (
+        {reel && (
+          <>
+            <Plan id="6912204" debut={0} fin={coupe} />
+            <Voile />
+          </>
+        )}
+        <Mots texte={'Quelle est\ncette plante ?'} debut={4} taille={124} couleur={reel ? C.blanc : C.encre} style={{ position: 'absolute', left: 80, top: 190 }} />
+        {!reel && (
+          <Telephone
+            nom="capture"
+            largeur={800}
+            x={140}
+            y={560 + (1 - monte) * 1100}
+            rotation={-3 + 3 * approche}
+            echelle={1 + 0.55 * approche}
+            origine={ORIGINE_NOM}
+          >
+            {/* Le flou, sous le trait : il ne couvre que ce que le trait n'a pas encore passé. */}
             <div
               style={{
                 position: 'absolute',
                 left: p.x,
-                top: ligne - 6,
+                top: ligne,
                 width: p.l,
-                height: 12,
-                borderRadius: 6,
-                background: C.blanc,
-                boxShadow: '0 0 40px 16px rgba(255,255,255,0.75)',
+                height: Math.max(0, p.y + p.h - ligne),
+                backdropFilter: 'blur(26px) saturate(0.7)',
+                background: 'rgba(28,23,18,0.18)',
+                borderBottomLeftRadius: p.rayon,
+                borderBottomRightRadius: p.rayon,
               }}
             />
-          )}
-        </Telephone>
+            {balayage > 0 && balayage < 1 && (
+              <div
+                style={{
+                  position: 'absolute',
+                  left: p.x,
+                  top: ligne - 6,
+                  width: p.l,
+                  height: 12,
+                  borderRadius: 6,
+                  background: C.blanc,
+                  boxShadow: '0 0 40px 16px rgba(255,255,255,0.75)',
+                }}
+              />
+            )}
+          </Telephone>
+        )}
+        {/* L'éclair du déclenchement, sur la coupe. */}
+        <AbsoluteFill style={{ backgroundColor: C.blanc, opacity: frame >= coupe ? eclair : 0 }} />
       </Fond>
     </Entree>
   );

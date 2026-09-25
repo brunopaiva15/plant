@@ -75,6 +75,38 @@ shutil.copy('assets/fonts/BricolageGrotesque-VF.ttf', os.path.join(PUB, 'Bricola
 for g in ('Medium', 'SemiBold'):
     shutil.copy(os.path.join(C.FONTS, f'Inter-{g}.ttf'), os.path.join(PUB, f'Inter-{g}.ttf'))
 
+# Les plans réels : des vidéos Pexels (licence Pexels : usage commercial
+# permis, sans crédit), tournées en intérieur. Seulement des mains — aucun
+# visage : la licence interdit de laisser croire qu'une personne filmée
+# recommande l'app. Chacun est recadré en 9:16 autour du téléphone ou de la
+# plante, et coupé au passage utile.
+#   (id, fichier sur le CDN, début en s, durée, centre du cadrage en largeur)
+PLANS = [
+    ('7872725', 'uhd_4096_2160_25fps', 6.0, 1.8, 0.52),   # un téléphone photographie un coin de plantes
+    ('4507878', 'uhd_4096_2160_25fps', 4.0, 1.8, 0.55),   # vu de dessus, des succulentes au téléphone
+    ('7421678', 'hd_1920_1080_25fps', 1.0, 1.4, 0.45),    # des mains autour d'une plante en pot
+    # Le cadrage, puis le déclenchement à 7,5 s : il tombe sur le temps où
+    # la vidéo passe à l'étape « Aperçu » d'Auxine (src/Scenes.tsx).
+    ('6912204', 'hd_1080_1920_24fps', 5.65, 2.2, 0.5),
+]
+import subprocess  # noqa: E402
+import urllib.request  # noqa: E402
+FF = os.path.join(ICI, 'node_modules', '@remotion', 'compositor-linux-x64-gnu')
+for pid, nom, debut, duree, centre in PLANS:
+    src = os.path.join(ICI, 'source', f'pexels-{pid}.mp4')
+    if not os.path.exists(src):
+        os.makedirs(os.path.dirname(src), exist_ok=True)
+        req = urllib.request.Request(f'https://videos.pexels.com/video-files/{pid}/{pid}-{nom}.mp4', headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req, timeout=600) as r, open(src, 'wb') as f:
+            f.write(r.read())
+    w, h = (int(v) for v in nom.split('_')[1:3])
+    cw = min(w, round(h * 9 / 16 / 2) * 2)
+    x = max(0, min(w - cw, round(centre * w - cw / 2)))
+    subprocess.run([os.path.join(FF, 'ffmpeg'), '-loglevel', 'error', '-y', '-ss', str(debut), '-t', str(duree), '-i', src,
+                    '-vf', f'crop={cw}:{h}:{x}:0,scale=1080:1920', '-an', '-c:v', 'libx264', '-crf', '17',
+                    '-pix_fmt', 'yuv420p', '-r', '30', os.path.join(PUB, f'plan-{pid}.mp4')],
+                   check=True, env={**os.environ, 'LD_LIBRARY_PATH': FF})
+
 with open(os.path.join(ICI, 'src', 'geometrie.json'), 'w') as f:
     json.dump(geometrie, f, indent=2)
 print('public/ :', len(os.listdir(PUB)), 'fichiers')

@@ -9,6 +9,24 @@ Reels et Shorts, en motion design avec Remotion.
 | `out/auxine-sortie-fr-muette.mp4` | la même, sans son (pour poser un son dans l'app) |
 | `out/auxine-sortie-fr-couverture.png` | la couverture |
 
+## Les plans réels
+
+L'accroche et la scène « Quelle est cette plante ? » montrent de vrais
+gestes, filmés en intérieur : des vidéos de [Pexels](https://www.pexels.com)
+(licence Pexels : usage commercial permis, sans crédit obligatoire).
+`preparer.py` les télécharge (`source/`, hors du dépôt), les recadre en 9:16
+et les coupe ; la liste est dans `PLANS`.
+
+| Pexels | Auteur | Ce qu'on y voit |
+|---|---|---|
+| [7872725](https://www.pexels.com/video/7872725/) | Ron Lach | un téléphone photographie un coin de plantes |
+| [4507878](https://www.pexels.com/video/4507878/) | cottonbro studio | des succulentes photographiées au téléphone, vues de dessus |
+| [7421678](https://www.pexels.com/video/7421678/) | Antoni Shkraba | des mains autour d'une plante en pot |
+| [6912204](https://www.pexels.com/video/6912204/) | Teona Swift | des mains cadrent une plante d'intérieur et déclenchent |
+
+Seulement des mains : la licence interdit de laisser croire qu'une personne
+filmée recommande l'app.
+
 ## La musique
 
 « Porch Swing Days (faster) », de Kevin MacLeod (incompetech.com), sous
