@@ -174,26 +174,38 @@ const ORIGINE_COCHES = `50% ${((JOUR.y + JOUR.coches[0][1]) / JOUR.h) * 100}%`;
 
 export const SceneSoins: React.FC = () => {
   const frame = useCurrentFrame();
-  const entre = useRessort(0, 150, 16);
-  const descend = interpolate(frame, [t(3.47), t(4.53)], [0, 1], { ...clamp, easing: Easing.inOut(Easing.cubic) });
+  // La première mesure, un vrai arrosage (Pexels) ; la seconde, l'écran
+  // Aujourd'hui, qui glisse puis descend vers les tuiles pour les cocher.
+  const coupe = t(4);
+  const reel = frame < coupe;
+  const entre = useRessort(coupe, 170, 16);
+  const descend = interpolate(frame, [t(4.9), t(5.8)], [0, 1], { ...clamp, easing: Easing.inOut(Easing.cubic) });
   return (
     <Entree type="droite">
       <Fond couleur={C.eau}>
+        {reel && (
+          <>
+            <Plan id="7218427" debut={0} fin={coupe} />
+            <Voile />
+          </>
+        )}
         <div style={{ opacity: 1 - descend, transform: `translateY(${-descend * 120}px)` }}>
-          <Mots texte={'Chaque matin,\nles soins du jour.'} debut={4} taille={112} style={{ position: 'absolute', left: 80, top: 190 }} />
+          <Mots texte={'Chaque matin,\nles soins du jour.'} debut={4} cadence={TEMPS * 0.55} taille={112} couleur={reel ? C.blanc : C.encre} style={{ position: 'absolute', left: 80, top: 190 }} />
         </div>
-        <Telephone
-          nom="today"
-          largeur={800}
-          x={140 + (1 - entre) * 700}
-          y={560 - descend * (560 + Y_COCHES - 1150)}
-          rotation={-4 * (1 - descend)}
-          echelle={1 + 0.3 * descend}
-          origine={ORIGINE_COCHES}
-        >
-          <Coche x={JOUR.coches[0][0]} y={JOUR.coches[0][1]} debut={t(5)} />
-          <Coche x={JOUR.coches[1][0]} y={JOUR.coches[1][1]} debut={t(6)} />
-        </Telephone>
+        {!reel && (
+          <Telephone
+            nom="today"
+            largeur={800}
+            x={140 + (1 - entre) * 900}
+            y={560 - descend * (560 + Y_COCHES - 1150)}
+            rotation={-4 * (1 - descend)}
+            echelle={1 + 0.3 * descend}
+            origine={ORIGINE_COCHES}
+          >
+            <Coche x={JOUR.coches[0][0]} y={JOUR.coches[0][1]} debut={t(6.2)} />
+            <Coche x={JOUR.coches[1][0]} y={JOUR.coches[1][1]} debut={t(7.1)} />
+          </Telephone>
+        )}
       </Fond>
     </Entree>
   );

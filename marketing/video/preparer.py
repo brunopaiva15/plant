@@ -85,6 +85,9 @@ PLANS = [
     ('7872725', 'uhd_4096_2160_25fps', 6.0, 1.8, 0.52),   # un téléphone photographie un coin de plantes
     ('4507878', 'uhd_4096_2160_25fps', 4.0, 1.8, 0.55),   # vu de dessus, des succulentes au téléphone
     ('7421678', 'hd_1920_1080_25fps', 1.0, 1.4, 0.45),    # des mains autour d'une plante en pot
+    # Un arrosage au pied d'une monstera, près d'une fenêtre : l'eau coule
+    # entre 19 et 23 s.
+    ('7218427', 'hd_1080_1920_25fps', 19.6, 2.2, 0.5),
     # Le cadrage, puis le déclenchement à 7,5 s : il tombe sur le temps où
     # la vidéo passe à l'étape « Aperçu » d'Auxine (src/Scenes.tsx).
     ('6912204', 'hd_1080_1920_24fps', 5.65, 2.2, 0.5),

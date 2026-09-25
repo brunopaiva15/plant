@@ -23,9 +23,11 @@ et les coupe ; la liste est dans `PLANS`.
 | [4507878](https://www.pexels.com/video/4507878/) | cottonbro studio | des succulentes photographiées au téléphone, vues de dessus |
 | [7421678](https://www.pexels.com/video/7421678/) | Antoni Shkraba | des mains autour d'une plante en pot |
 | [6912204](https://www.pexels.com/video/6912204/) | Teona Swift | des mains cadrent une plante d'intérieur et déclenchent |
+| [7218427](https://www.pexels.com/video/7218427/) | Thirdman | un arrosage au pied d'une monstera (scène des soins) |
 
-Seulement des mains : la licence interdit de laisser croire qu'une personne
-filmée recommande l'app.
+Surtout des mains : la licence interdit de laisser croire qu'une personne
+filmée recommande l'app. Dans le plan d'arrosage, la personne est de dos
+et de profil, sans texte qui lui prête un avis.
 
 ## La musique
 
