@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/l10n/platform_copy.dart';
 import '../../../core/system_settings.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/care/reminder_planner.dart';
@@ -25,19 +26,19 @@ class NotificationsScreen extends ConsumerWidget {
       if (v) {
         final granted = await ref.read(notificationServiceProvider).requestPermission();
         if (!granted) {
-          // iOS ne repose pas la question : la seule issue passe par les
-          // Réglages, autant y conduire plutôt que de le dire.
+          // Le système ne repose pas la question : la seule issue passe par
+          // ses réglages, autant y conduire plutôt que de le dire.
           if (context.mounted && SystemSettings.isSupported) {
             final go = await showAdaptiveConfirm(
               context,
               title: l10n.enableNotifications,
-              message: l10n.notificationPermissionDenied,
-              confirmLabel: l10n.openSettings,
+              message: l10n.notificationsDeniedHint,
+              confirmLabel: l10n.openSystemSettings,
               cancelLabel: l10n.later,
             );
             if (go) await SystemSettings.open();
           } else if (context.mounted) {
-            ref.read(toastProvider.notifier).show(ToastData(message: l10n.notificationPermissionDenied, emoji: '!'));
+            ref.read(toastProvider.notifier).show(ToastData(message: l10n.notificationsDeniedHint, emoji: '!'));
           }
           return;
         }

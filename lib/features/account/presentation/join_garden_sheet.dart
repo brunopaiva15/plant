@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart' show Icons;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
@@ -13,6 +12,7 @@ import '../../../domain/auth/auth_repository.dart';
 import '../../../domain/sharing/garden_collaboration.dart';
 import '../application/membership_providers.dart';
 import '../application/sign_in_availability.dart';
+import 'sign_in_button.dart';
 
 /// Rejoindre un jardin partagé : on saisit le code (ou il arrive tout fait par
 /// le lien d'invitation), on voit ce qu'il promet, et on accepte.
@@ -97,12 +97,15 @@ class _JoinSheetState extends ConsumerState<_JoinSheet> {
       _error = null;
     });
     final l10n = context.l10n;
+    final method = ref.read(signInMethodProvider);
     try {
-      await ref.read(authRepositoryProvider).signInWithApple();
+      if (method == null) throw const AuthException('unavailable');
+      await method.signIn(ref.read(authRepositoryProvider));
       Haptics.success();
     } on AuthException catch (e) {
-      // Refermer la feuille d'Apple n'est pas une erreur : on reste là.
-      if (mounted) setState(() => _error = e.message == 'cancelled' ? null : (e.message == 'apple_unavailable' ? l10n.appleUnavailable : l10n.authError));
+      // Refermer la feuille d'Apple ou de Google n'est pas une erreur : on
+      // reste là.
+      if (mounted) setState(() => _error = signInErrorText(l10n, e));
       return;
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'join-sign-in');
@@ -167,7 +170,10 @@ class _JoinSheetState extends ConsumerState<_JoinSheet> {
     final preview = _preview;
     final user = ref.watch(currentUserProvider).value;
     final signedIn = user != null && !user.isLocal;
-    final canSignIn = !signedIn && signInAvailable(ref.watch(authRepositoryProvider));
+    final method = ref.watch(signInMethodProvider);
+    // Ici la connexion se fait sur place, par la feuille du système : Google
+    // par le navigateur ne rendrait la session qu'au retour, feuille fermée.
+    final canSignIn = !signedIn && method != null;
     final online = ref.watch(isOnlineProvider);
     return Padding(
       padding: const EdgeInsets.fromLTRB(Space.page, 0, Space.page, Space.xl),
@@ -211,7 +217,11 @@ class _JoinSheetState extends ConsumerState<_JoinSheet> {
             // Sans compte, on le dit avant le geste, pas après : ici la
             // connexion se fait sur place, ailleurs elle n'existe pas encore.
             const SizedBox(height: Space.md),
-            Text(canSignIn ? l10n.joinSignInHint : l10n.joinNeedsAccount, style: context.text.caption, textAlign: TextAlign.center),
+            Text(
+              canSignIn ? (method == SignInMethod.google ? l10n.joinSignInHintGoogle : l10n.joinSignInHint) : l10n.joinNeedsAccount,
+              style: context.text.caption,
+              textAlign: TextAlign.center,
+            ),
           ],
           const SizedBox(height: Space.lg),
           // Le code s'échange sur le serveur, et la connexion Apple aussi :
@@ -219,7 +229,7 @@ class _JoinSheetState extends ConsumerState<_JoinSheet> {
           if (!online)
             Text(l10n.offlineCollaboration, style: context.text.caption, textAlign: TextAlign.center)
           else if (canSignIn)
-            FloraButton(label: l10n.continueWithApple, icon: Icons.apple, expand: true, loading: _busy, onPressed: _signInThenContinue)
+            SignInButton(method: method, loading: _busy, onPressed: _signInThenContinue)
           else
             FloraButton(
               label: preview == null ? l10n.joinLook : l10n.joinConfirm,

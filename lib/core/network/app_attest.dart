@@ -8,10 +8,9 @@ import 'package:flutter/services.dart';
 /// cette chaîne sait donc qu'il parle au vrai Auxine, sur un vrai iPhone —
 /// et rien de plus : ni qui le tient, ni ce qu'il contient.
 ///
-/// Le canal est dans `ios/Runner/AppAttestChannel.swift`. Ailleurs — sur le
-/// simulateur, qui n'a pas d'enclave, et sur Android, qui attend Play
-/// Integrity — [isSupported] rend `false` et l'appelant passe par le
-/// laissez-passer de développement.
+/// Le canal est dans `ios/Runner/AppAttestChannel.swift`. Ailleurs —
+/// sur le simulateur, qui n'a pas d'enclave, et sur Android, qui se présente
+/// par Play Integrity (`play_integrity.dart`) — [isSupported] rend `false`.
 class AppAttestException implements Exception {
   const AppAttestException(this.code, [this.message]);
 

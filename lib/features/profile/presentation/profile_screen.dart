@@ -15,6 +15,7 @@ import '../../account/application/membership_providers.dart';
 import '../../account/application/sign_in_availability.dart';
 import '../../community/application/moderation_providers.dart';
 import '../../account/presentation/gardens_screen.dart' show gardenLabel;
+import '../../account/presentation/sign_in_button.dart' show signInIcon;
 import '../../room_scan/application/room_scan_providers.dart';
 
 /// Profil : prénom, apparence, notifications, données, sources.
@@ -67,16 +68,17 @@ class ProfileScreen extends ConsumerWidget {
               // des réglages.
               Builder(builder: (context) {
                 final signedIn = user != null && !user.isLocal;
-                final canSignIn = !signedIn && signInAvailable(ref.watch(authRepositoryProvider));
+                final method = ref.watch(signInMethodProvider);
+                final canSignIn = !signedIn && ref.watch(signInAvailableProvider);
                 return FloraGroup(
                   footer: signedIn ? null : (canSignIn ? l10n.signInHint : l10n.localAccountHint),
                   children: [
                     FloraListRow(
                       leading: signedIn
                           ? Icon(CupertinoIcons.person_crop_circle_fill, size: 20, color: c.sage)
-                          : Icon(canSignIn ? Icons.apple : CupertinoIcons.lock, size: 20, color: c.inkSecondary),
+                          : Icon(canSignIn ? signInIcon(method ?? SignInMethod.google) : CupertinoIcons.lock, size: 20, color: c.inkSecondary),
                       title: canSignIn ? l10n.signIn : l10n.account,
-                      subtitle: signedIn ? (user.email ?? l10n.signedInAs) : (canSignIn ? l10n.signInWithAppleId : l10n.localAccount),
+                      subtitle: signedIn ? (user.email ?? l10n.signedInAs) : (canSignIn ? (method == SignInMethod.apple ? l10n.signInWithAppleId : l10n.signInWithGoogleAccount) : l10n.localAccount),
                       onTap: () => context.push(Routes.account),
                     ),
                     if (signedIn) const _GardensRow(),

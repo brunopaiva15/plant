@@ -1,12 +1,14 @@
 import 'package:flora/domain/auth/auth_repository.dart';
 
 /// Un dépôt d'auth de laboratoire : un compte local, et un backend ou non.
-/// `signInWithApple` réussit sans rien demander et compte ses appels.
+/// `signInWithApple` et `signInWithGoogle` réussissent sans rien demander et
+/// comptent leurs appels.
 class FakeAuthRepository implements AuthRepository {
   FakeAuthRepository({required this.remote});
 
   final bool remote;
   int appleSignIns = 0;
+  int googleSignIns = 0;
   final _user = const AppUser(id: 'u', displayName: '');
 
   @override
@@ -28,7 +30,7 @@ class FakeAuthRepository implements AuthRepository {
   Future<void> signInWithApple() async => appleSignIns++;
 
   @override
-  Future<void> signInWithGoogle() async {}
+  Future<void> signInWithGoogle() async => googleSignIns++;
 
   @override
   Future<void> signOut() async {}

@@ -16,6 +16,7 @@ import '../../../domain/home/home_climate.dart';
 import '../../../domain/weather/weather.dart';
 import '../../account/application/sign_in_availability.dart';
 import '../../account/presentation/open_garden_sheet.dart';
+import '../../account/presentation/sign_in_button.dart';
 import '../../home_climate/application/home_climate_providers.dart';
 import '../../home_climate/presentation/home_climate_widgets.dart';
 import '../../home_climate/presentation/home_sensor_picker_sheet.dart';
@@ -141,7 +142,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
   /// on ne promet pas une connexion qui n'existe pas. Le dépôt d'auth est
   /// fixé au démarrage : le lire ici, hors de `build`, ne rate aucun
   /// changement.
-  bool get _hasAccount => signInAvailable(ref.read(authRepositoryProvider));
+  bool get _hasAccount => ref.read(signInMethodProvider) != null;
   int get _accountIndex => _nameIndex + 1;
   int get _pageCount => _nameIndex + (_hasAccount ? 2 : 1);
 
@@ -884,18 +885,21 @@ class _AccountPageState extends ConsumerState<_AccountPage> {
   Future<void> _signIn() async {
     if (_busy) return;
     final l10n = context.l10n;
+    final method = ref.read(signInMethodProvider);
+    if (method == null) return;
     setState(() => _busy = true);
     try {
-      await ref.read(authRepositoryProvider).signInWithApple();
+      await method.signIn(ref.read(authRepositoryProvider));
       Haptics.success();
       // Le compte peut déjà avoir un jardin — une réinstallation, un autre
       // appareil : on le propose avant de passer à la suite.
       if (context.mounted) await proposeExistingGardens(context, ref);
       if (mounted) widget.onDone();
     } on AuthException catch (e) {
-      // Refermer la feuille d'Apple n'est pas une erreur : on reste là.
-      if (e.message == 'cancelled') return;
-      ref.read(toastProvider.notifier).show(ToastData(message: e.message == 'apple_unavailable' ? l10n.appleUnavailable : l10n.authError, emoji: '!'));
+      // Refermer la feuille d'Apple ou de Google n'est pas une erreur : on
+      // reste là.
+      final message = signInErrorText(l10n, e);
+      if (message != null) ref.read(toastProvider.notifier).show(ToastData(message: message, emoji: '!'));
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'onboarding_auth');
       if (mounted) ref.read(toastProvider.notifier).show(ToastData(message: l10n.authError, emoji: '!'));
@@ -910,6 +914,8 @@ class _AccountPageState extends ConsumerState<_AccountPage> {
     final c = context.colors;
     final user = ref.watch(currentUserProvider).value;
     final signedIn = user != null && !user.isLocal;
+    // La page n'existe que si l'appareil a une connexion (`_hasAccount`).
+    final method = ref.watch(signInMethodProvider) ?? SignInMethod.apple;
     return LayoutBuilder(
       builder: (context, constraints) => SingleChildScrollView(
         physics: floraScrollPhysics,
@@ -923,7 +929,7 @@ class _AccountPageState extends ConsumerState<_AccountPage> {
                 const SizedBox(height: Space.xl),
                 Text(l10n.onbAccountTitle, style: onboardingTitleStyle(context)),
                 const SizedBox(height: Space.sm),
-                Text(l10n.onbAccountBody, style: onboardingBodyStyle(context)),
+                Text(method == SignInMethod.google ? l10n.onbAccountBodyGoogle : l10n.onbAccountBody, style: onboardingBodyStyle(context)),
                 if (signedIn) ...[
                   const SizedBox(height: Space.lg),
                   FloraCard(
@@ -942,7 +948,7 @@ class _AccountPageState extends ConsumerState<_AccountPage> {
                 if (signedIn)
                   OnboardingButton(label: l10n.continueLabel, trailingIcon: CupertinoIcons.arrow_right, onPressed: widget.onDone)
                 else ...[
-                  FloraButton(label: l10n.continueWithApple, icon: Icons.apple, expand: true, loading: _busy, onPressed: _signIn),
+                  SignInButton(method: method, loading: _busy, onPressed: _signIn),
                   const SizedBox(height: Space.xs),
                   OnboardingButton(label: l10n.later, filled: false, onPressed: widget.onDone),
                 ],

@@ -8,6 +8,7 @@ import '../../../app/providers.dart';
 import '../../../app/router.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/l10n/platform_copy.dart';
 import '../../../core/system_settings.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/models/models.dart';
@@ -117,10 +118,10 @@ class _ScannerScreenState extends ConsumerState<ScannerScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(l10n.cameraPermission, style: context.text.body.copyWith(color: Colors.white), textAlign: TextAlign.center),
+                    Text(l10n.cameraDeniedHint, style: context.text.body.copyWith(color: Colors.white), textAlign: TextAlign.center),
                     if (SystemSettings.isSupported) ...[
                       const SizedBox(height: Space.lg),
-                      FloraButton(label: l10n.openSettings, style: FloraButtonStyle.secondary, onPressed: SystemSettings.open),
+                      FloraButton(label: l10n.openSystemSettings, style: FloraButtonStyle.secondary, onPressed: SystemSettings.open),
                     ],
                   ],
                 ),

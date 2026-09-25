@@ -3,9 +3,11 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 
+import '../../core/config/app_config.dart';
 import '../../core/config/supabase_config.dart';
 import '../../domain/auth/auth_repository.dart';
 import '../db/database.dart';
@@ -118,8 +120,25 @@ class SupabaseAuthRepository implements AuthRepository {
     }
   }
 
+  static const MethodChannel _google = MethodChannel('ch.vergasta.plant/google_sign_in');
+
+  /// Connexion Google.
+  ///
+  /// Sur Android, native, comme Apple sur iPhone : la feuille du système
+  /// (Credential Manager, `android/.../GoogleSignInChannel.kt`) rend un jeton
+  /// d'identité signé par Google, échangé contre une session Supabase avec un
+  /// nonce pour lier les deux. L'appel ne revient qu'une fois connecté.
+  ///
+  /// Ailleurs, par le navigateur (OAuth) : la session arrive plus tard, par
+  /// le lien de retour `auxine://login-callback`.
+  ///
+  /// Côté Supabase, le fournisseur Google doit connaître le client OAuth Web
+  /// ([AppConfig.googleWebClientId]) ; côté Google Cloud, un client Android
+  /// doit porter le nom du paquet et l'empreinte SHA-1 de la clé de
+  /// signature. Voir docs/20-android.md.
   @override
   Future<void> signInWithGoogle() async {
+    if (defaultTargetPlatform == TargetPlatform.android) return _signInWithGoogleOnAndroid();
     try {
       await _client.auth.signInWithOAuth(sb.OAuthProvider.google, redirectTo: SupabaseConfig.authRedirect, authScreenLaunchMode: sb.LaunchMode.externalApplication);
     } on sb.AuthException catch (e) {
@@ -127,9 +146,58 @@ class SupabaseAuthRepository implements AuthRepository {
     }
   }
 
+  Future<void> _signInWithGoogleOnAndroid() async {
+    if (AppConfig.googleWebClientId.isEmpty) throw const AuthException('google_unavailable');
+    final rawNonce = _client.auth.generateRawNonce();
+    final Map<Object?, Object?> credential;
+    try {
+      credential = await _google.invokeMapMethod<Object?, Object?>('signIn', {
+            'serverClientId': AppConfig.googleWebClientId,
+            // Google scelle le condensé ; Supabase le recalcule depuis le
+            // nonce brut, et refuse un jeton qui ne serait pas le sien.
+            'nonce': sha256.convert(utf8.encode(rawNonce)).toString(),
+          }) ??
+          const {};
+    } on MissingPluginException {
+      throw const AuthException('google_unavailable');
+    } on PlatformException catch (e) {
+      // Refermer la feuille : l'UI ne montre rien. Le reste est une erreur,
+      // dite comme telle.
+      throw AuthException(e.code == 'cancelled' ? 'cancelled' : (e.message ?? e.code));
+    }
+    final idToken = credential['idToken'];
+    if (idToken is! String || idToken.isEmpty) throw const AuthException('google_no_token');
+    try {
+      await _client.auth.signInWithIdToken(provider: sb.OAuthProvider.google, idToken: idToken, nonce: rawNonce);
+    } on sb.AuthException catch (e) {
+      throw AuthException(e.message);
+    }
+    // Comme pour Apple : le prénom est un supplément, son échec ne dit rien
+    // de la connexion.
+    final given = credential['givenName'];
+    if (given is String && given.isNotEmpty && (_prefs.displayName ?? '').isEmpty) {
+      try {
+        await updateDisplayName(given);
+      } catch (_) {
+        _emit();
+      }
+    }
+  }
+
   @override
   Future<void> signOut() async {
     await _client.auth.signOut();
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      // Oublier le compte choisi : la prochaine connexion reproposera la
+      // liste, au lieu de reprendre d'office celui qu'on vient de quitter.
+      try {
+        await _google.invokeMethod<void>('signOut');
+      } on MissingPluginException {
+        // Un binaire sans le canal : rien à oublier.
+      } on PlatformException {
+        // Rien de grave : la session Supabase, elle, est bien fermée.
+      }
+    }
     _emit();
   }
 

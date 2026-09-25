@@ -44,13 +44,25 @@ abstract final class AppConfig {
   /// l'affiche en clair dit d'où elle vient.
   static const String linkScheme = 'auxine';
 
-  /// Fournisseurs tiers proposés sur l'écran Compte, en plus de l'e-mail par
-  /// code. Apple est livré (natif, iPhone et iPad, entitlement
-  /// `com.apple.developer.applesignin` dans `ios/Runner/Runner.entitlements`).
-  /// Google ne l'est pas encore : `signInWithGoogle` reste codé, mais le
-  /// bouton n'est pas dessiné tant que ce drapeau est faux. Android n'est pas
-  /// la priorité, et la règle 4.8 de l'App Store n'exige Apple qu'en présence
-  /// d'un autre fournisseur tiers — proposer Apple seul est permis.
+  /// Les connexions proposées. Chaque appareil a la sienne, par la feuille
+  /// de son système : **Apple sur iPhone et iPad** (entitlement
+  /// `com.apple.developer.applesignin` dans `ios/Runner/Runner.entitlements`),
+  /// **Google sur Android** (Credential Manager,
+  /// `android/.../GoogleSignInChannel.kt`). Pas de connexion par e-mail.
+  ///
+  /// Google sur Android demande l'identifiant du client OAuth *Web* du projet
+  /// Google Cloud — celui que le fournisseur Google de Supabase connaît aussi.
+  /// Ce n'est pas un secret : il dit à Google pour quel serveur le jeton est
+  /// émis. Tant qu'il est vide, le compte reste local sur Android, comme
+  /// avant, et aucun écran ne promet une connexion qui n'existe pas. La
+  /// marche à suivre est dans `docs/20-android.md`.
+  static const String googleWebClientId = '';
+
+  /// Google *en plus* d'Apple sur iPhone, par le navigateur (OAuth).
+  /// `signInWithGoogle` y reste codé, mais le bouton n'est pas dessiné tant
+  /// que ce drapeau est faux : la règle 4.8 de l'App Store n'exige Apple
+  /// qu'en présence d'un autre fournisseur tiers — proposer Apple seul est
+  /// permis.
   static const bool googleSignInEnabled = false;
 
   /// Google Home, en plus d'Apple Maison : mêmes deux nombres — la

@@ -30,7 +30,8 @@ const double compactWindowWidth = 600;
 ///
 /// Ailleurs, la demande ne faisait que répéter ce qui était déjà déclaré :
 /// `ios/Runner/Info.plist` tient le portrait sur iPhone et les quatre
-/// orientations sur iPad, le manifeste Android tient le portrait partout. Sur
+/// orientations sur iPad, et `MainActivity` applique la même règle sur
+/// Android, selon le côté le plus court de l'écran. Sur
 /// iPad, Flutter note d'ailleurs que la demande n'est honorée que si le
 /// multitâche est coupé — ce qu'on ne fait pas.
 ///

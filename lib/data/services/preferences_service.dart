@@ -85,6 +85,12 @@ class PreferencesService {
   Future<void> setAppAttestKeyId(String? value) =>
       value == null ? _prefs.remove('app_attest_key_id') : _prefs.setString('app_attest_key_id', value);
 
+  /// L'identifiant d'installation que le relais compte sur Android, où Play
+  /// Integrity ne rend aucune identité d'appareil. Tiré au sort une fois ;
+  /// il n'identifie personne, et une réinstallation en tire un neuf.
+  String? get relayInstallId => _prefs.getString('relay_install_id');
+  Future<void> setRelayInstallId(String value) => _prefs.setString('relay_install_id', value);
+
   /// Compteurs de la cascade d'identification, en JSON.
   String? get identificationMetrics => _prefs.getString('identification_metrics');
   Future<void> setIdentificationMetrics(String json) => _prefs.setString('identification_metrics', json);

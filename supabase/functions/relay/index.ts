@@ -3,6 +3,7 @@
 //   POST /attest/challenge   un défi à usage unique
 //   POST /attest/register    la première attestation d'un appareil
 //   POST /attest/session     une assertion, contre un jeton de session
+//   POST /attest/integrity   un verdict Play Integrity, contre un jeton de session
 //   POST /attest/dev         le laissez-passer des constructions sans enclave
 //   POST /identify           Pl@ntNet
 //   POST /ai                 les AI Services d'Infomaniak
@@ -17,8 +18,9 @@
 //
 // D'où les deux gardes, qui ne font pas le même travail :
 //
-// - **App Attest** dit que c'est le vrai Auxine, sur un vrai appareil Apple.
-//   Il borne le nombre d'attaquants possibles.
+// - **App Attest** (iPhone) et **Play Integrity** (Android) disent que c'est
+//   le vrai Auxine, sur un vrai appareil. Ils bornent le nombre d'attaquants
+//   possibles.
 // - **Les quotas** bornent ce que chacun d'eux peut coûter. Ils s'appliquent
 //   toujours, y compris à un appareil parfaitement légitime — c'est le seul
 //   mécanisme qui tienne encore le jour où le premier est contourné.
@@ -30,9 +32,19 @@
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
 import { fromBase64, hex, sha256, timingSafeEqual, toBase64, toBase64Url, utf8 } from './bytes.ts';
-import { attestPolicy, available, challengeLifetime, limits, missingSecrets, secrets, sessionLifetime } from './config.ts';
+import {
+  attestPolicy,
+  available,
+  challengeLifetime,
+  integrityPolicy,
+  limits,
+  missingSecrets,
+  secrets,
+  sessionLifetime,
+} from './config.ts';
 import type { Route } from './config.ts';
 import { AttestationError, verifyAssertion, verifyAttestation } from './attest.ts';
+import { checkVerdict, decodeIntegrityToken, integrityRequestHash, IntegrityError, parseServiceAccount } from './integrity.ts';
 import { mintSession, readSession } from './session.ts';
 import { ai, decide, identify, UpstreamError } from './upstreams.ts';
 
@@ -92,6 +104,7 @@ async function claim(value: unknown): Promise<string> {
 
 interface Registration {
   keyId?: unknown;
+  installId?: unknown;
   attestation?: unknown;
   assertion?: unknown;
   challenge?: unknown;
@@ -184,8 +197,42 @@ async function session(request: Request): Promise<Response> {
   return json(await mintSession(secrets.session, { sub: keyId, kind: 'appattest' }, sessionLifetime));
 }
 
+/// Android : Google déchiffre le jeton, le relais lit le verdict. Il n'y a
+/// pas de clé à garder ni de compteur à faire monter — chaque poignée de main
+/// redemande un jeton au Play Store de l'appareil. L'identifiant
+/// d'installation est tiré au sort par l'application et scellé dans le jeton
+/// avec le défi : c'est lui que les quotas comptent.
+async function integrity(request: Request): Promise<Response> {
+  const account = parseServiceAccount(secrets.playServiceAccount);
+  if (!account) return fail(404, 'inconnu');
+  const payload = await body<Registration>(request);
+  const installId = payload.installId;
+  // 32 octets tirés au sort, en base64url sans remplissage.
+  if (typeof installId !== 'string' || !/^[A-Za-z0-9_-]{43}$/.test(installId)) {
+    throw new UpstreamError(400, "identifiant d'installation attendu");
+  }
+  if (typeof payload.token !== 'string' || payload.token.length === 0 || payload.token.length > 16384) {
+    throw new UpstreamError(400, 'jeton attendu');
+  }
+  const value = await claim(payload.challenge);
+
+  const policy = integrityPolicy();
+  try {
+    const verdict = await decodeIntegrityToken(payload.token, policy.packageName, account);
+    checkVerdict(verdict, await integrityRequestHash(value, installId), policy);
+  } catch (error) {
+    if (error instanceof IntegrityError) return fail(401, 'verdict refusé');
+    // Google injoignable : ce n'est pas un refus, et l'appareil retentera.
+    console.error('play integrity', error);
+    return fail(503, 'indisponible');
+  }
+
+  return json(await mintSession(secrets.session, { sub: `play:${installId}`, kind: 'playintegrity' }, sessionLifetime));
+}
+
 /// Le chemin des constructions qui ne peuvent pas attester : le simulateur,
-/// où App Attest n'existe pas, et Android, qui attend Play Integrity. Un
+/// où App Attest n'existe pas, et une construction Android qui ne vient pas
+/// de Google Play, que Play Integrity ne reconnaît pas. Un
 /// secret partagé, donc rien qui prouve quoi que ce soit — d'où le quota
 /// commun : tout ce qui entre par là partage un seul appareil, et se coupe
 /// d'un `supabase secrets unset` le jour où il fuit.
@@ -251,7 +298,17 @@ Deno.serve(async (request) => {
   // se voit ici plutôt que dans un échec d'amont trois écrans plus loin.
   if (path === '/health') {
     const missing = missingSecrets();
-    return json({ ok: missing.length === 0, routes: available(), missing }, missing.length === 0 ? 200 : 503);
+    return json(
+      {
+        ok: missing.length === 0,
+        routes: available(),
+        // Android se présente par Play Integrity ; sans compte de service, la
+        // porte existe mais ne s'ouvre qu'au laissez-passer.
+        playIntegrity: parseServiceAccount(secrets.playServiceAccount) !== null,
+        missing,
+      },
+      missing.length === 0 ? 200 : 503,
+    );
   }
 
   if (request.method !== 'POST') return fail(405, 'méthode refusée');
@@ -266,6 +323,8 @@ Deno.serve(async (request) => {
         return await register(request);
       case '/attest/session':
         return await session(request);
+      case '/attest/integrity':
+        return await integrity(request);
       case '/attest/dev':
         return await dev(request);
     }

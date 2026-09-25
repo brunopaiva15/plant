@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/providers.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/l10n/platform_copy.dart';
 import '../../../core/system_settings.dart';
 import '../../../design_system/design_system.dart';
 import '../application/reminder_scheduler.dart';
@@ -36,8 +37,8 @@ class _NotificationPromptState extends ConsumerState<NotificationPrompt> {
       final go = await showAdaptiveConfirm(
         context,
         title: l10n.notificationAskTitle,
-        message: l10n.notificationPermissionDenied,
-        confirmLabel: l10n.openSettings,
+        message: l10n.notificationsDeniedHint,
+        confirmLabel: l10n.openSystemSettings,
         cancelLabel: l10n.later,
       );
       if (go) await SystemSettings.open();

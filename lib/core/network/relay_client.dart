@@ -1,10 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
+import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:http/http.dart' as http;
 
 import '../config/relay_config.dart';
 import 'app_attest.dart';
+import 'play_integrity.dart';
 
 /// Le relais n'a pas voulu, ou n'a pas pu, laisser entrer.
 class RelayException implements Exception {
@@ -20,14 +24,21 @@ class RelayException implements Exception {
   String toString() => 'RelayException($code${message == null ? '' : ': $message'})';
 }
 
-/// Où l'identifiant de la clé attestée se garde d'un lancement à l'autre.
+/// Ce que l'appareil garde d'un lancement à l'autre pour se présenter.
 ///
-/// Ce n'est pas un secret — c'est le condensé d'une clé publique — mais il
-/// doit survivre : Apple refuse d'attester deux fois la même clé, et en
-/// refaire une à chaque lancement finirait par buter sur ses limites.
+/// Sur iPhone, l'identifiant de la clé attestée. Ce n'est pas un secret —
+/// c'est le condensé d'une clé publique — mais il doit survivre : Apple
+/// refuse d'attester deux fois la même clé, et en refaire une à chaque
+/// lancement finirait par buter sur ses limites.
+///
+/// Sur Android, l'identifiant d'installation : Play Integrity ne rend aucune
+/// identité d'appareil, et c'est lui que le relais compte dans ses quotas.
 abstract interface class RelayKeyStore {
   String? get keyId;
   Future<void> setKeyId(String? value);
+
+  String? get installId;
+  Future<void> setInstallId(String value);
 }
 
 /// Un client HTTP qui se présente au relais avant de lui parler.
@@ -38,8 +49,9 @@ abstract interface class RelayKeyStore {
 /// `http.Client` et postent sur une URL.
 ///
 /// La poignée de main, elle, est ici. Elle se fait une fois par heure, pas à
-/// chaque requête : une signature de la Secure Enclave coûte un aller-retour,
-/// et le relais délivre contre elle un jeton de séance.
+/// chaque requête : une signature de la Secure Enclave, ou un jeton Play
+/// Integrity, coûte un aller-retour, et le relais délivre contre elle un
+/// jeton de séance.
 ///
 /// **Ce qui n'est pas rejoué.** Si le relais répond 401 — jeton périmé entre
 /// la vérification et l'envoi, secret changé côté serveur, appareil retiré de
@@ -55,6 +67,7 @@ class RelayClient extends http.BaseClient {
     required this.store,
     String? baseUrl,
     this.attest = const AppAttest(),
+    this.integrity = const PlayIntegrity(),
     this.devToken = RelayConfig.devToken,
     http.Client? inner,
     DateTime Function()? clock,
@@ -66,6 +79,7 @@ class RelayClient extends http.BaseClient {
   final String baseUrl;
   final RelayKeyStore store;
   final AppAttest attest;
+  final PlayIntegrity integrity;
   final String devToken;
 
   final http.Client _inner;
@@ -113,11 +127,62 @@ class RelayClient extends http.BaseClient {
   Future<String> _handshake() async {
     if (baseUrl.isEmpty) throw const RelayException('unavailable', 'relais non configuré');
     if (await attest.isSupported) return _byAttestation();
+    if (await integrity.isSupported) {
+      try {
+        return await _byIntegrity();
+      } on RelayException catch (e) {
+        // Un binaire que Google Play n'a pas distribué — `flutter run`, un
+        // APK installé à la main — est refusé par le relais ; un émulateur
+        // sans Play Store ne peut pas même demander de jeton. S'il porte le
+        // laissez-passer, c'est une construction de développement : elle
+        // passe par là. Sinon l'échec remonte tel quel, comme un relais
+        // injoignable, que le laissez-passer n'atteindrait pas mieux.
+        if (devToken.isEmpty || e.code == 'unreachable') rethrow;
+      }
+    }
     if (devToken.isNotEmpty) return _byDevToken();
-    // Ni enclave ni laissez-passer : c'est une construction Android, ou un
-    // simulateur lancé sans `RELAY_DEV_TOKEN`. Les fonctions qui dépendent du
-    // relais se taisent, le reste de l'application marche.
+    // Ni attestation ni laissez-passer : un simulateur lancé sans
+    // `RELAY_DEV_TOKEN`, ou une construction Android sans projet Play
+    // Integrity. Les fonctions qui dépendent du relais se taisent, le reste
+    // de l'application marche.
     throw const RelayException('unavailable', 'aucun moyen de se présenter');
+  }
+
+  /// Le condensé que Play Integrity scelle dans son jeton : le défi, qui dit
+  /// que le jeton est frais, et l'installation, qui dit à qui il appartient.
+  /// Le relais le recalcule à l'identique (`integrity.ts`).
+  @visibleForTesting
+  static String integrityHash(String challenge, String installId) =>
+      sha256.convert(utf8.encode('$challenge.$installId')).toString();
+
+  Future<String> _byIntegrity() async {
+    final installId = await _installId();
+    final challenge = await _challenge();
+    final String token;
+    try {
+      token = await integrity.token(integrityHash(challenge, installId));
+    } on PlayIntegrityException catch (e) {
+      // Pas de Play Store, pas de réseau, trop de demandes : l'appareil ne
+      // peut pas se présenter maintenant. Rien de refusé, rien à oublier.
+      throw RelayException('unavailable', 'Play Integrity : ${e.code}');
+    }
+    return _keep(await _post('attest/integrity', {
+      'installId': installId,
+      'challenge': challenge,
+      'token': token,
+    }));
+  }
+
+  /// Tiré une fois au sort, puis gardé : 32 octets en base64url, sans
+  /// remplissage. Il n'identifie personne — une réinstallation en tire un
+  /// neuf.
+  Future<String> _installId() async {
+    final known = store.installId;
+    if (known != null && known.isNotEmpty) return known;
+    final random = Random.secure();
+    final value = base64Url.encode(List<int>.generate(32, (_) => random.nextInt(256))).replaceAll('=', '');
+    await store.setInstallId(value);
+    return value;
   }
 
   Future<String> _byAttestation() async {

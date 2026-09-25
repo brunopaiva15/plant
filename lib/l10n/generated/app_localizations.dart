@@ -192,11 +192,23 @@ abstract class AppLocalizations {
   /// **'Ouvrir les Réglages'**
   String get openSettings;
 
+  /// No description provided for @openSettingsAndroid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir les Paramètres'**
+  String get openSettingsAndroid;
+
   /// No description provided for @settingsShort.
   ///
   /// In fr, this message translates to:
   /// **'Réglages'**
   String get settingsShort;
+
+  /// No description provided for @settingsShortAndroid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paramètres'**
+  String get settingsShortAndroid;
 
   /// No description provided for @skip.
   ///
@@ -2694,6 +2706,12 @@ abstract class AppLocalizations {
   /// **'Autorisez les notifications dans les Réglages de votre téléphone.'**
   String get notificationPermissionDenied;
 
+  /// No description provided for @notificationPermissionDeniedAndroid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autorisez les notifications dans les Paramètres de votre téléphone.'**
+  String get notificationPermissionDeniedAndroid;
+
   /// No description provided for @archives.
   ///
   /// In fr, this message translates to:
@@ -3174,6 +3192,12 @@ abstract class AppLocalizations {
   /// **'Un compte sauvegarde vos données et vous permet de partager un jardin. Connectez-vous avec votre identifiant Apple.'**
   String get onbAccountBody;
 
+  /// No description provided for @onbAccountBodyGoogle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un compte sauvegarde vos données et vous permet de partager un jardin. Connectez-vous avec votre compte Google.'**
+  String get onbAccountBodyGoogle;
+
   /// No description provided for @notificationAskTitle.
   ///
   /// In fr, this message translates to:
@@ -3642,11 +3666,23 @@ abstract class AppLocalizations {
   /// **'Autorisez l\'accès à l\'appareil photo dans les Réglages.'**
   String get cameraPermission;
 
+  /// No description provided for @cameraPermissionAndroid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autorisez l\'accès à l\'appareil photo dans les Paramètres.'**
+  String get cameraPermissionAndroid;
+
   /// No description provided for @photoLibraryPermission.
   ///
   /// In fr, this message translates to:
   /// **'Autorisez l\'accès à vos photos dans les Réglages.'**
   String get photoLibraryPermission;
+
+  /// No description provided for @photoLibraryPermissionAndroid.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autorisez l\'accès à vos photos dans les Paramètres.'**
+  String get photoLibraryPermissionAndroid;
 
   /// No description provided for @identify.
   ///
@@ -4169,6 +4205,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Avec votre identifiant Apple'**
   String get signInWithAppleId;
+
+  /// No description provided for @signInWithGoogleAccount.
+  ///
+  /// In fr, this message translates to:
+  /// **'Avec votre compte Google'**
+  String get signInWithGoogleAccount;
 
   /// No description provided for @signInHint.
   ///
@@ -9311,6 +9353,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Connexion avec votre identifiant Apple.'**
   String get joinSignInHint;
+
+  /// No description provided for @joinSignInHintGoogle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connexion avec votre compte Google.'**
+  String get joinSignInHintGoogle;
 
   /// No description provided for @joinInvitedBy.
   ///

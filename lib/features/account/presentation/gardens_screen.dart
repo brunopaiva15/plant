@@ -58,7 +58,7 @@ class GardensScreen extends ConsumerWidget {
           : null,
       child: !service.isAvailable || !signedIn
           ? Builder(builder: (context) {
-              final canSignIn = signInAvailable(ref.watch(authRepositoryProvider));
+              final canSignIn = ref.watch(signInAvailableProvider);
               return EmptyState(
                 emoji: '🌱',
                 title: l10n.collaborationNeedsAccount,

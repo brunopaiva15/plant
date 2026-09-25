@@ -31,7 +31,10 @@ class NotificationService {
     }
     await _plugin.initialize(
       settings: const InitializationSettings(
-        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+        // La silhouette blanche du pot (tool/build_app_icon.py) : Android ne
+        // garde que l'alpha d'une icône de barre d'état, et l'icône en
+        // couleur y deviendrait un carré blanc.
+        android: AndroidInitializationSettings('ic_stat_auxine'),
         iOS: DarwinInitializationSettings(
           requestAlertPermission: false,
           requestBadgePermission: false,

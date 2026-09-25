@@ -2,6 +2,7 @@ import 'package:flora/data/services/photo_storage_service.dart';
 import 'package:flora/design_system/design_system.dart';
 import 'package:flora/features/plants/presentation/photo_error.dart';
 import 'package:flora/l10n/generated/app_localizations_fr.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
@@ -54,9 +55,26 @@ void main() {
   });
 
   test('le toast dit quoi autoriser, pas « Réessayez »', () {
-    expect(photoErrorToast(l10n, const PhotoAccessDenied(PhotoSource.camera)).message, l10n.cameraPermission);
-    expect(photoErrorToast(l10n, const PhotoAccessDenied(PhotoSource.gallery)).message, l10n.photoLibraryPermission);
-    expect(photoErrorToast(l10n, Exception('disque plein')).message, l10n.photoError);
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    try {
+      expect(photoErrorToast(l10n, const PhotoAccessDenied(PhotoSource.camera)).message, l10n.cameraPermission);
+      expect(photoErrorToast(l10n, const PhotoAccessDenied(PhotoSource.gallery)).message, l10n.photoLibraryPermission);
+      expect(photoErrorToast(l10n, Exception('disque plein')).message, l10n.photoError);
+    } finally {
+      debugDefaultTargetPlatformOverride = null;
+    }
+  });
+
+  test('sur Android, le toast nomme les Paramètres et y mène', () {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    try {
+      final toast = photoErrorToast(l10n, const PhotoAccessDenied(PhotoSource.camera));
+      expect(toast.message, l10n.cameraPermissionAndroid);
+      expect(photoErrorToast(l10n, const PhotoAccessDenied(PhotoSource.gallery)).message, l10n.photoLibraryPermissionAndroid);
+      expect(toast.undoLabel, l10n.settingsShortAndroid);
+    } finally {
+      debugDefaultTargetPlatformOverride = null;
+    }
   });
 
   test("le toast générique n'a pas de bouton", () {

@@ -55,7 +55,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get openSettings => 'Open Settings';
 
   @override
+  String get openSettingsAndroid => 'Open Settings';
+
+  @override
   String get settingsShort => 'Settings';
+
+  @override
+  String get settingsShortAndroid => 'Settings';
 
   @override
   String get skip => 'Skip';
@@ -1502,6 +1508,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Allow notifications in your phone\'s Settings.';
 
   @override
+  String get notificationPermissionDeniedAndroid =>
+      'Allow notifications in your phone\'s Settings.';
+
+  @override
   String get archives => 'Past plants';
 
   @override
@@ -1782,6 +1792,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'An account backs up your data and lets you share a garden. Sign in with your Apple ID.';
 
   @override
+  String get onbAccountBodyGoogle =>
+      'An account backs up your data and lets you share a garden. Sign in with your Google account.';
+
+  @override
   String get notificationAskTitle => 'Daily reminder';
 
   @override
@@ -2053,7 +2067,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cameraPermission => 'Allow camera access in Settings.';
 
   @override
+  String get cameraPermissionAndroid => 'Allow camera access in Settings.';
+
+  @override
   String get photoLibraryPermission =>
+      'Allow access to your photos in Settings.';
+
+  @override
+  String get photoLibraryPermissionAndroid =>
       'Allow access to your photos in Settings.';
 
   @override
@@ -2365,6 +2386,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signInWithAppleId => 'With your Apple ID';
+
+  @override
+  String get signInWithGoogleAccount => 'With your Google account';
 
   @override
   String get signInHint =>
@@ -5403,6 +5427,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get joinSignInHint => 'Sign in with your Apple ID.';
+
+  @override
+  String get joinSignInHintGoogle => 'Sign in with your Google account.';
 
   @override
   String joinInvitedBy(String name, String garden) {

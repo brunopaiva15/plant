@@ -36,7 +36,7 @@ class MembersScreen extends ConsumerWidget {
     final gardenName = gardenLabel(context, ref.watch(activeGardenNameProvider).value ?? '', isMine: isOwner);
 
     if (!service.isAvailable || !signedIn) {
-      final canSignIn = signInAvailable(ref.watch(authRepositoryProvider));
+      final canSignIn = ref.watch(signInAvailableProvider);
       return FloraPage(
         title: l10n.membersTitle,
         child: EmptyState(

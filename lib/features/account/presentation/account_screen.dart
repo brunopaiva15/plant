@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart' show Icons, SelectableText;
+import 'package:flutter/material.dart' show SelectableText;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -18,9 +17,11 @@ import '../application/membership_providers.dart';
 import '../application/sign_in_availability.dart';
 import 'gardens_screen.dart' show gardenLabel;
 import 'open_garden_sheet.dart';
+import 'sign_in_button.dart';
 
-/// Compte : connexion (Apple sur iOS ; Google derrière
-/// `AppConfig.googleSignInEnabled`), état de synchronisation.
+/// Compte : connexion (Apple sur iPhone, Google sur Android ; Google par le
+/// navigateur sur iPhone derrière `AppConfig.googleSignInEnabled`), état de
+/// synchronisation.
 class AccountScreen extends ConsumerStatefulWidget {
   const AccountScreen({super.key});
 
@@ -39,8 +40,8 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
       await action();
       Haptics.success();
     } on AuthException catch (e) {
-      if (e.message == 'cancelled') return;
-      ref.read(toastProvider.notifier).show(ToastData(message: e.message == 'apple_unavailable' ? l10n.appleUnavailable : l10n.authError, emoji: '!'));
+      final message = signInErrorText(l10n, e);
+      if (message != null) ref.read(toastProvider.notifier).show(ToastData(message: message, emoji: '!'));
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'auth');
       if (mounted) ref.read(toastProvider.notifier).show(ToastData(message: l10n.authError, emoji: '!'));
@@ -53,6 +54,7 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final auth = ref.watch(authRepositoryProvider);
+    final method = ref.watch(signInMethodProvider);
     final user = ref.watch(currentUserProvider).value;
     final signedIn = user != null && !user.isLocal;
     return FloraPage(
@@ -65,29 +67,30 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
               final ok = await showAdaptiveConfirm(context, title: l10n.signOut, message: l10n.signOutConfirm, confirmLabel: l10n.signOut, cancelLabel: l10n.cancel, destructive: true);
               if (ok) await auth.signOut();
             })),
-          ] else if (!signInAvailable(auth)) ...[
+          ] else if (!ref.watch(signInAvailableProvider)) ...[
             FloraGroup(footer: l10n.localAccountHint, children: [FloraListRow(leading: Icon(CupertinoIcons.lock, size: 20, color: context.colors.inkSecondary), title: l10n.localAccount)]),
           ] else ...[
             Text(l10n.signInHint, style: context.text.callout),
             const SizedBox(height: Space.xl),
-            // Se connecter passe par Apple puis par le serveur : hors ligne le
-            // bouton ne rendrait qu'« impossible », sans dire pourquoi.
+            // Se connecter passe par Apple ou Google, puis par le serveur :
+            // hors ligne le bouton ne rendrait qu'« impossible », sans dire
+            // pourquoi.
             OfflineBanner(message: l10n.offlineCollaboration),
-            if (defaultTargetPlatform == TargetPlatform.iOS)
-              FloraButton(
-                label: l10n.continueWithApple,
-                icon: Icons.apple,
-                expand: true,
+            if (method != null)
+              SignInButton(
+                method: method,
                 loading: _busy,
                 // La connexion faite, le compte a peut-être déjà des jardins :
                 // celui de cet appareil n'est pas forcément celui qu'on ouvre.
                 onPressed: () => _run(() async {
-                  await auth.signInWithApple();
+                  await method.signIn(auth);
                   if (context.mounted) await proposeExistingGardens(context, ref);
                 }),
               ),
-            if (AppConfig.googleSignInEnabled) ...[
-              if (defaultTargetPlatform == TargetPlatform.iOS) const SizedBox(height: Space.xs),
+            // Google par le navigateur, en plus d'Apple sur iPhone : la
+            // session arrive par le lien de retour, pas au bout de l'appel.
+            if (AppConfig.googleSignInEnabled && method != SignInMethod.google) ...[
+              if (method != null) const SizedBox(height: Space.xs),
               FloraButton(label: l10n.continueWithGoogle, icon: CupertinoIcons.globe, style: FloraButtonStyle.secondary, expand: true, onPressed: _busy ? null : () => _run(auth.signInWithGoogle)),
             ],
           ],

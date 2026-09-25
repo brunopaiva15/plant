@@ -7,6 +7,8 @@
 // `docs/19-relais-des-cles.md`.
 
 import type { AttestEnvironment, AttestPolicy } from './attest.ts';
+import { normalizeDigest } from './integrity.ts';
+import type { IntegrityPolicy } from './integrity.ts';
 
 const env = (name: string): string => Deno.env.get(name)?.trim() ?? '';
 
@@ -62,13 +64,18 @@ export const limits: Record<Route, RouteLimits> = {
 export const secrets = {
   session: env('RELAY_SESSION_SECRET'),
   /// Le laissez-passer des constructions qui ne peuvent pas attester : le
-  /// simulateur, où App Attest n'existe pas, et Android, qui attend Play
-  /// Integrity. Vide en production — et alors ce chemin n'existe pas.
+  /// simulateur, où App Attest n'existe pas, et une construction Android qui
+  /// ne vient pas de Google Play. Vide en production — et alors ce chemin
+  /// n'existe pas.
   devToken: env('RELAY_DEV_TOKEN'),
   plantNet: env('PLANTNET_API_KEY'),
   infomaniakKey: env('INFOMANIAK_AI_API_KEY'),
   infomaniakProduct: env('INFOMANIAK_AI_PRODUCT_ID'),
   openRouter: env('OPENROUTER_API_KEY'),
+  /// Le compte de service Google qui déchiffre les jetons Play Integrity :
+  /// le JSON téléchargé depuis la console Google Cloud, tel quel. Vide, le
+  /// relais ne sait pas parler aux constructions Android — le reste marche.
+  playServiceAccount: env('PLAY_INTEGRITY_SERVICE_ACCOUNT'),
 };
 
 /// Les modèles se décident ici, et non dans l'application : en changer ne
@@ -99,6 +106,24 @@ function environments(): AttestEnvironment[] {
 export const attestPolicy = (): AttestPolicy => ({
   appId: env('APPLE_APP_ID'),
   environments: environments(),
+});
+
+/// Play Integrity. Le nom du paquet est celui de Google Play, et les
+/// empreintes sont celles de la clé de signature de l'application telles que
+/// la console Play les affiche (*Intégrité de l'application › Signature de
+/// l'application*), séparées par des virgules. Sans empreinte,
+/// `PLAY_RECOGNIZED` suffit : Google ne le rend que pour un binaire signé par
+/// la clé qu'il connaît.
+export const integrityPolicy = (): IntegrityPolicy => ({
+  packageName: env('PLAY_PACKAGE_NAME') || 'ch.vergasta.plant',
+  certificates: env('PLAY_CERT_SHA256')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .map(normalizeDigest),
+  // Le jeton est demandé juste après le défi : la durée de vie de l'un borne
+  // l'âge de l'autre.
+  maxAge: challengeLifetime * 1000,
 });
 
 /// Ce qui manque pour que le relais serve. Dit tôt et en clair : une fonction

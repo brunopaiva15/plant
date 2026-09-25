@@ -55,7 +55,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get openSettings => 'Einstellungen öffnen';
 
   @override
+  String get openSettingsAndroid => 'Einstellungen öffnen';
+
+  @override
   String get settingsShort => 'Einstellungen';
+
+  @override
+  String get settingsShortAndroid => 'Einstellungen';
 
   @override
   String get skip => 'Überspringen';
@@ -1505,6 +1511,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Erlaube Mitteilungen in den Einstellungen deines Telefons.';
 
   @override
+  String get notificationPermissionDeniedAndroid =>
+      'Erlaube Benachrichtigungen in den Einstellungen deines Telefons.';
+
+  @override
   String get archives => 'Frühere Pflanzen';
 
   @override
@@ -1784,6 +1794,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Ein Konto sichert deine Daten und lässt dich einen Garten teilen. Melde dich mit deiner Apple-ID an.';
 
   @override
+  String get onbAccountBodyGoogle =>
+      'Ein Konto sichert deine Daten und lässt dich einen Garten teilen. Melde dich mit deinem Google-Konto an.';
+
+  @override
   String get notificationAskTitle => 'Tägliche Erinnerung';
 
   @override
@@ -2056,7 +2070,15 @@ class AppLocalizationsDe extends AppLocalizations {
       'Erlaube den Kamerazugriff in den Einstellungen.';
 
   @override
+  String get cameraPermissionAndroid =>
+      'Erlaube den Kamerazugriff in den Einstellungen.';
+
+  @override
   String get photoLibraryPermission =>
+      'Erlaube den Zugriff auf deine Fotos in den Einstellungen.';
+
+  @override
+  String get photoLibraryPermissionAndroid =>
       'Erlaube den Zugriff auf deine Fotos in den Einstellungen.';
 
   @override
@@ -2369,6 +2391,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get signInWithAppleId => 'Mit deiner Apple-ID';
+
+  @override
+  String get signInWithGoogleAccount => 'Mit deinem Google-Konto';
 
   @override
   String get signInHint =>
@@ -5414,6 +5439,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get joinSignInHint => 'Anmeldung mit deiner Apple-ID.';
+
+  @override
+  String get joinSignInHintGoogle => 'Anmeldung mit deinem Google-Konto.';
 
   @override
   String joinInvitedBy(String name, String garden) {

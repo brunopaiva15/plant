@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- L'icône des notifications n'est nommée que depuis Dart
+     (`NotificationService`) : sans cette ligne, la réduction des ressources
+     de la construction release la croirait inutilisée et la retirerait. -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@drawable/ic_stat_auxine" />

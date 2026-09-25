@@ -12,11 +12,15 @@
 
 import { fromBase64, source, timingSafeEqual, toBase64Url, utf8 } from './bytes.ts';
 
+export const sessionKinds = ['appattest', 'playintegrity', 'dev'] as const;
+export type SessionKind = (typeof sessionKinds)[number];
+
 export interface SessionClaims {
-  /// L'appareil : l'identifiant de clé App Attest, ou `dev:<empreinte>`.
+  /// L'appareil : l'identifiant de clé App Attest, `play:<installation>`
+  /// sur Android, ou `dev`.
   readonly sub: string;
   /// Comment il s'est présenté, pour que les quotas puissent différer.
-  readonly kind: 'appattest' | 'dev';
+  readonly kind: SessionKind;
   readonly iat: number;
   readonly exp: number;
 }
@@ -63,7 +67,7 @@ export async function readSession(secret: string, token: string, now: number = D
   try {
     const claims = JSON.parse(new TextDecoder().decode(fromBase64(payload))) as SessionClaims;
     if (typeof claims.sub !== 'string' || !claims.sub) return null;
-    if (claims.kind !== 'appattest' && claims.kind !== 'dev') return null;
+    if (!sessionKinds.includes(claims.kind)) return null;
     if (typeof claims.exp !== 'number' || claims.exp * 1000 <= now) return null;
     return claims;
   } catch {

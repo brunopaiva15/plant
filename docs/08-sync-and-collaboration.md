@@ -63,7 +63,7 @@ La ligne et l'image voyagent séparément, et l'image coûte mille fois plus che
   l'outbox porte le chemin puisque la ligne, elle, n'existe plus).
 
 ## Auth
-`AuthRepository` : `LocalAuthRepository` (Phase 1) → `SupabaseAuthRepository` (Apple natif sur iOS ; Google via OAuth est codé mais pas livré, le bouton attend `AppConfig.googleSignInEnabled`). Pas de connexion par e-mail sur Auxine : un compte, c'est un identifiant Apple, et sur Android le compte reste local tant que Google n'est pas livré (`signInAvailable`). La connexion se propose à deux endroits : une étape de l'onboarding, après le prénom, qui dit en deux phrases à quoi sert un compte et se passe d'un « Plus tard » ; et Profil › Se connecter, la ligne juste sous le nom, à tout moment. L'étape de l'onboarding n'est pas dessinée là où la connexion n'existe pas. À la première connexion, le jardin local est réattribué au compte (`owner_id`, `SyncService.claimGarden`) et toutes ses lignes sont mises en file de synchronisation. Dans la foulée, si le compte a déjà des jardins, ils sont proposés (`proposeExistingGardens`, `account/presentation/open_garden_sheet.dart`) : c'est le chemin d'une réinstallation, où l'installation neuve vient de créer un jardin vide et où les plantes, elles, sont restées dans celui d'avant.
+`AuthRepository` : `LocalAuthRepository` (Phase 1) → `SupabaseAuthRepository` (Apple natif sur iOS, Google natif sur Android ; Google par le navigateur sur iPhone est codé mais pas livré, le bouton attend `AppConfig.googleSignInEnabled`). Pas de connexion par e-mail sur Auxine : un compte, c'est un identifiant Apple sur iPhone, un compte Google sur Android (`signInMethodProvider`, `account/application/sign_in_availability.dart`). Sur Android, tant que le client OAuth n'est pas renseigné (`AppConfig.googleWebClientId`), le compte reste local. La connexion se propose à deux endroits : une étape de l'onboarding, après le prénom, qui dit en deux phrases à quoi sert un compte et se passe d'un « Plus tard » ; et Profil › Se connecter, la ligne juste sous le nom, à tout moment. L'étape de l'onboarding n'est pas dessinée là où la connexion n'existe pas. À la première connexion, le jardin local est réattribué au compte (`owner_id`, `SyncService.claimGarden`) et toutes ses lignes sont mises en file de synchronisation. Dans la foulée, si le compte a déjà des jardins, ils sont proposés (`proposeExistingGardens`, `account/presentation/open_garden_sheet.dart`) : c'est le chemin d'une réinstallation, où l'installation neuve vient de créer un jardin vide et où les plantes, elles, sont restées dans celui d'avant.
 
 ### La première connexion
 C'est le seul moment où le compte n'existe pas encore, et le seul que le
@@ -219,9 +219,13 @@ fois (commit c13bbcd), et la raison pour laquelle l'entitlement avait été reti
 Sans l'étape 1, le build ne se signe pas ; sans la 2, Supabase refuse le jeton
 (« Unacceptable audience ») ; sans la 3, le bouton n'est pas dessiné.
 
-Google n'est pas livré : `signInWithGoogle` et sa redirection
-`auxine://login-callback` restent codés, mais le bouton attend
-`AppConfig.googleSignInEnabled`. La règle 4.8 de l'App Store n'exige Apple qu'en
-présence d'un autre fournisseur tiers ; Apple seul est permis, et Google
-pourra suivre quand Android deviendra prioritaire — en activant alors aussi le
-fournisseur côté Supabase.
+Sur Android, Google suit le même chemin qu'Apple : la feuille du système
+(Credential Manager, `android/.../GoogleSignInChannel.kt`) rend un jeton
+d'identité, échangé par `signInWithIdToken` avec un nonce. La mise en place —
+clients OAuth Web et Android, fournisseur Google côté Supabase — est dans
+docs/20, § 4.
+
+Sur iPhone, Google par le navigateur (`signInWithOAuth` et sa redirection
+`auxine://login-callback`) reste codé, mais le bouton attend
+`AppConfig.googleSignInEnabled`. La règle 4.8 de l'App Store n'exige Apple
+qu'en présence d'un autre fournisseur tiers ; Apple seul est permis.

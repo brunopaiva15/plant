@@ -11,6 +11,7 @@ import '../../../app/router.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/l10n/platform_copy.dart';
 import '../../../core/network/connectivity.dart';
 import '../../../core/observability/observability.dart';
 import '../../../core/system_settings.dart';
@@ -954,11 +955,11 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
                 const SizedBox(height: Space.xs),
                 SizedBox(
                   width: 220,
-                  child: Text(l10n.cameraPermission, textAlign: TextAlign.center, style: context.text.caption.copyWith(color: c.sage)),
+                  child: Text(l10n.cameraDeniedHint, textAlign: TextAlign.center, style: context.text.caption.copyWith(color: c.sage)),
                 ),
                 if (_camera.opensSettings) ...[
                   const SizedBox(height: Space.sm),
-                  Text(l10n.openSettings, style: context.text.caption.copyWith(color: c.sage, fontWeight: FontWeight.w600)),
+                  Text(l10n.openSystemSettings, style: context.text.caption.copyWith(color: c.sage, fontWeight: FontWeight.w600)),
                 ],
               ],
             ],

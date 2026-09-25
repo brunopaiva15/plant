@@ -55,7 +55,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get openSettings => 'Ouvrir les Réglages';
 
   @override
+  String get openSettingsAndroid => 'Ouvrir les Paramètres';
+
+  @override
   String get settingsShort => 'Réglages';
+
+  @override
+  String get settingsShortAndroid => 'Paramètres';
 
   @override
   String get skip => 'Passer';
@@ -1503,6 +1509,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Autorisez les notifications dans les Réglages de votre téléphone.';
 
   @override
+  String get notificationPermissionDeniedAndroid =>
+      'Autorisez les notifications dans les Paramètres de votre téléphone.';
+
+  @override
   String get archives => 'Anciennes plantes';
 
   @override
@@ -1783,6 +1793,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Un compte sauvegarde vos données et vous permet de partager un jardin. Connectez-vous avec votre identifiant Apple.';
 
   @override
+  String get onbAccountBodyGoogle =>
+      'Un compte sauvegarde vos données et vous permet de partager un jardin. Connectez-vous avec votre compte Google.';
+
+  @override
   String get notificationAskTitle => 'Rappel quotidien';
 
   @override
@@ -2055,8 +2069,16 @@ class AppLocalizationsFr extends AppLocalizations {
       'Autorisez l\'accès à l\'appareil photo dans les Réglages.';
 
   @override
+  String get cameraPermissionAndroid =>
+      'Autorisez l\'accès à l\'appareil photo dans les Paramètres.';
+
+  @override
   String get photoLibraryPermission =>
       'Autorisez l\'accès à vos photos dans les Réglages.';
+
+  @override
+  String get photoLibraryPermissionAndroid =>
+      'Autorisez l\'accès à vos photos dans les Paramètres.';
 
   @override
   String get identify => 'Identifier';
@@ -2368,6 +2390,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get signInWithAppleId => 'Avec votre identifiant Apple';
+
+  @override
+  String get signInWithGoogleAccount => 'Avec votre compte Google';
 
   @override
   String get signInHint =>
@@ -5432,6 +5457,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get joinSignInHint => 'Connexion avec votre identifiant Apple.';
+
+  @override
+  String get joinSignInHintGoogle => 'Connexion avec votre compte Google.';
 
   @override
   String joinInvitedBy(String name, String garden) {

@@ -93,7 +93,7 @@ class _List extends ConsumerWidget {
     final l10n = context.l10n;
     final service = ref.watch(communityTipsServiceProvider);
     final mine = tips.where((t) => t.mine).firstOrNull;
-    final canSignIn = signInAvailable(ref.watch(authRepositoryProvider));
+    final canSignIn = ref.watch(signInAvailableProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

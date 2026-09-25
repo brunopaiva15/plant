@@ -254,6 +254,30 @@ def android(pleine, avant_plan, fond, logo):
         ecrire(cadre, dossier / "splash_android12.png", cadre.width, False)
 
 
+def notification(lancement):
+    """La petite icône de la barre d'état d'Android : 24 dp, blanche.
+
+    Android n'en garde que l'alpha et la teinte lui-même. L'icône de
+    l'application, en couleur, y deviendrait un carré blanc : c'est le pot
+    raccourci de l'écran de lancement, en silhouette, qui s'y pose — entier,
+    là où celui de l'icône adaptative continue sous le masque.
+    """
+    blanc = Image.new("RGBA", lancement.size, (255, 255, 255, 0))
+    blanc.putalpha(lancement.getchannel("A"))
+    forme = blanc.crop(blanc.getchannel("A").getbbox())
+    for suffixe, echelle in ANDROID_DENSITES.items():
+        # 24 dp, dont 2 de marge de chaque côté : la zone active que
+        # préconisent les consignes d'Android pour les icônes de notification.
+        cote, utile = round(24 * echelle), round(20 * echelle)
+        rapport = utile / max(forme.size)
+        dessin = forme.resize((max(1, round(forme.width * rapport)), max(1, round(forme.height * rapport))), Image.LANCZOS)
+        toile = Image.new("RGBA", (cote, cote), (255, 255, 255, 0))
+        toile.paste(dessin, ((cote - dessin.width) // 2, (cote - dessin.height) // 2))
+        chemin = ANDROID_RES / f"drawable-{suffixe}/ic_stat_auxine.png"
+        chemin.parent.mkdir(parents=True, exist_ok=True)
+        toile.save(chemin)
+
+
 def web(pleine):
     # L'icône est pleine jusqu'aux bords : elle sert telle quelle de
     # « maskable », le pot et la pousse restant dans le disque de sûreté.
@@ -286,6 +310,7 @@ def main():
     logo = ombrer(rendu("lancement"))
     ios(pleine, images["icon_ios_foreground.png"][0], logo)
     android(pleine, images["icon_foreground.png"][0], images["icon_background.png"][0], logo)
+    notification(rendu("lancement"))
     web(pleine)
     splash(logo)
     ecrire_contour(contour(rendu("lancement")))

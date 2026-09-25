@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/providers.dart';
 import '../../../core/haptics.dart';
 import '../../../core/l10n/l10n.dart';
+import '../../../core/l10n/platform_copy.dart';
 import '../../../core/system_settings.dart';
 import '../../../data/services/photo_storage_service.dart';
 import '../../../design_system/design_system.dart';
@@ -367,11 +368,11 @@ class CaptureFrame extends StatelessWidget {
                 const SizedBox(height: Space.xs),
                 SizedBox(
                   width: 220,
-                  child: Text(l10n.cameraPermission, textAlign: TextAlign.center, style: context.text.caption.copyWith(color: c.sage)),
+                  child: Text(l10n.cameraDeniedHint, textAlign: TextAlign.center, style: context.text.caption.copyWith(color: c.sage)),
                 ),
                 if (camera.opensSettings) ...[
                   const SizedBox(height: Space.sm),
-                  Text(l10n.openSettings, style: context.text.caption.copyWith(color: c.sage, fontWeight: FontWeight.w600)),
+                  Text(l10n.openSystemSettings, style: context.text.caption.copyWith(color: c.sage, fontWeight: FontWeight.w600)),
                 ],
               ],
             ],

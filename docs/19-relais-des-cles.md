@@ -181,10 +181,46 @@ par là partage un seul quota d'appareil, et un
 republier quoi que ce soit. **Il n'a rien à faire dans une construction
 publiée.**
 
-Android attend Play Integrity, qui est le pendant du mécanisme d'Apple et
-reste à écrire. En attendant, une construction Android sans
-`RELAY_DEV_TOKEN` voit les fonctions du relais simplement absentes — le
-reste de l'application marche, elle est locale d'abord.
+### Android : Play Integrity
+
+Android se présente par **Play Integrity**, le pendant du mécanisme d'Apple —
+mais il ne prouve pas la même chose de la même façon. Il n'y a pas de clé à
+garder : à chaque poignée de main, l'application demande au Play Store un
+jeton chiffré, que seul Google sait ouvrir.
+
+```
+1. POST /attest/challenge            → un défi
+2. StandardIntegrityTokenProvider.request(SHA256(défi.installation))
+3. POST /attest/integrity            → le relais fait déchiffrer le jeton par
+                                       Google, lit le verdict, et rend un
+                                       jeton de séance (1 h)
+```
+
+Ce que le relais exige du verdict (`supabase/functions/relay/integrity.ts`) :
+
+1. la demande porte ce paquet, et le condensé du défi et de l'identifiant
+   d'installation — c'est ce qui empêche de rejouer un jeton obtenu pour un
+   autre défi, ou de le prêter à une autre installation ;
+2. elle a moins de cinq minutes ;
+3. l'application est `PLAY_RECOGNIZED` — distribuée par Google Play, signée
+   par la clé qu'il connaît, et, si `PLAY_CERT_SHA256` est renseigné, par
+   celle-là ;
+4. l'appareil est `MEETS_DEVICE_INTEGRITY` : un Android certifié, pas un
+   émulateur ni un système modifié — ce qu'un script utiliserait pour se
+   faire passer pour mille appareils.
+
+**Ce que ça ne donne pas : une identité d'appareil.** Google n'en rend
+aucune. L'appareil se présente par un identifiant d'installation tiré au sort
+par l'application et scellé dans le jeton : il ne se vole pas d'un jeton à
+l'autre, mais une réinstallation en tire un neuf. Le quota par appareil est
+donc plus souple sur Android que sur iPhone ; le plafond du jour, tous
+appareils confondus, tient comme avant.
+
+Une construction qui ne vient pas de Google Play — `flutter run`, un APK
+installé à la main — n'est pas reconnue : elle passe par `RELAY_DEV_TOKEN` si
+elle en porte un, et sinon les fonctions du relais restent absentes, le reste
+de l'application marche. La mise en place (projet Cloud, compte de service)
+est dans docs/20, § 3.
 
 ## 5. Mise en place
 
@@ -255,7 +291,9 @@ faire de nouvelles, et ne les donner qu'au relais.
 
 ## 6. Ce qui reste à faire
 
-- **Play Integrity** pour Android, à la place du laissez-passer partagé.
+- **Le verdict de licence** de Play Integrity (`appLicensingVerdict`) n'est
+  pas exigé : il refuserait une installation depuis une piste de test mal
+  configurée. À reconsidérer si des installations hors Play se multiplient.
 - **Le reçu d'Apple** est gardé (`relay_devices.receipt`) mais pas exploité :
   il ouvre le service de risque d'Apple, qui dit combien d'attestations un
   appareil a demandées. C'est ce qui repérerait une ferme d'appareils.

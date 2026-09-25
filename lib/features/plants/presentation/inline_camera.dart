@@ -84,17 +84,16 @@ class InlineCameraController extends ChangeNotifier with WidgetsBindingObserver 
   /// web, le bureau, les tests — l'appelant garde l'appareil du système.
   static bool get isSupported => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
 
-  /// Vrai quand la page ne peut pas tourner : sur Android le manifeste
-  /// verrouille le portrait sur tous les appareils, sur iOS c'est `Info.plist`
-  /// — portrait sur iPhone, les quatre orientations sur iPad —, et la taille
-  /// de la fenêtre dit lequel des deux on est. Sur tablette libre, et sur un
-  /// pliable ouvert, la capture reste au capteur : la page tourne aussi.
+  /// Vrai quand la page ne peut pas tourner : portrait sur téléphone, les
+  /// quatre orientations sur tablette — `Info.plist` le déclare sur iOS,
+  /// `MainActivity` l'applique sur Android —, et la taille de la fenêtre dit
+  /// lequel des deux on est. Sur tablette libre, et sur un pliable ouvert, la
+  /// capture reste au capteur : la page tourne aussi.
   ///
   /// La question se repose à chaque ouverture du viseur, jamais une fois pour
   /// toutes : entre deux photos, l'appareil a pu être déplié.
   static bool get _portraitOnly {
     if (kIsWeb) return false;
-    if (Platform.isAndroid) return true;
     return isCompactWindow();
   }
 

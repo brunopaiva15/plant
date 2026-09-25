@@ -25,7 +25,8 @@ seul `AppConfig.appName` porte le nom vu par l'utilisateur.
 | [docs/13-care-environment-scenes.md](docs/13-care-environment-scenes.md) | Scène d'environnement idéal : diorama clay, projection des besoins, pipeline Blender |
 | [docs/17-releve-de-la-maison.md](docs/17-releve-de-la-maison.md) | Relevé de la maison au LiDAR (expérimental) : où poser une plante, modèle de lumière, canal RoomPlan, paliers |
 | [docs/18-clarte-des-textes.md](docs/18-clarte-des-textes.md) | Clarté des textes : charte de rédaction, lots de réécriture des quatre ARB, garde-fous |
-| [docs/19-relais-des-cles.md](docs/19-relais-des-cles.md) | Relais des clés d'API : pourquoi elles ont quitté le binaire, App Attest, quotas, déploiement |
+| [docs/19-relais-des-cles.md](docs/19-relais-des-cles.md) | Relais des clés d'API : pourquoi elles ont quitté le binaire, App Attest, Play Integrity, quotas, déploiement |
+| [docs/20-android.md](docs/20-android.md) | Android : signature, Play Integrity, connexion Google, fiche Google Play |
 
 ## Démarrer
 ```bash
@@ -40,10 +41,11 @@ Sans configuration, l'app est 100 % locale. Pour la synchronisation et les compt
 ```bash
 flutter run --dart-define=SUPABASE_URL=https://xxx.supabase.co --dart-define=SUPABASE_ANON_KEY=...
 ```
-Schéma et politiques RLS : `supabase/schema.sql`, à rejouer en entier dans l'éditeur SQL. Les liens de partage et d'invitation demandent en plus la fonction Edge `share` (`supabase functions deploy share --no-verify-jwt`, depuis la racine du dépôt) et le relais `share-proxy/` qui la sert sous un domaine à soi (docs/08). Connexion par Apple, sur
-iPhone et iPad, et par rien d'autre : pas d'e-mail, et Google attend son tour
-(`AppConfig.googleSignInEnabled`) — sur Android le compte reste local. Sign in with Apple demande la capability sur
-l'App ID et le bundle dans les *Authorized Client IDs* de Supabase. Détails : docs/08.
+Schéma et politiques RLS : `supabase/schema.sql`, à rejouer en entier dans l'éditeur SQL. Les liens de partage et d'invitation demandent en plus la fonction Edge `share` (`supabase functions deploy share --no-verify-jwt`, depuis la racine du dépôt) et le relais `share-proxy/` qui la sert sous un domaine à soi (docs/08). Connexion par Apple sur
+iPhone et iPad, par Google sur Android, et par rien d'autre : pas d'e-mail. Sign in with Apple demande la capability sur
+l'App ID et le bundle dans les *Authorized Client IDs* de Supabase ; Google, le client OAuth Web
+(`AppConfig.googleWebClientId`) et un client Android par empreinte de signature — sans lui, le compte reste local sur
+Android. Détails : docs/08 et docs/20.
 
 ## Les services de l'éditeur (identification en ligne, diagnostic, Jev)
 Trois services payants — Pl@ntNet, les AI Services d'Infomaniak, OpenRouter —
@@ -94,7 +96,8 @@ l'arrosage, la validation et les gestes sensibles ont leurs motifs Core
 Haptics. Tout passe par des canaux natifs, sans plugin (`ios/Runner/*Channel.swift`,
 `ios/AuxineWidget/`). L'App Group `group.ch.vergasta.plant` doit exister sur
 l'App ID de l'application et sur celui du widget (`ch.vergasta.plant.widget`).
-Sur Android, rien de tout cela n'apparaît. Détails : docs/05 et docs/06.
+Sur Android, rien de tout cela n'apparaît. Détails : docs/05 et docs/06 ; ce
+qu'Android a en propre est dans docs/20.
 
 ## Encyclopédie
 *Profil › Encyclopédie* ouvre ce que l'application embarque, à lire hors de

@@ -411,10 +411,14 @@ Sur téléphone, l'application se tient en portrait : chaque écran est une
 colonne, et le paysage n'apporterait qu'une mise en page étirée. Sur tablette,
 rien n'est verrouillé — iPadOS attend qu'une application tourne et cohabite
 avec une autre, et le refuser est un motif de rejet. **Ces deux règles sont
-déclarées, pas demandées** : `ios/Runner/Info.plist` porte le portrait sur
-iPhone et les quatre orientations sur iPad, le manifeste Android porte le
-portrait partout. Aucun code ne fait de demande à l'exécution, et la section
-« Ce qu'il ne faut pas refaire », plus bas, dit pourquoi.
+déclarées, pas demandées à Flutter** : `ios/Runner/Info.plist` porte le
+portrait sur iPhone et les quatre orientations sur iPad ; sur Android,
+`MainActivity` applique la même règle selon le côté le plus court de l'écran
+(600 dp), et la relit quand un pliable s'ouvre. Le manifeste ne sait pas
+dire « portrait sur téléphone seulement », et un verrou portrait partout
+serait ignoré sur grand écran depuis Android 16 (cible SDK 36). Aucun code
+Dart ne fait de demande à l'exécution, et la section « Ce qu'il ne faut pas
+refaire », plus bas, dit pourquoi.
 
 Ce que le code décide, c'est où se poser dans la fenêtre qu'on lui donne. La
 limite est à 600 points de côté le plus court ; au-delà de 700 points de
