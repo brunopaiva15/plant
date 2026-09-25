@@ -1,0 +1,129 @@
+// Une vraie attestation App Attest, et une vraie assertion, sorties d'un iPhone.
+//
+// Celles de `attest_fixtures.ts` sont fabriquées : de la même forme qu'Apple,
+// mais signées par une autorité de test, et avec les algorithmes qu'on a
+// choisis. Elles ne pouvaient donc pas révéler ce qu'Apple fait
+// autrement — et Apple signe le certificat d'appareil en SHA-256 avec une
+// clé P-384, le mélange que le runtime Supabase refusait. Celles-ci viennent
+// d'un vrai appareil et remontent à la vraie racine d'Apple.
+//
+// Source : le paquet npm `node-app-attest` (David Übelacker, licence MIT),
+// fichiers `test/fixtures/attestation-production.json` et
+// `test/verifyAssertion.test.js`. Application « io.uebelacker.AppAttestExample »
+// de l'équipe V8H6LQ9448. Les certificats d'appareil ont expiré depuis : les
+// tests fixent l'heure à leur période de validité.
+
+export const appleFixtures = {
+  appId: 'V8H6LQ9448.io.uebelacker.AppAttestExample',
+  /// Un instant où la chaîne était valable (février 2024 – décembre 2024).
+  validAt: Date.UTC(2024, 5, 1),
+  challenge: 'de5e0359-84f7-4dd7-a98d-5363e9415fb1',
+  keyId: 'SC86LZmoFbL/KxWfezr7ihgEdLHK8ZrDbTwMtAkBCbM=',
+  attestation:
+    'o2NmbXRvYXBwbGUtYXBwYXR0ZXN0Z2F0dFN0bXSiY3g1Y4JZAzgwggM0MIICuqADAgECAgYBjYVm' +
+    '/04wCgYIKoZIzj0EAwIwTzEjMCEGA1UEAwwaQXBwbGUgQXBwIEF0dGVzdGF0aW9uIENBIDExEzAR' +
+    'BgNVBAoMCkFwcGxlIEluYy4xEzARBgNVBAgMCkNhbGlmb3JuaWEwHhcNMjQwMjA2MjEwODU2WhcN' +
+    'MjQxMjIxMTI0MjU2WjCBkTFJMEcGA1UEAwxANDgyZjNhMmQ5OWE4MTViMmZmMmIxNTlmN2IzYWZi' +
+    'OGExODA0NzRiMWNhZjE5YWMzNmQzYzBjYjQwOTAxMDliMzEaMBgGA1UECwwRQUFBIENlcnRpZmlj' +
+    'YXRpb24xEzARBgNVBAoMCkFwcGxlIEluYy4xEzARBgNVBAgMCkNhbGlmb3JuaWEwWTATBgcqhkjO' +
+    'PQIBBggqhkjOPQMBBwNCAATZgp7Aml8r0OItfeXeYu+8qIKJPFUMmoWYu7tMd6w/GWFjqyNY+Mp1' +
+    'FGika2RdQwAFMfyUdgBNeVv9gx3lViqGo4IBPTCCATkwDAYDVR0TAQH/BAIwADAOBgNVHQ8BAf8E' +
+    'BAMCBPAwgYoGCSqGSIb3Y2QIBQR9MHukAwIBCr+JMAMCAQG/iTEDAgEAv4kyAwIBAb+JMwMCAQG/' +
+    'iTQrBClWOEg2TFE5NDQ4LmlvLnVlYmVsYWNrZXIuQXBwQXR0ZXN0RXhhbXBsZaUGBARza3Mgv4k2' +
+    'AwIBBb+JNwMCAQC/iTkDAgEAv4k6AwIBAL+JOwMCAQAwVwYJKoZIhvdjZAgHBEowSL+KeAgEBjE3' +
+    'LjIuMb+IUAcCBQD/////v4p7BwQFMjFDNja/in0IBAYxNy4yLjG/in4DAgEAv4sMDwQNMjEuMy42' +
+    'Ni4wLjAsMDAzBgkqhkiG92NkCAIEJjAkoSIEIBwIwAN2H8j5gX6W4cgE7HGoHGurrAvt0S62royY' +
+    'kPclMAoGCCqGSM49BAMCA2gAMGUCMQDeNNEsh782FcjkD1biify1dyH1zeJYXNz87XmQeRsN2Vc2' +
+    'e8jifwcpp5SBtCMyXdoCMEtky4mPcswhzsy6egQgJjKbk1qdyewD+sA8vNNKb+CJBpxdB1lMC70E' +
+    '2A8C6MFmP1kCRzCCAkMwggHIoAMCAQICEAm6xeG8QBrZ1FOVvDgaCFQwCgYIKoZIzj0EAwMwUjEm' +
+    'MCQGA1UEAwwdQXBwbGUgQXBwIEF0dGVzdGF0aW9uIFJvb3QgQ0ExEzARBgNVBAoMCkFwcGxlIElu' +
+    'Yy4xEzARBgNVBAgMCkNhbGlmb3JuaWEwHhcNMjAwMzE4MTgzOTU1WhcNMzAwMzEzMDAwMDAwWjBP' +
+    'MSMwIQYDVQQDDBpBcHBsZSBBcHAgQXR0ZXN0YXRpb24gQ0EgMTETMBEGA1UECgwKQXBwbGUgSW5j' +
+    'LjETMBEGA1UECAwKQ2FsaWZvcm5pYTB2MBAGByqGSM49AgEGBSuBBAAiA2IABK5bN6B3TXmyNY9A' +
+    '59HyJibxwl/vF4At6rOCalmHT/jSrRUleJqiZgQZEki2PLlnBp6Y02O9XjcPv6COMp6Ac6mF53Ru' +
+    'o1mi9m8p2zKvRV4hFljVZ6+eJn6yYU3CGmbOmaNmMGQwEgYDVR0TAQH/BAgwBgEB/wIBADAfBgNV' +
+    'HSMEGDAWgBSskRBTM72+aEH/pwyp5frq5eWKoTAdBgNVHQ4EFgQUPuNdHAQZqcm0MfiEdNbh4Vdy' +
+    '45swDgYDVR0PAQH/BAQDAgEGMAoGCCqGSM49BAMDA2kAMGYCMQC7voiNc40FAs+8/WZtCVdQNbzW' +
+    'hyw/hDBJJint0fkU6HmZHJrota7406hUM/e2DQYCMQCrOO3QzIHtAKRSw7pE+ZNjZVP+zCl/LrTf' +
+    'n16+WkrKtplcS4IN+QQ4b3gHu1iUObdncmVjZWlwdFkOsjCABgkqhkiG9w0BBwKggDCAAgEBMQ8w' +
+    'DQYJYIZIAWUDBAIBBQAwgAYJKoZIhvcNAQcBoIAkgASCA+gxggRtMDECAQICAQEEKVY4SDZMUTk0' +
+    'NDguaW8udWViZWxhY2tlci5BcHBBdHRlc3RFeGFtcGxlMIIDQgIBAwIBAQSCAzgwggM0MIICuqAD' +
+    'AgECAgYBjYVm/04wCgYIKoZIzj0EAwIwTzEjMCEGA1UEAwwaQXBwbGUgQXBwIEF0dGVzdGF0aW9u' +
+    'IENBIDExEzARBgNVBAoMCkFwcGxlIEluYy4xEzARBgNVBAgMCkNhbGlmb3JuaWEwHhcNMjQwMjA2' +
+    'MjEwODU2WhcNMjQxMjIxMTI0MjU2WjCBkTFJMEcGA1UEAwxANDgyZjNhMmQ5OWE4MTViMmZmMmIx' +
+    'NTlmN2IzYWZiOGExODA0NzRiMWNhZjE5YWMzNmQzYzBjYjQwOTAxMDliMzEaMBgGA1UECwwRQUFB' +
+    'IENlcnRpZmljYXRpb24xEzARBgNVBAoMCkFwcGxlIEluYy4xEzARBgNVBAgMCkNhbGlmb3JuaWEw' +
+    'WTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAATZgp7Aml8r0OItfeXeYu+8qIKJPFUMmoWYu7tMd6w/' +
+    'GWFjqyNY+Mp1FGika2RdQwAFMfyUdgBNeVv9gx3lViqGo4IBPTCCATkwDAYDVR0TAQH/BAIwADAO' +
+    'BgNVHQ8BAf8EBAMCBPAwgYoGCSqGSIb3Y2QIBQR9MHukAwIBCr+JMAMCAQG/iTEDAgEAv4kyAwIB' +
+    'Ab+JMwMCAQG/iTQrBClWOEg2TFE5NDQ4LmlvLnVlYmVsYWNrZXIuQXBwQXR0ZXN0RXhhbXBsZaUG' +
+    'BARza3Mgv4k2AwIBBb+JNwMCAQC/iTkDAgEAv4k6AwIBAL+JOwMCAQAwVwYJKoZIhvdjZAgHBEow' +
+    'SL+KeAgEBjE3LjIuMb+IUAcCBQD/////v4p7BwQFMjFDNja/in0IBAYxNy4yLjG/in4DAgEAv4sM' +
+    'DwQNMjEuMy42Ni4wLjAsMDAzBgkqhkiG92NkCAIEJjAkoSIEIBwIwAN2H8j5gX6W4cgE7HGoHGur' +
+    'rAvt0S62royYkPclMAoGCCqGSM49BAMCA2gAMGUCMQDeNNEsh782FcjkD1biify1dyH1zeJYXNz8' +
+    '7XmQeRsN2Vc2e8jifwcpp5SBtCMyXdoCMEtky4mPcswhzsy6egQgJjKbk1qdyewD+sA8vNNKb+CJ' +
+    'BpxdB1lMC70E2A8C6MFmPzAoAgEEAgEBBCA+nvULf/D5hTBPe2YIlcTC2gNOQ9r7OFtxUomNImwA' +
+    'NzBgAgEFAgEBBFhjZjhsbVRXS3JHRTdORnl6c0RBY0JmeFJQczY5RmVYcUNEUU5OTXljSTJ1Q2NL' +
+    'SHI3TGJiMER2BIGJNzB6aTR1eUFVNEY3eGdCcHFBYVh1anZGUStFVkgrUT09MA4CAQYCAQEEBkFU' +
+    'VEVTVDASAgEHAgEBBApwcm9kdWN0aW9uMCACAQwCAQEEGDIwMjQtMDItMDdUMjE6MDg6NTYuMzA4' +
+    'WjAgAgEVAgEBBBgyMDI0LTA1LTA3VDIxOjA4OjU2LjMwOFoAAAAAAACggDCCA60wggNUoAMCAQIC' +
+    'EH3NmVEtjH3NFgveDjiBekIwCgYIKoZIzj0EAwIwfDEwMC4GA1UEAwwnQXBwbGUgQXBwbGljYXRp' +
+    'b24gSW50ZWdyYXRpb24gQ0EgNSAtIEcxMSYwJAYDVQQLDB1BcHBsZSBDZXJ0aWZpY2F0aW9uIEF1' +
+    'dGhvcml0eTETMBEGA1UECgwKQXBwbGUgSW5jLjELMAkGA1UEBhMCVVMwHhcNMjMwMzA4MTUyOTE3' +
+    'WhcNMjQwNDA2MTUyOTE2WjBaMTYwNAYDVQQDDC1BcHBsaWNhdGlvbiBBdHRlc3RhdGlvbiBGcmF1' +
+    'ZCBSZWNlaXB0IFNpZ25pbmcxEzARBgNVBAoMCkFwcGxlIEluYy4xCzAJBgNVBAYTAlVTMFkwEwYH' +
+    'KoZIzj0CAQYIKoZIzj0DAQcDQgAE2pgoZ+9d0imsG72+nHEJ7T/XS6UZeRiwRGwaMi/mVldJ7Pmx' +
+    'u9UEcwJs5pTYHdPICN2Cfh6zy/vx/Sop4n8Q/aOCAdgwggHUMAwGA1UdEwEB/wQCMAAwHwYDVR0j' +
+    'BBgwFoAU2Rf+S2eQOEuS9NvO1VeAFAuPPckwQwYIKwYBBQUHAQEENzA1MDMGCCsGAQUFBzABhido' +
+    'dHRwOi8vb2NzcC5hcHBsZS5jb20vb2NzcDAzLWFhaWNhNWcxMDEwggEcBgNVHSAEggETMIIBDzCC' +
+    'AQsGCSqGSIb3Y2QFATCB/TCBwwYIKwYBBQUHAgIwgbYMgbNSZWxpYW5jZSBvbiB0aGlzIGNlcnRp' +
+    'ZmljYXRlIGJ5IGFueSBwYXJ0eSBhc3N1bWVzIGFjY2VwdGFuY2Ugb2YgdGhlIHRoZW4gYXBwbGlj' +
+    'YWJsZSBzdGFuZGFyZCB0ZXJtcyBhbmQgY29uZGl0aW9ucyBvZiB1c2UsIGNlcnRpZmljYXRlIHBv' +
+    'bGljeSBhbmQgY2VydGlmaWNhdGlvbiBwcmFjdGljZSBzdGF0ZW1lbnRzLjA1BggrBgEFBQcCARYp' +
+    'aHR0cDovL3d3dy5hcHBsZS5jb20vY2VydGlmaWNhdGVhdXRob3JpdHkwHQYDVR0OBBYEFEzxp58Q' +
+    'YYoaOWTMbebbOwdil3a9MA4GA1UdDwEB/wQEAwIHgDAPBgkqhkiG92NkDA8EAgUAMAoGCCqGSM49' +
+    'BAMCA0cAMEQCIHrbZOJ1nE8FFv8sSdvzkCwvESymd45Qggp0g5ysO5vsAiBFNcdgKjJATfkqgWf8' +
+    'l7Zy4AmZ1CmKlucFy+0JcBdQjTCCAvkwggJ/oAMCAQICEFb7g9Qr/43DN5kjtVqubr0wCgYIKoZI' +
+    'zj0EAwMwZzEbMBkGA1UEAwwSQXBwbGUgUm9vdCBDQSAtIEczMSYwJAYDVQQLDB1BcHBsZSBDZXJ0' +
+    'aWZpY2F0aW9uIEF1dGhvcml0eTETMBEGA1UECgwKQXBwbGUgSW5jLjELMAkGA1UEBhMCVVMwHhcN' +
+    'MTkwMzIyMTc1MzMzWhcNMzQwMzIyMDAwMDAwWjB8MTAwLgYDVQQDDCdBcHBsZSBBcHBsaWNhdGlv' +
+    'biBJbnRlZ3JhdGlvbiBDQSA1IC0gRzExJjAkBgNVBAsMHUFwcGxlIENlcnRpZmljYXRpb24gQXV0' +
+    'aG9yaXR5MRMwEQYDVQQKDApBcHBsZSBJbmMuMQswCQYDVQQGEwJVUzBZMBMGByqGSM49AgEGCCqG' +
+    'SM49AwEHA0IABJLOY719hrGrKAo7HOGv+wSUgJGs9jHfpssoNW9ES+Eh5VfdEo2NuoJ8lb5J+r4z' +
+    'yq7NBBnxL0Ml+vS+s8uDfrqjgfcwgfQwDwYDVR0TAQH/BAUwAwEB/zAfBgNVHSMEGDAWgBS7sN6h' +
+    'WDOImqSKmd6+veuv2sskqzBGBggrBgEFBQcBAQQ6MDgwNgYIKwYBBQUHMAGGKmh0dHA6Ly9vY3Nw' +
+    'LmFwcGxlLmNvbS9vY3NwMDMtYXBwbGVyb290Y2FnMzA3BgNVHR8EMDAuMCygKqAohiZodHRwOi8v' +
+    'Y3JsLmFwcGxlLmNvbS9hcHBsZXJvb3RjYWczLmNybDAdBgNVHQ4EFgQU2Rf+S2eQOEuS9NvO1VeA' +
+    'FAuPPckwDgYDVR0PAQH/BAQDAgEGMBAGCiqGSIb3Y2QGAgMEAgUAMAoGCCqGSM49BAMDA2gAMGUC' +
+    'MQCNb6afoeDk7FtOc4qSfz14U5iP9NofWB7DdUr+OKhMKoMaGqoNpmRt4bmT6NFVTO0CMGc7LLTh' +
+    '6DcHd8vV7HaoGjpVOz81asjF5pKw4WG+gElp5F8rqWzhEQKqzGHZOLdzSjCCAkMwggHJoAMCAQIC' +
+    'CC3F/IjSxUuVMAoGCCqGSM49BAMDMGcxGzAZBgNVBAMMEkFwcGxlIFJvb3QgQ0EgLSBHMzEmMCQG' +
+    'A1UECwwdQXBwbGUgQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkxEzARBgNVBAoMCkFwcGxlIEluYy4x' +
+    'CzAJBgNVBAYTAlVTMB4XDTE0MDQzMDE4MTkwNloXDTM5MDQzMDE4MTkwNlowZzEbMBkGA1UEAwwS' +
+    'QXBwbGUgUm9vdCBDQSAtIEczMSYwJAYDVQQLDB1BcHBsZSBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0' +
+    'eTETMBEGA1UECgwKQXBwbGUgSW5jLjELMAkGA1UEBhMCVVMwdjAQBgcqhkjOPQIBBgUrgQQAIgNi' +
+    'AASY6S89QHKk7ZMicoETHN0QlfHFo05x3BQW2Q7lpgUqd2R7X04407scRLV/9R+2MmJdyemEW08w' +
+    'TxFaAP1YWAyl9Q8sTQdHE3Xal5eXbzFc7SudeyA72LlU2V6ZpDpRCjGjQjBAMB0GA1UdDgQWBBS7' +
+    'sN6hWDOImqSKmd6+veuv2sskqzAPBgNVHRMBAf8EBTADAQH/MA4GA1UdDwEB/wQEAwIBBjAKBggq' +
+    'hkjOPQQDAwNoADBlAjEAg+nBxBZeGl00GNnt7/RsDgBGS7jfskYRxQ/95nqMoaZrzsID1Jz1k8Z0' +
+    'uGrfqiMVAjBtZooQytQN1E/NjUM+tIpjpTNu423aF7dkH8hTJvmIYnQ5Cxdby1GoDOgYA+eisigA' +
+    'ADGB/DCB+QIBATCBkDB8MTAwLgYDVQQDDCdBcHBsZSBBcHBsaWNhdGlvbiBJbnRlZ3JhdGlvbiBD' +
+    'QSA1IC0gRzExJjAkBgNVBAsMHUFwcGxlIENlcnRpZmljYXRpb24gQXV0aG9yaXR5MRMwEQYDVQQK' +
+    'DApBcHBsZSBJbmMuMQswCQYDVQQGEwJVUwIQfc2ZUS2Mfc0WC94OOIF6QjANBglghkgBZQMEAgEF' +
+    'ADAKBggqhkjOPQQDAgRGMEQCIHSUEAahN7NurrzYZn0Jdof4HOHYYoWEdF143LiKZtyQAiAmQTit' +
+    'B7NJuQeGPmoGdR6eEk+LcvfJK5CHYQdzJA6X+gAAAAAAAGhhdXRoRGF0YVikyj3cO094ro3BWWx1' +
+    'ax19Jg0jKzZrOT8xG6xW0D0QOqxAAAAAAGFwcGF0dGVzdAAAAAAAAAAAIEgvOi2ZqBWy/ysVn3s6' +
+    '+4oYBHSxyvGaw208DLQJAQmzpQECAyYgASFYINmCnsCaXyvQ4i195d5i77yogok8VQyahZi7u0x3' +
+    'rD8ZIlggYWOrI1j4ynUUaKRrZF1DAAUx/JR2AE15W/2DHeVWKoY=',
+  /// Une assertion d'un autre appareil de la même application, avec sa clé
+  /// publique et ce qu'elle a signé.
+  assertion:
+    'omlzaWduYXR1cmVYRzBFAiBB8BGAwkmFCg1M5J0mOYEun0SUN1/lse79/7ypG9WiMQIhAIHvqj7e' +
+    'g59B1PMFX1CN4GMGlsgfFtdL30pHCf7G/dNRcWF1dGhlbnRpY2F0b3JEYXRhWCXKPdw7T3iujcFZ' +
+    'bHVrHX0mDSMrNms5PzEbrFbQPRA6rEAAAAAB',
+  assertionPublicKey:
+    'MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEg69t2YzgcPTLUx8Zgu+rbcikeaEL8Ppb+HG0QTIu' +
+    'lz8YUB9tgv1pDRruWk87nZC3our56pzIWaqXEbaWyamdzA==',
+  assertionPayload:
+    '{"subject":"Lorem ipsum","message":"Lorem ipsum dolor sit amet, consectetur adipiscing elit."}',
+};

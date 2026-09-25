@@ -1,7 +1,11 @@
 // Ce que le relais laisse entrer, éprouvé sans iPhone.
 //
 //   node --experimental-strip-types supabase/functions/relay/attest_test.ts
-//   deno run --allow-none supabase/functions/relay/attest_test.ts
+//   deno run supabase/functions/relay/attest_test.ts
+//
+// Node seul ne suffit pas : sa Web Crypto accepte ce que celle du runtime
+// Supabase refuse, et c'est ainsi qu'une attestation d'iPhone a pu échouer en
+// production avec vingt tests au vert. Le passage sous Deno compte.
 //
 // Les cas qui comptent sont les refus : une vérification qui accepte ce
 // qu'il faut mais laisse aussi passer le reste ne protège rien. Chaque étape
@@ -16,6 +20,9 @@ import { AttestationError, verifyAssertion, verifyAttestation } from './attest.t
 import type { AttestPolicy } from './attest.ts';
 import { mintSession, readSession } from './session.ts';
 import { fixtures } from './attest_fixtures.ts';
+import { appleFixtures } from './apple_fixtures.ts';
+import { verifyEcdsa } from './ecdsa.ts';
+import type { Curve, Hash } from './ecdsa.ts';
 
 let failures = 0;
 let passes = 0;
@@ -164,6 +171,73 @@ await test("ne se laisse pas relire sans sa signature", async () => {
   const [head, payload] = token.split('.');
   assert((await readSession('secret du relais', `${head}.${payload}.`)) === null, 'signature vide refusée');
   assert((await readSession('secret du relais', `${head}.${payload}`)) === null, 'jeton tronqué refusé');
+});
+
+console.log("\nUne vraie chaîne d'Apple");
+const realPolicy: AttestPolicy = { appId: appleFixtures.appId, environments: ['production'], now: appleFixtures.validAt };
+const realAttestation = fromBase64(appleFixtures.attestation);
+
+await test("est acceptée sous l'ancre épinglée", async () => {
+  const key = await verifyAttestation(realAttestation, appleFixtures.keyId, appleFixtures.challenge, realPolicy);
+  assert(key.keyId === appleFixtures.keyId, 'identifiant de clé rendu');
+  assert(key.environment === 'production', 'environnement de production reconnu');
+  assert(key.publicKey.length === 65, 'point non compressé de 65 octets');
+});
+
+await test('signe le certificat d’appareil en SHA-256 sous une clé P-384', () => {
+  // Le mélange que le runtime Supabase ne sait pas vérifier par la Web
+  // Crypto. S'il disparaissait de la chaîne d'Apple, ce test le dirait, et
+  // le détour d'`ecdsa.ts` n'aurait plus de raison d'être.
+  const statement = (decodeCbor(realAttestation) as Map<string, unknown>).get('attStmt') as Map<string, unknown>;
+  const [device, intermediate] = (statement.get('x5c') as Uint8Array[]).map(parseCertificate);
+  assert(device.signatureAlgorithm === '1.2.840.10045.4.3.2', 'certificat d’appareil en ecdsa-with-SHA256');
+  assert(intermediate.curve === 'P-384', 'intermédiaire en P-384');
+});
+
+await test('est refusée pour une autre application', () =>
+  rejects('autre application', () =>
+    verifyAttestation(realAttestation, appleFixtures.keyId, appleFixtures.challenge, { ...realPolicy, appId: fixtures.appId })));
+
+await test('est refusée sous un autre défi', () =>
+  rejects('autre défi', () => verifyAttestation(realAttestation, appleFixtures.keyId, fixtures.challenge, realPolicy)));
+
+await test("rend une assertion d'appareil vérifiable", async () => {
+  const spki = fromBase64(appleFixtures.assertionPublicKey);
+  const point = spki.subarray(spki.length - 65);
+  const assertion = fromBase64(appleFixtures.assertion);
+  const verified = await verifyAssertion(assertion, point, appleFixtures.assertionPayload, 0, realPolicy);
+  assert(verified.counter === 1, 'compteur de l’assertion');
+  await rejects('autre contenu signé', () => verifyAssertion(assertion, point, fixtures.challenge, 0, realPolicy));
+});
+
+console.log('\nLa vérification ECDSA');
+/// Les paires que toute Web Crypto sait signer : la vérification maison doit
+/// accepter ce qu'elle signe, et refuser dès qu'un octet a bougé.
+for (const [curve, hash] of [['P-256', 'SHA-256'], ['P-384', 'SHA-384']] as [Curve, Hash][]) {
+  await test(`${curve} avec ${hash} rejoint la Web Crypto`, async () => {
+    const pair = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: curve }, true, ['sign', 'verify']);
+    const point = new Uint8Array(await crypto.subtle.exportKey('raw', pair.publicKey));
+    const message = new TextEncoder().encode('Monstera deliciosa');
+    const signature = new Uint8Array(await crypto.subtle.sign({ name: 'ECDSA', hash }, pair.privateKey, message));
+    assert(await verifyEcdsa(curve, hash, point, signature, message), 'signature acceptée');
+    assert(!(await verifyEcdsa(curve, hash, point, tampered(signature, 5), message)), 'signature modifiée refusée');
+    assert(!(await verifyEcdsa(curve, hash, point, signature, tampered(message, 0))), 'message modifié refusé');
+    const other = curve === 'P-256' ? 'SHA-384' : 'SHA-256';
+    assert(!(await verifyEcdsa(curve, other, point, signature, message)), 'autre condensé refusé');
+  });
+}
+
+await test('refuse sans lever une clé hors courbe ou une signature hors bornes', async () => {
+  const message = new Uint8Array([1, 2, 3]);
+  const offCurve = new Uint8Array(65);
+  offCurve[0] = 0x04;
+  offCurve[64] = 1;
+  assert(!(await verifyEcdsa('P-256', 'SHA-256', offCurve, new Uint8Array(64).fill(1), message)), 'point hors courbe');
+  assert(!(await verifyEcdsa('P-256', 'SHA-256', offCurve.subarray(0, 33), new Uint8Array(64).fill(1), message)), 'clé tronquée');
+  const pair = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign']);
+  const point = new Uint8Array(await crypto.subtle.exportKey('raw', pair.publicKey));
+  assert(!(await verifyEcdsa('P-256', 'SHA-256', point, new Uint8Array(64), message)), 'r et s nuls');
+  assert(!(await verifyEcdsa('P-256', 'SHA-256', point, new Uint8Array(64).fill(0xff), message)), 'r et s au-delà de l’ordre');
 });
 
 console.log('\nLes décodeurs');
