@@ -25,20 +25,31 @@ PUB = os.path.join(ICI, 'public')
 os.makedirs(PUB, exist_ok=True)
 SHOTS = 'store/shots-fr'
 
-# Les téléphones, et où tombe l'écran dans chacun : l'écran commence après le
-# cadre et la barre d'état que compose.py dessine au-dessus d'une capture web.
+# Les captures du simulateur (store/capture_ios.sh, marquées par un fichier
+# .device) sont l'écran entier, 1320 × 2868 : la barre d'état y a déjà sa
+# place. Celles du web (store/capture.mjs, 1170 × 2532) n'en ont pas, et
+# compose.py la dessine au-dessus.
+SIMULATEUR = os.path.exists(os.path.join(SHOTS, '.device'))
 dev = C.L['device']
-ecran = {'x': dev['bezel'] * dev['px'], 'y': dev['bezel'] * dev['px'] + dev['status'] * dev['px']}
+ecran = {'x': dev['bezel'] * dev['px'], 'y': dev['bezel'] * dev['px'] + (0 if SIMULATEUR else dev['status'] * dev['px'])}
 geometrie = {}
 for nom in ('capture', 'today', 'diagnosis', 'plants', 'garden-calendar'):
-    ph = C.phone(os.path.join(SHOTS, f'{nom}.png'))
+    chemin = os.path.join(SHOTS, f'{nom}.png')
+    sw, sh = Image.open(chemin).size
+    ph = C.phone(chemin, device=SIMULATEUR)
     ph.save(os.path.join(PUB, f'tel-{nom}.png'), optimize=True)
-    geometrie[nom] = {'w': ph.width, 'h': ph.height, **ecran}
+    geometrie[nom] = {'w': ph.width, 'h': ph.height, 'sw': sw, 'sh': sh, **ecran}
 
-# Les ronds de validation des deux premières tuiles « À venir » de l'écran
-# Aujourd'hui, en pixels de la capture (1170 × 2532).
-geometrie['today']['coches'] = [[500, 2004], [1042, 2004]]
-geometrie['today']['rayon'] = 48
+# Ce que la vidéo anime par-dessus les écrans, en pixels de la capture :
+# les ronds de validation des deux premières tuiles « À venir »
+# d'Aujourd'hui, la photo de l'étape « Aperçu » et le nom qu'Iris y pose.
+# Mesurés sur les captures de chaque source.
+if SIMULATEUR:
+    geometrie['today'].update(coches=[[576, 2471], [1193, 2471]], rayon=48)
+    geometrie['capture'].update(photo={'x': 60, 'y': 784, 'l': 1200, 'h': 1500, 'rayon': 100}, nom=[400, 1140])
+else:
+    geometrie['today'].update(coches=[[500, 2004], [1042, 2004]], rayon=48)
+    geometrie['capture'].update(photo={'x': 60, 'y': 615, 'l': 1050, 'h': 1311, 'rayon': 90}, nom=[360, 936])
 
 # Le pot de l'ouverture, et l'œil de droite qui se ferme.
 for f in ('logo.webp', 'clin_50.webp', 'clin_85.webp', 'clin_100.webp'):

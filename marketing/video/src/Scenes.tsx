@@ -1,7 +1,7 @@
 import React from 'react';
 import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame, Easing } from 'remotion';
 import { Pot } from './Pot';
-import { C, Entree, Fond, Mots, Objet, Pastille, Telephone, phrase, titre, useRessort } from './outils';
+import { C, Entree, Fond, Mots, Objet, Pastille, Telephone, geometrie, phrase, titre, useRessort } from './outils';
 
 const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
 
@@ -113,7 +113,11 @@ const Lettre: React.FC<{ l: string; debut: number; taille: number }> = ({ l, deb
 // L'étape « Aperçu » : la photo est d'abord floue, un trait de lumière la
 // parcourt, et derrière lui l'image devient nette — avec les noms posés
 // dessus. Puis la caméra s'approche de « Figuier lyre ».
-const PHOTO_APERCU = { x: 60, y: 615, l: 1050, h: 1311, rayon: 90 };
+// La photo et le nom posé dessus, mesurés par preparer.py sur la capture.
+const APERCU = geometrie.capture;
+const PHOTO_APERCU = APERCU.photo;
+// La caméra s'approche du nom : l'origine du zoom, dans le téléphone.
+const ORIGINE_NOM = `${((APERCU.x + APERCU.nom[0]) / APERCU.w) * 100}% ${((APERCU.y + APERCU.nom[1]) / APERCU.h) * 100}%`;
 
 export const SceneIris: React.FC = () => {
   const frame = useCurrentFrame();
@@ -133,7 +137,7 @@ export const SceneIris: React.FC = () => {
           y={560 + (1 - monte) * 1100}
           rotation={-3 + 3 * approche}
           echelle={1 + 0.55 * approche}
-          origine="30% 38%"
+          origine={ORIGINE_NOM}
         >
           {/* Le flou, sous le trait : il ne couvre que ce que le trait n'a pas encore passé. */}
           <div
@@ -172,6 +176,11 @@ export const SceneIris: React.FC = () => {
 // --- 4. Les soins -------------------------------------------------------------------
 // L'écran Aujourd'hui. À la deuxième mesure, la caméra descend vers les
 // tuiles « À venir », et leurs ronds se cochent sur deux temps.
+const JOUR = geometrie.today;
+const K_JOUR = 800 / JOUR.w;
+const Y_COCHES = (JOUR.y + JOUR.coches[0][1]) * K_JOUR;
+const ORIGINE_COCHES = `50% ${((JOUR.y + JOUR.coches[0][1]) / JOUR.h) * 100}%`;
+
 export const SceneSoins: React.FC = () => {
   const frame = useCurrentFrame();
   const entre = useRessort(0, 150, 16);
@@ -186,13 +195,13 @@ export const SceneSoins: React.FC = () => {
           nom="today"
           largeur={800}
           x={140 + (1 - entre) * 700}
-          y={560 - descend * 1080}
+          y={560 - descend * (560 + Y_COCHES - 1150)}
           rotation={-4 * (1 - descend)}
           echelle={1 + 0.3 * descend}
-          origine="50% 72%"
+          origine={ORIGINE_COCHES}
         >
-          <Coche x={500} y={2004} debut={75} />
-          <Coche x={1042} y={2004} debut={90} />
+          <Coche x={JOUR.coches[0][0]} y={JOUR.coches[0][1]} debut={75} />
+          <Coche x={JOUR.coches[1][0]} y={JOUR.coches[1][1]} debut={90} />
         </Telephone>
       </Fond>
     </Entree>

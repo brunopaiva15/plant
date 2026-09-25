@@ -14,7 +14,9 @@ python3 marketing/kit.py fr store/x   # avec un autre dossier de captures
 
 Les captures sont celles de `store/shots-<langue>/` (hors du dépôt) : du web
 avec `store/capture.mjs`, ou du simulateur avec `store/capture_ios.sh`. Celles
-du simulateur donnent la barre d'onglets native ; le script reconnaît les deux.
+du simulateur donnent la barre d'onglets native ; le script les reconnaît au fichier
+`.device` que `capture_ios.sh` pose dans le dossier. Le kit est rendu avec
+elles.
 
 Les textes sont dans `TEXTES`, un registre par langue comme dans l'app
 (« vous », *you*, *du*, *tu*), écrits depuis l'intention plutôt que traduits

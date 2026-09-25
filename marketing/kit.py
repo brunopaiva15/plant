@@ -7,7 +7,7 @@ aux formats courants des réseaux, en français, anglais, allemand et italien.
 
 Les captures viennent de `store/shots-<langue>/` : celles du web
 (`store/capture.mjs`) ou celles du simulateur (`store/capture_ios.sh`) — le
-script les reconnaît à leur taille. Les couleurs, les polices, l'appareil et
+script les reconnaît au fichier .device que pose le second. Les couleurs, les polices, l'appareil et
 les objets 3D sont ceux des visuels du magasin (`store/compose.py`), dont ce
 script reprend les outils.
 """
@@ -291,10 +291,13 @@ def pastilles(img, x, y, labels, size, fill, ink, vertical=True, max_x=None):
 
 
 def telephone(img, shot, width, x, y, angle=0.0):
-    """L'appareil, habillé par compose.py. Une capture du web (390 points de
-    large, sans barre d'état) en reçoit une ; celle du simulateur l'a déjà."""
+    """L'appareil, habillé par compose.py. Une capture du web (sans barre
+    d'état) en reçoit une ; celle du simulateur a déjà sa place."""
     path = os.path.join(SHOTS, f'{shot}.png')
-    device = Image.open(path).size[1] / Image.open(path).size[0] > 2.3
+    # Les captures du simulateur (store/capture_ios.sh) sont marquées d'un
+    # fichier .device, comme le lit compose.py : l'écran entier, barre
+    # d'état comprise.
+    device = os.path.exists(os.path.join(SHOTS, '.device'))
     ph = C.phone(path, device=device)
     ph = ph.resize((width, round(ph.height * width / ph.width)), Image.LANCZOS)
     if angle:

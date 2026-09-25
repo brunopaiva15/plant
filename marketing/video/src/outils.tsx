@@ -135,7 +135,7 @@ type NomTel = 'capture' | 'today' | 'diagnosis' | 'plants' | 'garden-calendar';
 /**
  * Un téléphone habillé (preparer.py), posé à (x, y) — son coin haut gauche —
  * à la [largeur] donnée. [children] se dessine dans le repère de la capture
- * (1170 × 2532), par-dessus l'écran.
+ * (sw × sh), par-dessus l'écran.
  */
 export const Telephone: React.FC<{
   nom: NomTel;
@@ -169,8 +169,8 @@ export const Telephone: React.FC<{
           position: 'absolute',
           left: g.x * k,
           top: g.y * k,
-          width: 1170,
-          height: 2532,
+          width: g.sw,
+          height: g.sh,
           transform: `scale(${k})`,
           transformOrigin: '0 0',
         }}
