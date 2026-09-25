@@ -1,12 +1,18 @@
-// La grille du montage, celle de la musique (musique.py) : 120 BPM, 30
-// images par seconde. Un temps dure 15 images, une mesure 60. Chaque scène
-// commence sur une mesure, chaque geste tombe sur un temps.
-export const FPS = 30;
-export const TEMPS = 15;
-export const MESURE = 4 * TEMPS;
-export const mesure = (m: number, temps = 0) => m * MESURE + temps * TEMPS;
+// La grille du montage, celle de la musique : chaque scène commence sur une
+// mesure, chaque geste tombe sur un temps. Le tempo et le premier temps du
+// morceau sont mesurés par musique.py, qui écrit musique.json.
+import musique from './musique.json';
 
-export const DUREE = mesure(12);
+export const FPS = 30;
+export const BPM: number = musique.bpm;
+/** Un temps, en images — pas forcément entier : 13,85 images à 130 BPM. */
+export const TEMPS = (FPS * 60) / BPM;
+export const MESURE = 4 * TEMPS;
+/** [n] temps, arrondis à l'image. */
+export const t = (n: number) => Math.round(n * TEMPS);
+export const mesure = (m: number, temps = 0) => t(m * 4 + temps);
+
+export const DUREE = mesure(13);
 
 // Où commence chaque scène, en mesures.
 export const SCENES = {

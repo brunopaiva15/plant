@@ -1,5 +1,5 @@
 import React from 'react';
-import { AbsoluteFill, Audio, Composition, Sequence, interpolate, staticFile } from 'remotion';
+import { AbsoluteFill, Audio, Composition, Sequence, staticFile } from 'remotion';
 import { DUREE, FPS, SCENES } from './temps';
 import {
   SceneCollection,
@@ -38,10 +38,8 @@ export const Sortie: React.FC<{ musique: boolean }> = ({ musique }) => (
       );
     })}
     {musique && (
-      <Audio
-        src={staticFile('musique.wav')}
-        volume={(f) => interpolate(f, [DUREE - 20, DUREE], [1, 0], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' })}
-      />
+      // Le passage, déjà coupé sur ses temps et fondu par musique.py.
+      <Audio src={staticFile('musique.wav')} />
     )}
   </AbsoluteFill>
 );

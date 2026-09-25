@@ -11,6 +11,7 @@ import {
   useVideoConfig,
 } from 'remotion';
 import geometrie from './geometrie.json';
+import { TEMPS } from './temps';
 
 // La palette de l'app (lib/design_system/tokens/colors.dart), celle du kit.
 export const C = {
@@ -98,7 +99,7 @@ export const Mots: React.FC<{
   taille: number;
   couleur?: string;
   style?: React.CSSProperties;
-}> = ({ texte, debut, cadence = 15, taille, couleur = C.encre, style }) => {
+}> = ({ texte, debut, cadence = TEMPS, taille, couleur = C.encre, style }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   let i = 0;

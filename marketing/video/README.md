@@ -11,9 +11,18 @@ Reels et Shorts, en motion design avec Remotion.
 
 ## La musique
 
-Un morceau original, composé par `musique.py` (synthèse, sans échantillon ni
-droits) : 120 BPM, fa majeur. Le montage suit sa grille : une mesure par
-scène, un geste par temps (`src/temps.ts`). À publier en « son original ».
+« Porch Swing Days (faster) », de Kevin MacLeod (incompetech.com), sous
+licence **CC BY 4.0** : l'usage commercial est permis, **à condition de
+créditer l'auteur**. À mettre dans la légende de chaque publication :
+
+> Musique : « Porch Swing Days (faster) », Kevin MacLeod (incompetech.com), licence CC BY 4.0 — creativecommons.org/licenses/by/4.0/
+
+`musique.py` télécharge le morceau (`source/`, hors du dépôt), mesure son
+tempo (130 BPM) et ses temps forts, et coupe 13 mesures à partir du temps
+fort de 29,6 s, qui ouvre une section ; la section suivante tombe sur la
+dernière scène. Le montage lit le tempo dans `src/musique.json` : chaque
+scène commence sur une mesure (`src/temps.ts`). Pour changer de morceau,
+changer `MORCEAU` et `DEBUT_APPROX`, relancer `musique.py`, puis le rendu.
 
 ## Refaire le rendu
 

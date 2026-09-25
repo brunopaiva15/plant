@@ -1,6 +1,7 @@
 import React from 'react';
 import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame, Easing } from 'remotion';
 import { Pot } from './Pot';
+import { TEMPS, t } from './temps';
 import { C, Entree, Fond, Mots, Objet, Pastille, Telephone, geometrie, phrase, titre, useRessort } from './outils';
 
 const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
@@ -22,12 +23,12 @@ const PHOTOS: [string, number, number, number][] = [
 export const ScenePhotos: React.FC = () => {
   const frame = useCurrentFrame();
   // Sur la fin de la deuxième mesure, le tas se resserre : la montée.
-  const serre = interpolate(frame, [96, 120], [0, 1], { ...clamp, easing: Easing.in(Easing.cubic) });
+  const serre = interpolate(frame, [t(6.4), t(8)], [0, 1], { ...clamp, easing: Easing.in(Easing.cubic) });
   return (
     <Fond couleur={C.soleil}>
       <Mots texte={'Le carnet\nde vos plantes.'} debut={-5} taille={124} style={{ position: 'absolute', left: 80, top: 190 }} />
       {PHOTOS.map(([nom, x, y, r], i) => (
-        <Photo key={nom} nom={nom} x={x} y={y} r={r} debut={i * 15 - 5} serre={serre} />
+        <Photo key={nom} nom={nom} x={x} y={y} r={r} debut={t(i) - 5} serre={serre} />
       ))}
     </Fond>
   );
@@ -74,7 +75,7 @@ const Photo: React.FC<{ nom: string; x: number; y: number; r: number; debut: num
 export const ScenePot: React.FC = () => (
   <Entree type="disque" x={540} y={1080}>
     <Fond couleur={C.sauge}>
-      <Pot taille={640} x={540} y={820} arrivee={0} clin={30} />
+      <Pot taille={640} x={540} y={820} arrivee={0} clin={t(2)} />
       <Lettres texte="Auxine" debut={6} taille={200} couleur={C.blanc} y={1150} />
     </Fond>
   </Entree>
@@ -122,8 +123,8 @@ const ORIGINE_NOM = `${((APERCU.x + APERCU.nom[0]) / APERCU.w) * 100}% ${((APERC
 export const SceneIris: React.FC = () => {
   const frame = useCurrentFrame();
   const monte = useRessort(0, 150, 16);
-  const balayage = interpolate(frame, [30, 72], [0, 1], { ...clamp, easing: Easing.inOut(Easing.cubic) });
-  const approche = interpolate(frame, [92, 118], [0, 1], { ...clamp, easing: Easing.inOut(Easing.cubic) });
+  const balayage = interpolate(frame, [t(2), t(4.8)], [0, 1], { ...clamp, easing: Easing.inOut(Easing.cubic) });
+  const approche = interpolate(frame, [t(6.13), t(7.87)], [0, 1], { ...clamp, easing: Easing.inOut(Easing.cubic) });
   const p = PHOTO_APERCU;
   const ligne = p.y + balayage * p.h;
   return (
@@ -184,7 +185,7 @@ const ORIGINE_COCHES = `50% ${((JOUR.y + JOUR.coches[0][1]) / JOUR.h) * 100}%`;
 export const SceneSoins: React.FC = () => {
   const frame = useCurrentFrame();
   const entre = useRessort(0, 150, 16);
-  const descend = interpolate(frame, [52, 68], [0, 1], { ...clamp, easing: Easing.inOut(Easing.cubic) });
+  const descend = interpolate(frame, [t(3.47), t(4.53)], [0, 1], { ...clamp, easing: Easing.inOut(Easing.cubic) });
   return (
     <Entree type="droite">
       <Fond couleur={C.eau}>
@@ -200,8 +201,8 @@ export const SceneSoins: React.FC = () => {
           echelle={1 + 0.3 * descend}
           origine={ORIGINE_COCHES}
         >
-          <Coche x={JOUR.coches[0][0]} y={JOUR.coches[0][1]} debut={75} />
-          <Coche x={JOUR.coches[1][0]} y={JOUR.coches[1][1]} debut={90} />
+          <Coche x={JOUR.coches[0][0]} y={JOUR.coches[0][1]} debut={t(5)} />
+          <Coche x={JOUR.coches[1][0]} y={JOUR.coches[1][1]} debut={t(6)} />
         </Telephone>
       </Fond>
     </Entree>
@@ -257,12 +258,12 @@ const Coche: React.FC<{ x: number; y: number; debut: number }> = ({ x, y, debut 
 export const SceneDiagnostic: React.FC = () => {
   const entre = useRessort(0, 140, 15);
   const frame = useCurrentFrame();
-  const derive = interpolate(frame, [0, 70], [0, 1], clamp);
-  const sous = useRessort(30, 200, 16);
+  const derive = interpolate(frame, [0, t(4.67)], [0, 1], clamp);
+  const sous = useRessort(t(2), 200, 16);
   return (
     <Entree type="disque" x={760} y={1150}>
       <Fond couleur={C.nuit}>
-        <Mots texte={'Un diagnostic\nsur photo.'} debut={0} cadence={7} taille={124} couleur={C.blanc} style={{ position: 'absolute', left: 80, top: 190 }} />
+        <Mots texte={'Un diagnostic\nsur photo.'} debut={0} cadence={TEMPS / 2} taille={124} couleur={C.blanc} style={{ position: 'absolute', left: 80, top: 190 }} />
         <div
           style={{
             position: 'absolute',
@@ -292,14 +293,14 @@ export const SceneDiagnostic: React.FC = () => {
 export const SceneCollection: React.FC = () => {
   const frame = useCurrentFrame();
   const a = useRessort(0, 150, 15);
-  const b = useRessort(15, 150, 15);
+  const b = useRessort(t(1), 150, 15);
   // Le roulement de la fin de mesure : les deux écrans vibrent de plus en plus.
-  const tension = interpolate(frame, [30, 60], [0, 1], clamp);
+  const tension = interpolate(frame, [t(2), t(4)], [0, 1], clamp);
   const vibre = Math.sin(frame * 2.3) * tension * 7;
   return (
     <Entree type="haut">
       <Fond couleur={C.rose}>
-        <Mots texte={'Toutes vos plantes,\nau même endroit.'} debut={0} cadence={6} taille={100} style={{ position: 'absolute', left: 80, top: 190 }} />
+        <Mots texte={'Toutes vos plantes,\nau même endroit.'} debut={0} cadence={TEMPS * 0.4} taille={100} style={{ position: 'absolute', left: 80, top: 190 }} />
         <Telephone nom="plants" largeur={560} x={50 + vibre} y={640 + (1 - a) * 1300} rotation={-6} />
         <Telephone nom="garden-calendar" largeur={560} x={470 - vibre} y={720 + (1 - b) * 1300} rotation={5} />
       </Fond>
@@ -312,9 +313,9 @@ export const ScenePrix: React.FC = () => {
   const frame = useCurrentFrame();
   const s = useRessort(0, 420, 18);
   const secousse = frame < 10 ? Math.sin(frame * 3.1) * (10 - frame) * 2.4 : 0;
-  const l1 = useRessort(8, 220, 15);
-  const l2 = useRessort(16, 220, 15);
-  const pot = useRessort(20, 140, 14);
+  const l1 = useRessort(t(0.5), 220, 15);
+  const l2 = useRessort(t(1), 220, 15);
+  const pot = useRessort(t(1.33), 140, 14);
   return (
     <Entree type="disque" x={540} y={560} duree={6}>
       <Fond couleur={C.soleil}>
@@ -337,9 +338,9 @@ export const ScenePrix: React.FC = () => {
             <div style={{ opacity: l2, transform: `translateX(${(1 - l2) * -80}px)` }}>Sans abonnement.</div>
           </div>
           <div style={{ position: 'absolute', left: 84, top: 920, width: 880 }}>
-            <Pastille texte="Toutes les fonctions" debut={26} />
-            <Pastille texte="Sans publicité" debut={30} />
-            <Pastille texte="Sans achat intégré" debut={34} />
+            <Pastille texte="Toutes les fonctions" debut={t(1.75)} />
+            <Pastille texte="Sans publicité" debut={t(2)} />
+            <Pastille texte="Sans achat intégré" debut={t(2.25)} />
           </div>
           <Objet nom="monstera" taille={640} x={430} y={1080 + (1 - pot) * 700} style={{ transform: `rotate(${(1 - pot) * 20}deg)` }} />
         </AbsoluteFill>
@@ -351,12 +352,12 @@ export const ScenePrix: React.FC = () => {
 // --- 8. La fin ---------------------------------------------------------------------
 // Le pot revient, cligne de l'œil sur l'accord final, et l'annonce se pose.
 export const SceneFin: React.FC = () => {
-  const sous = useRessort(18, 200, 16);
-  const dispo = useRessort(30, 220, 13);
+  const sous = useRessort(t(1.2), 200, 16);
+  const dispo = useRessort(t(2), 220, 13);
   return (
     <Entree type="disque" x={300} y={520}>
       <Fond couleur={C.sauge}>
-        <Pot taille={560} x={540} y={740} arrivee={0} clin={60} />
+        <Pot taille={560} x={540} y={740} arrivee={0} clin={t(4)} />
         <Lettres texte="Auxine" debut={6} taille={190} couleur={C.blanc} y={1030} />
         <div
           style={{
