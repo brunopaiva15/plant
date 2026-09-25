@@ -952,7 +952,7 @@ class _Viewfinder extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  CaptureFrame(camera: camera),
+                  CaptureFrame(camera: camera, controls: !full, controlsBottom: InlineCameraControls.aboveShutter),
                   if (live && !full)
                     Positioned(
                       left: 0,

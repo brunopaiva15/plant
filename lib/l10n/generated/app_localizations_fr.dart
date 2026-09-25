@@ -508,6 +508,23 @@ class AppLocalizationsFr extends AppLocalizations {
   String get choosePhoto => 'Choisir une photo';
 
   @override
+  String get cameraFlashOn => 'Activer le flash';
+
+  @override
+  String get cameraFlashOff => 'Désactiver le flash';
+
+  @override
+  String get cameraZoomIn => 'Zoomer';
+
+  @override
+  String get cameraZoomReset => 'Revenir à 1×';
+
+  @override
+  String cameraZoomLevel(String level) {
+    return '$level×';
+  }
+
+  @override
   String get withoutPhoto => 'Continuer sans photo';
 
   @override
