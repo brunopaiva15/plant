@@ -80,11 +80,12 @@ for g in ('Medium', 'SemiBold'):
 # visage : la licence interdit de laisser croire qu'une personne filmée
 # recommande l'app. Chacun est recadré en 9:16 autour du téléphone ou de la
 # plante, et coupé au passage utile.
-#   (id, fichier sur le CDN, début en s, durée, centre du cadrage en largeur)
+#   (id, fichier sur le CDN, début en s, durée, centre du cadrage en largeur[, nom du passage])
 PLANS = [
-    ('7872725', 'uhd_4096_2160_25fps', 6.0, 1.8, 0.52),   # un téléphone photographie un coin de plantes
     ('4507878', 'uhd_4096_2160_25fps', 4.0, 1.8, 0.55),   # vu de dessus, des succulentes au téléphone
-    ('7421678', 'hd_1920_1080_25fps', 1.0, 1.4, 0.45),    # des mains autour d'une plante en pot
+    ('7421678', 'hd_1920_1080_25fps', 1.0, 1.8, 0.45),    # des mains autour d'une plante en pot
+    # Le début du plan d'arrosage : les mains passent dans les feuilles.
+    ('7218427', 'hd_1080_1920_25fps', 5.0, 1.4, 0.5, 'feuilles'),
     # Un arrosage au pied d'une monstera, près d'une fenêtre : l'eau coule
     # entre 19 et 23 s.
     ('7218427', 'hd_1080_1920_25fps', 19.6, 2.2, 0.5),
@@ -95,7 +96,7 @@ PLANS = [
 import subprocess  # noqa: E402
 import urllib.request  # noqa: E402
 FF = os.path.join(ICI, 'node_modules', '@remotion', 'compositor-linux-x64-gnu')
-for pid, nom, debut, duree, centre in PLANS:
+for pid, nom, debut, duree, centre, *alias in PLANS:
     src = os.path.join(ICI, 'source', f'pexels-{pid}.mp4')
     if not os.path.exists(src):
         os.makedirs(os.path.dirname(src), exist_ok=True)
@@ -107,7 +108,7 @@ for pid, nom, debut, duree, centre in PLANS:
     x = max(0, min(w - cw, round(centre * w - cw / 2)))
     subprocess.run([os.path.join(FF, 'ffmpeg'), '-loglevel', 'error', '-y', '-ss', str(debut), '-t', str(duree), '-i', src,
                     '-vf', f'crop={cw}:{h}:{x}:0,scale=1080:1920', '-an', '-c:v', 'libx264', '-crf', '17',
-                    '-pix_fmt', 'yuv420p', '-r', '30', os.path.join(PUB, f'plan-{pid}.mp4')],
+                    '-pix_fmt', 'yuv420p', '-r', '30', os.path.join(PUB, f'plan-{alias[0] if alias else pid}.mp4')],
                    check=True, env={**os.environ, 'LD_LIBRARY_PATH': FF})
 
 with open(os.path.join(ICI, 'src', 'geometrie.json'), 'w') as f:

@@ -7,13 +7,13 @@ import { C, Entree, Fond, Mots, Objet, Pastille, Telephone, geometrie, phrase, t
 const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
 
 // --- 1. Les plans réels ------------------------------------------------------------
-// Trois plans filmés en intérieur (Pexels), coupés sur les temps : un
-// téléphone qui photographie des plantes, des succulentes vues de dessus, des
-// mains autour d'un pot. « Le carnet de vos plantes. » s'écrit par-dessus.
+// Trois plans filmés en intérieur (Pexels), coupés sur les temps : des
+// succulentes photographiées au téléphone, des mains autour d'un pot, des
+// mains dans les feuilles d'une monstera. « Le carnet de vos plantes. » s'écrit par-dessus.
 const PLANS_ACCROCHE: [string, number, number][] = [
-  ['7872725', 0, 3],
-  ['4507878', 3, 6],
-  ['7421678', 6, 9],
+  ['4507878', 0, 3],
+  ['7421678', 3, 6],
+  ['feuilles', 6, 9],
 ];
 
 /** Un plan réel, plein cadre, qui avance d'un léger zoom. */
