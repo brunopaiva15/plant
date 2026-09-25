@@ -262,69 +262,43 @@ Scaricate Auxine per sapere ogni mattina quali piante annaffiare.
 
 ## Nouveautés de la 1.0.1
 
-Le champ « Nouveautés » de chaque langue. Le détail, avec les commits, est
-dans [CHANGELOG.md](../CHANGELOG.md). Même règle que les descriptions, sans
-deux-points ni tiret cadratin ; les consignes s'adressent à la personne, dans
-le registre de chaque langue.
+Le champ « Nouveautés » de chaque langue, en quatre lignes. Le détail, avec
+les commits, est dans [CHANGELOG.md](../CHANGELOG.md).
 
-### Français (682 / 4000 caractères)
+### Français (320 / 4000 caractères)
 
 ```
-Création d'une plante
-• Quand l'espèce reconnue est probable, l'application la retient d'office, avec le nom et l'arrosage qui vont avec. Touchez un autre nom pour la changer.
-• Le nom de la plante suit l'espèce choisie tant que vous ne l'avez pas modifié.
-• Pour votre première plante, la photo, le nom et la pièce portent chacun une consigne.
-
-Photos
-• Si vous avez refusé l'accès à l'appareil photo ou à vos photos, l'application indique quoi autoriser et ouvre les Réglages. Au retour, l'appareil photo se rouvre.
-
-Langues
-• Les demandes d'autorisation s'affichent dans la langue de votre téléphone, en français, anglais, allemand ou italien. Elles étaient toujours en français.
+• Quand vous ajoutez une plante, l'application retient d'office l'espèce la plus probable.
+• L'application vous guide pas à pas pour votre première plante.
+• Si vous avez refusé l'accès à l'appareil photo, l'application vous mène aux Réglages.
+• Les demandes d'autorisation s'affichent dans la langue de votre téléphone.
 ```
 
-### Deutsch (701 / 4000 caractères)
+### Deutsch (303 / 4000 caractères)
 
 ```
-Neue Pflanze anlegen
-• Wenn die erkannte Art wahrscheinlich ist, übernimmt die App sie direkt, mit passendem Namen und Gießrhythmus. Tippe auf einen anderen Namen, um sie zu ändern.
-• Der Name der Pflanze folgt der gewählten Art, solange du ihn nicht änderst.
-• Bei deiner ersten Pflanze zeigen Foto, Name und Raum jeweils einen kurzen Hinweis.
-
-Fotos
-• Wenn du den Zugriff auf die Kamera oder deine Fotos verweigert hast, sagt dir die App, was du erlauben musst, und öffnet die Einstellungen. Danach öffnet sich die Kamera wieder.
-
-Sprachen
-• Berechtigungsanfragen erscheinen in der Sprache deines Telefons, auf Deutsch, Englisch, Französisch oder Italienisch. Bisher waren sie immer auf Französisch.
+• Wenn du eine Pflanze anlegst, übernimmt die App direkt die wahrscheinlichste Art.
+• Die App begleitet dich Schritt für Schritt bei deiner ersten Pflanze.
+• Hast du den Kamerazugriff verweigert, führt dich die App zu den Einstellungen.
+• Berechtigungsanfragen erscheinen in der Sprache deines Telefons.
 ```
 
-### English (584 / 4000 caractères)
+### English (239 / 4000 caractères)
 
 ```
-Adding a plant
-• When the recognized species is likely, the app keeps it, with the matching name and watering. Tap another name to change it.
-• The plant's name follows the chosen species until you edit it.
-• For your first plant, the photo, name and room steps each show a short instruction.
-
-Photos
-• If you denied access to the camera or your photos, the app tells you what to allow and opens Settings. The camera reopens when you come back.
-
-Languages
-• Permission requests appear in your phone's language, in English, French, German or Italian. They were always in French before.
+• When you add a plant, the app keeps the most likely species.
+• The app guides you step by step through your first plant.
+• If you denied camera access, the app takes you to Settings.
+• Permission requests appear in your phone's language.
 ```
 
-### Italiano (645 / 4000 caractères)
+### Italiano (284 / 4000 caractères)
 
 ```
-Aggiungere una pianta
-• Quando la specie riconosciuta è probabile, l'app la sceglie subito, con il nome e l'annaffiatura corrispondenti. Tocca un altro nome per cambiarla.
-• Il nome della pianta segue la specie scelta finché non lo modifichi.
-• Per la tua prima pianta, i passaggi foto, nome e stanza mostrano ciascuno un'indicazione.
-
-Foto
-• Se hai negato l'accesso alla fotocamera o alle tue foto, l'app ti dice cosa consentire e apre le Impostazioni. Al ritorno la fotocamera si riapre.
-
-Lingue
-• Le richieste di autorizzazione compaiono nella lingua del tuo telefono, in italiano, francese, inglese o tedesco. Prima erano sempre in francese.
+• Quando aggiungi una pianta, l'app sceglie subito la specie più probabile.
+• L'app ti guida passo per passo con la tua prima pianta.
+• Se hai negato l'accesso alla fotocamera, l'app ti porta alle Impostazioni.
+• Le richieste di autorizzazione compaiono nella lingua del tuo telefono.
 ```
 
 ## Politique de confidentialité
