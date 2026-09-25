@@ -513,17 +513,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cameraFlashOff => 'Turn off flash';
 
   @override
-  String get cameraZoomIn => 'Zoom in';
-
-  @override
-  String get cameraZoomReset => 'Back to 1×';
-
-  @override
-  String cameraZoomLevel(String level) {
-    return '$level×';
-  }
-
-  @override
   String get withoutPhoto => 'Continue without photo';
 
   @override

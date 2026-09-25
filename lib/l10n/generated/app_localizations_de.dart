@@ -513,17 +513,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get cameraFlashOff => 'Blitz ausschalten';
 
   @override
-  String get cameraZoomIn => 'Heranzoomen';
-
-  @override
-  String get cameraZoomReset => 'Zurück zu 1×';
-
-  @override
-  String cameraZoomLevel(String level) {
-    return '$level×';
-  }
-
-  @override
   String get withoutPhoto => 'Ohne Foto fortfahren';
 
   @override

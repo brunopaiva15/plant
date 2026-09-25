@@ -897,9 +897,8 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
             Center(child: ClayLoader(size: 32, color: c.sage))
           else
             Center(child: Icon(CupertinoIcons.camera, size: 44, color: c.sage)),
-          // Le flash et le zoom, par-dessus l'aperçu ; la pastille du zoom
-          // se pose au-dessus du déclencheur.
-          InlineCameraControls(controller: _camera, bottom: InlineCameraControls.aboveShutter),
+          // Le flash, par-dessus l'aperçu.
+          InlineCameraControls(controller: _camera),
           // Le déclencheur reste parfaitement centré. La galerie vient
           // simplement se placer à sa gauche, à 12 points du bord du bouton
           // photo : les deux commandes forment un seul groupe sans toucher

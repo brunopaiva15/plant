@@ -1,6 +1,5 @@
 import 'package:flora/features/plants/presentation/inline_camera.dart';
 import 'package:flora/l10n/generated/app_localizations.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -76,7 +75,6 @@ void main() {
     await camera.toggleFlash();
     expect(camera.flash, isFalse);
     camera.setZoom(3);
-    camera.resetZoom();
     expect(camera.zoom.value, 1);
   });
 
