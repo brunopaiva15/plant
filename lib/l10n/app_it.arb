@@ -928,6 +928,15 @@
   "diagnosisNatural": "Fenomeno normale",
   "analyze": "Analizza",
   "analyzing": "Analisi in corso…",
+  "analysisTimeLeft": "L'analisi dura ancora circa {time}.",
+  "@analysisTimeLeft": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "analysisLongerThanUsual": "L'analisi richiede più tempo del solito. Tieni aperta questa schermata.",
   "diagnosisError": "Analisi impossibile. Controlla la connessione e riprova.",
   "diagnosisRefused": "Questa foto non ha potuto essere analizzata.",
   "diagnosisUnauthorized": "La diagnosi non è disponibile al momento. Riprova più tardi.",

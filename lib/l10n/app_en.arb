@@ -928,6 +928,15 @@
   "diagnosisNatural": "Normal phenomenon",
   "analyze": "Analyze",
   "analyzing": "Analyzing…",
+  "analysisTimeLeft": "The analysis needs about {time} more.",
+  "@analysisTimeLeft": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "analysisLongerThanUsual": "The analysis is taking longer than usual. Keep this screen open.",
   "diagnosisError": "Couldn't analyze. Check your connection and try again.",
   "diagnosisRefused": "This photo could not be analysed.",
   "diagnosisUnauthorized": "Diagnosis is unavailable right now. Try again later.",

@@ -59,6 +59,18 @@ export const limits: Record<Route, RouteLimits> = {
   },
 };
 
+/// Le budget minimal d'une demande avec photos, en jetons.
+///
+/// Les constructions 1.0.x demandent 5000 jetons au premier appel de
+/// diagnostic, 9000 au second. Qwen réfléchit près de 5000 jetons avant
+/// d'écrire : le premier revenait vide (`length`), toujours, et un
+/// diagnostic enchaînait trois appels et quatre minutes — 94 s et 69 s
+/// payées pour rien avant celui qui aboutissait. Le relais relève donc ce
+/// premier budget, sans attendre une nouvelle construction. Un modèle qui
+/// ne réfléchit pas s'arrête bien avant et n'en paie rien : seuls les
+/// jetons écrits se facturent. Réglable par `RELAY_AI_IMAGE_TOKENS`.
+export const imageTokens = number('RELAY_AI_IMAGE_TOKENS', 8000);
+
 export const secrets = {
   session: env('RELAY_SESSION_SECRET'),
   /// Le laissez-passer des constructions qui ne peuvent pas attester : le

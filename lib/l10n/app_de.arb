@@ -928,6 +928,15 @@
   "diagnosisNatural": "Normale Erscheinung",
   "analyze": "Analysieren",
   "analyzing": "Analyse läuft…",
+  "analysisTimeLeft": "Die Analyse dauert noch etwa {time}.",
+  "@analysisTimeLeft": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "analysisLongerThanUsual": "Die Analyse dauert länger als sonst. Lass diesen Bildschirm offen.",
   "diagnosisError": "Analyse nicht möglich. Prüfe deine Verbindung und versuche es erneut.",
   "diagnosisRefused": "Dieses Foto konnte nicht analysiert werden.",
   "diagnosisUnauthorized": "Die Diagnose ist im Moment nicht verfügbar. Versuche es später noch einmal.",

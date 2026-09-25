@@ -181,7 +181,9 @@ Le relais ne transmet pas n'importe quoi. Sur `ai`, seuls `messages`,
 `max_tokens` est plafonné à 12000 — ce que le diagnostic demande quand une
 réponse revient coupée, et pas moins, sans quoi la réflexion du modèle
 mange la réponse —, `stream` est forcé à faux, et le modèle
-vient des secrets. C'est ce qui sépare un relais qui sert Auxine d'une
+vient des secrets. Une demande qui porte des photos reçoit au moins 8000
+jetons (`RELAY_AI_IMAGE_TOKENS`) : les constructions 1.0.x en demandent 5000
+au premier appel, que la réflexion de Qwen épuisait à chaque fois. C'est ce qui sépare un relais qui sert Auxine d'une
 passerelle OpenAI gratuite.
 
 ## 4. Là où il n'y a pas d'enclave

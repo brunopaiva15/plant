@@ -35,6 +35,7 @@ import '../../plants/presentation/inline_camera.dart';
 import '../../plants/presentation/photo_capture_flow.dart';
 import '../../plants/presentation/photo_error.dart';
 import '../../weather/application/weather_providers.dart';
+import 'analysis_eta.dart';
 import 'analysis_wait.dart';
 import 'diagnosis_report.dart';
 
@@ -113,6 +114,11 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
   BugSighting? _bugs;
 
   bool _busy = false;
+
+  /// Le départ de l'analyse en cours, et ce qu'on en attend : de quoi dire
+  /// à l'écran combien de temps il reste.
+  DateTime _startedAt = DateTime.now();
+  Duration _expected = AnalysisEta.initial;
   bool _picking = false;
   Diagnosis? _result;
 
@@ -301,7 +307,12 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
     // Le viseur ne tourne que devant quelqu'un qui vise : pendant l'analyse
     // et sous le compte rendu, il ne ferait que tenir la caméra allumée.
     unawaited(_camera.stop());
-    setState(() => _busy = true);
+    final timing = ref.read(preferencesServiceProvider);
+    setState(() {
+      _busy = true;
+      _startedAt = DateTime.now();
+      _expected = AnalysisEta.expected(timing.diagnosisSeconds);
+    });
     final storage = ref.read(photoStorageProvider);
     final prefs = ref.read(preferencesProvider);
     final lang = prefs.locale?.languageCode ?? WidgetsBinding.instance.platformDispatcher.locale.languageCode;
@@ -343,6 +354,9 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
             date: DateTime.now(),
             latitude: prefs.weatherPlace?.latitude,
           ));
+      // Seule une analyse aboutie dit ce que dure une analyse : une panne
+      // ou une coupure fausserait l'annonce suivante.
+      unawaited(timing.setDiagnosisSeconds(AnalysisEta.blend(timing.diagnosisSeconds, DateTime.now().difference(_startedAt))));
       Haptics.success();
       if (mounted) {
         setState(() {
@@ -572,7 +586,7 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
     // Les trois temps se croisent en fondu : on ne change pas d'écran, on
     // passe de ce qu'on montre à ce qu'on cherche, puis à ce qu'on lit.
     final (stage, body) = _busy
-        ? ('busy', _AnalysisStage(photo: _photos.first))
+        ? ('busy', _AnalysisStage(photo: _photos.first, startedAt: _startedAt, expected: _expected))
         : _result == null
             ? ('form', _form(l10n, plant))
             : ('report', _report(l10n));
@@ -1123,21 +1137,83 @@ class _CheckCard<T extends Object> extends StatelessWidget {
 
 /// Le deuxième temps : la photo dans son halo, et ce que la machine cherche
 /// autour d'elle.
-class _AnalysisStage extends StatelessWidget {
-  const _AnalysisStage({required this.photo});
+class _AnalysisStage extends StatefulWidget {
+  const _AnalysisStage({required this.photo, required this.startedAt, required this.expected});
 
   final StoredPhoto photo;
+  final DateTime startedAt;
+  final Duration expected;
+
+  @override
+  State<_AnalysisStage> createState() => _AnalysisStageState();
+}
+
+/// L'attente, et ce qu'il en reste.
+///
+/// Une analyse dure de dix secondes à plus d'une minute selon le modèle, et
+/// une attente sans repère ressemble à une panne : la personne ferme l'écran
+/// au moment où la réponse allait venir. La barre avance vers la durée
+/// habituelle sans jamais l'atteindre — elle ne se remplit qu'à l'arrivée de
+/// la réponse —, et le texte dit ce qu'il reste, puis, l'attente dépassée,
+/// qu'il faut garder l'écran ouvert.
+class _AnalysisStageState extends State<_AnalysisStage> {
+  Timer? _clock;
+
+  @override
+  void initState() {
+    super.initState();
+    _clock = Timer.periodic(const Duration(seconds: 1), (_) => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _clock?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final c = context.colors;
+    final elapsed = DateTime.now().difference(widget.startedAt);
+    final left = AnalysisEta.remaining(widget.expected, elapsed);
+    final progress = (elapsed.inMilliseconds / widget.expected.inMilliseconds).clamp(0.0, 0.95);
+    final status = left == null ? l10n.analysisLongerThanUsual : l10n.analysisTimeLeft(AnalysisEta.format(left));
     return Padding(
       padding: const EdgeInsets.only(top: Space.xl),
       child: Column(
         children: [
-          Center(child: AnalysisWait(photo: PlantImage(relativePath: photo.thumbPath, cacheWidth: 500))),
+          Center(child: AnalysisWait(photo: PlantImage(relativePath: widget.photo.thumbPath, cacheWidth: 500))),
           const SizedBox(height: Space.xl),
           Text(l10n.analyzing, style: context.text.callout, textAlign: TextAlign.center),
+          const SizedBox(height: Space.md),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: Space.xxl),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(3),
+              child: SizedBox(
+                height: 6,
+                child: Stack(
+                  children: [
+                    Positioned.fill(child: ColoredBox(color: c.ink.withValues(alpha: c.isDark ? 0.22 : 0.14))),
+                    AnimatedFractionallySizedBox(
+                      duration: const Duration(seconds: 1),
+                      curve: Curves.linear,
+                      alignment: Alignment.centerLeft,
+                      widthFactor: progress,
+                      heightFactor: 1,
+                      child: ColoredBox(color: c.sage),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: Space.sm),
+          Semantics(
+            liveRegion: true,
+            child: Text(status, style: context.text.caption, textAlign: TextAlign.center),
+          ),
         ],
       ),
     );

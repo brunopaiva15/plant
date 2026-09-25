@@ -8,7 +8,7 @@
 // clé volée.
 
 import { source } from './bytes.ts';
-import { limits, models, secrets } from './config.ts';
+import { imageTokens, limits, models, secrets } from './config.ts';
 import type { Route } from './config.ts';
 
 /// L'application est native, mais une construction web appellerait le relais
@@ -117,7 +117,17 @@ const CHAT_FIELDS = ['messages', 'max_tokens', 'temperature', 'response_format',
 /// client n'en réclame lui-même n'est pas un appel d'Auxine.
 const MAX_TOKENS = 12000;
 
-function chatBody(raw: Uint8Array): Record<string, unknown> {
+/// Une conversation dont un message porte une image : dans le format
+/// OpenAI, une partie `{ type: 'image_url' }` d'un contenu en liste.
+function carriesImages(messages: unknown[]): boolean {
+  return messages.some((message) => {
+    const content = (message as { content?: unknown } | null)?.content;
+    return Array.isArray(content) &&
+      content.some((part) => (part as { type?: unknown } | null)?.type === 'image_url');
+  });
+}
+
+export function chatBody(raw: Uint8Array): Record<string, unknown> {
   let parsed: unknown;
   try {
     parsed = JSON.parse(new TextDecoder().decode(raw));
@@ -138,7 +148,11 @@ function chatBody(raw: Uint8Array): Record<string, unknown> {
     if (source[field] !== undefined) body[field] = source[field];
   }
   const tokens = Number(body.max_tokens);
-  body.max_tokens = Number.isFinite(tokens) ? Math.min(Math.max(1, Math.floor(tokens)), MAX_TOKENS) : 1000;
+  const asked = Number.isFinite(tokens) ? Math.max(1, Math.floor(tokens)) : 1000;
+  // Une demande qui porte des photos est un diagnostic : elle reçoit au moins
+  // de quoi réfléchir et répondre en un seul appel (`imageTokens`).
+  const floor = carriesImages(source.messages) ? imageTokens : 1;
+  body.max_tokens = Math.min(Math.max(asked, floor), MAX_TOKENS);
   // Le modèle vient d'ici, jamais du client : c'est lui qui décide du prix.
   body.model = models.infomaniak;
   // Le client lit une réponse entière ; un flux le laisserait sans rien.

@@ -2577,6 +2577,15 @@ class AppLocalizationsIt extends AppLocalizations {
   String get analyzing => 'Analisi in corso…';
 
   @override
+  String analysisTimeLeft(String time) {
+    return 'L\'analisi dura ancora circa $time.';
+  }
+
+  @override
+  String get analysisLongerThanUsual =>
+      'L\'analisi richiede più tempo del solito. Tieni aperta questa schermata.';
+
+  @override
   String get diagnosisError =>
       'Analisi impossibile. Controlla la connessione e riprova.';
 
