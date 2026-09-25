@@ -262,40 +262,50 @@ Scaricate Auxine per sapere ogni mattina quali piante annaffiare.
 
 ## Nouveautés de la 1.0.1
 
-Le champ « Nouveautés » de chaque langue, en quatre lignes sans termes
-techniques. Chaque ligne dit si c'est une nouveauté ou une correction.
+Le champ « Nouveautés » de chaque langue, sans termes techniques. Même
+patron que Streaks ou Things : une phrase qui résume la mise à jour — l'App
+Store n'en montre que les 150 premiers caractères avant « plus » —, puis une
+ligne par changement, qui dit si c'est une nouveauté ou une correction.
 Le détail, avec les commits, est dans [CHANGELOG.md](../CHANGELOG.md).
 
-### Français (359 / 4000 caractères)
+### Français (410 / 4000 caractères)
 
 ```
+Cette mise à jour simplifie l'ajout d'une plante.
+
 - Nouveau : l'application choisit désormais pour vous l'espèce la plus probable de votre plante.
 - Nouveau : l'application vous guide pour ajouter votre première plante.
 - Corrigé : si l'appareil photo est bloqué, l'application vous montre maintenant comment l'autoriser.
 - Corrigé : tous les messages s'affichent maintenant dans la langue de votre téléphone.
 ```
 
-### Deutsch (296 / 4000 caractères)
+### Deutsch (354 / 4000 caractères)
 
 ```
+Dieses Update macht das Anlegen einer Pflanze einfacher.
+
 - Neu: Die App wählt jetzt für dich die wahrscheinlichste Art deiner Pflanze.
 - Neu: Die App hilft dir beim Anlegen deiner ersten Pflanze.
 - Behoben: Ist die Kamera gesperrt, zeigt dir die App jetzt, wie du sie freigibst.
 - Behoben: Alle Meldungen erscheinen jetzt in der Sprache deines Telefons.
 ```
 
-### English (251 / 4000 caractères)
+### English (293 / 4000 caractères)
 
 ```
+This update makes adding a plant easier.
+
 - New: the app now picks the most likely species of your plant for you.
 - New: the app helps you add your first plant.
 - Fixed: if the camera is blocked, the app now shows you how to allow it.
 - Fixed: all messages now appear in your phone's language.
 ```
 
-### Italiano (288 / 4000 caractères)
+### Italiano (352 / 4000 caractères)
 
 ```
+Questo aggiornamento rende più semplice aggiungere una pianta.
+
 - Nuovo: l'app ora sceglie per te la specie più probabile della tua pianta.
 - Nuovo: l'app ti aiuta ad aggiungere la tua prima pianta.
 - Corretto: se la fotocamera è bloccata, l'app ora ti mostra come autorizzarla.
