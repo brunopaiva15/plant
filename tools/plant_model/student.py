@@ -75,12 +75,15 @@ DIM = 1024
 # Le prétraitement
 # --------------------------------------------------------------------------
 
-def preparer(chemin: str, recadrage: str = 'carre') -> np.ndarray:
-    """L'image en `[1, 3, 224, 224]`, valeurs 0-1, sans normalisation.
+def preparer(chemin: str, recadrage: str = 'carre', entree: int = ENTREE) -> np.ndarray:
+    """L'image en `[1, 3, entree, entree]`, valeurs 0-1, sans normalisation.
 
     `carre` recadre au carré central puis réduit — ce que le teacher a vu, et
     ce que fait `prepare()` pour Iris. `etire` réduit directement à 224×224 en
     déformant, comme l'implémentation de référence de la carte du modèle.
+
+    `entree` ne sert qu'à nos propres students (`distiller.py --entree`) :
+    le modèle public et le teacher restent à 224.
     """
     from PIL import Image
     with Image.open(chemin) as im:
@@ -90,12 +93,13 @@ def preparer(chemin: str, recadrage: str = 'carre') -> np.ndarray:
             g = (im.width - cote) // 2
             h = (im.height - cote) // 2
             im = im.crop((g, h, g + cote, h + cote))
-        im = im.resize((ENTREE, ENTREE), Image.BICUBIC)
+        im = im.resize((entree, entree), Image.BICUBIC)
         x = np.asarray(im, dtype=np.float32) / 255.0
     return x.transpose(2, 0, 1)[None, ...]
 
 
-def signature_student(modele: str, recadrage: str, dim: int = DIM) -> dict:
+def signature_student(modele: str, recadrage: str, dim: int = DIM,
+                      entree: int = ENTREE) -> dict:
     """La clé du cache du student.
 
     Elle porte le **recadrage** au même titre que le modèle : deux passes au
@@ -106,7 +110,7 @@ def signature_student(modele: str, recadrage: str, dim: int = DIM) -> dict:
     conf = {
         'teacher': f'student:{modele}',
         'dim': int(dim),
-        'taille_entree': ENTREE,
+        'taille_entree': int(entree),
         'recadrage': recadrage,
         'normalise': True,
     }

@@ -609,6 +609,22 @@ Ce qu'on y cherche, dans l'ordre : le **top-1 sur le répertoire entier** — la
 seule lecture qui décrive le produit — puis la **largeur du cône**, qui doit
 s'approcher des 0,2806 du teacher et non descendre en dessous.
 
+### Une autre taille d'entrée
+
+`--entree` fixe le côté des images que voit le student : 224 par défaut,
+comme toutes les passes jusqu'au 25 septembre. Le bras à 320 px est décrit
+au § 20 quinquies de `docs/14`. On mesure d'abord, parce que le calcul
+double et que la VRAM ne se devine pas :
+
+```bash
+cd ~/plant/tools/plant_model
+~/venv-torch/bin/python3 distiller.py mesure --dataset ~/plant-data/dataset-v8-indoor \
+  --cache ~/plant-data/bioclip --demi --contrastive 0.2 --entree 320
+```
+
+La taille est écrite dans `etat.json` et dans la signature du banc de chaque
+époque. Une reprise à une autre taille est refusée.
+
 ## Pl@ntNet-300K comme corpus de distillation
 
 ```bash

@@ -1939,6 +1939,55 @@ d'images qui comblera cet écart.
   données : les *hard negatives* (§ 19 bis, point 3), ou la résolution
   d'entrée, aujourd'hui de 224 px.
 
+## 20 quinquies. La résolution d'entrée, 224 → 320 px — 25 septembre 2026
+
+Le premier levier de recette après les données : un seul changement, le
+côté des images que voit le student. `distiller.py --entree 320`, corpus v8
+seul, recette cosinus, référence `iris10-cosinus`.
+
+### Pourquoi celui-ci d'abord
+
+- **L'indoor est une affaire de détail.** Une plante d'intérieur occupe
+  souvent une petite partie du cadre, au milieu d'un meuble, d'un pot, d'un
+  mur. `fastvit_sa12` divise l'image par 32 : à 224 px, sa dernière carte
+  fait 7 × 7 cases ; à 320 px, 10 × 10 ;
+- **le teacher, lui, voit plus fin à 224** : un ViT-H/14 découpe l'image en
+  16 × 16 patchs. Le student doit reproduire un vecteur construit sur une
+  grille plus de cinq fois plus dense que la sienne ;
+- **Iris 9 tourne déjà à 320 px.** La comparaison du banc est donc aussi plus
+  juste ;
+- **les images le permettent** : le corpus v8 est rangé à 384 px de grand
+  côté, Pl@ntNet et iNaturalist à 320 ;
+- **c'est une option, pas du code nouveau** : le levier le moins cher à
+  mesurer.
+
+### La réserve
+
+Les cibles ne changent pas : le cache du teacher a été calculé à 224 px. Le
+student ne reçoit donc aucune information que le teacher n'avait pas. Le
+gain ne peut venir que de là : mieux reproduire ce que le teacher voyait
+déjà, avec plus de pixels pour le faire.
+
+### Le coût
+
+Environ deux fois le calcul par image (320² / 224² ≈ 2,04), soit ~100 min
+par époque sur le corpus v8 et ~17 h pour la passe, **à confirmer par
+`mesure`** avant de lancer. Même rapport sur le téléphone, à l'inférence :
+c'est le coût d'Iris 9, déjà accepté. La VRAM se lit dans `mesure` : le
+lot de 64 doit tenir dans les 8 Go.
+
+### Le critère, écrit avant
+
+| à é10, textes à armes égales | décision |
+|---|---|
+| indoor ≥ +2 points sur `iris10-cosinus` (0,6957) | 320 entre dans la recette |
+| entre +1 et +2 | on garde, et le levier suivant passe devant |
+| < +1 | la résolution n'est pas le levier ; retour à 224 |
+
+La taille est inscrite dans `etat.json` et dans la signature de chaque
+point de contrôle. Une reprise à une autre taille est refusée, comme pour
+le calendrier.
+
 ## 21. Ce qui est décidé et ce qui reste ouvert
 
 ### Décidé

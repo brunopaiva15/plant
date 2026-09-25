@@ -215,7 +215,7 @@ def taux_du_pas(pas: int, total: int, base: float, calendrier: str = 'constant')
 
 
 def desaccord_de_reprise(etat: dict, student: str, contrastive: float,
-                         calendrier: str = 'constant') -> str:
+                         calendrier: str = 'constant', entree: int = ENTREE) -> str:
     """Ce qui a changé entre la passe écrite et celle qu'on relance, s'il y a.
 
     **Une reprise ne renégocie pas la recette.** Un dorsal différent ferait
@@ -234,6 +234,9 @@ def desaccord_de_reprise(etat: dict, student: str, contrastive: float,
     # Un état écrit avant que le calendrier existe a tourné à taux constant.
     if etat.get('calendrier', 'constant') != calendrier:
         ecarts.append(f"calendrier {etat.get('calendrier', 'constant')} → {calendrier}")
+    # De même, un état sans taille d'entrée a tourné à 224.
+    if int(etat.get('entree', ENTREE)) != int(entree):
+        ecarts.append(f"entrée {etat.get('entree', ENTREE)} → {entree} px")
     return ' ; '.join(ecarts)
 
 
@@ -305,6 +308,10 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
     ap.add_argument('--calendrier', choices=['constant', 'cosinus'], default='constant',
                     help='constant reproduit les passes du 22 septembre ; '
                          'cosinus descend à zéro sur la passe (§ 19 decies de docs/14)')
+    ap.add_argument('--entree', type=int, default=ENTREE, metavar='PX',
+                    help='côté des images vues par le student. 224 reproduit les passes '
+                         "jusqu'au 25 septembre ; Iris 9 tourne à 320 (§ 20 quinquies "
+                         'de docs/14)')
     ap.add_argument('--contrastive', type=float, default=1.0,
                     help='poids du terme qui écarte ; 0 reproduit la recette publique')
     ap.add_argument('--demi', action='store_true',
@@ -345,7 +352,8 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
     appareil = 'cuda' if torch.cuda.is_available() else 'cpu'
     modele = construire(args.student).to(appareil)
     parametres = sum(p.numel() for p in modele.parameters())
-    print(f'{args.student} — {parametres / 1e6:.1f} M de paramètres, {appareil}')
+    print(f'{args.student} — {parametres / 1e6:.1f} M de paramètres, {appareil}, '
+          f'entrée {args.entree} px')
 
     if args.commande == 'mesure':
         from student import preparer
@@ -366,7 +374,7 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
         memo: dict = {}
         debut = None
         for pas, (lot, images) in enumerate(
-                flux_de_lots(lots, lambda t: preparer(t[0])[0], args.fils)):
+                flux_de_lots(lots, lambda t: preparer(t[0], entree=args.entree)[0], args.fils)):
             x = torch.from_numpy(np.stack(images)).to(appareil)
             if args.demi:
                 x = x.to(memory_format=torch.channels_last)
@@ -422,7 +430,8 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
     depart = 0
     if etat.exists():
         e = json.loads(etat.read_text())
-        ecart = desaccord_de_reprise(e, args.student, args.contrastive, args.calendrier)
+        ecart = desaccord_de_reprise(e, args.student, args.contrastive, args.calendrier,
+                                     args.entree)
         if ecart:
             raise SystemExit(
                 f'{sortie} a été écrit sous une autre recette : {ecart}.\n'
@@ -458,7 +467,7 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
         modele.train()
         debut = time.perf_counter()
         for pas, (lot, images) in enumerate(
-                flux_de_lots(lots, lambda t: preparer(t[0])[0], args.fils)):
+                flux_de_lots(lots, lambda t: preparer(t[0], entree=args.entree)[0], args.fils)):
             x = torch.from_numpy(np.stack(images)).to(appareil)
             if args.demi:
                 x = x.to(memory_format=torch.channels_last)
@@ -496,21 +505,23 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
                    sortie / 'poids.pt')
         etat.write_text(json.dumps({'epoque': epoque + 1, 'student': args.student,
                                     'contrastive': args.contrastive,
-                                    'calendrier': args.calendrier}))
+                                    'calendrier': args.calendrier,
+                                    'entree': args.entree}))
 
         # Le point de contrôle qui décide : un cache du banc, lisible tel quel
         # par `voisins.py --embeddings`. On arrête sur le top-1 par référence,
         # jamais sur la perte (§ 19 bis de docs/14).
         if banc:
             dossier = sortie / f'banc-e{epoque + 1}'
-            sig = signature_student(f'{args.student}-e{epoque + 1}', 'carre')
+            sig = signature_student(f'{args.student}-e{epoque + 1}', 'carre',
+                                   entree=args.entree)
             accorder_signature(dossier, sig)
             modele.eval()
             vecteurs = np.empty((len(banc), DIM), dtype=np.float16)
             paquets = [banc[d:d + args.batch] for d in range(0, len(banc), args.batch)]
             ecrit = 0
             with torch.no_grad():
-                for paquet, images in flux_de_lots(paquets, lambda c: preparer(c)[0],
+                for paquet, images in flux_de_lots(paquets, lambda c: preparer(c, entree=args.entree)[0],
                                                    args.fils):
                     x = torch.from_numpy(np.stack(images)).to(appareil)
                     if args.demi:

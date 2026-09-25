@@ -22,6 +22,14 @@ def test_la_sortie_est_nchw_en_224(tmp_path):
     assert x.shape == (1, 3, ENTREE, ENTREE)
 
 
+def test_une_autre_entree_change_la_taille_et_rien_dautre(tmp_path):
+    """`distiller.py --entree 320` : le même recadrage, à une autre taille."""
+    chemin = image(tmp_path, 640, 480)
+    x = preparer(chemin, entree=320)
+    assert x.shape == (1, 3, 320, 320)
+    assert np.allclose(x.mean(), preparer(chemin).mean(), atol=0.01)
+
+
 def test_les_valeurs_restent_entre_zero_et_un(tmp_path):
     """La normalisation ImageNet est repliée dans le graphe : l'appliquer ici
     la passerait deux fois, ce qui ne plante pas et rend faux."""
@@ -65,6 +73,15 @@ def test_le_recadrage_appartient_a_la_signature():
     vecteurs qui ne se comparent pas."""
     a = signature_student('flora.onnx', 'carre')
     b = signature_student('flora.onnx', 'etire')
+    assert a['empreinte'] != b['empreinte']
+
+
+def test_la_taille_dentree_appartient_a_la_signature():
+    """Un student entraîné à 320 et encodé à 224 rendrait des vecteurs faux
+    sans le dire : la taille fait partie de la clé."""
+    a = signature_student('fastvit_sa12-e10', 'carre')
+    b = signature_student('fastvit_sa12-e10', 'carre', entree=320)
+    assert a['taille_entree'] == ENTREE and b['taille_entree'] == 320
     assert a['empreinte'] != b['empreinte']
 
 

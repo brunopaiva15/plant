@@ -201,3 +201,24 @@ def test_un_etat_sans_calendrier_a_tourne_a_taux_constant():
     from distiller import desaccord_de_reprise
     etat = {'student': 'fastvit_sa12', 'contrastive': 0.2}
     assert desaccord_de_reprise(etat, 'fastvit_sa12', 0.2, 'constant') == ''
+
+
+# --------------------------------------------------------------------------
+# La taille d'entrée
+# --------------------------------------------------------------------------
+
+def test_une_entree_differente_arrete_la_reprise():
+    from distiller import desaccord_de_reprise
+    etat = {'student': 'fastvit_sa12', 'contrastive': 0.2, 'calendrier': 'cosinus',
+            'entree': 224}
+    assert 'entrée' in desaccord_de_reprise(etat, 'fastvit_sa12', 0.2, 'cosinus', 320)
+
+
+def test_un_etat_sans_entree_a_tourne_a_224():
+    """Les passes jusqu'au 25 septembre n'écrivaient pas leur taille : elles se
+    reprennent à 224 sans objection, et refusent 320."""
+    from distiller import desaccord_de_reprise
+    etat = {'student': 'fastvit_sa12', 'contrastive': 0.2, 'calendrier': 'cosinus'}
+    assert desaccord_de_reprise(etat, 'fastvit_sa12', 0.2, 'cosinus') == ''
+    assert desaccord_de_reprise(etat, 'fastvit_sa12', 0.2, 'cosinus', 224) == ''
+    assert 'entrée' in desaccord_de_reprise(etat, 'fastvit_sa12', 0.2, 'cosinus', 320)
