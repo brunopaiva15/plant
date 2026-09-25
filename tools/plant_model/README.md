@@ -792,3 +792,29 @@ attendu par défaut est `~/plant-data/dataset-v8-indoor/manifest.jsonl` ;
 
 `HF_TOKEN` dans l'environnement, s'il est défini, relève la limite de débit de
 Hugging Face.
+
+## Les plantes en pot de Pl@ntNet comme corpus
+
+```bash
+cd ~/plant/tools/plant_model && source ~/venv-torch/bin/activate
+python3 -u plantnet_direct_corpus.py --especes 2   # essai sur deux espèces
+python3 -u plantnet_direct_corpus.py               # le tout, reprenable
+```
+
+**Sans GPU.** Les 186 espèces de `disponibilite_plantnet.csv` qui ont des
+photos libres, tous verdicts confondus — le student ne lit aucun nom —, au
+plus 2 000 photos par espèce, la plante entière d'abord : ~74 000 images.
+Chaque image est téléchargée en original, vérifiée, réduite à 320 px. Relancer
+la même commande reprend aux espèces manquantes ; `especes-faites.txt` dit où
+on en est, `bilan.json` ce que chaque espèce a donné et pourquoi le reste est
+écarté. `attributions.csv` porte la mention que Pl@ntNet demande pour chaque
+image gardée.
+
+**L'accès est autorisé par écrit par Pl@ntNet** (§ 15 de `docs/09`). Quatre
+téléchargements en parallèle par défaut (`--fils`) : c'est un service public.
+
+**Il refuse de tourner sans le manifeste et sans le banc.** Trois gardes,
+comme pour iNaturalist : l'identifiant d'image (GBIF relaie Pl@ntNet), la
+photo sœur d'une même observation, l'empreinte perceptuelle (§ 20 sexies de
+`docs/14`).
+

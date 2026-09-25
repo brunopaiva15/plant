@@ -1944,8 +1944,8 @@ revanche, n'ont pas encore été essayées.
   « à filtrer » de plantes en pot, 62 et 38 espèces absentes du modèle. Pour
   la distillation, les étiquettes fausses du § 15.4 ne coûtent rien, puisque
   le student n'en lit aucune ; elles ne comptent que pour les références et
-  le banc. Les trois gardes du § 20 quater s'appliquent. L'accès attend
-  l'autorisation écrite de Pl@ntNet.
+  le banc. Les trois gardes du § 20 quater s'appliquent. L'accès est
+  autorisé depuis le 25 septembre : § 20 sexies.
 
 ## 20 quinquies. La résolution d'entrée, 224 → 320 px — 25 septembre 2026
 
@@ -1995,6 +1995,72 @@ l'inférence : c'est le coût d'Iris 9, déjà accepté.
 La taille est inscrite dans `etat.json` et dans la signature de chaque
 point de contrôle. Une reprise à une autre taille est refusée, comme pour
 le calendrier.
+
+## 20 sexies. Les plantes en pot de Pl@ntNet — 25 septembre 2026
+
+Le levier de données que le § 20 quater laissait ouvert : des photos
+d'intérieur. **Pl@ntNet a autorisé par écrit l'accès à son API** le 25
+septembre 2026 (§ 15.5 et 15.6 de `docs/09`). Deux outils en sortent :
+`fetchers/plantnet.py` dans `tools/plant_dataset`, pour le jour où ces
+espèces deviendront des classes, et `plantnet_direct_corpus.py` ici, pour la
+distillation.
+
+### Ce qui entre
+
+**Les 186 espèces de `disponibilite_plantnet.csv` qui ont des photos
+libres, quel que soit leur verdict.** Le tri du § 15.3 juge des étiquettes ;
+le student n'en lit aucune. Les « à écarter » (20 292 photos) sont des
+plantes en pot mal nommées, les « déjà dans le modèle » (43 811) les espèces
+les plus photographiées, vues en pot. Toutes servent.
+
+**Au plus 2 000 photos par espèce**, la plante entière d'abord : 108 211
+photos sans plafond, **~74 000** avec. Sans plafond, *Dieffenbachia
+seguine* (11 104) ferait un dixième du corpus à elle seule.
+
+Mesuré sur l'API avant d'écrire le script : le détail d'une espèce rend
+toutes ses images en une réponse (*Begonia rex* : 4 491 sur 4 491, 3 s,
+toutes en CC BY-SA ; 99,5 % sur les 187 espèces du § 15.2 de `docs/09`). L'original fait ~300 Ko pour ~1 600 px de grand
+côté ; la vignette `m` est le carré central à 600 px.
+
+### Trois gardes contre la fuite dans le banc
+
+Les mêmes qu'au § 20 quater, adaptées :
+
+1. **par identifiant d'image** : GBIF relaie Pl@ntNet avec ses URL
+   (`bs.plantnet.org/image/o/<id>`), donc une image de nos manifestes peut en
+   venir. Tout identifiant qu'on y lit est écarté, et ceux des fichiers de
+   Pl@ntNet-300K, qui portent le même ;
+2. **par observation** : une image du banc écarte toutes les photos de son
+   observation. Le détail d'une espèce donne l'observation de chaque image,
+   sans requête de plus ;
+3. **par empreinte perceptuelle**, sur l'original : une photo publiée par
+   son auteur sur iNaturalist et sur Pl@ntNet a deux identifiants et la même
+   empreinte. C'est pourquoi le script télécharge l'original et pas la
+   vignette carrée, qui n'aurait pas la même empreinte que l'image du banc.
+
+### Le coût, et l'ordre
+
+- **collecte** : ~21 Go téléchargés, ~2,6 Go gardés à 320 px, sans GPU.
+  Elle peut tourner pendant le bras à 320 px ;
+- **cache du teacher** : ~15 min, GPU libre. Pas avant la fin du bras à
+  320 px, qui occupe 7,6 Go sur 8 ;
+- **le bras** : le corpus v8 plus ces ~74 000 images, à la résolution que le
+  § 20 quinquies aura retenue, contre la référence à cette même résolution.
+
+### Le critère, écrit avant
+
+74 000 images, c'est **9 % de plus** que le corpus v8 : un apport petit en
+nombre, grand en domaine. Pl@ntNet-300K en apportait 30 % et rendait
+0,8 point.
+
+| à é10, indoor, textes à armes égales | décision |
+|---|---|
+| ≥ +1,5 point sur la référence | le domaine compte : ces photos entrent dans la recette, et collecter davantage de photos d'intérieur devient la priorité |
+| entre +0,5 et +1,5 | on garde, et on essaie de répéter ces images à chaque époque (une seconde variable, donc un second bras) |
+| < +0,5 | le domaine seul n'explique pas l'écart d'indoor |
+
+L'outdoor ne doit pas reculer de plus d'un point : ces photos ne sont pas
+faites pour lui, mais elles ne doivent pas lui coûter.
 
 ## 21. Ce qui est décidé et ce qui reste ouvert
 
