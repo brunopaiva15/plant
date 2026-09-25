@@ -262,43 +262,43 @@ Scaricate Auxine per sapere ogni mattina quali piante annaffiare.
 
 ## Nouveautés de la 1.0.1
 
-Le champ « Nouveautés » de chaque langue, en quatre lignes. Le détail, avec
-les commits, est dans [CHANGELOG.md](../CHANGELOG.md).
+Le champ « Nouveautés » de chaque langue, en quatre lignes sans termes
+techniques. Le détail, avec les commits, est dans [CHANGELOG.md](../CHANGELOG.md).
 
-### Français (320 / 4000 caractères)
-
-```
-• Quand vous ajoutez une plante, l'application retient d'office l'espèce la plus probable.
-• L'application vous guide pas à pas pour votre première plante.
-• Si vous avez refusé l'accès à l'appareil photo, l'application vous mène aux Réglages.
-• Les demandes d'autorisation s'affichent dans la langue de votre téléphone.
-```
-
-### Deutsch (303 / 4000 caractères)
+### Français (287 / 4000 caractères)
 
 ```
-• Wenn du eine Pflanze anlegst, übernimmt die App direkt die wahrscheinlichste Art.
-• Die App begleitet dich Schritt für Schritt bei deiner ersten Pflanze.
-• Hast du den Kamerazugriff verweigert, führt dich die App zu den Einstellungen.
-• Berechtigungsanfragen erscheinen in der Sprache deines Telefons.
+- L'application choisit pour vous l'espèce la plus probable de votre plante.
+- L'application vous guide pour ajouter votre première plante.
+- Si l'appareil photo est bloqué, l'application vous montre comment l'autoriser.
+- Tous les messages s'affichent dans la langue de votre téléphone.
 ```
 
-### English (239 / 4000 caractères)
+### Deutsch (250 / 4000 caractères)
 
 ```
-• When you add a plant, the app keeps the most likely species.
-• The app guides you step by step through your first plant.
-• If you denied camera access, the app takes you to Settings.
-• Permission requests appear in your phone's language.
+- Die App wählt für dich die wahrscheinlichste Art deiner Pflanze.
+- Die App hilft dir beim Anlegen deiner ersten Pflanze.
+- Ist die Kamera gesperrt, zeigt dir die App, wie du sie freigibst.
+- Alle Meldungen erscheinen in der Sprache deines Telefons.
 ```
 
-### Italiano (284 / 4000 caractères)
+### English (219 / 4000 caractères)
 
 ```
-• Quando aggiungi una pianta, l'app sceglie subito la specie più probabile.
-• L'app ti guida passo per passo con la tua prima pianta.
-• Se hai negato l'accesso alla fotocamera, l'app ti porta alle Impostazioni.
-• Le richieste di autorizzazione compaiono nella lingua del tuo telefono.
+- The app picks the most likely species of your plant for you.
+- The app helps you add your first plant.
+- If the camera is blocked, the app shows you how to allow it.
+- All messages now appear in your phone's language.
+```
+
+### Italiano (242 / 4000 caractères)
+
+```
+- L'app sceglie per te la specie più probabile della tua pianta.
+- L'app ti aiuta ad aggiungere la tua prima pianta.
+- Se la fotocamera è bloccata, l'app ti mostra come autorizzarla.
+- Tutti i messaggi compaiono nella lingua del tuo telefono.
 ```
 
 ## Politique de confidentialité
