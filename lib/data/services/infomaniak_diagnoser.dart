@@ -57,14 +57,14 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
 
   /// Ce qu'on attend d'une réponse, et combien de fois on repose la question.
   ///
-  /// Une minute suffisait à trois photos réduites, téléversement compris —
-  /// les photos partent plus grandes depuis qu'un dégât d'un millimètre doit
-  /// y survivre ([maxSide]), et quarante secondes se jouaient alors sur la
-  /// qualité du réseau. Le modèle réfléchit avant d'écrire, et cette
-  /// réflexion prend le temps qu'elle prend ([_answerTokens]) : une minute
-  /// et demie la laisse aller au bout d'une photo difficile. Au-delà, c'est
-  /// que la demande s'est perdue, et la reposer vaut mieux que de l'attendre.
-  static const _callTimeout = Duration(seconds: 90);
+  /// Le délai suit celui du relais, qui laisse 120 secondes au modèle avant
+  /// de rendre un 504 (`RELAY_TIMEOUT_AI`), et le dépasse d'un souffle : c'est
+  /// toujours le relais qui répond le premier. À quatre-vingt-dix secondes,
+  /// l'application abandonnait une réponse qui arrivait à quatre-vingt-
+  /// quatorze et reposait la même question — deux secondes avant que la
+  /// première revienne, pour la jeter et repartir de zéro. Les journaux du
+  /// relais l'ont montré sur un diagnostic de quatre minutes.
+  static const _callTimeout = Duration(seconds: 125);
   static const _attempts = 3;
 
   /// Jetons laissés à la réponse, et ce qu'on redonne quand elle est revenue
@@ -83,8 +83,17 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
   /// On garde la réflexion — c'est elle qui lit le motif avant de nommer —
   /// et on lui laisse la place. Le plafond ne coûte rien tant qu'il n'est
   /// pas atteint : seuls les jetons écrits se facturent.
-  static const _answerTokens = 5000;
-  static const _wideTokens = 9000;
+  ///
+  /// Cinq mille ne suffisaient plus. Relevé dans les journaux du relais sur
+  /// trois photos : deux appels à 5000 jetons, arrêtés net (`length`) sans
+  /// un mot de réponse après 94 et 69 secondes de réflexion, puis un
+  /// troisième à 9000 qui aboutissait avec 5574 jetons écrits. Quatre
+  /// minutes pour un compte rendu, dont deux et demie payées pour rien. Le
+  /// premier appel a maintenant de quoi finir du premier coup, et le second
+  /// ne sert plus qu'aux photos vraiment difficiles. Le relais plafonne au
+  /// même chiffre que [_wideTokens].
+  static const _answerTokens = 8000;
+  static const _wideTokens = 12000;
 
   @override
   bool get isConfigured => endpoint.hasAuthority;
@@ -436,7 +445,11 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
 
   /// Les codes qui ne disent rien de la demande : le service est occupé,
   /// pas fâché.
-  static bool _worthAnotherTry(int code) => code == 408 || code == 429 || code >= 500;
+  ///
+  /// Sauf le 504 : c'est le relais qui a attendu le modèle deux minutes sans
+  /// réponse. La même question reposée réfléchirait aussi longtemps, et la
+  /// personne attendrait deux minutes de plus pour le même échec.
+  static bool _worthAnotherTry(int code) => code == 408 || code == 429 || (code >= 500 && code != 504);
 
   /// Ce que vaut un code de retour, une fois les renvois épuisés. Chaque
   /// famille a sa phrase à l'écran : une clé refusée ne se réessaie pas, un

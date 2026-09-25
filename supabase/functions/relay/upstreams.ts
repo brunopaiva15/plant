@@ -102,9 +102,10 @@ const CHAT_FIELDS = ['messages', 'max_tokens', 'temperature', 'response_format',
 /// Le plafond de jetons d'une réponse.
 ///
 /// Il suit ce que demande le plus gourmand des appels : le diagnostic, qui
-/// réclame 5000 jetons puis 9000 quand la réponse revient coupée
-/// (`InfomaniakDiagnoser._answerTokens`, `_wideTokens`). Qwen réfléchit avant
-/// d'écrire, et cette réflexion se paie sur ce budget. Plafonné à 4096, le
+/// réclame 8000 jetons puis 12000 quand la réponse revient coupée
+/// (`InfomaniakDiagnoser._answerTokens`, `_wideTokens`) ; les constructions
+/// déjà installées, qui demandent 5000 puis 9000, passent aussi. Qwen
+/// réfléchit avant d'écrire, et cette réflexion se paie sur ce budget. Plafonné à 4096, le
 /// relais la privait de la place que le client lui avait rendue : la réponse
 /// revenait vide ou coupée, le client reposait la question, le relais la
 /// rabotait de nouveau, et le diagnostic tournait des minutes avant de
@@ -114,7 +115,7 @@ const CHAT_FIELDS = ['messages', 'max_tokens', 'temperature', 'response_format',
 /// jetons écrits se facturent. Il reste une borne, et c'est le quota par
 /// appareil qui borne la facture. Un appel qui demanderait plus que le
 /// client n'en réclame lui-même n'est pas un appel d'Auxine.
-const MAX_TOKENS = 9000;
+const MAX_TOKENS = 12000;
 
 function chatBody(raw: Uint8Array): Record<string, unknown> {
   let parsed: unknown;
