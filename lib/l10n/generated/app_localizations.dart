@@ -4542,6 +4542,18 @@ abstract class AppLocalizations {
   /// **'Analyse en cours…'**
   String get analyzing;
 
+  /// Sous l'animation d'attente du diagnostic : le temps restant estimé d'après les analyses déjà faites sur l'appareil. {time} vaut « 40 s » ou « 1 min 20 s ».
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'analyse dure encore {time} environ.'**
+  String analysisTimeLeft(String time);
+
+  /// No description provided for @analysisLongerThanUsual.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'analyse dure plus longtemps que d\'habitude. Gardez cet écran ouvert.'**
+  String get analysisLongerThanUsual;
+
   /// No description provided for @diagnosisError.
   ///
   /// In fr, this message translates to:

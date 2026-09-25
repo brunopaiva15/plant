@@ -8,7 +8,7 @@
 // clé volée.
 
 import { source } from './bytes.ts';
-import { limits, models, secrets } from './config.ts';
+import { imageTokens, limits, models, secrets } from './config.ts';
 import type { Route } from './config.ts';
 
 /// L'application est native, mais une construction web appellerait le relais
@@ -102,9 +102,10 @@ const CHAT_FIELDS = ['messages', 'max_tokens', 'temperature', 'response_format',
 /// Le plafond de jetons d'une réponse.
 ///
 /// Il suit ce que demande le plus gourmand des appels : le diagnostic, qui
-/// réclame 5000 jetons puis 9000 quand la réponse revient coupée
-/// (`InfomaniakDiagnoser._answerTokens`, `_wideTokens`). Qwen réfléchit avant
-/// d'écrire, et cette réflexion se paie sur ce budget. Plafonné à 4096, le
+/// réclame 8000 jetons puis 12000 quand la réponse revient coupée
+/// (`InfomaniakDiagnoser._answerTokens`, `_wideTokens`) ; les constructions
+/// déjà installées, qui demandent 5000 puis 9000, passent aussi. Qwen
+/// réfléchit avant d'écrire, et cette réflexion se paie sur ce budget. Plafonné à 4096, le
 /// relais la privait de la place que le client lui avait rendue : la réponse
 /// revenait vide ou coupée, le client reposait la question, le relais la
 /// rabotait de nouveau, et le diagnostic tournait des minutes avant de
@@ -114,9 +115,19 @@ const CHAT_FIELDS = ['messages', 'max_tokens', 'temperature', 'response_format',
 /// jetons écrits se facturent. Il reste une borne, et c'est le quota par
 /// appareil qui borne la facture. Un appel qui demanderait plus que le
 /// client n'en réclame lui-même n'est pas un appel d'Auxine.
-const MAX_TOKENS = 9000;
+const MAX_TOKENS = 12000;
 
-function chatBody(raw: Uint8Array): Record<string, unknown> {
+/// Une conversation dont un message porte une image : dans le format
+/// OpenAI, une partie `{ type: 'image_url' }` d'un contenu en liste.
+function carriesImages(messages: unknown[]): boolean {
+  return messages.some((message) => {
+    const content = (message as { content?: unknown } | null)?.content;
+    return Array.isArray(content) &&
+      content.some((part) => (part as { type?: unknown } | null)?.type === 'image_url');
+  });
+}
+
+export function chatBody(raw: Uint8Array): Record<string, unknown> {
   let parsed: unknown;
   try {
     parsed = JSON.parse(new TextDecoder().decode(raw));
@@ -137,7 +148,11 @@ function chatBody(raw: Uint8Array): Record<string, unknown> {
     if (source[field] !== undefined) body[field] = source[field];
   }
   const tokens = Number(body.max_tokens);
-  body.max_tokens = Number.isFinite(tokens) ? Math.min(Math.max(1, Math.floor(tokens)), MAX_TOKENS) : 1000;
+  const asked = Number.isFinite(tokens) ? Math.max(1, Math.floor(tokens)) : 1000;
+  // Une demande qui porte des photos est un diagnostic : elle reçoit au moins
+  // de quoi réfléchir et répondre en un seul appel (`imageTokens`).
+  const floor = carriesImages(source.messages) ? imageTokens : 1;
+  body.max_tokens = Math.min(Math.max(asked, floor), MAX_TOKENS);
   // Le modèle vient d'ici, jamais du client : c'est lui qui décide du prix.
   body.model = models.infomaniak;
   // Le client lit une réponse entière ; un flux le laisserait sans rien.
@@ -151,11 +166,36 @@ function chatBody(raw: Uint8Array): Record<string, unknown> {
 export async function ai(request: Request): Promise<Response> {
   const body = chatBody(await readBounded(request, 'ai'));
   const upstream = `https://api.infomaniak.com/2/ai/${secrets.infomaniakProduct}/openai/v1/chat/completions`;
-  return passthrough(await call(upstream, {
+  const response = await call(upstream, {
     method: 'POST',
     headers: { 'content-type': 'application/json', authorization: `Bearer ${secrets.infomaniakKey}` },
     body: JSON.stringify(body),
-  }, 'ai'));
+  }, 'ai');
+  const bytes = await response.arrayBuffer();
+  console.log(`relais ai amont ${response.status} ${describeCompletion(bytes)} demandés=${body.max_tokens}`);
+  return passthrough(new Response(bytes, { status: response.status, headers: response.headers }));
+}
+
+/// Ce qu'une réponse du modèle dit de sa propre fin, pour les journaux :
+/// pourquoi il s'est arrêté, combien de jetons il a écrits, et la longueur
+/// de ce qui reste une fois la réflexion écrite. Jamais le texte lui-même —
+/// il parle de la plante de quelqu'un.
+///
+/// C'est ce qui manquait pour lire un diagnostic lent : sans cela, le
+/// journal de la fonction ne disait ni qu'une réponse revenait coupée
+/// (`length`), ni qu'elle revenait vide.
+function describeCompletion(bytes: ArrayBuffer): string {
+  try {
+    const json = JSON.parse(new TextDecoder().decode(bytes)) as {
+      choices?: { finish_reason?: unknown; message?: { content?: unknown } }[];
+      usage?: { completion_tokens?: unknown };
+    };
+    const choice = json.choices?.[0];
+    const content = typeof choice?.message?.content === 'string' ? choice.message.content : '';
+    return `fin=${choice?.finish_reason ?? '?'} écrits=${json.usage?.completion_tokens ?? '?'} contenu=${content.length}`;
+  } catch {
+    return `corps illisible (${bytes.byteLength} octets)`;
+  }
 }
 
 /// Jev, sur l'endpoint Decisions d'OpenRouter. Il ne génère pas de texte : il

@@ -1249,6 +1249,16 @@
   "diagnosisNatural": "Phénomène normal",
   "analyze": "Analyser",
   "analyzing": "Analyse en cours…",
+  "analysisTimeLeft": "L'analyse dure encore {time} environ.",
+  "@analysisTimeLeft": {
+    "description": "Sous l'animation d'attente du diagnostic : le temps restant estimé d'après les analyses déjà faites sur l'appareil. {time} vaut « 40 s » ou « 1 min 20 s ».",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "analysisLongerThanUsual": "L'analyse dure plus longtemps que d'habitude. Gardez cet écran ouvert.",
   "diagnosisError": "Analyse impossible. Vérifiez votre connexion et réessayez.",
   "diagnosisRefused": "Cette photo n'a pas pu être analysée.",
   "diagnosisUnauthorized": "Le diagnostic est indisponible pour le moment. Réessayez plus tard.",

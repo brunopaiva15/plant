@@ -572,6 +572,23 @@ void main() {
       expect(appels, 2);
     });
 
+    test('un modèle que le relais a attendu deux minutes ne se redemande pas', () async {
+      // 504 : le relais a coupé après 120 s sans réponse. La même question
+      // réfléchirait aussi longtemps ; la reposer doublerait l'attente.
+      var appels = 0;
+      final client = MockClient((_) async {
+        appels++;
+        return _reponse('', 504);
+      });
+      final tmp = await _tmpImage();
+      await expectLater(
+        _diagnoser(client).diagnose(images: [tmp], language: 'fr'),
+        throwsA(predicate((e) => e is DiagnosisException && e.message == 'busy')),
+      );
+      await tmp.delete();
+      expect(appels, 1);
+    });
+
     test('un réseau coupé se redemande, puis se dit tel quel', () async {
       var appels = 0;
       final client = MockClient((_) async {

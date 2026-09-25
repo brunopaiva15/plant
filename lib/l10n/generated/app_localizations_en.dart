@@ -2572,6 +2572,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get analyzing => 'Analyzing…';
 
   @override
+  String analysisTimeLeft(String time) {
+    return 'The analysis needs about $time more.';
+  }
+
+  @override
+  String get analysisLongerThanUsual =>
+      'The analysis is taking longer than usual. Keep this screen open.';
+
+  @override
   String get diagnosisError =>
       'Couldn\'t analyze. Check your connection and try again.';
 

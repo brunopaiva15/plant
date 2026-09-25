@@ -227,7 +227,19 @@ const upstreams: Record<Route, (request: Request, url: URL) => Promise<Response>
 
 // ---------- L'aiguillage ----------
 
+// Une ligne par requête dans les journaux de la fonction : la route, le code
+// rendu et la durée. L'onglet « Invocations » du tableau de bord peut rester
+// des minutes sans se mettre à jour ; les journaux, eux, arrivent — et sans
+// cette ligne, ils ne disaient que le démarrage et l'arrêt d'une instance.
 Deno.serve(async (request) => {
+  const started = Date.now();
+  const response = await handle(request);
+  const path = new URL(request.url).pathname.replace(/^\/relay(?=\/|$)/, '') || '/';
+  console.log(`relais ${request.method} ${path} ${response.status} ${Date.now() - started} ms`);
+  return response;
+});
+
+async function handle(request: Request): Promise<Response> {
   const url = new URL(request.url);
   // Le chemin arrive préfixé du nom de la fonction : le runtime Supabase a
   // déjà retiré `/functions/v1`, il reste `/relay/ai`. La garde après le nom
@@ -283,4 +295,4 @@ Deno.serve(async (request) => {
     console.error('relais', error);
     return fail(500, 'erreur interne');
   }
-});
+}

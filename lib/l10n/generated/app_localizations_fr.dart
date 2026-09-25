@@ -2575,6 +2575,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get analyzing => 'Analyse en cours…';
 
   @override
+  String analysisTimeLeft(String time) {
+    return 'L\'analyse dure encore $time environ.';
+  }
+
+  @override
+  String get analysisLongerThanUsual =>
+      'L\'analyse dure plus longtemps que d\'habitude. Gardez cet écran ouvert.';
+
+  @override
   String get diagnosisError =>
       'Analyse impossible. Vérifiez votre connexion et réessayez.';
 

@@ -44,6 +44,14 @@ class PreferencesService {
   /// L'utilisateur a-t-il déjà soutenu le développeur ? Ne déverrouille rien :
   /// sert seulement à ne plus lui proposer, et à dire merci.
 
+  /// Ce que dure un diagnostic sur cet appareil, en secondes, lissé sur les
+  /// derniers aboutis. L'attente s'en sert pour dire combien de temps il
+  /// reste : la durée dépend du modèle que le relais a choisi, et de la
+  /// connexion — une valeur écrite dans le code aurait été fausse dès le
+  /// premier changement de modèle.
+  int? get diagnosisSeconds => _prefs.getInt('diagnosis_seconds');
+  Future<void> setDiagnosisSeconds(int value) => _prefs.setInt('diagnosis_seconds', value);
+
   /// Repli vers Pl@ntNet quand le modèle local hésite. Coupé, tout reste
   /// sur l'appareil.
   bool get identificationFallbackEnabled => _prefs.getBool('identification_fallback') ?? true;
