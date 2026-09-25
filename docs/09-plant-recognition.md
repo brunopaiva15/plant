@@ -494,6 +494,7 @@ Ces images ne sont pas un complément faible, elles sont du bruit.
 | **Smithsonian NMNH (Botany)** | idem | planches d'herbier | ❌ |
 | **USDA / USFWS / NPS** | — | planches d'herbier et photos de terrain déjà relayées par GBIF | ❌ |
 | **Trefle** | API REST, token gratuit | un relais, pas une source : les photos sont celles de **Pl@ntNet** (`bs.plantnet.org`) et de Kew, la licence n'existe qu'en texte libre dans un champ `copyright` — sur *Monstera deliciosa* : 33 images, 24 CC BY-SA, et le filtre naïf en classe une à tort en NC sur le nom de l'auteur | ❌ |
+| **Pl@ntNet en direct** | `api.plantnet.org/v1`, l'API du site, sans clé ni documentation | ce que Trefle relayait mal, à la source : la licence **structurée par image** (99 % CC BY-SA), l'auteur, l'organe, les votes ; et le bon domaine visuel — 103 photos de 'White Fusion' là où GBIF, iNaturalist et Commons réunis en ont une ; 62 espèces absentes du modèle à 25 photos propres ou plus | ⏸ accès à faire autoriser (§ 15) |
 | **Openverse** | API REST, anonyme 20 req/min et **200 req/jour** (mesuré), au-delà client OAuth | méta-moteur : il **relaye nos propres sources** (Flickr, Wikimedia, iNaturalist vu sur *Pilea peperomioides*) mais par leurs titres — aucune identification vérifiée (« Philodendron bipinnatifidum **and a blazing fire** », noms d'avant renommage) ; `license_type=commercial` laisse passer `by-nd`, il faut `commercial,modification` ; Rawpixel : 3 résultats sur *Monstera*, dont 2 illustrations | ❌ |
 | **Pexels** | API REST, clé gratuite | licence **maison, hors CC** — illisible pour `licenses.py`, donc refusée par construction ; aucune identification d'espèce (l'`alt` est du texte de référencement) ; le meilleur domaine visuel des trois — plantes en pot en intérieur — mais sans étiquettes | ❌ |
 | **iNaturalist Open Data (S3)** | seau AWS public, CSV mensuels | le **même contenu** que le connecteur API, en vrac : inclut CC BY-NC à refiltrer, sans résolution de synonymes ni `captive`/`place_id` — l'API rend le même service avec la couche d'identité en plus | ❌ (redondant) |
@@ -4367,3 +4368,208 @@ Deux choses restent à mesurer :
 - **pas d'arbitrage entre deux entraînements.** Tant que les deux masques ne
   viennent pas de la même tête, comparer leurs scores n'a pas de sens
   (§ 14.1).
+
+## 15. Pl@ntNet en direct : les photos que les autres sources n'ont pas — mesuré le 25 septembre 2026, pour l'Iris 10
+
+Le point de départ est une photo d'utilisateur : un *Calathea* 'White Fusion'
+(*Goeppertia lietzei*) en pot, sur une table de cuisine. Iris a proposé
+*Ficus benjamina*, *Maranta leuconeura* et *Schlumbergera truncata*. Seule la
+deuxième est de la bonne famille, et aucune n'est la bonne plante : l'espèce
+n'est pas une classe du modèle. `cible_interieur_500.tsv` la marque
+`A_COLLECTER`, et `disponibilite_indoor.csv` dit pourquoi — 11 images libres
+chez GBIF, 15 chez iNaturalist, sous le seuil de 25.
+
+L'écran d'aperçu du flux de création a aggravé l'erreur :
+`_DetectedPlantsOverlay` pose les trois candidates à trois endroits fixes de
+la photo, comme trois plantes détectées. Un Cactus de Noël « trouvé » au pied
+du pot se lit comme une affirmation, pas comme une troisième hypothèse. C'est
+un défaut de présentation, séparé du modèle ; il est noté ici parce qu'il
+change ce que l'utilisateur retient d'une hésitation.
+
+### 15.1 Ce que les sources connues ont pour un cultivar du commerce
+
+Toutes les sources du § 4, et d'autres, interrogées sur le 'White Fusion' :
+
+| Source | Photos libres de l'espèce | Dont 'White Fusion' |
+|---|---|---|
+| GBIF | 69, dont 58 planches d'herbier : **11** plantes vivantes | 0 |
+| iNaturalist | 26 photos — 22 sauvages (Brésil, Équateur, Costa Rica), 4 cultivées | 0 |
+| iNaturalist, 260 des 740 observations libres de Marantacées cultivées, regardées une à une (celles rangées au genre, à la famille, ou sous une espèce qu'on confond avec lui) | — | **1**, rangée au genre |
+| Wikimedia Commons | une dizaine, forme verte | 0 |
+| Flickr, licences libres | 0 | 0 |
+| Unsplash (licence maison) | 2, identifiées par l'auteur | 2 |
+| Pexels (licence maison, § 4.5) | 4 | 4 |
+| Brevet US PP26,187 | 1 figure | 1 |
+| **Pl@ntNet** | **107**, toutes CC BY-SA | **103** |
+
+Hors licence : ~70 observations cultivées d'iNaturalist en CC BY-NC ou droits
+réservés ; 13 photos sur garden.org, dont la licence n'a pas pu être lue.
+
+La leçon dépasse la plante. **Les photos libres d'une espèce ne sont pas
+celles de la plante qu'on achète.** Une classe *Goeppertia lietzei* nourrie
+des seules 26 photos libres d'iNaturalist apprendrait une plante verte
+striée de sous-bois brésilien ; le salon, lui, contient un cultivar marbré de
+blanc. Le principe du § 13.5 tient — le cultivar reste une fiche, ses photos
+entrent sous le nom de l'espèce — mais il faut que ces photos existent.
+
+Le détail, photo par photo : `tools/plant_dataset/plantnet_white_fusion.csv`.
+
+### 15.2 L'API du site de Pl@ntNet
+
+Celle qu'appelle `identify.plantnet.org`, sans clé :
+
+| Appel | Ce qu'il rend |
+|---|---|
+| `GET /v1/projects/k-world-flora/species?search=<nom>` | nom accepté, auteur, `imagesCount`, noms courants ; la recherche est un préfixe et passe par les synonymes (« Calathea li » rend *Goeppertia lietzei*) |
+| `GET /v1/projects/k-world-flora/species/<nom et auteur>` | **toutes** les images, rangées par organe, chacune avec `author`, `license`, `licenseUrl`, `observationId` — sur 187 espèces, la liste rendue couvre `imagesCount` à une exception près ; 99,5 % des 108 636 images sont en CC BY-SA |
+| `GET /v1/projects/k-world-flora/observations/<id>` | les votes : noms proposés, nombre de voix, probabilité, `isValid`, `isRevised` |
+
+Le projet `the-plant-list` est l'ancien référentiel : il ne connaît pas
+*Goeppertia lietzei*. C'est `k-world-flora` qu'il faut interroger.
+
+Pour le 'White Fusion', Pl@ntNet donne « Calathea White Fusion » comme nom
+courant de l'espèce, et ses 107 photos sont presque toutes le cultivar en
+pot : **84 auteurs, 92 observations**, des salons, des jardineries, des
+rebords de fenêtre — le domaine visuel que le § 13 cherche. Quatre écartées
+à la relecture : deux captures d'écran de réseaux sociaux, une panachure
+jaune d'un autre cultivar, un doublon.
+
+C'est la source que Trefle relayait (§ 4.5), sans son défaut : la licence
+n'est plus un texte libre mais un champ, par image.
+
+### 15.3 Les autres plantes qui manquaient
+
+Les noms interrogés, 230 au total une fois les doublons retirés :
+
+- les 14 plantes du § 12.12 que l'application ne peut pas nommer — toutes
+  encore absentes du modèle ;
+- les 161 `A_COLLECTER` de `cible_interieur_500.tsv` ;
+- les 192 plantes d'intérieur du catalogue de l'application sans classe ;
+- 8 noms repris sous leur forme correcte (*Goeppertia warscewiczii* →
+  *warszewiczii*, *Clerodendrum ugandense* → *Rotheca myricoides*…).
+
+D'autres noms des listes désignaient des classes existantes, sous une autre
+graphie ou un synonyme : *Pachypodium lameri* est `pachypodium-lamerei`,
+*Narcissus tazzetta* `narcissus-tazetta`, *Yucca elephantipes*
+`yucca-gigantea`.
+
+Pl@ntNet les ramène à **187 espèces acceptées**. Chaque nom accepté est passé
+par GBIF `species/match`, et sa clé comparée à celles de `plants.csv` : **10
+sont déjà des classes** sous un autre nom (*Dracaena angolensis* =
+`sansevieria-cylindrica`, *Heptapleurum actinophyllum*, *Hoya carnosa*…).
+
+Pour chaque espèce à 25 photos libres ou plus, 6 photos tirées au hasard ont
+été regardées :
+
+| Verdict | Espèces | Photos libres | Ce qu'il veut dire |
+|---|---|---|---|
+| propre | **62** | ~28 800 | 6 sur 6 montrent la bonne plante |
+| à filtrer | **38** | ~14 800 | la bonne plante domine, des erreurs visibles |
+| à écarter | **34** | | erreurs majoritaires, ou collision avec une classe existante |
+| trop peu | 43 | | moins de 25 photos libres |
+| déjà dans le modèle | 10 | | |
+| absente de Pl@ntNet | 26 | | surtout des hybrides et des cultivars (*Philodendron* 'Birkin', *Monstera* 'Esqueleto', *Cymbidium* hybrides…) |
+
+Parmi les propres, onze des quatorze du § 12.12 : *Begonia rex* (4 491),
+*Phalaenopsis amabilis* (3 092 — des hybrides du commerce, ce que
+photographient les utilisateurs), *Alocasia* × *amazonica* (rangée par
+Pl@ntNet sous *A. sanderiana*, 2 573), *Goeppertia orbifolia* (787),
+*Anthurium clarinervium* (498), *Gynura aurantiaca* (678), *Hippeastrum
+vittatum* (146), *Alocasia zebrina* (285), *Pachyphytum oviferum* (118),
+*Peperomia argyreia* (75, orthographiée *argyraea*), *Columnea gloriosa*
+(29, sous *C. microcalyx*). *Rhaphidophora tetrasperma* est à écarter,
+*Ravenea rivularis* à filtrer, et *Cymbidium* n'existe qu'en hybrides.
+
+« Propre » veut dire six photos sur six, pas une espèce vérifiée. Le tableau
+entier, verdict et raison par espèce : `tools/plant_dataset/disponibilite_plantnet.csv`.
+
+### 15.4 La justesse des étiquettes
+
+Un nom chez Pl@ntNet est celui qu'a choisi l'utilisateur, confirmé ou non par
+d'autres. La justesse varie d'une espèce à l'autre, et elle est la plus
+mauvaise là où le coût est le plus haut — **quand l'erreur tombe sur une
+classe qui existe déjà** :
+
+| Espèce | Ce que montrent ses photos | Classe existante |
+|---|---|---|
+| *Anthurium scherzerianum* | presque tout *A. andraeanum* | `anthurium-andraeanum` |
+| *Spathiphyllum floribundum* | le spathiphyllum du commerce | `spathiphyllum-wallisii` |
+| *Rhaphidophora tetrasperma* | pour moitié de jeunes *Monstera* | `monstera-deliciosa` |
+| *Peperomia polybotrya* | mêlé de *Pilea peperomioides* | `pilea-peperomioides` |
+| *Syngonium auritum*, *S. erythrophyllum* | surtout *S. podophyllum* | `syngonium-podophyllum` |
+| *Citrus medica* | Pl@ntNet y range le citronnier | `citrus-x-limon` |
+
+Collectées telles quelles, ces classes répéteraient le défaut du § 12.14 à
+plus grande échelle : deux étiquettes pour les mêmes photos.
+
+Les votes aident, sans suffire. Sur 10 photos tirées de chaque espèce :
+
+- *Rhaphidophora tetrasperma* : 7 observations à une seule voix, jamais
+  revues ; celle qui montre un *Monstera* porte deux noms (0,77 contre
+  0,23). Exiger au moins deux voix et une probabilité de 0,9 aurait écarté
+  les erreurs visibles — et quelques bonnes photos avec elles ;
+- *Anthurium scherzerianum* : les *A. andraeanum* ont **jusqu'à quatre voix
+  concordantes**. Aucun filtre sur les votes ne les rattrape.
+
+Deux autres pièges : des captures d'écran publiées sous CC BY-SA par des
+gens qui n'en sont pas les auteurs, et des photos d'extérieur tropical pour
+des espèces que l'application ne voit qu'en pot (*Philodendron giganteum*,
+*Saribus rotundifolius*).
+
+La conséquence : un filtre sur les votes pour les espèces « propres », et
+l'écran de validation du § 13.5 pour les « à filtrer ». Les « à écarter » ne
+se collectent pas chez Pl@ntNet.
+
+### 15.5 Ce qui bloque : l'accès, pas la licence
+
+La licence est réglée. Les photos sont en CC BY-SA, que le projet accepte
+depuis le 6 septembre (`--allow-sa`) ; l'attribution demandée par Pl@ntNet
+est « Photo(s) : <auteur> / Pl@ntNet, CC BY-SA », à reproduire dans
+`attributions.csv`.
+
+**L'accès ne l'est pas.** L'API ci-dessus n'est pas documentée, et les
+conditions de l'API publique (`my.plantnet.org/terms_of_use`) disent
+qu'aucun élément de l'application ne peut être copié, reproduit ou
+téléchargé sans autorisation écrite préalable. Que la clause vise les
+photos des utilisateurs, placées sous licence libre, ou seulement le
+logiciel, le texte ne le tranche pas. Un collecteur ne se branche pas sur
+une question ouverte.
+
+Les deux voies officielles ont été mesurées, et elles ne portent pas ces
+plantes :
+
+| Voie | Ce qu'elle a |
+|---|---|
+| le jeu « Pl@ntNet observations » sur GBIF (`7a3679ef-…`, CC BY 4.0) | 0 *Begonia rex*, 2 *Goeppertia orbifolia*, 0 *Alocasia reginula*, 0 *Anthurium clarinervium* — le jeu semble ne publier que des observations géolocalisées, ce qu'une plante en pot est rarement |
+| les métadonnées d'entraînement PlantCLEF 2024 (1 408 033 images, `lab.plantnet.org`) | **aucune** des 187 espèces — c'est la flore sauvage d'Europe, comme le disait le § 12.8 |
+
+La décision appartient donc à Pl@ntNet : lui écrire. Le projet est déjà
+client de son API d'identification par le relais (docs/19) ; c'est le bon
+interlocuteur, et la demande est précise — les photos sous CC BY-SA de
+quelques centaines d'espèces d'intérieur, pour entraîner un modèle embarqué,
+avec attribution livrée.
+
+### 15.6 Pour l'Iris 10
+
+Dans l'ordre, et rien avant le premier point :
+
+1. **L'autorisation écrite de Pl@ntNet.** Sans elle, rien ne se collecte
+   par cette API.
+2. **Un connecteur `fetchers/plantnet.py`**, désactivé par défaut
+   (`--plantnet`), sur le modèle de `wikimedia.py` : les images de l'espèce,
+   la plante entière d'abord (`habit`, comme au § 12.8), la licence vérifiée
+   image par image par `licenses.py`, l'identifiant d'image dans
+   `extra.photo_id` pour la déduplication. Le filtre sur les votes en option,
+   une requête par observation, mise en cache.
+3. **Les lignes de `plants.csv`**, pour les seules espèces retenues : une
+   ligne y est une classe (§ 13.5), et le nombre d'espèces exposées reste la
+   décision produit du § 13.3. Les 62 propres d'abord, les 38 à filtrer
+   après l'écran de validation, aucune des 34 à écarter.
+4. **Les photos de cultivars sous le nom de l'espèce** : les 103 'White
+   Fusion' entrent comme *Goeppertia lietzei*, et 'White Fusion' reste une
+   fiche.
+5. **La mesure habituelle** (§ 12.10) : la justesse sur les photos de
+   plantes cultivées, avant et après, et le taux d'affirmation à tort des
+   plantes hors catalogue (§ 12.7). Ajouter des classes propres doit faire
+   baisser le second ; ajouter des classes bruitées ferait monter les deux
+   erreurs à la fois.

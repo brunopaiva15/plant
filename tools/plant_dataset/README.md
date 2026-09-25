@@ -72,6 +72,8 @@ clés sont mises en cache, une reprise ne redemande rien. Voir le § 12.14 de
 | `commons_apport.py` | Mesure ce que Wikimedia Commons ajouterait, espèce par espèce, sans télécharger d'image. Voir le § 12.2 de `docs/09`. |
 | `plantnet300k.py` | Mesure ce que PlantNet-300K apporterait, sur ses seules métadonnées (66 Mo) : recouvrement d'espèces, licences, cadrage. Voir le § 12.8 de `docs/09`. |
 | `cible_interieur_500.tsv` | La cible « 500 intérieur » d'Iris Indoor, résolue nom par nom (GBIF `species/match`, 17 septembre 2026) : `EXPOSEE` (155), `COLLECTEE` (127), `A_COLLECTER` (161), `SYNONYME` (43), `PAS_ESPECE` (14). Voir le § 13.3 de `docs/09`. |
+| `disponibilite_plantnet.csv` | Ce que Pl@ntNet a pour 230 noms absents du modèle (25 septembre 2026) : nom accepté, photos libres, verdict d'un tri à l'œil (`propre` 62, `à filtrer` 38, `à écarter` 34…). Voir le § 15 de `docs/09`. |
+| `plantnet_white_fusion.csv` | Les photos de *Goeppertia lietzei* 'White Fusion' trouvées toutes sources confondues, avec auteur, licence et décision. Voir le § 15.1 de `docs/09`. |
 | `plant_dataset/` | Le paquet : `taxonomy` (noms), `licenses`, `manifest`, `images`, `dedup`, `splits`, `fetchers/gbif`. |
 | `tests/` | Tests unitaires, avec des réponses GBIF réelles enregistrées dans `tests/fixtures/`. |
 | `dataset/` | Sortie. **Ignorée par Git.** |
