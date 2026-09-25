@@ -14,17 +14,7 @@ export const mesure = (m: number, temps = 0) => t(m * 4 + temps);
 
 export const DUREE = mesure(13);
 
-// Où commence chaque scène, en mesures.
-export const SCENES = {
-  photos: mesure(0), // les photos, une par temps, et « Le carnet de vos plantes. »
-  pot: mesure(2), // le pot de l'icône, son clin d'œil, « Auxine »
-  iris: mesure(3), // « Quelle est cette plante ? »
-  soins: mesure(5), // « Chaque matin, les soins du jour. »
-  diagnostic: mesure(7), // « Un diagnostic sur photo. »
-  collection: mesure(8), // « Toutes vos plantes, au même endroit. »
-  prix: mesure(9), // « 0,99 € »
-  fin: mesure(10), // « Auxine » et « Disponible sur l'App Store. »
-};
+// Le déroulé, temps par temps, est dans PARTITION.md et src/Film.tsx.
 
 // Les zones que TikTok recouvre : on n'y pose pas de texte.
 export const MARGE = { haut: 170, bas: 420, gauche: 80, droite: 140 };

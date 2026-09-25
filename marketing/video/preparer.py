@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.join(ROOT, 'store'))
 os.chdir(ROOT)
 
 import compose as C  # noqa: E402
-from PIL import Image  # noqa: E402
+from PIL import Image, ImageDraw  # noqa: E402
 
 C.ensure_fonts()
 C.use('iphone')
@@ -40,12 +40,41 @@ for nom in ('capture', 'today', 'diagnosis', 'plants', 'garden-calendar'):
     ph.save(os.path.join(PUB, f'tel-{nom}.png'), optimize=True)
     geometrie[nom] = {'w': ph.width, 'h': ph.height, 'sw': sw, 'sh': sh, **ecran}
 
+# Le téléphone persistant de l'acte 2 : le cadre, percé à la place de
+# l'écran (l'île redessinée par-dessus), et chaque écran seul, barre d'état
+# comprise. Les écrans glissent dans le cadre comme une navigation iOS.
+from PIL import ImageChops  # noqa: E402
+bx = dev['bezel'] * dev['px']
+haut = 0 if SIMULATEUR else dev['status'] * dev['px']
+corps = C.phone(os.path.join(SHOTS, 'today.png'), device=SIMULATEUR)
+el, eh = corps.width - 2 * bx, corps.height - 2 * bx
+rayon = dev['radius'] * dev['px']
+trou = Image.new('L', corps.size, 255)
+ImageDraw.Draw(trou).rounded_rectangle((bx, bx, bx + el - 1, bx + eh - 1), radius=rayon, fill=0)
+cadre = corps.copy()
+cadre.putalpha(ImageChops.multiply(cadre.split()[-1], trou))
+if dev['island']:
+    iw, ih = dev['island'][0] * dev['px'], dev['island'][1] * dev['px']
+    ix, iy = bx + (el - iw) // 2, bx + 11 * dev['px']
+    ImageDraw.Draw(cadre).rounded_rectangle((ix, iy, ix + iw, iy + ih), radius=ih // 2, fill=(14, 11, 9, 255))
+cadre.save(os.path.join(PUB, 'cadre.png'), optimize=True)
+for nom in ('capture', 'today', 'diagnosis', 'plants'):
+    ecran_ = C.phone(os.path.join(SHOTS, f'{nom}.png'), device=SIMULATEUR).crop((bx, bx, bx + el, bx + eh))
+    ecran_.convert('RGB').save(os.path.join(PUB, f'ecran-{nom}.jpg'), quality=93)
+geometrie['tel'] = {'w': corps.width, 'h': corps.height, 'ecran': {'x': bx, 'y': bx, 'l': el, 'h': eh, 'rayon': rayon},
+                    # Où commence la capture dans l'écran : sous la barre d'état dessinée, pour le web.
+                    'haut': haut}
+
 # Ce que la vidéo anime par-dessus les écrans, en pixels de la capture :
 # les ronds de validation des deux premières tuiles « À venir »
 # d'Aujourd'hui, la photo de l'étape « Aperçu » et le nom qu'Iris y pose.
 # Mesurés sur les captures de chaque source.
 if SIMULATEUR:
     geometrie['today'].update(coches=[[576, 2471], [1193, 2471]], rayon=48)
+    # La carte « Air trop sec » du diagnostic, et les deux premières tuiles
+    # de la grille des plantes (la seconde rangée passe sous les onglets).
+    geometrie['diagnosis'].update(carte={'x': 70, 'y': 740, 'l': 1180, 'h': 710, 'rayon': 44})
+    geometrie['plants'].update(tuiles=[[60, 1256, 580, 800], [680, 1256, 580, 800]], rayonTuile=64)
     geometrie['capture'].update(photo={'x': 60, 'y': 784, 'l': 1200, 'h': 1500, 'rayon': 100}, nom=[400, 1140])
 else:
     geometrie['today'].update(coches=[[500, 2004], [1042, 2004]], rayon=48)

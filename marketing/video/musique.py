@@ -86,8 +86,21 @@ subprocess.run([ffmpeg, '-y', '-loglevel', 'error', '-i', brut, '-af', 'loudnorm
                check=True, env={**os.environ, 'LD_LIBRARY_PATH': os.path.dirname(ffmpeg)})
 os.remove(brut)
 
+# Les accents : la force de l'attaque sur chacun des 52 temps du passage,
+# ramenée entre 0 et 1. La partition y pose ses gestes forts.
+yp, srp = librosa.load(sortie, sr=22050)
+force = librosa.onset.onset_strength(y=yp, sr=srp)
+tf = librosa.times_like(force, sr=srp)
+accents = []
+for k in range(MESURES * 4):
+    fen = (tf >= k * periode - 0.03) & (tf < k * periode + 0.06)
+    accents.append(float(force[fen].max()) if fen.any() else 0.0)
+m = max(accents)
+accents = [round(a / m, 2) for a in accents]
+
 with open(os.path.join(ICI, 'src', 'musique.json'), 'w') as f:
-    json.dump({**MORCEAU, 'bpm': round(bpm, 3), 'debut': round(debut, 3), 'duree': round(duree, 3), 'credit': CREDIT},
+    json.dump({**MORCEAU, 'bpm': round(bpm, 3), 'debut': round(debut, 3), 'duree': round(duree, 3), 'credit': CREDIT,
+               'accents': accents},
               f, ensure_ascii=False, indent=2)
 print(f'{MORCEAU["titre"]} : {bpm:.2f} BPM, de {debut:.2f} s à {debut + duree:.2f} s → {sortie}')
 print(CREDIT)
