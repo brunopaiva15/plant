@@ -178,7 +178,9 @@ dépend d'aucun code de ce dépôt. C'est la dernière ligne.
 
 Le relais ne transmet pas n'importe quoi. Sur `ai`, seuls `messages`,
 `max_tokens`, `temperature`, `response_format` et `top_p` traversent ;
-`max_tokens` est plafonné à 4096, `stream` est forcé à faux, et le modèle
+`max_tokens` est plafonné à 9000 — ce que le diagnostic demande quand une
+réponse revient coupée, et pas moins, sans quoi la réflexion du modèle
+mange la réponse —, `stream` est forcé à faux, et le modèle
 vient des secrets. C'est ce qui sépare un relais qui sert Auxine d'une
 passerelle OpenAI gratuite.
 
