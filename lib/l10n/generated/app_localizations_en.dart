@@ -55,6 +55,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get openSettings => 'Open Settings';
 
   @override
+  String get settingsShort => 'Settings';
+
+  @override
   String get skip => 'Skip';
 
   @override
@@ -2050,6 +2053,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cameraPermission => 'Allow camera access in Settings.';
 
   @override
+  String get photoLibraryPermission =>
+      'Allow access to your photos in Settings.';
+
+  @override
   String get identify => 'Identify';
 
   @override
@@ -2060,6 +2067,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get identifyHint => 'Species suggestions, to confirm';
+
+  @override
+  String get identifyChooseHint =>
+      'Tap your plant\'s name, or continue without choosing.';
+
+  @override
+  String get identifyPreselectedHint =>
+      'The app keeps the most likely one. Tap another name to change it.';
+
+  @override
+  String get guideAimTip =>
+      'Frame the whole plant, pot included, then take the photo. The app recognizes the species from this photo.';
+
+  @override
+  String get guideNameTip =>
+      'Give your plant a name, for example “Living room pothos”. The species sets the suggested watering.';
+
+  @override
+  String get guideLocationTip =>
+      'Choose the room where your plant lives, then tap “Finish”.';
 
   @override
   String get searchOnline => 'Search online';

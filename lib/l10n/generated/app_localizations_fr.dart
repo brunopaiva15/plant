@@ -55,6 +55,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get openSettings => 'Ouvrir les Réglages';
 
   @override
+  String get settingsShort => 'Réglages';
+
+  @override
   String get skip => 'Passer';
 
   @override
@@ -2052,6 +2055,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Autorisez l\'accès à l\'appareil photo dans les Réglages.';
 
   @override
+  String get photoLibraryPermission =>
+      'Autorisez l\'accès à vos photos dans les Réglages.';
+
+  @override
   String get identify => 'Identifier';
 
   @override
@@ -2062,6 +2069,26 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get identifyHint => 'Suggestions d\'espèce, à confirmer';
+
+  @override
+  String get identifyChooseHint =>
+      'Touchez le nom de votre plante, ou continuez sans choisir.';
+
+  @override
+  String get identifyPreselectedHint =>
+      'L\'application retient la plus probable. Touchez un autre nom pour la changer.';
+
+  @override
+  String get guideAimTip =>
+      'Cadrez toute la plante, pot compris, puis prenez la photo. L\'application reconnaît l\'espèce sur cette photo.';
+
+  @override
+  String get guideNameTip =>
+      'Donnez un nom à votre plante, par exemple « Pothos du salon ». L\'espèce règle l\'arrosage conseillé.';
+
+  @override
+  String get guideLocationTip =>
+      'Choisissez la pièce où vit votre plante, puis touchez « Terminer ».';
 
   @override
   String get searchOnline => 'Chercher en ligne';

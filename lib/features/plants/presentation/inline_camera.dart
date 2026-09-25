@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
 import '../../../app/window.dart';
+import '../../../core/system_settings.dart';
 import '../../../design_system/components/scanning_overlay.dart';
 
 /// Où en est le viseur intégré.
@@ -65,6 +66,10 @@ class InlineCameraController extends ChangeNotifier with WidgetsBindingObserver 
   /// L'utilisateur a refusé l'accès : lui dire, plutôt que de laisser un
   /// cadre vide qui n'attendrait rien.
   bool get permissionDenied => _permissionDenied;
+
+  /// Refusé, et le système sait mener aux Réglages : toucher le cadre y va,
+  /// plutôt que d'ouvrir un appareil photo qui refusera aussi.
+  bool get opensSettings => _permissionDenied && SystemSettings.isSupported;
 
   /// Le flux est ouvert et peut prendre une photo.
   bool get isReady => _status == InlineCameraStatus.ready && (_camera?.value.isInitialized ?? false);

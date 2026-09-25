@@ -55,6 +55,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get openSettings => 'Einstellungen öffnen';
 
   @override
+  String get settingsShort => 'Einstellungen';
+
+  @override
   String get skip => 'Überspringen';
 
   @override
@@ -2053,6 +2056,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Erlaube den Kamerazugriff in den Einstellungen.';
 
   @override
+  String get photoLibraryPermission =>
+      'Erlaube den Zugriff auf deine Fotos in den Einstellungen.';
+
+  @override
   String get identify => 'Bestimmen';
 
   @override
@@ -2063,6 +2070,26 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get identifyHint => 'Artvorschläge, zu bestätigen';
+
+  @override
+  String get identifyChooseHint =>
+      'Tippe auf den Namen deiner Pflanze oder mach ohne Auswahl weiter.';
+
+  @override
+  String get identifyPreselectedHint =>
+      'Die App übernimmt die wahrscheinlichste. Tippe auf einen anderen Namen, um sie zu ändern.';
+
+  @override
+  String get guideAimTip =>
+      'Nimm die ganze Pflanze samt Topf ins Bild und mach das Foto. Die App erkennt die Art auf diesem Foto.';
+
+  @override
+  String get guideNameTip =>
+      'Gib deiner Pflanze einen Namen, zum Beispiel „Efeutute im Wohnzimmer“. Die Art bestimmt das empfohlene Gießen.';
+
+  @override
+  String get guideLocationTip =>
+      'Wähle den Raum, in dem deine Pflanze steht, und tippe auf „Fertig“.';
 
   @override
   String get searchOnline => 'Online suchen';

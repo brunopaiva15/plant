@@ -192,6 +192,12 @@ abstract class AppLocalizations {
   /// **'Ouvrir les Réglages'**
   String get openSettings;
 
+  /// No description provided for @settingsShort.
+  ///
+  /// In fr, this message translates to:
+  /// **'Réglages'**
+  String get settingsShort;
+
   /// No description provided for @skip.
   ///
   /// In fr, this message translates to:
@@ -3636,6 +3642,12 @@ abstract class AppLocalizations {
   /// **'Autorisez l\'accès à l\'appareil photo dans les Réglages.'**
   String get cameraPermission;
 
+  /// No description provided for @photoLibraryPermission.
+  ///
+  /// In fr, this message translates to:
+  /// **'Autorisez l\'accès à vos photos dans les Réglages.'**
+  String get photoLibraryPermission;
+
   /// No description provided for @identify.
   ///
   /// In fr, this message translates to:
@@ -3659,6 +3671,36 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Suggestions d\'espèce, à confirmer'**
   String get identifyHint;
+
+  /// No description provided for @identifyChooseHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Touchez le nom de votre plante, ou continuez sans choisir.'**
+  String get identifyChooseHint;
+
+  /// No description provided for @identifyPreselectedHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'application retient la plus probable. Touchez un autre nom pour la changer.'**
+  String get identifyPreselectedHint;
+
+  /// No description provided for @guideAimTip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cadrez toute la plante, pot compris, puis prenez la photo. L\'application reconnaît l\'espèce sur cette photo.'**
+  String get guideAimTip;
+
+  /// No description provided for @guideNameTip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Donnez un nom à votre plante, par exemple « Pothos du salon ». L\'espèce règle l\'arrosage conseillé.'**
+  String get guideNameTip;
+
+  /// No description provided for @guideLocationTip.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisissez la pièce où vit votre plante, puis touchez « Terminer ».'**
+  String get guideLocationTip;
 
   /// No description provided for @searchOnline.
   ///

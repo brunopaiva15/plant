@@ -21,6 +21,7 @@ import '../../../domain/identification/identification_confidence.dart';
 import '../../../domain/identification/identification_policy.dart';
 import '../../../domain/identification/plant_identifier.dart';
 import '../../../domain/species/species_info.dart';
+import '../../plants/presentation/photo_error.dart';
 import '../../species/presentation/species_sheet.dart';
 import 'identification_photos.dart';
 import 'identification_source_note.dart';
@@ -274,7 +275,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
       await _accept(stored);
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'identification.addPhoto');
-      if (mounted) ref.read(toastProvider.notifier).show(ToastData(message: context.l10n.photoError, emoji: '!'));
+      if (mounted) ref.read(toastProvider.notifier).show(photoErrorToast(context.l10n, e));
     } finally {
       if (mounted) setState(() => _picking = false);
     }
