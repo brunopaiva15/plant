@@ -1887,6 +1887,58 @@ question — des images distinctes en plus aident-elles ? S'il ne gagne rien,
 ce corpus-ci ne gagnera probablement rien non plus. La préparation, elle, ne
 prend ni GPU ni décision : elle tourne à côté.
 
+### Le bras iNaturalist, mesuré — 25 septembre 2026
+
+`fastvit_sa12`, recette cosinus, les trois corpus réunis : 797 965 images
+du corpus v8, 243 567 de Pl@ntNet, 596 518 d'iNaturalist, **1 638 050 par
+époque**, 57 % de plus que le bras Pl@ntNet et le double du bras cosinus.
+Environ 115 min par époque. La passe a été coupée pendant l'époque 3 par un
+redémarrage de Windows Update, et reprise au point de contrôle é2 : même
+recette, même calendrier, la partie coupée refaite.
+
+| textes, é10 | cosinus | + Pl@ntNet | **+ Pl@ntNet + iNat** | écart à cosinus | Iris 9 |
+|---|---|---|---|---|---|
+| indoor, armes égales | 0,6957 | 0,7036 | **0,7045** | +0,9 | 0,8119 |
+| outdoor, armes égales | 0,7420 | 0,7500 | **0,7575** | +1,6 | 0,7615 |
+| hors répertoire, rép. entier | 0,5745 | 0,5640 | **0,5880** | +1,4 | 0,0 |
+
+L'écart au bras Pl@ntNet, époque par époque :
+
+| iNat − Pl@ntNet | é1 | é2 | é3 | é4 | é5 | é6 | é7 | é8 | é10 |
+|---|---|---|---|---|---|---|---|---|---|
+| indoor | −0,5 | −2,0 | +1,1 | +0,8 | −0,8 | +0,4 | −0,7 | +0,4 | +0,1 |
+| outdoor | +3,3 | +1,7 | −0,9 | +0,5 | +1,5 | +0,7 | +0,8 | +0,9 | +0,8 |
+| hors répertoire | +2,2 | +2,4 | +1,7 | +2,2 | −0,9 | +0,9 | +1,7 | +0,6 | +2,4 |
+
+**L'indoor ne bouge pas.** Le signe change d'une époque à l'autre, autour de
+zéro : c'est le bruit du banc, un point environ. **L'outdoor et le
+hors-répertoire gagnent peu, mais de façon régulière** : positifs à huit
+époques sur neuf, un point environ. C'est ce qu'apporte iNaturalist, des
+photos prises dehors, sur des espèces que le répertoire n'expose pas. La
+passe est convergée : é9 donnait 0,7072 / 0,7545 / 0,5825.
+
+**Les données sont un levier, et un petit.** Doubler les images par époque
+rapporte un point en indoor et un point et demi ailleurs, pour un calcul
+doublé. Le gain ne se sépare même pas de ce calcul : ce bras fait deux fois
+plus de pas que le bras cosinus. Le calendrier de taux avait rapporté quatre
+à sept points à calcul égal.
+
+**L'outdoor est à 0,4 point d'Iris 9. L'indoor reste à 10,7 points**, et
+aucune des images ajoutées n'est une photo d'intérieur : ce n'est pas plus
+d'images qui comblera cet écart.
+
+### Ce qu'on en fait
+
+- **Les trois corpus restent dans la recette finale.** Rien n'y perd, et le
+  hors-répertoire, qu'Iris 9 ne sait pas faire, y gagne le plus ;
+- **les bras suivants partent du corpus v8 seul**, contre `iris10-cosinus`
+  comme référence : une passe y coûte ~9 h au lieu de ~19 h. On suppose que
+  les gains d'une recette et ceux des données s'additionnent à peu près. La
+  passe finale, sur les trois corpus, le vérifiera ;
+- **le prochain levier vise l'indoor**, dans la recette et pas dans les
+  données : les *hard negatives* (§ 19 bis, point 3), ou la résolution
+  d'entrée, aujourd'hui de 224 px.
+
 ## 21. Ce qui est décidé et ce qui reste ouvert
 
 ### Décidé
