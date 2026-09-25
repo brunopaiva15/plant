@@ -316,20 +316,16 @@ class _PhotoCaptureFlowState extends ConsumerState<PhotoCaptureFlow> {
 /// dernière photo par-dessus, ou — faute de viseur — l'invite qui mène à
 /// l'appareil photo du système.
 class CaptureFrame extends StatelessWidget {
-  const CaptureFrame({super.key, required this.camera, this.ghost, this.controls = true, this.controlsBottom = Space.md});
+  const CaptureFrame({super.key, required this.camera, this.ghost, this.controls = true});
 
   final InlineCameraController camera;
 
   /// La photo à poser en transparence sur le viseur, ou rien.
   final PlantPhoto? ghost;
 
-  /// Le flash et le zoom se posent sur le viseur. Faux quand le cadre ne
-  /// sert plus à viser.
+  /// Le flash se pose sur le viseur. Faux quand le cadre ne sert plus à
+  /// viser.
   final bool controls;
-
-  /// La hauteur de la pastille du zoom : [InlineCameraControls.aboveShutter]
-  /// quand le cadre porte un déclencheur.
-  final double controlsBottom;
 
   /// Assez présente pour aligner un pot dessus, assez discrète pour voir ce
   /// qu'on vise.
@@ -353,7 +349,7 @@ class CaptureFrame extends StatelessWidget {
               ),
             ),
           // Au-dessus du calque : les commandes ne se voilent pas avec lui.
-          if (controls) InlineCameraControls(controller: camera, bottom: controlsBottom),
+          if (controls) InlineCameraControls(controller: camera),
         ],
       );
     } else if (camera.status == InlineCameraStatus.starting) {

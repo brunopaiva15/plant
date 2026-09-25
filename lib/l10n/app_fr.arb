@@ -258,17 +258,6 @@
   "choosePhoto": "Choisir une photo",
   "cameraFlashOn": "Activer le flash",
   "cameraFlashOff": "Désactiver le flash",
-  "cameraZoomIn": "Zoomer",
-  "cameraZoomReset": "Revenir à 1×",
-  "cameraZoomLevel": "{level}×",
-  "@cameraZoomLevel": {
-    "description": "Pastille du zoom sur le viseur : « 2× », « 1,5× ».",
-    "placeholders": {
-      "level": {
-        "type": "String"
-      }
-    }
-  },
   "withoutPhoto": "Continuer sans photo",
   "changePhoto": "Changer",
   "stepNameTitle": "Nom",

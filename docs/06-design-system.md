@@ -196,8 +196,8 @@ C'est la règle d'`onAccent` qui fixe la clarté des accents de texte ; les
 accents vifs, eux, restent clairs et portent l'encre.
 
 ### Les commandes posées sur une image (`OnMedia`)
-La galerie dans un coin du viseur, le flash et la pastille du zoom, la croix
-d'une vue de plus : sous elles il n'y a pas un fond du thème mais un cadrage.
+La galerie dans un coin du viseur, le flash, la croix d'une vue de plus : sous
+elles il n'y a pas un fond du thème mais un cadrage.
 Elles sont donc hors du contrat, comme la marque d'Iris — pastille blanche (`OnMedia.tile`, #FFFFFF à 85 %) et
 encre figée (`OnMedia.ink`, #1C1712) dans les quatre palettes. Prendre `ink`
 de la palette du moment, comme la première version, faisait tourner l'icône au

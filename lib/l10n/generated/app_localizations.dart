@@ -906,24 +906,6 @@ abstract class AppLocalizations {
   /// **'Désactiver le flash'**
   String get cameraFlashOff;
 
-  /// No description provided for @cameraZoomIn.
-  ///
-  /// In fr, this message translates to:
-  /// **'Zoomer'**
-  String get cameraZoomIn;
-
-  /// No description provided for @cameraZoomReset.
-  ///
-  /// In fr, this message translates to:
-  /// **'Revenir à 1×'**
-  String get cameraZoomReset;
-
-  /// Pastille du zoom sur le viseur : « 2× », « 1,5× ».
-  ///
-  /// In fr, this message translates to:
-  /// **'{level}×'**
-  String cameraZoomLevel(String level);
-
   /// No description provided for @withoutPhoto.
   ///
   /// In fr, this message translates to:

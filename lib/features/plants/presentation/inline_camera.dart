@@ -6,7 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 
 import '../../../app/window.dart';
 import '../../../core/l10n/l10n.dart';
@@ -115,11 +114,8 @@ class InlineCameraController extends ChangeNotifier with WidgetsBindingObserver 
   bool get hasFlash => isReady && _hasFlash;
 
   /// Le zoom en cours, écouté à part : un pincement en produit des dizaines
-  /// par seconde, et seuls l'aperçu et sa pastille ont à se redessiner.
+  /// par seconde, et personne d'autre n'a à se redessiner.
   ValueListenable<double> get zoom => _zoom;
-
-  double get minZoom => _minZoom;
-  double get maxZoom => _maxZoom;
 
   /// L'objectif ouvert sait zoomer.
   bool get canZoom => isReady && _maxZoom > _minZoom;
@@ -216,9 +212,6 @@ class InlineCameraController extends ChangeNotifier with WidgetsBindingObserver 
     _pendingZoom = clamped;
     if (!_zoomInFlight) _flushZoom();
   }
-
-  /// Revient au zoom de repos.
-  void resetZoom() => setZoom(baseZoom);
 
   Future<void> _flushZoom() async {
     _zoomInFlight = true;
@@ -574,24 +567,18 @@ class PinchRecognizer extends ScaleGestureRecognizer {
 }
 
 /// Les commandes posées sur le viseur : le flash en haut à droite, niché
-/// dans le repère de cadrage, et la pastille du zoom en bas, au centre.
+/// dans le repère de cadrage. Le zoom, lui, n'a pas de commande à l'écran :
+/// il passe par le pincement de l'aperçu, et rien ne vient recouvrir la
+/// plante.
 ///
 /// À poser par-dessus l'aperçu — et par-dessus ce qui le recouvre, comme le
 /// calque de la photo précédente. Ne dessine rien tant que le flux n'est pas
 /// prêt, et rien de ce que l'objectif ne sait pas faire : pas de flash sur
 /// un iPad qui n'en a pas.
 class InlineCameraControls extends StatelessWidget {
-  const InlineCameraControls({super.key, required this.controller, this.bottom = Space.md});
+  const InlineCameraControls({super.key, required this.controller});
 
   final InlineCameraController controller;
-
-  /// La distance entre la pastille du zoom et le bas du cadre : au-dessus du
-  /// déclencheur quand le cadre en porte un, voir [aboveShutter].
-  final double bottom;
-
-  /// La pastille au-dessus d'un déclencheur posé à [Space.md] du bas : le
-  /// déclencheur, puis douze points d'écart.
-  static const double aboveShutter = Space.md + Shutter.side + Space.sm;
 
   /// Le bouton du flash tient dans le coin du repère de cadrage : les 18
   /// points du repère, puis 10 d'écart.
@@ -617,106 +604,8 @@ class InlineCameraControls extends StatelessWidget {
                 onPressed: controller.toggleFlash,
               ),
             ),
-          if (controller.canZoom)
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: bottom,
-              child: Center(child: _ZoomBadge(controller: controller)),
-            ),
         ],
       ),
-    );
-  }
-}
-
-/// La pastille du zoom : elle dit où l'on en est, et d'un toucher passe de
-/// 1× à 2×, ou revient à 1× — le zoom glisse de l'un à l'autre au lieu de
-/// sauter.
-class _ZoomBadge extends StatefulWidget {
-  const _ZoomBadge({required this.controller});
-
-  final InlineCameraController controller;
-
-  /// Le zoom qu'un toucher propose depuis le repos.
-  static const double step = 2;
-
-  @override
-  State<_ZoomBadge> createState() => _ZoomBadgeState();
-}
-
-class _ZoomBadgeState extends State<_ZoomBadge> with SingleTickerProviderStateMixin {
-  late final AnimationController _glide = AnimationController(vsync: this);
-  Animation<double>? _levels;
-
-  /// Le dernier zoom que la glissade a demandé : s'il n'est plus celui du
-  /// viseur, c'est qu'un pincement a repris la main, et la glissade s'efface.
-  double? _driven;
-
-  @override
-  void initState() {
-    super.initState();
-    _glide.addListener(_step);
-  }
-
-  @override
-  void dispose() {
-    _glide.dispose();
-    super.dispose();
-  }
-
-  InlineCameraController get _camera => widget.controller;
-
-  /// Au repos, ou presque : l'écart qu'un pincement laisse en revenant à la
-  /// main ne compte pas.
-  bool _atBase(double zoom) => (zoom - _camera.baseZoom).abs() < 0.05;
-
-  void _step() {
-    final levels = _levels;
-    if (levels == null) return;
-    if (_driven != null && _camera.zoom.value != _driven) {
-      _glide.stop();
-      return;
-    }
-    _driven = levels.value.clamp(_camera.minZoom, _camera.maxZoom).toDouble();
-    _camera.setZoom(_driven!);
-  }
-
-  void _toggle() {
-    final from = _camera.zoom.value;
-    final to = _atBase(from) ? math.min(_ZoomBadge.step, _camera.maxZoom) : _camera.baseZoom;
-    if (to == from) return;
-    _driven = null;
-    _levels = Tween<double>(begin: from, end: to).animate(CurvedAnimation(parent: _glide, curve: Motion.easeInOut));
-    _glide
-      ..duration = Motion.of(context, Motion.standard)
-      ..forward(from: 0);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final format = NumberFormat('0.#', l10n.localeName);
-    return ValueListenableBuilder<double>(
-      valueListenable: _camera.zoom,
-      builder: (context, zoom, _) {
-        final atBase = _atBase(zoom);
-        return Pressable(
-          onTap: _toggle,
-          scale: 0.92,
-          semanticLabel: atBase ? l10n.cameraZoomIn : l10n.cameraZoomReset,
-          child: Container(
-            constraints: const BoxConstraints(minWidth: 44, minHeight: 32),
-            padding: const EdgeInsets.symmetric(horizontal: Space.sm),
-            alignment: Alignment.center,
-            decoration: const BoxDecoration(color: OnMedia.tile, borderRadius: BorderRadius.all(Radius.circular(16))),
-            child: Text(
-              l10n.cameraZoomLevel(format.format(atBase ? _camera.baseZoom : zoom)),
-              style: context.text.caption.copyWith(color: OnMedia.ink, fontWeight: FontWeight.w600, fontFeatures: const [FontFeature.tabularFigures()]),
-            ),
-          ),
-        );
-      },
     );
   }
 }
