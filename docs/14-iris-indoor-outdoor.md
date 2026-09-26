@@ -2018,7 +2018,7 @@ le calendrier.
 | hors répertoire | 0,5745 | **0,6340** | **+6,0** | 0,0 |
 
 **Le critère est rempli, et largement : 320 px entre dans la recette.**
-L'écart est positif à chaque époque, de +3,7 à +6,1 points, sur les trois
+L'écart est positif à chaque époque, de +3,4 à +6,9 points, sur les trois
 colonnes. Ce n'est pas le bruit du banc, qui fait un point.
 
 - **C'est le plus gros levier mesuré depuis le calendrier cosinus**, et il
