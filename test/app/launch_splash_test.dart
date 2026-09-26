@@ -61,7 +61,7 @@ void main() {
     expect(logo(), findsNothing);
   });
 
-  testWidgets('les barres natives restent voilées tant que dure l’ouverture', (tester) async {
+  testWidgets('les barres natives reviennent en fondu avec l’application', (tester) async {
     const canal = MethodChannel('ch.vergasta.plant/native_shell');
     final chromes = <Map<Object?, Object?>>[];
     NativeShell.debugForceSupported = true;
@@ -76,11 +76,39 @@ void main() {
 
     await pumpSplash(tester);
     expect(chromes.last['veil'], isTrue, reason: 'la barre d’onglets paraîtrait sur l’écran de lancement');
-    await tester.pump(const Duration(milliseconds: 1000));
+    // 950 ms : la fenêtre s'ouvre, l'application n'y a pas fini de paraître.
+    await tester.pump(const Duration(milliseconds: 950));
     expect(chromes.last['veil'], isTrue, reason: 'encore voilées pendant que la fenêtre s’ouvre');
-    await tester.pump(const Duration(milliseconds: 700));
+    // 1100 ms : l'application a paru, l'ouverture n'est pas finie.
+    await tester.pump(const Duration(milliseconds: 150));
+    expect(logo(), findsNothing);
+    expect(chromes.last['veil'], isFalse, reason: 'rendues avec l’application, pas 600 ms après');
+    expect(chromes.last['fade'], 250, reason: 'en fondu, comme l’application');
+    final rendues = chromes.length;
+    await tester.pump(const Duration(milliseconds: 600));
     await tester.pump();
-    expect(chromes.last['veil'], isFalse, reason: 'rendues une fois l’application découverte');
+    expect(chromes.length, rendues, reason: 'la fin de l’ouverture ne redit rien');
+  });
+
+  testWidgets('réduire les animations : les barres reviennent avec le fondu', (tester) async {
+    const canal = MethodChannel('ch.vergasta.plant/native_shell');
+    final chromes = <Map<Object?, Object?>>[];
+    NativeShell.debugForceSupported = true;
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(canal, (call) async {
+      if (call.method == 'setChrome') chromes.add(call.arguments as Map<Object?, Object?>);
+      return true;
+    });
+    addTearDown(() {
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(canal, null);
+      NativeShell.debugReset();
+    });
+
+    await pumpSplash(tester, reduceMotion: true);
+    await tester.pump(const Duration(milliseconds: 250));
+    expect(chromes.last['veil'], isTrue);
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(chromes.last['veil'], isFalse, reason: 'le fondu du pot a commencé');
+    expect(chromes.last['fade'], 250);
   });
 
   testWidgets('l’application reste la même du premier au dernier cadre', (tester) async {
