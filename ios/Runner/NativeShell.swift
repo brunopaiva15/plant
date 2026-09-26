@@ -133,7 +133,8 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
       appliquerLaChrome(
         barre: (args["bar"] as? Bool) ?? true,
         onglets: (args["tabs"] as? Bool) ?? true,
-        voile: (args["veil"] as? Bool) ?? false)
+        voile: (args["veil"] as? Bool) ?? false,
+        fondu: TimeInterval((args["fade"] as? Int) ?? 0) / 1000)
       result(true)
     case "setActions":
       guard let args = call.arguments as? [String: Any] else {
@@ -167,7 +168,18 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
   /// encore là — partie, elle ne dit plus ce qu'elle prenait — et dans les
   /// quatre sens, parce qu'une barre rangée dans la bande verticale ne prend
   /// pas la sienne en haut.
-  private func appliquerLaChrome(barre: Bool, onglets ongletsVisibles: Bool, voile: Bool) {
+  ///
+  /// **`fondu`** : une barre qui reparaît le fait en fondu, sur cette durée.
+  /// À la fin de l'ouverture, l'application vient de paraître en fondu dans
+  /// la fenêtre, et des barres tombées d'un coup par-dessus se voyaient
+  /// arriver après elle. Le fondu passe par l'opacité, le temps de
+  /// l'animation seulement : c'est toujours le contrôleur qui montre et qui
+  /// cache.
+  private func appliquerLaChrome(
+    barre: Bool, onglets ongletsVisibles: Bool, voile: Bool, fondu: TimeInterval = 0
+  ) {
+    let barresCachees = navigations.map(\.isNavigationBarHidden)
+    let ongletsCaches = ongletsSontCaches()
     // Sous un voile, la place se reprend chaque fois que la chrome demandée
     // change : au lancement, l'ouverture voile une chrome qui n'a encore
     // jamais paru, et c'est la coquille, arrivée ensuite, qui la demande.
@@ -198,6 +210,31 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
       barreDOnglets.isUserInteractionEnabled = montrerLesOnglets
     }
     flutter?.additionalSafeAreaInsets = margesVoilees
+
+    guard fondu > 0 else { return }
+    var aFondre: [UIView] = []
+    for (navigation, etaitCachee) in zip(navigations, barresCachees)
+    where etaitCachee && !navigation.isNavigationBarHidden {
+      aFondre.append(navigation.navigationBar)
+    }
+    if ongletsCaches, !ongletsSontCaches(), let barreDOnglets = onglets?.tabBar {
+      aFondre.append(barreDOnglets)
+    }
+    guard !aFondre.isEmpty else { return }
+    for vue in aFondre { vue.alpha = 0 }
+    UIView.animate(
+      withDuration: fondu, delay: 0, options: [.curveEaseOut, .allowUserInteraction]
+    ) {
+      for vue in aFondre { vue.alpha = 1 }
+    }
+  }
+
+  /// La barre d'onglets est-elle cachée ? Par le contrôleur depuis iOS 18,
+  /// par la vue en deçà — comme `appliquerLaChrome` la cache.
+  private func ongletsSontCaches() -> Bool {
+    guard let onglets else { return true }
+    if #available(iOS 18.0, *) { return onglets.isTabBarHidden }
+    return onglets.tabBar.isHidden
   }
 
   /// La place que prendra la chrome demandée, qu'elle soit déjà à l'écran ou

@@ -1129,6 +1129,13 @@ n'ont encore jamais paru, et leur place ne se mesurait pas : le natif les
 pose donc un instant, transparentes, le temps d'une mise en page, pour la
 mesurer (`mesurerLaChrome`), avant de les cacher.
 
+Elles reviennent **avec l'application, et non après** : dès qu'elle a fini
+de paraître dans la fenêtre (30 % de l'ouverture), en fondu de 250 ms
+(`fade` de `setChrome`). Rendues à la fin seulement, elles tombaient d'un
+coup 600 ms après elle — la courbe passe ce temps-là à poser l'échelle, et
+l'écran semble déjà fini. Sans le zoom, elles reviennent au début du fondu
+du pot.
+
 **L'application garde sa place dans l'arbre** du premier au dernier cadre.
 La première version la sortait de la pile une fois l'ouverture finie, et
 l'application entière se reconstruisait.

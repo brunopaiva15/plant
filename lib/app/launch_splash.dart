@@ -25,8 +25,11 @@ import 'launch_silhouette.dart';
 /// aplat de la couleur de fond de l'application : agrandie cinq ou seize
 /// fois, l'image du pot ne serait plus qu'une tache floue.
 ///
-/// Les barres natives d'iOS, posées par-dessus Flutter, sont voilées tant que
-/// l'ouverture dure (`NativeShell.setLaunching`).
+/// Les barres natives d'iOS, posées par-dessus Flutter, sont voilées jusqu'à
+/// ce que l'application ait fini de paraître dans la fenêtre — 30 % de
+/// l'ouverture —, puis reviennent en fondu (`NativeShell.setLaunching`).
+/// Les rendre à la fin seulement les faisait tomber d'un coup, 600 ms après
+/// l'application : la courbe passe ce temps-là à poser l'échelle.
 ///
 /// Avec « réduire les animations », ni clin d'œil ni zoom : le pot reste un
 /// instant, puis s'efface. Un toucher saute le clin d'œil.
@@ -75,6 +78,10 @@ class _LaunchSplashState extends State<LaunchSplash> with SingleTickerProviderSt
   static const _twitterStart = 640.0;
   static const _twitter = 1000.0;
 
+  /// Le fondu des barres natives quand elles reviennent : le temps que la
+  /// fenêtre finisse d'effacer le sauge, ou celui du fondu réduit.
+  static const _chromeFade = Duration(milliseconds: 250);
+
   /// Les images du clin d'œil, pas à pas : un pas dure 40 ms, sauf l'œil
   /// fermé, tenu 160 ms. `null`, c'est l'œil ouvert de l'image du pot.
   static const _winkSteps = <(double, int?)>[
@@ -85,12 +92,14 @@ class _LaunchSplashState extends State<LaunchSplash> with SingleTickerProviderSt
   bool _started = false;
   bool _done = false;
   bool _reduced = false;
+  bool _chromeShown = false;
 
   @override
   void initState() {
     super.initState();
     NativeShell.setLaunching(true);
     _controller = AnimationController(vsync: this)
+      ..addListener(_revealChrome)
       ..addStatusListener((status) {
         if (status != AnimationStatus.completed) return;
         NativeShell.setLaunching(false);
@@ -123,6 +132,16 @@ class _LaunchSplashState extends State<LaunchSplash> with SingleTickerProviderSt
     _controller.dispose();
     if (!_done) NativeShell.setLaunching(false);
     super.dispose();
+  }
+
+  /// Rend les barres natives dès que l'application a paru : en même temps
+  /// qu'elle, et non après. Sans le zoom, au début du fondu.
+  void _revealChrome() {
+    if (_chromeShown) return;
+    final ms = _controller.value * (_reduced ? 550 : _total);
+    if (_reduced ? ms < 300 : _progress(ms) < 30) return;
+    _chromeShown = true;
+    NativeShell.setLaunching(false, fade: _chromeFade);
   }
 
   /// Un toucher saute l'attente et le clin d'œil : l'ouverture part aussitôt.
