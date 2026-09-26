@@ -1996,6 +1996,51 @@ La taille est inscrite dans `etat.json` et dans la signature de chaque
 point de contrôle. Une reprise à une autre taille est refusée, comme pour
 le calendrier.
 
+### Mesuré — 26 septembre 2026
+
+`iris10-320` : corpus v8 seul, recette cosinus, `--entree 320`. Référence
+`iris10-cosinus`, la même passe à 224 px. Textes, indoor et outdoor à armes
+égales, hors répertoire sur le répertoire entier :
+
+| | é1 | é2 | é3 | é4 | é5 | é6 | é7 | é8 | é9 | **é10** |
+|---|---|---|---|---|---|---|---|---|---|---|
+| indoor, 320 px | 0,5413 | 0,6122 | 0,6539 | 0,6868 | 0,6912 | 0,7116 | 0,7258 | 0,7338 | 0,7427 | **0,7382** |
+| indoor, 224 px | 0,4800 | 0,5634 | 0,6016 | 0,6406 | 0,6433 | 0,6646 | 0,6859 | 0,6850 | 0,6930 | 0,6957 |
+| outdoor, 320 px | 0,5295 | 0,6125 | 0,6850 | 0,7135 | 0,7440 | 0,7630 | 0,7760 | 0,7890 | 0,7980 | **0,8000** |
+| outdoor, 224 px | 0,4625 | 0,5625 | 0,6160 | 0,6450 | 0,6875 | 0,7020 | 0,7200 | 0,7340 | 0,7460 | 0,7420 |
+| hors rép., 320 px | 0,3475 | 0,4245 | 0,4750 | 0,5175 | 0,5585 | 0,5900 | 0,6150 | 0,6200 | 0,6285 | **0,6340** |
+| hors rép., 224 px | 0,2920 | 0,3665 | 0,4410 | 0,4825 | 0,5080 | 0,5325 | 0,5520 | 0,5665 | 0,5755 | 0,5745 |
+
+| é10 | 224 px | **320 px** | écart | Iris 9 |
+|---|---|---|---|---|
+| indoor | 0,6957 | **0,7382** | **+4,3** | 0,8119 |
+| outdoor | 0,7420 | **0,8000** | **+5,8** | 0,7615 |
+| hors répertoire | 0,5745 | **0,6340** | **+6,0** | 0,0 |
+
+**Le critère est rempli, et largement : 320 px entre dans la recette.**
+L'écart est positif à chaque époque, de +3,7 à +6,1 points, sur les trois
+colonnes. Ce n'est pas le bruit du banc, qui fait un point.
+
+- **C'est le plus gros levier mesuré depuis le calendrier cosinus**, et il
+  s'ajoute à lui. Le bras iNaturalist, deux fois plus d'images à 224 px,
+  rendait +0,9 / +1,6 / +1,4 ; 320 px sur le corpus v8 seul fait
+  +4,3 / +5,8 / +6,0 ;
+- **l'outdoor dépasse Iris 9** : 0,8000 contre 0,7615, +3,9 points ;
+- **l'indoor reste à 7,4 points d'Iris 9**, contre 11,6 à 224 px. L'écart se
+  réduit d'un tiers ;
+- **la réserve du § précédent ne s'est pas vérifiée** : les cibles du
+  teacher restent calculées à 224 px, et le student gagne quand même. Sa
+  carte finale passe de 7 × 7 à 10 × 10 cases, et c'est ce qui lui manquait
+  pour reproduire un vecteur construit sur 16 × 16 patchs.
+
+Le coût est celui mesuré avant : 1,8 fois le calcul par époque, et le même
+rapport sur le téléphone, qui est celui d'Iris 9.
+
+**La référence des bras suivants devient `iris10-320`.** Aller au-delà de
+320 px n'est pas testé : les corpus Pl@ntNet-300K, iNaturalist et Pl@ntNet
+en direct sont rangés à 320 px, et le coût sur le téléphone dépasserait
+celui d'Iris 9.
+
 ## 20 sexies. Les plantes en pot de Pl@ntNet — 25 septembre 2026
 
 Le levier de données que le § 20 quater laissait ouvert : des photos
@@ -2041,11 +2086,12 @@ Les mêmes qu'au § 20 quater, adaptées :
 ### Le coût, et l'ordre
 
 - **collecte** : ~21 Go téléchargés, ~2,6 Go gardés à 320 px, sans GPU.
-  Elle peut tourner pendant le bras à 320 px ;
+  Faite le 25 septembre pendant le bras à 320 px : **73 702 images**,
+  aucune écartée pour le réseau ;
 - **cache du teacher** : ~15 min, GPU libre. Pas avant la fin du bras à
   320 px, qui occupe 7,6 Go sur 8 ;
-- **le bras** : le corpus v8 plus ces ~74 000 images, à la résolution que le
-  § 20 quinquies aura retenue, contre la référence à cette même résolution.
+- **le bras** : le corpus v8 plus ces 73 702 images, à 320 px (retenu au
+  § 20 quinquies), contre `iris10-320`. ~97 min par époque, ~16 h.
 
 ### Le critère, écrit avant
 
