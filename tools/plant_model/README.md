@@ -609,6 +609,14 @@ Ce qu'on y cherche, dans l'ordre : le **top-1 sur le répertoire entier** — la
 seule lecture qui décrive le produit — puis la **largeur du cône**, qui doit
 s'approcher des 0,2806 du teacher et non descendre en dessous.
 
+### Des lots difficiles
+
+`--difficiles 0.5` fait la moitié de chaque lot de groupes de voisins dans
+l'espace du teacher (§ 20 septies de `docs/14`) : 1 024 grappes
+(`--grappes`), groupes de 4 images (`--groupe`). Les grappes sont calculées
+au démarrage, en une minute environ, et gardées dans le dossier de sortie.
+Une reprise avec une autre part est refusée.
+
 ### Une autre taille d'entrée
 
 `--entree` fixe le côté des images que voit le student : 224 par défaut,
@@ -817,4 +825,13 @@ téléchargements en parallèle par défaut (`--fils`) : c'est un service public
 comme pour iNaturalist : l'identifiant d'image (GBIF relaie Pl@ntNet), la
 photo sœur d'une même observation, l'empreinte perceptuelle (§ 20 sexies de
 `docs/14`).
+
+Pour les espèces d'intérieur que le modèle connaît déjà, `--masque` prend
+les classes d'un masque au lieu du tableau, dans un dossier à part :
+
+```bash
+python3 -u plantnet_direct_corpus.py --masque ../plant_dataset/masque_indoor.txt \
+  --max-par-espece 1000 --sortie ~/plant-data/plantnet-interieur \
+  --corpus ~/plant-data/plantnet-300k --corpus ~/plant-data/plantnet-direct
+```
 

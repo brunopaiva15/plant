@@ -107,7 +107,8 @@ def corpus(datasets: list[Path], cache: Path,
 
 
 def cibles(cache: Path, lot: list[tuple[str, str, int]],
-           fragments: dict[str, np.ndarray] | None = None) -> np.ndarray:
+           fragments: dict[str, np.ndarray] | None = None,
+           dtype=np.float32) -> np.ndarray:
     """Les vecteurs du teacher pour ce lot, dans l'ordre reçu.
 
     `fragments` sert de mémo entre les appels : un fragment fait 16 Mo et un
@@ -115,7 +116,7 @@ def cibles(cache: Path, lot: list[tuple[str, str, int]],
     relirait des dizaines de mégaoctets pour en extraire trente-deux lignes.
     """
     memo = {} if fragments is None else fragments
-    sortie = np.empty((len(lot), DIM), dtype=np.float32)
+    sortie = np.empty((len(lot), DIM), dtype=dtype)
     for i, (_, fragment, ligne) in enumerate(lot):
         if fragment not in memo:
             memo[fragment] = np.load(cache / f'{fragment}.npy')
@@ -167,6 +168,103 @@ def melanger(total: int, graine: int) -> np.ndarray:
     return ordre
 
 
+# --------------------------------------------------------------------------
+# Les lots difficiles
+# --------------------------------------------------------------------------
+
+def normaliser(x: np.ndarray) -> np.ndarray:
+    x = np.asarray(x, dtype=np.float32)
+    return x / np.maximum(np.linalg.norm(x, axis=1, keepdims=True), 1e-12)
+
+
+def assigner(x: np.ndarray, centres: np.ndarray, paquet: int = 65536) -> np.ndarray:
+    """Le centre le plus proche de chaque vecteur, par paquets pour tenir en
+    mémoire : 870 000 × 1 024 centres d'un coup feraient 3,5 Go."""
+    sortie = np.empty(len(x), dtype=np.int32)
+    for d in range(0, len(x), paquet):
+        sortie[d:d + paquet] = np.argmax(normaliser(x[d:d + paquet]) @ centres.T, axis=1)
+    return sortie
+
+
+def grappes(vecteurs: np.ndarray, k: int, graine: int, iterations: int = 10,
+            echantillon: int = 200_000) -> np.ndarray:
+    """Le regroupement de l'espace du teacher en `k` grappes, un numéro par
+    image.
+
+    Un k-moyennes sphérique : les vecteurs du teacher sont normalisés, la
+    proximité est leur cosinus. Les centres sont appris sur un échantillon,
+    puis chaque image est rangée. Une grappe vide garde son centre d'avant
+    plutôt que d'en inventer un.
+    """
+    rng = np.random.default_rng(graine)
+    n = len(vecteurs)
+    k = max(1, min(k, n))
+    x = normaliser(vecteurs[np.sort(rng.choice(n, size=min(echantillon, n), replace=False))])
+    centres = x[rng.choice(len(x), size=k, replace=False)].copy()
+    for _ in range(iterations):
+        a = assigner(x, centres)
+        # Les sommes par grappe, sur les vecteurs triés par grappe : `add.at`
+        # ferait la même chose deux cents fois plus lentement.
+        tri = np.argsort(a, kind='stable')
+        presentes, debuts = np.unique(a[tri], return_index=True)
+        centres[presentes] = normaliser(np.add.reduceat(x[tri], debuts, axis=0))
+    return assigner(vecteurs, centres)
+
+
+def lots_difficiles(ordre: np.ndarray, numeros: np.ndarray, batch: int, part: float,
+                    groupe: int, graine: int) -> list[list[int]]:
+    """Les lots d'une époque, chacun fait pour `part` de groupes de voisins.
+
+    **Pourquoi.** Le terme contrastif apprend à séparer une image des autres
+    images du lot. Tirées au hasard parmi 1 500 espèces, ces autres images
+    sont presque toujours faciles : une fougère contre un cactus. L'écart qui
+    reste avec Iris 9 est ailleurs, entre un *Calathea* et un *Maranta*
+    (§ 12.4 de `docs/09`). Mettre dans le même lot des images que le teacher
+    range côte à côte, c'est donner au contrastif les paires qui coûtent.
+
+    **Ce que ce n'est pas.** Deux photos de la même espèce dans le même lot
+    ne se contredisent pas : chacune a *son* vecteur de teacher, distinct de
+    l'autre, et le student doit s'approcher du sien plus que de l'autre. C'est
+    exactement reproduire le teacher de plus près.
+
+    Chaque image reste vue **une fois par époque** : les groupes sont pris
+    dans l'ordre mélangé, et ce qui ne forme pas un groupe complet rejoint la
+    part tirée au hasard. Le reste du lot est tiré au hasard, pour que le
+    student continue de voir l'espace entier. Les lots sont ensuite mélangés
+    entre eux.
+    """
+    rng = np.random.default_rng(graine)
+    n_lots = len(ordre) // batch
+    par_lot = max(0, min(batch, int(batch * part))) // max(1, groupe)
+    groupes, reste = [], []
+    if par_lot:
+        # `ordre` est déjà mélangé : un tri stable par grappe garde ce hasard
+        # à l'intérieur de chaque grappe.
+        tries = ordre[np.argsort(numeros[ordre], kind='stable')]
+        bords = np.flatnonzero(np.diff(numeros[tries])) + 1
+        for membres in np.split(tries, bords):
+            complets = len(membres) // groupe * groupe
+            groupes += [membres[d:d + groupe] for d in range(0, complets, groupe)]
+            reste.append(membres[complets:])
+        rng.shuffle(groupes)
+    else:
+        reste.append(ordre)
+    pris = groupes[:n_lots * par_lot]
+    reste += groupes[n_lots * par_lot:]
+    hasard = np.concatenate(reste) if reste else np.empty(0, dtype=ordre.dtype)
+    rng.shuffle(hasard)
+    lots, p = [], 0
+    for b in range(n_lots):
+        durs = [int(i) for g in pris[b * par_lot:(b + 1) * par_lot] for i in g]
+        manque = batch - len(durs)
+        if p + manque > len(hasard):
+            break
+        lots.append(durs + [int(i) for i in hasard[p:p + manque]])
+        p += manque
+    rng.shuffle(lots)
+    return lots
+
+
 def etat_du_lot(sortie, cible) -> dict:  # pragma: no cover - demande PyTorch
     """Ce qu'on lit d'un lot : l'accord, et la largeur du cône.
 
@@ -215,7 +313,8 @@ def taux_du_pas(pas: int, total: int, base: float, calendrier: str = 'constant')
 
 
 def desaccord_de_reprise(etat: dict, student: str, contrastive: float,
-                         calendrier: str = 'constant', entree: int = ENTREE) -> str:
+                         calendrier: str = 'constant', entree: int = ENTREE,
+                         difficiles: float = 0.0) -> str:
     """Ce qui a changé entre la passe écrite et celle qu'on relance, s'il y a.
 
     **Une reprise ne renégocie pas la recette.** Un dorsal différent ferait
@@ -237,6 +336,9 @@ def desaccord_de_reprise(etat: dict, student: str, contrastive: float,
     # De même, un état sans taille d'entrée a tourné à 224.
     if int(etat.get('entree', ENTREE)) != int(entree):
         ecarts.append(f"entrée {etat.get('entree', ENTREE)} → {entree} px")
+    # Et un état sans lots difficiles a tiré ses lots au hasard.
+    if float(etat.get('difficiles', 0.0)) != float(difficiles):
+        ecarts.append(f"lots difficiles {etat.get('difficiles', 0.0)} → {difficiles}")
     return ' ; '.join(ecarts)
 
 
@@ -312,6 +414,14 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
                     help='côté des images vues par le student. 224 reproduit les passes '
                          "jusqu'au 25 septembre ; Iris 9 tourne à 320 (§ 20 quinquies "
                          'de docs/14)')
+    ap.add_argument('--difficiles', type=float, default=0.0, metavar='PART',
+                    help='part de chaque lot faite de groupes de voisins dans l\'espace du '
+                         'teacher ; 0 tire tout le lot au hasard, comme jusqu\'au 27 septembre '
+                         '(§ 20 septies de docs/14)')
+    ap.add_argument('--grappes', type=int, default=1024,
+                    help='nombre de grappes de l\'espace du teacher, avec --difficiles')
+    ap.add_argument('--groupe', type=int, default=4,
+                    help='images par groupe de voisins, avec --difficiles')
     ap.add_argument('--contrastive', type=float, default=1.0,
                     help='poids du terme qui écarte ; 0 reproduit la recette publique')
     ap.add_argument('--demi', action='store_true',
@@ -431,7 +541,7 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
     if etat.exists():
         e = json.loads(etat.read_text())
         ecart = desaccord_de_reprise(e, args.student, args.contrastive, args.calendrier,
-                                     args.entree)
+                                     args.entree, args.difficiles)
         if ecart:
             raise SystemExit(
                 f'{sortie} a été écrit sous une autre recette : {ecart}.\n'
@@ -454,15 +564,44 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
         print(f'ATTENTION : banc introuvable ({fichier_banc}) — aucune époque '
               f'n\'écrira de point de contrôle. Lancer depuis tools/plant_model, '
               f'ou passer --banc avec un chemin absolu.', flush=True)
+    numeros = None
+    if args.difficiles:
+        # Les grappes sont calculées une fois et gardées : une reprise doit
+        # retrouver les mêmes, sans quoi la recette changerait en route.
+        fichier_grappes = sortie / f'grappes-{args.grappes}.npy'
+        if fichier_grappes.exists():
+            numeros = np.load(fichier_grappes)
+        if numeros is None or len(numeros) != len(lot_complet):
+            print(f'grappes de l\'espace du teacher : {args.grappes}, '
+                  f'sur {len(lot_complet)} vecteurs…', flush=True)
+            # En float16 : 870 000 vecteurs font 1,8 Go, contre 3,6 en float32.
+            numeros = grappes(cibles(cache, lot_complet, {}, np.float16),
+                              args.grappes, args.graine)
+            np.save(fichier_grappes, numeros)
+        tailles = np.bincount(numeros, minlength=args.grappes)
+        print(f'  {int((tailles > 0).sum())} grappes non vides, médiane '
+              f'{int(np.median(tailles[tailles > 0]))} images ; lots faits pour '
+              f'{args.difficiles:.0%} de groupes de {args.groupe}', flush=True)
+
     journal = open(sortie / 'journal.csv', 'a', newline='', encoding='utf-8')
     if journal.tell() == 0:
         csv.writer(journal).writerow(['epoque', 'pas', 'perte', 'accord', 'cone'])
 
     for epoque in range(depart, args.epoques):
         ordre = melanger(len(lot_complet), args.graine + epoque)
-        lots = [[lot_complet[i] for i in ordre[d:d + args.batch]]
-                for d in range(0, len(ordre), args.batch)]
-        lots = [l for l in lots if len(l) == args.batch]
+        if numeros is not None:
+            lots = [[lot_complet[i] for i in l] for l in lots_difficiles(
+                ordre, numeros, args.batch, args.difficiles, args.groupe,
+                args.graine + epoque)]
+        else:
+            lots = [[lot_complet[i] for i in ordre[d:d + args.batch]]
+                    for d in range(0, len(ordre), args.batch)]
+            lots = [l for l in lots if len(l) == args.batch]
+        # Les groupes de voisins sont en tête de lot ; le cône se lit sur la
+        # part tirée au hasard, sans quoi il mesurerait les voisins et non
+        # l'étalement de l'espace, et crierait à tort qu'il se referme.
+        durs = (int(args.batch * args.difficiles) // args.groupe * args.groupe
+                if numeros is not None else 0)
         memo: dict = {}
         modele.train()
         debut = time.perf_counter()
@@ -490,6 +629,8 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
                 optimiseur.step()
             if pas % 200 == 0:
                 lu = etat_du_lot(s.float(), y)
+                if 0 < durs < len(y) - 1:
+                    lu['cone'] = etat_du_lot(s.float()[durs:], y[durs:])['cone']
                 csv.writer(journal).writerow(
                     [epoque, pas, round(float(perte.detach()), 4),
                      round(lu['accord'], 4), round(lu['cone'], 4)])
@@ -506,7 +647,8 @@ def main() -> int:  # pragma: no cover - demande PyTorch, timm et les images
         etat.write_text(json.dumps({'epoque': epoque + 1, 'student': args.student,
                                     'contrastive': args.contrastive,
                                     'calendrier': args.calendrier,
-                                    'entree': args.entree}))
+                                    'entree': args.entree,
+                                    'difficiles': args.difficiles}))
 
         # Le point de contrôle qui décide : un cache du banc, lisible tel quel
         # par `voisins.py --embeddings`. On arrête sur le top-1 par référence,

@@ -2146,6 +2146,59 @@ connaît déjà, et ce corpus n'en a pris que 10.
 
 **La référence des bras suivants devient `iris10-pnd`.**
 
+### La suite côté données : les espèces d'intérieur du modèle
+
+Mesuré sur l'API le 27 septembre : Pl@ntNet a des photos pour **355 des 363
+classes de `masque_indoor.txt`**, 1 375 754 en tout. 322 de ces espèces ne
+sont pas dans le corpus ci-dessus. Plafonnées à 1 000 photos par espèce,
+elles donnent **~257 000 photos de plantes en pot**, trois fois et demie ce
+que le bras vient de mesurer ; ~75 Go à télécharger, ~9 Go gardés, ~4 h.
+
+`plantnet_direct_corpus.py --masque ../plant_dataset/masque_indoor.txt`,
+dans un dossier à part (`~/plant-data/plantnet-interieur`), pour que le bras
+qui le mesurera n'ait qu'une variable. Les images déjà dans
+`plantnet-direct` ou Pl@ntNet-300K sont écartées par leur identifiant.
+
+## 20 septies. Les lots difficiles — 27 septembre 2026
+
+L'étape 7 prévoyait des *hard negatives*. Leur forme la plus simple ne
+touche pas à la perte : elle change **qui est dans le lot**.
+
+**Le constat.** Le terme contrastif apprend à séparer chaque image des 63
+autres de son lot. Tirées au hasard parmi 1 500 espèces, ces 63 autres sont
+presque toujours faciles : une fougère contre un cactus. L'écart qui reste
+avec Iris 9 est entre plantes proches, un *Calathea* et un *Maranta*
+(§ 12.4 de `docs/09`). Le contrastif ne les voit presque jamais ensemble.
+
+**Le levier.** `distiller.py --difficiles 0.5` : l'espace du teacher est
+découpé en 1 024 grappes (k-moyennes sphérique, calculé une fois et gardé
+dans `grappes-1024.npy`), et la moitié de chaque lot est faite de huit
+groupes de quatre images d'une même grappe. L'autre moitié reste tirée au
+hasard, pour que le student continue de voir l'espace entier. Chaque image
+reste vue une fois par époque.
+
+**Ce qui ne se contredit pas.** Deux photos de la même espèce dans le même
+lot ont chacune leur propre vecteur de teacher. Le student doit s'approcher
+du sien plus que de l'autre : c'est reproduire le teacher de plus près, pas
+séparer ce qui devrait être rapproché.
+
+**Le cône se lit sur la moitié tirée au hasard.** Des voisins sont proches
+par construction : lu sur le lot entier, le cône monterait et donnerait
+l'alarme à tort.
+
+Une variable : les lots. Même corpus, même taille, même recette que
+`iris10-pnd`, qui sert de référence.
+
+### Le critère, écrit avant
+
+| à é10, indoor, textes à armes égales | décision |
+|---|---|
+| ≥ +1,5 point sur `iris10-pnd` (0,7533) | les lots difficiles entrent dans la recette |
+| entre +0,5 et +1,5 | on garde, et on essaie une part plus grande (0,75) |
+| < +0,5 | la composition des lots n'est pas le levier ; la perte le sera peut-être (cibles douces, supervision taxonomique) |
+
+L'outdoor et le hors-répertoire ne doivent pas reculer de plus d'un point.
+
 ## 21. Ce qui est décidé et ce qui reste ouvert
 
 ### Décidé

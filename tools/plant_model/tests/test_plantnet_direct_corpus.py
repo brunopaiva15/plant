@@ -11,7 +11,7 @@ import json
 from pathlib import Path
 
 from plantnet_direct_corpus import (attribution, destination, ecrire_attributions,
-                                    especes_a_collecter, identite, ids_des_corpus,
+                                    especes_a_collecter, especes_du_masque, identite, ids_des_corpus,
                                     ids_des_manifestes, motif_de_rejet,
                                     observations_interdites)
 
@@ -163,3 +163,14 @@ def test_les_attributions_ne_listent_que_les_images_presentes(tmp_path):
     assert ecrire_attributions(index, tmp_path) == 1
     lignes = list(csv.DictReader(open(tmp_path / 'attributions.csv', encoding='utf-8')))
     assert lignes[0]['attribution'] == 'Photo : A / Pl@ntNet, CC BY-SA 4.0'
+
+
+def test_un_masque_se_lit_par_plants_csv():
+    """Les identifiants du masque prennent leur nom dans `plants.csv` ; un
+    identifiant inconnu est sauté, pas deviné."""
+    plants = [{'internal_id': 'monstera-deliciosa', 'scientific_name': 'Monstera deliciosa'},
+              {'internal_id': 'alocasia-amazonica', 'scientific_name': 'Alocasia  amazonica'}]
+    masque = ['monstera-deliciosa', '', 'inconnue', 'alocasia-amazonica', 'monstera-deliciosa']
+    assert especes_du_masque(masque, plants) == [
+        ('Monstera deliciosa', 'Monstera deliciosa'),
+        ('Alocasia amazonica', 'Alocasia amazonica')]

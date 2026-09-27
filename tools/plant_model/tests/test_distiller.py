@@ -222,3 +222,81 @@ def test_un_etat_sans_entree_a_tourne_a_224():
     assert desaccord_de_reprise(etat, 'fastvit_sa12', 0.2, 'cosinus') == ''
     assert desaccord_de_reprise(etat, 'fastvit_sa12', 0.2, 'cosinus', 224) == ''
     assert 'entrée' in desaccord_de_reprise(etat, 'fastvit_sa12', 0.2, 'cosinus', 320)
+
+
+# --------------------------------------------------------------------------
+# Les lots difficiles
+# --------------------------------------------------------------------------
+
+def _especes(n_especes=30, par_espece=40, bruit=0.3, graine=0):
+    rng = np.random.default_rng(graine)
+    centres = rng.normal(size=(n_especes, 64))
+    vecteurs = np.repeat(centres, par_espece, axis=0) + bruit * rng.normal(
+        size=(n_especes * par_espece, 64))
+    return vecteurs.astype(np.float16), np.repeat(np.arange(n_especes), par_espece)
+
+
+def test_les_grappes_retrouvent_des_voisins():
+    """Des images tirées autour de trente centres retombent, pour l'essentiel,
+    dans la grappe de leur centre."""
+    from collections import Counter
+    from distiller import grappes
+    vecteurs, vraies = _especes()
+    numeros = grappes(vecteurs, 30, graine=1)
+    purete = np.mean([Counter(vraies[numeros == k]).most_common(1)[0][1] / (numeros == k).sum()
+                      for k in np.unique(numeros)])
+    assert purete > 0.8
+
+
+def test_les_grappes_sont_reproductibles():
+    """Une reprise recalcule les mêmes grappes si le fichier manque."""
+    from distiller import grappes
+    vecteurs, _ = _especes()
+    assert (grappes(vecteurs, 30, graine=1) == grappes(vecteurs, 30, graine=1)).all()
+
+
+def test_chaque_image_est_vue_une_fois_par_epoque():
+    from distiller import lots_difficiles
+    rng = np.random.default_rng(3)
+    numeros = rng.integers(0, 40, size=2000)
+    lots = lots_difficiles(rng.permutation(2000), numeros, 64, 0.5, 4, graine=5)
+    vues = [i for l in lots for i in l]
+    assert len(vues) == len(set(vues))
+    assert all(len(l) == 64 for l in lots)
+    assert len(lots) == 2000 // 64
+
+
+def test_les_groupes_sont_des_voisins_et_le_reste_du_hasard():
+    from distiller import lots_difficiles
+    rng = np.random.default_rng(3)
+    numeros = rng.integers(0, 40, size=4000)
+    lots = lots_difficiles(rng.permutation(4000), numeros, 64, 0.5, 4, graine=5)
+    for l in lots[:20]:
+        # huit groupes de quatre en tête, chacun d'une seule grappe
+        assert all(len(set(numeros[l[d:d + 4]])) == 1 for d in range(0, 32, 4))
+    # la moitié tirée au hasard mélange les grappes
+    assert np.mean([len(set(numeros[l[32:]])) for l in lots]) > 15
+
+
+def test_sans_part_difficile_les_lots_sont_ceux_du_hasard():
+    from distiller import lots_difficiles
+    ordre = np.random.default_rng(1).permutation(640)
+    lots = lots_difficiles(ordre, np.zeros(640, dtype=int), 64, 0.0, 4, graine=2)
+    assert sorted(i for l in lots for i in l) == list(range(640))
+
+
+def test_des_grappes_trop_petites_laissent_la_place_au_hasard():
+    """Une grappe par image : aucun groupe ne se forme, et l'époque reste
+    entière."""
+    from distiller import lots_difficiles
+    ordre = np.random.default_rng(1).permutation(640)
+    lots = lots_difficiles(ordre, np.arange(640), 64, 0.5, 4, graine=2)
+    assert len(lots) == 10 and len({i for l in lots for i in l}) == 640
+
+
+def test_des_lots_difficiles_differents_arretent_la_reprise():
+    from distiller import desaccord_de_reprise
+    etat = {'student': 'fastvit_sa12', 'contrastive': 0.2, 'calendrier': 'cosinus',
+            'entree': 320}
+    assert desaccord_de_reprise(etat, 'fastvit_sa12', 0.2, 'cosinus', 320) == ''
+    assert 'difficiles' in desaccord_de_reprise(etat, 'fastvit_sa12', 0.2, 'cosinus', 320, 0.5)

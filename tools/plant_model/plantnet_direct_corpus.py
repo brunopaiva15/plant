@@ -114,6 +114,25 @@ def especes_a_collecter(lignes, verdicts: set[str] | None = None) -> list[tuple[
     return sortie
 
 
+def especes_du_masque(identifiants, plants) -> list[tuple[str, str]]:
+    """(nom scientifique, nom du dépôt) pour chaque classe d'un masque.
+
+    Un masque (`masque_indoor.txt`) liste nos identifiants internes ; c'est
+    `plants.csv` qui leur donne un nom. Pl@ntNet résout ensuite le nom vers
+    le sien, synonymes compris. Un identifiant absent de `plants.csv` est
+    sauté, pas deviné.
+    """
+    noms = {r['internal_id']: ' '.join(r['scientific_name'].split()) for r in plants}
+    sortie, vus = [], set()
+    for i in identifiants:
+        i = i.strip()
+        nom = noms.get(i)
+        if i and nom and nom not in vus:
+            vus.add(nom)
+            sortie.append((nom, nom))
+    return sortie
+
+
 def identite(espece: str, depot: str, catalogue: dict[str, str]) -> str:
     """Notre identifiant quand l'espèce est au catalogue, `pnd:<nom>` sinon.
 
@@ -299,6 +318,9 @@ def main() -> int:  # pragma: no cover - réseau et disque
     ap.add_argument('--sortie', default='~/plant-data/plantnet-direct')
     ap.add_argument('--liste', default=str(ESPECES),
                     help='le tableau du § 15.3 de docs/09 : une espèce par ligne, et son verdict')
+    ap.add_argument('--masque', default=None,
+                    help="prendre les classes d'un masque du modèle (un identifiant interne "
+                         "par ligne, ex. ../plant_dataset/masque_indoor.txt) au lieu de --liste")
     ap.add_argument('--verdict', action='append', default=[],
                     help="répétable : ne collecter que ces verdicts. Défaut : tous, "
                          "puisque le student ne lit aucun nom")
@@ -364,8 +386,14 @@ def main() -> int:  # pragma: no cover - réseau et disque
     banc = empreintes_du_banc(banc_csv)
     print(f'{len(banc)} empreintes, seuil {args.seuil} bits\n')
 
-    with open(Path(args.liste).expanduser(), newline='', encoding='utf-8') as f:
-        especes = especes_a_collecter(csv.DictReader(f), set(args.verdict) or None)
+    if args.masque:
+        with open(Path(args.plants).expanduser(), newline='', encoding='utf-8') as f:
+            plants = list(csv.DictReader(f))
+        especes = especes_du_masque(
+            Path(args.masque).expanduser().read_text(encoding='utf-8').splitlines(), plants)
+    else:
+        with open(Path(args.liste).expanduser(), newline='', encoding='utf-8') as f:
+            especes = especes_a_collecter(csv.DictReader(f), set(args.verdict) or None)
     catalogue = noms_du_catalogue(Path(args.plants).expanduser())
     faites_f = sortie / 'especes-faites.txt'
     faites = set(faites_f.read_text(encoding='utf-8').splitlines()) if faites_f.exists() else set()
