@@ -2159,6 +2159,24 @@ dans un dossier à part (`~/plant-data/plantnet-interieur`), pour que le bras
 qui le mesurera n'ait qu'une variable. Les images déjà dans
 `plantnet-direct` ou Pl@ntNet-300K sont écartées par leur identifiant.
 
+**Collecté le 27 septembre : 265 894 images**, un peu plus que l'estimation :
+les espèces déjà dans `plantnet-direct` au plafond de 2 000 ont donné jusqu'à
+1 000 photos de plus chacune.
+
+**Le bras** : `iris10-int`, corpus v8, `plantnet-direct` et
+`plantnet-interieur`, 1 137 561 images par époque, 320 px, lots tirés au
+hasard. Référence `iris10-pnd`. ~133 min par époque, ~22 h.
+
+| à é10, indoor, textes à armes égales | décision |
+|---|---|
+| ≥ +1,5 point sur `iris10-pnd` (0,7533) | ces photos entrent dans la recette |
+| entre +0,5 et +1,5 | elles entrent, et le levier des données d'intérieur est proche de sa limite |
+| < +0,5 | le domaine a donné ce qu'il pouvait avec 74 000 photos ; on ne les garde pas |
+
+L'outdoor et le hors-répertoire vont reculer : la part de photos de plein
+air tombe de 91 % à 70 %. Un recul au-delà d'un point est noté, pas
+bloquant : la passe finale rétablit iNaturalist et Pl@ntNet-300K.
+
 ## 20 septies. Les lots difficiles — 27 septembre 2026
 
 L'étape 7 prévoyait des *hard negatives*. Leur forme la plus simple ne
