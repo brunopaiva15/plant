@@ -2278,5 +2278,6 @@
   "whatsNewSpeciesTitle": "The most likely species",
   "whatsNewSpeciesBody": "When you add a plant, the app keeps the most likely species. Tap another name to change it.",
   "whatsNewDiagnosisTitle": "Analysis time",
-  "whatsNewDiagnosisBody": "During a diagnosis, the screen shows the time left. The analysis also finishes faster."
+  "whatsNewDiagnosisBody": "During a diagnosis, the screen shows the time left. The analysis also finishes faster.",
+  "whatsNewWateringIntro": "This version brings the pot into the watering calculation. The viewfinder, adding a plant and the diagnosis change too."
 }

@@ -6687,4 +6687,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get whatsNewDiagnosisBody =>
       'During a diagnosis, the screen shows the time left. The analysis also finishes faster.';
+
+  @override
+  String get whatsNewWateringIntro =>
+      'This version brings the pot into the watering calculation. The viewfinder, adding a plant and the diagnosis change too.';
 }

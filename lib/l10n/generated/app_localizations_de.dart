@@ -6711,4 +6711,8 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get whatsNewDiagnosisBody =>
       'Während einer Diagnose zeigt der Bildschirm die verbleibende Zeit. Die Analyse ist auch schneller fertig.';
+
+  @override
+  String get whatsNewWateringIntro =>
+      'Diese Version bezieht den Topf in die Gießberechnung ein. Auch Sucher, das Hinzufügen einer Pflanze und die Diagnose ändern sich.';
 }

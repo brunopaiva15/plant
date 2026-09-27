@@ -6730,4 +6730,8 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get whatsNewDiagnosisBody =>
       'Pendant un diagnostic, l\'écran indique le temps restant. L\'analyse aboutit aussi plus vite.';
+
+  @override
+  String get whatsNewWateringIntro =>
+      'Cette version fait entrer le pot dans le calcul de l\'arrosage. Le viseur, l\'ajout d\'une plante et le diagnostic changent aussi.';
 }

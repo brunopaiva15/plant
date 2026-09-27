@@ -11297,6 +11297,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Pendant un diagnostic, l\'écran indique le temps restant. L\'analyse aboutit aussi plus vite.'**
   String get whatsNewDiagnosisBody;
+
+  /// No description provided for @whatsNewWateringIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette version fait entrer le pot dans le calcul de l\'arrosage. Le viseur, l\'ajout d\'une plante et le diagnostic changent aussi.'**
+  String get whatsNewWateringIntro;
 }
 
 class _AppLocalizationsDelegate

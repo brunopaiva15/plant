@@ -3376,5 +3376,6 @@
   "whatsNewSpeciesTitle": "L'espèce la plus probable",
   "whatsNewSpeciesBody": "À l'ajout d'une plante, l'application retient l'espèce la plus probable. Touchez un autre nom pour la changer.",
   "whatsNewDiagnosisTitle": "Le temps d'analyse",
-  "whatsNewDiagnosisBody": "Pendant un diagnostic, l'écran indique le temps restant. L'analyse aboutit aussi plus vite."
+  "whatsNewDiagnosisBody": "Pendant un diagnostic, l'écran indique le temps restant. L'analyse aboutit aussi plus vite.",
+  "whatsNewWateringIntro": "Cette version fait entrer le pot dans le calcul de l'arrosage. Le viseur, l'ajout d'une plante et le diagnostic changent aussi."
 }

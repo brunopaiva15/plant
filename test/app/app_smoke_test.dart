@@ -13,7 +13,7 @@ import 'package:flora/data/services/preferences_service.dart';
 import 'package:flora/domain/models/models.dart';
 import 'package:flora/design_system/design_system.dart';
 import 'package:flora/domain/repositories/repositories.dart';
-import 'package:flora/features/whats_new/application/whats_new.dart';
+import 'package:flora/features/whats_new/application/release_notes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -46,7 +46,7 @@ Future<ProviderContainer> boot(WidgetTester tester, {bool onboardingDone = true,
   SharedPreferences.setMockInitialValues({
     'onboarding_done': onboardingDone,
     'locale': 'fr',
-    if (whatsNewSeen) 'whats_new_seen': WhatsNew.edition,
+    if (whatsNewSeen) 'seen_release_notes': [latestReleaseNoteId],
   });
   final prefs = await PreferencesService.load();
   final db = FloraDatabase(NativeDatabase.memory());

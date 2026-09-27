@@ -6724,4 +6724,8 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get whatsNewDiagnosisBody =>
       'Durante una diagnosi, lo schermo mostra il tempo rimanente. L\'analisi finisce anche prima.';
+
+  @override
+  String get whatsNewWateringIntro =>
+      'Questa versione fa entrare il vaso nel calcolo dell\'annaffiatura. Cambiano anche il mirino, l\'aggiunta di una pianta e la diagnosi.';
 }

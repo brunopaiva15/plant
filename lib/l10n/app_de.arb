@@ -2271,5 +2271,6 @@
   "whatsNewSpeciesTitle": "Die wahrscheinlichste Art",
   "whatsNewSpeciesBody": "Beim Hinzufügen einer Pflanze übernimmt die App die wahrscheinlichste Art. Tippe auf einen anderen Namen, um sie zu ändern.",
   "whatsNewDiagnosisTitle": "Die Analysedauer",
-  "whatsNewDiagnosisBody": "Während einer Diagnose zeigt der Bildschirm die verbleibende Zeit. Die Analyse ist auch schneller fertig."
+  "whatsNewDiagnosisBody": "Während einer Diagnose zeigt der Bildschirm die verbleibende Zeit. Die Analyse ist auch schneller fertig.",
+  "whatsNewWateringIntro": "Diese Version bezieht den Topf in die Gießberechnung ein. Auch Sucher, das Hinzufügen einer Pflanze und die Diagnose ändern sich."
 }

@@ -51,7 +51,7 @@ Le projet est découpé en 4 phases produit + une phase 0 de fondations. Chaque 
 | Gel et chaleur : les trois prochains jours lus pour les plantes du dehors, comparés au minimum et à la plage idéale de chaque fiche ; carte du matin et ligne dans le rappel quotidien quand c'est pour la nuit ou le lendemain | ✅ |
 | Stratégie d'arrosage « Météo » : l'intervalle saisonnier corrigé par la semaine du lieu (chaleur sèche ×0,7, pluie ×1,35, borné à 0,6–1,6), et la correction écrite sous le sélecteur | ✅ |
 | Le pot dans l'arrosage : diamètre et matière (terre cuite, plastique, céramique émaillée, tissu, pot à réserve) corrigent l'intervalle de la fiche — racine carrée du rapport à 15 cm bornée à 0,7–1,4, terre cuite ×0,8, tissu ×0,75, réserve ×1,6 — et donnent la dose d'eau à verser, en ml ou en fl oz, selon le séchage que la fiche attend | ✅ |
-| Nouveautés : une feuille à l'ouverture qui suit une installation ou une mise à jour, une fois par édition (`WhatsNew.edition`), après l'animation d'ouverture et jamais par-dessus une page déjà ouverte | ✅ |
+| Fenêtre des nouveautés rétablie après la publication : une fois après une installation ou une mise à jour, après l'animation d'ouverture et jamais par-dessus une page déjà ouverte ; ligne « Nouveautés » dans le profil ; première annonce `watering-pot-1` | ✅ |
 | Climat de la région (archives Open-Meteo sur trois ans, mises en cache) : zone de rusticité du lieu, et propositions de plantes d'extérieur classées par ce qu'elles font de l'hiver — l'IA reçoit le climat, jamais la ville | ✅ |
 | Export complet (ZIP : `data.json` de toutes les tables + photos), partage natif | ✅ |
 | Timelapse de croissance (photos en fondu, chronologiques) | ✅ |
