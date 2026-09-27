@@ -41,6 +41,12 @@ class PreferencesService {
   bool get onboardingDone => _prefs.getBool('onboarding_done') ?? false;
   Future<void> setOnboardingDone() => _prefs.setBool('onboarding_done', true);
 
+  /// La dernière édition des nouveautés montrée sur cet appareil. `null`
+  /// tant qu'aucune ne l'a été : une installation neuve comme une mise à
+  /// jour depuis une version qui n'en montrait pas.
+  int? get whatsNewSeen => _prefs.getInt('whats_new_seen');
+  Future<void> setWhatsNewSeen(int edition) => _prefs.setInt('whats_new_seen', edition);
+
   /// L'utilisateur a-t-il déjà soutenu le développeur ? Ne déverrouille rien :
   /// sert seulement à ne plus lui proposer, et à dire merci.
 

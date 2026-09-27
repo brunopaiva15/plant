@@ -13,6 +13,7 @@ import 'package:flora/data/services/preferences_service.dart';
 import 'package:flora/domain/models/models.dart';
 import 'package:flora/design_system/design_system.dart';
 import 'package:flora/domain/repositories/repositories.dart';
+import 'package:flora/features/whats_new/application/whats_new.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -37,8 +38,16 @@ class FakeNotifications extends NotificationService {
 ///
 /// Sous FakeAsync, les requêtes drift (insert / select) se résolvent, mais les
 /// flux (`watch`) attendent un timer : le seed n'utilise donc que des requêtes.
-Future<ProviderContainer> boot(WidgetTester tester, {bool onboardingDone = true, Future<void> Function(ProviderContainer c)? seed}) async {
-  SharedPreferences.setMockInitialValues({'onboarding_done': onboardingDone, 'locale': 'fr'});
+///
+/// Les nouveautés sont marquées vues par défaut : elles s'ouvriraient sinon
+/// par-dessus chaque écran que les tests parcourent. [whatsNewSeen] à faux
+/// rejoue une première ouverture après mise à jour.
+Future<ProviderContainer> boot(WidgetTester tester, {bool onboardingDone = true, bool whatsNewSeen = true, Future<void> Function(ProviderContainer c)? seed}) async {
+  SharedPreferences.setMockInitialValues({
+    'onboarding_done': onboardingDone,
+    'locale': 'fr',
+    if (whatsNewSeen) 'whats_new_seen': WhatsNew.edition,
+  });
   final prefs = await PreferencesService.load();
   final db = FloraDatabase(NativeDatabase.memory());
   final auth = LocalAuthRepository(db, prefs);

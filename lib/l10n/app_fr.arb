@@ -3367,5 +3367,14 @@
       }
     }
   },
-  "careWateringPotHint": "Indiquez le diamètre du pot pour connaître la quantité d'eau à verser."
+  "careWateringPotHint": "Indiquez le diamètre du pot pour connaître la quantité d'eau à verser.",
+  "whatsNewTitle": "Nouveautés",
+  "whatsNewPotTitle": "L'arrosage selon le pot",
+  "whatsNewPotBody": "Indiquez le diamètre et la matière du pot : l'intervalle s'ajuste, et la fiche d'entretien dit combien d'eau verser.",
+  "whatsNewCameraTitle": "Flash et zoom dans le viseur",
+  "whatsNewCameraBody": "Allumez le flash dans le coin du cadre, et écartez deux doigts sur l'image pour zoomer.",
+  "whatsNewSpeciesTitle": "L'espèce la plus probable",
+  "whatsNewSpeciesBody": "À l'ajout d'une plante, l'application retient l'espèce la plus probable. Touchez un autre nom pour la changer.",
+  "whatsNewDiagnosisTitle": "Le temps d'analyse",
+  "whatsNewDiagnosisBody": "Pendant un diagnostic, l'écran indique le temps restant. L'analyse aboutit aussi plus vite."
 }

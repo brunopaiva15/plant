@@ -2269,5 +2269,14 @@
   "careWateringReservoir": "Refill the reservoir when its level is at the bottom: the soil draws water from below.",
   "careWateringPotShorter": "Your pot shortens the interval by {percent}%.",
   "careWateringPotLonger": "Your pot lengthens the interval by {percent}%.",
-  "careWateringPotHint": "Enter the pot diameter to see how much water to pour."
+  "careWateringPotHint": "Enter the pot diameter to see how much water to pour.",
+  "whatsNewTitle": "What's new",
+  "whatsNewPotTitle": "Watering by pot",
+  "whatsNewPotBody": "Enter the pot's diameter and material: the interval adjusts, and the care guide shows how much water to pour.",
+  "whatsNewCameraTitle": "Flash and zoom in the viewfinder",
+  "whatsNewCameraBody": "Turn on the flash in the corner of the frame, and spread two fingers on the image to zoom.",
+  "whatsNewSpeciesTitle": "The most likely species",
+  "whatsNewSpeciesBody": "When you add a plant, the app keeps the most likely species. Tap another name to change it.",
+  "whatsNewDiagnosisTitle": "Analysis time",
+  "whatsNewDiagnosisBody": "During a diagnosis, the screen shows the time left. The analysis also finishes faster."
 }

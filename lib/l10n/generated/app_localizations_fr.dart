@@ -6699,4 +6699,35 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get careWateringPotHint =>
       'Indiquez le diamètre du pot pour connaître la quantité d\'eau à verser.';
+
+  @override
+  String get whatsNewTitle => 'Nouveautés';
+
+  @override
+  String get whatsNewPotTitle => 'L\'arrosage selon le pot';
+
+  @override
+  String get whatsNewPotBody =>
+      'Indiquez le diamètre et la matière du pot : l\'intervalle s\'ajuste, et la fiche d\'entretien dit combien d\'eau verser.';
+
+  @override
+  String get whatsNewCameraTitle => 'Flash et zoom dans le viseur';
+
+  @override
+  String get whatsNewCameraBody =>
+      'Allumez le flash dans le coin du cadre, et écartez deux doigts sur l\'image pour zoomer.';
+
+  @override
+  String get whatsNewSpeciesTitle => 'L\'espèce la plus probable';
+
+  @override
+  String get whatsNewSpeciesBody =>
+      'À l\'ajout d\'une plante, l\'application retient l\'espèce la plus probable. Touchez un autre nom pour la changer.';
+
+  @override
+  String get whatsNewDiagnosisTitle => 'Le temps d\'analyse';
+
+  @override
+  String get whatsNewDiagnosisBody =>
+      'Pendant un diagnostic, l\'écran indique le temps restant. L\'analyse aboutit aussi plus vite.';
 }
