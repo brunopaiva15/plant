@@ -3329,5 +3329,43 @@
         "type": "int"
       }
     }
-  }
+  },
+  "potMaterial": "Matière du pot",
+  "potMaterialTerracotta": "Terre cuite",
+  "potMaterialPlastic": "Plastique",
+  "potMaterialGlazed": "Céramique émaillée",
+  "potMaterialFabric": "Tissu",
+  "potMaterialSelfWatering": "Pot à réserve d'eau",
+  "careWateringDose": "Versez {low} à {high} {unit} à chaque arrosage.",
+  "@careWateringDose": {
+    "placeholders": {
+      "low": {
+        "type": "String"
+      },
+      "high": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "careWateringReservoir": "Remplissez la réserve quand son niveau est au plus bas : le substrat boit par en dessous.",
+  "careWateringPotShorter": "Votre pot raccourcit l'intervalle de {percent} %.",
+  "@careWateringPotShorter": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "careWateringPotLonger": "Votre pot allonge l'intervalle de {percent} %.",
+  "@careWateringPotLonger": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "careWateringPotHint": "Indiquez le diamètre du pot pour connaître la quantité d'eau à verser."
 }

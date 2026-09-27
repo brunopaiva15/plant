@@ -1,4 +1,5 @@
 import '../problems/plant_problem.dart';
+import 'pot.dart';
 
 /// Besoin en lumière, du plus sombre au plus ensoleillé.
 enum LightNeed { shade, lowLight, indirect, brightIndirect, someSun, fullSun }
@@ -574,10 +575,11 @@ class CareProfile {
   }
 
   /// Intervalle d'arrosage conseillé pour un mois donné, ajusté par la
-  /// lumière réelle de l'emplacement (une plante en pleine lumière boit plus).
+  /// lumière réelle de l'emplacement (une plante en pleine lumière boit plus)
+  /// et par son pot (un petit pot ou une terre cuite sèchent plus vite).
   ///
   /// [month] : 1–12, hémisphère nord. [south] inverse les saisons.
-  int wateringDaysFor(int month, {bool south = false, LightNeed? actualLight}) {
+  int wateringDaysFor(int month, {bool south = false, LightNeed? actualLight, Pot pot = Pot.unknown}) {
     final m = south ? (month + 6 - 1) % 12 + 1 : month;
     // Poids saisonnier : 0 en plein été, 1 au cœur de l'hiver.
     final winterness = switch (m) {
@@ -593,7 +595,7 @@ class CareProfile {
       LightNeed.shade || LightNeed.lowLight => base * 1.2,
       _ => base,
     };
-    return adjusted.round().clamp(1, 120);
+    return (adjusted * pot.intervalFactor).round().clamp(1, 120);
   }
 
   /// Les méthodes de multiplication, le milieu d'enracinement mis à part.

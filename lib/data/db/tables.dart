@@ -75,6 +75,9 @@ class Plants extends Table with Timestamps {
   TextColumn get source => text().nullable()();
   RealColumn get price => real().nullable()();
   RealColumn get potSize => real().nullable()();
+
+  /// Matière du pot (v15) : nom d'enum, `null` = non renseignée.
+  TextColumn get potMaterial => text().nullable()();
   TextColumn get notes => text().nullable()();
   TextColumn get parentPlantId => text().nullable()();
   DateTimeColumn get archivedAt => dateTime().nullable()();

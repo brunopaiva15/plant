@@ -15,6 +15,7 @@ import '../../../core/observability/observability.dart';
 import '../../../core/native_shell.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_engine.dart';
+import '../../../domain/care/care_profile.dart';
 import '../../../domain/identification/identification_context.dart';
 import '../../../domain/models/models.dart';
 import '../../account/application/membership_providers.dart';
@@ -497,7 +498,7 @@ class _PlantDetailScreenState extends ConsumerState<PlantDetailScreen> {
               ),
             ),
           ),
-          _CareGuideCard(plantId: id, speciesName: plant.speciesName),
+          _CareGuideCard(plant: plant),
           // Sa place dans la maison relevée, juste sous la fiche : la pièce
           // et le repère où elle est, ou « Où la poser » depuis sa pièce.
           SliverToBoxAdapter(
@@ -765,18 +766,28 @@ class _CustomFields extends ConsumerWidget {
 }
 
 /// Accès à la fiche d'entretien, avec le repère d'arrosage du moment.
+///
+/// Le repère est celui que la fiche affiche : même lumière, même pot. Sans
+/// eux, la carte et la fiche donneraient deux intervalles pour une plante.
 class _CareGuideCard extends ConsumerWidget {
-  const _CareGuideCard({required this.plantId, required this.speciesName});
+  const _CareGuideCard({required this.plant});
 
-  final String plantId;
-  final String? speciesName;
+  final Plant plant;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final c = context.colors;
+    final plantId = plant.id;
+    final speciesName = plant.speciesName;
     final care = ref.watch(careGuideProvider).resolve(speciesName, family: speciesFamilyLookup(ref)(speciesName));
-    final days = care.profile.wateringDaysFor(DateTime.now().month, south: ref.watch(southernHemisphereProvider));
+    final location = plant.locationId == null ? null : (ref.watch(locationsProvider).value ?? const <Location>[]).where((l) => l.id == plant.locationId).firstOrNull;
+    final days = care.profile.wateringDaysFor(
+      DateTime.now().month,
+      south: ref.watch(southernHemisphereProvider),
+      actualLight: plant.light ?? lightNeedFromCode(location?.light),
+      pot: plant.pot(metric: ref.watch(preferencesProvider.select((p) => p.metricUnits))),
+    );
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(Space.page, Space.lg, Space.page, 0),
@@ -941,6 +952,7 @@ class _Info extends ConsumerWidget {
       if (p.source != null) (l10n.source, p.source!),
       if (p.price != null) (l10n.price, p.price!.toStringAsFixed(p.price! == p.price!.roundToDouble() ? 0 : 2)),
       if (p.potSize != null) (l10n.potSize, '${p.potSize!.toStringAsFixed(0)} ${metric ? 'cm' : 'in'}'),
+      if (p.potMaterial != null) (l10n.potMaterial, l10n.potMaterialName(p.potMaterial!)),
     ];
     return SliverToBoxAdapter(
       child: Column(

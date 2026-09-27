@@ -12,6 +12,7 @@ import '../../../domain/care/care_guide.dart';
 import '../../../domain/care/care_profile.dart';
 import '../../../domain/care/grow_light.dart';
 import '../../../domain/care/leaf_signs.dart';
+import '../../../domain/care/pot.dart';
 import '../../../domain/care/toxicity.dart';
 import '../../../domain/models/models.dart';
 import '../../../domain/problems/plant_problem.dart';
@@ -70,6 +71,7 @@ class CareGuideScreen extends ConsumerWidget {
             family: family,
             location: location,
             plantLight: plant?.light,
+            pot: plant?.pot(metric: ref.watch(preferencesProvider.select((p) => p.metricUnits))),
             category: plant?.speciesName == null ? null : SpeciesCatalog.findAccepted(plant!.speciesName!)?.category,
           ),
         ),
@@ -106,6 +108,7 @@ class CareGuideBody extends ConsumerWidget {
     this.location,
     this.header,
     this.plantLight,
+    this.pot,
     this.category,
     this.showEnvironmentHero = true,
     this.paper = true,
@@ -133,6 +136,11 @@ class CareGuideBody extends ConsumerWidget {
   /// l'emplacement.
   final LightNeed? plantLight;
 
+  /// Le pot de la plante, quand la fiche est celle d'une plante du jardin :
+  /// il corrige l'intervalle et donne la dose d'eau. `null` pour la fiche
+  /// d'une espèce, qui n'a pas de pot.
+  final Pot? pot;
+
   /// La catégorie d'usage de l'espèce, quand le catalogue la connaît : elle
   /// départage la scène d'environnement entre la pièce et dehors.
   final SpeciesCategory? category;
@@ -155,7 +163,14 @@ class CareGuideBody extends ConsumerWidget {
     final now = DateTime.now();
     final south = ref.watch(southernHemisphereProvider);
     final actualLight = plantLight ?? _lightOf(location);
-    final currentDays = p.wateringDaysFor(now.month, south: south, actualLight: actualLight);
+    final currentDays = p.wateringDaysFor(now.month, south: south, actualLight: actualLight, pot: pot ?? Pot.unknown);
+    // Le calcul de l'arrosage : ce que le pot change à l'intervalle, puis ce
+    // qu'il faut verser. La dose ne se calcule qu'avec un diamètre ; sur la
+    // fiche d'une plante qui n'en a pas, la ligne dit comment l'obtenir.
+    final metric = ref.watch(preferencesProvider.select((p) => p.metricUnits));
+    final potNote = pot == null ? null : l10n.wateringPotNote(pot!);
+    final doseNote = pot == null ? null : l10n.wateringDoseNote(pot!, p.dryDownRule, metric: metric);
+    final doseHint = plantId != null && doseNote == null ? l10n.careWateringPotHint : null;
     final tips = [for (final key in p.tipKeys) l10n.careTip(key)].whereType<String>().toList();
     final hasTemperature = (p.idealTempMinC != null && p.idealTempMaxC != null) || p.damageBelowC != null;
     final lamp = GrowLight.forNeed(p.light);
@@ -215,8 +230,9 @@ class CareGuideBody extends ConsumerWidget {
           // L'intervalle en jours suit, comme une estimation.
           value: l10n.dryDownName(p.dryDownRule),
           valueColor: c.water,
-          details: [l10n.careWateringNow(currentDays), l10n.guideWateringSeasons(p.wateringSummerDays, p.wateringWinterDays)],
+          details: [l10n.careWateringNow(currentDays), ?potNote, l10n.guideWateringSeasons(p.wateringSummerDays, p.wateringWinterDays)],
           badge: p.dormantInWinter ? ('❄️', l10n.guideBadgeDormant) : null,
+          notes: [?doseNote, ?doseHint],
         ),
         const SizedBox(height: Space.md),
 

@@ -100,6 +100,10 @@ alter table plants add column if not exists lifespan text check (lifespan in ('a
 alter table plants add column if not exists hardiness text check (hardiness in ('hardy','tender'));
 alter table plants add column if not exists cutting_month int check (cutting_month between 1 and 12);
 
+-- v15 : matière du pot, qui pèse sur l'intervalle et la dose d'arrosage.
+alter table plants add column if not exists pot_material text
+  check (pot_material in ('terracotta','plastic','glazed','fabric','selfWatering'));
+
 -- Libellé et URL externe des photos (v7).
 create table if not exists plant_photos (
   id uuid primary key,

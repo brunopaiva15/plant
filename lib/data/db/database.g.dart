@@ -1564,6 +1564,17 @@ class $PlantsTable extends Plants with TableInfo<$PlantsTable, PlantRow> {
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _potMaterialMeta = const VerificationMeta(
+    'potMaterial',
+  );
+  @override
+  late final GeneratedColumn<String> potMaterial = GeneratedColumn<String>(
+    'pot_material',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _notesMeta = const VerificationMeta('notes');
   @override
   late final GeneratedColumn<String> notes = GeneratedColumn<String>(
@@ -1641,6 +1652,7 @@ class $PlantsTable extends Plants with TableInfo<$PlantsTable, PlantRow> {
     source,
     price,
     potSize,
+    potMaterial,
     notes,
     parentPlantId,
     archivedAt,
@@ -1810,6 +1822,15 @@ class $PlantsTable extends Plants with TableInfo<$PlantsTable, PlantRow> {
         potSize.isAcceptableOrUnknown(data['pot_size']!, _potSizeMeta),
       );
     }
+    if (data.containsKey('pot_material')) {
+      context.handle(
+        _potMaterialMeta,
+        potMaterial.isAcceptableOrUnknown(
+          data['pot_material']!,
+          _potMaterialMeta,
+        ),
+      );
+    }
     if (data.containsKey('notes')) {
       context.handle(
         _notesMeta,
@@ -1943,6 +1964,10 @@ class $PlantsTable extends Plants with TableInfo<$PlantsTable, PlantRow> {
         DriftSqlType.double,
         data['${effectivePrefix}pot_size'],
       ),
+      potMaterial: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}pot_material'],
+      ),
       notes: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}notes'],
@@ -2000,6 +2025,9 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
   final String? source;
   final double? price;
   final double? potSize;
+
+  /// Matière du pot (v15) : nom d'enum, `null` = non renseignée.
+  final String? potMaterial;
   final String? notes;
   final String? parentPlantId;
   final DateTime? archivedAt;
@@ -2028,6 +2056,7 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
     this.source,
     this.price,
     this.potSize,
+    this.potMaterial,
     this.notes,
     this.parentPlantId,
     this.archivedAt,
@@ -2084,6 +2113,9 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
     }
     if (!nullToAbsent || potSize != null) {
       map['pot_size'] = Variable<double>(potSize);
+    }
+    if (!nullToAbsent || potMaterial != null) {
+      map['pot_material'] = Variable<String>(potMaterial);
     }
     if (!nullToAbsent || notes != null) {
       map['notes'] = Variable<String>(notes);
@@ -2153,6 +2185,9 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
       potSize: potSize == null && nullToAbsent
           ? const Value.absent()
           : Value(potSize),
+      potMaterial: potMaterial == null && nullToAbsent
+          ? const Value.absent()
+          : Value(potMaterial),
       notes: notes == null && nullToAbsent
           ? const Value.absent()
           : Value(notes),
@@ -2199,6 +2234,7 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
       source: serializer.fromJson<String?>(json['source']),
       price: serializer.fromJson<double?>(json['price']),
       potSize: serializer.fromJson<double?>(json['potSize']),
+      potMaterial: serializer.fromJson<String?>(json['potMaterial']),
       notes: serializer.fromJson<String?>(json['notes']),
       parentPlantId: serializer.fromJson<String?>(json['parentPlantId']),
       archivedAt: serializer.fromJson<DateTime?>(json['archivedAt']),
@@ -2232,6 +2268,7 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
       'source': serializer.toJson<String?>(source),
       'price': serializer.toJson<double?>(price),
       'potSize': serializer.toJson<double?>(potSize),
+      'potMaterial': serializer.toJson<String?>(potMaterial),
       'notes': serializer.toJson<String?>(notes),
       'parentPlantId': serializer.toJson<String?>(parentPlantId),
       'archivedAt': serializer.toJson<DateTime?>(archivedAt),
@@ -2263,6 +2300,7 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
     Value<String?> source = const Value.absent(),
     Value<double?> price = const Value.absent(),
     Value<double?> potSize = const Value.absent(),
+    Value<String?> potMaterial = const Value.absent(),
     Value<String?> notes = const Value.absent(),
     Value<String?> parentPlantId = const Value.absent(),
     Value<DateTime?> archivedAt = const Value.absent(),
@@ -2293,6 +2331,7 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
     source: source.present ? source.value : this.source,
     price: price.present ? price.value : this.price,
     potSize: potSize.present ? potSize.value : this.potSize,
+    potMaterial: potMaterial.present ? potMaterial.value : this.potMaterial,
     notes: notes.present ? notes.value : this.notes,
     parentPlantId: parentPlantId.present
         ? parentPlantId.value
@@ -2341,6 +2380,9 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
       source: data.source.present ? data.source.value : this.source,
       price: data.price.present ? data.price.value : this.price,
       potSize: data.potSize.present ? data.potSize.value : this.potSize,
+      potMaterial: data.potMaterial.present
+          ? data.potMaterial.value
+          : this.potMaterial,
       notes: data.notes.present ? data.notes.value : this.notes,
       parentPlantId: data.parentPlantId.present
           ? data.parentPlantId.value
@@ -2380,6 +2422,7 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
           ..write('source: $source, ')
           ..write('price: $price, ')
           ..write('potSize: $potSize, ')
+          ..write('potMaterial: $potMaterial, ')
           ..write('notes: $notes, ')
           ..write('parentPlantId: $parentPlantId, ')
           ..write('archivedAt: $archivedAt, ')
@@ -2413,6 +2456,7 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
     source,
     price,
     potSize,
+    potMaterial,
     notes,
     parentPlantId,
     archivedAt,
@@ -2445,6 +2489,7 @@ class PlantRow extends DataClass implements Insertable<PlantRow> {
           other.source == this.source &&
           other.price == this.price &&
           other.potSize == this.potSize &&
+          other.potMaterial == this.potMaterial &&
           other.notes == this.notes &&
           other.parentPlantId == this.parentPlantId &&
           other.archivedAt == this.archivedAt &&
@@ -2475,6 +2520,7 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
   final Value<String?> source;
   final Value<double?> price;
   final Value<double?> potSize;
+  final Value<String?> potMaterial;
   final Value<String?> notes;
   final Value<String?> parentPlantId;
   final Value<DateTime?> archivedAt;
@@ -2504,6 +2550,7 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
     this.source = const Value.absent(),
     this.price = const Value.absent(),
     this.potSize = const Value.absent(),
+    this.potMaterial = const Value.absent(),
     this.notes = const Value.absent(),
     this.parentPlantId = const Value.absent(),
     this.archivedAt = const Value.absent(),
@@ -2534,6 +2581,7 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
     this.source = const Value.absent(),
     this.price = const Value.absent(),
     this.potSize = const Value.absent(),
+    this.potMaterial = const Value.absent(),
     this.notes = const Value.absent(),
     this.parentPlantId = const Value.absent(),
     this.archivedAt = const Value.absent(),
@@ -2568,6 +2616,7 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
     Expression<String>? source,
     Expression<double>? price,
     Expression<double>? potSize,
+    Expression<String>? potMaterial,
     Expression<String>? notes,
     Expression<String>? parentPlantId,
     Expression<DateTime>? archivedAt,
@@ -2598,6 +2647,7 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
       if (source != null) 'source': source,
       if (price != null) 'price': price,
       if (potSize != null) 'pot_size': potSize,
+      if (potMaterial != null) 'pot_material': potMaterial,
       if (notes != null) 'notes': notes,
       if (parentPlantId != null) 'parent_plant_id': parentPlantId,
       if (archivedAt != null) 'archived_at': archivedAt,
@@ -2630,6 +2680,7 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
     Value<String?>? source,
     Value<double?>? price,
     Value<double?>? potSize,
+    Value<String?>? potMaterial,
     Value<String?>? notes,
     Value<String?>? parentPlantId,
     Value<DateTime?>? archivedAt,
@@ -2660,6 +2711,7 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
       source: source ?? this.source,
       price: price ?? this.price,
       potSize: potSize ?? this.potSize,
+      potMaterial: potMaterial ?? this.potMaterial,
       notes: notes ?? this.notes,
       parentPlantId: parentPlantId ?? this.parentPlantId,
       archivedAt: archivedAt ?? this.archivedAt,
@@ -2738,6 +2790,9 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
     if (potSize.present) {
       map['pot_size'] = Variable<double>(potSize.value);
     }
+    if (potMaterial.present) {
+      map['pot_material'] = Variable<String>(potMaterial.value);
+    }
     if (notes.present) {
       map['notes'] = Variable<String>(notes.value);
     }
@@ -2784,6 +2839,7 @@ class PlantsCompanion extends UpdateCompanion<PlantRow> {
           ..write('source: $source, ')
           ..write('price: $price, ')
           ..write('potSize: $potSize, ')
+          ..write('potMaterial: $potMaterial, ')
           ..write('notes: $notes, ')
           ..write('parentPlantId: $parentPlantId, ')
           ..write('archivedAt: $archivedAt, ')
@@ -15591,6 +15647,7 @@ typedef $$PlantsTableCreateCompanionBuilder = PlantsCompanion Function({
   Value<String?> source,
   Value<double?> price,
   Value<double?> potSize,
+  Value<String?> potMaterial,
   Value<String?> notes,
   Value<String?> parentPlantId,
   Value<DateTime?> archivedAt,
@@ -15621,6 +15678,7 @@ typedef $$PlantsTableUpdateCompanionBuilder = PlantsCompanion Function({
   Value<String?> source,
   Value<double?> price,
   Value<double?> potSize,
+  Value<String?> potMaterial,
   Value<String?> notes,
   Value<String?> parentPlantId,
   Value<DateTime?> archivedAt,
@@ -15745,6 +15803,11 @@ class $$PlantsTableFilterComposer
 
   ColumnFilters<double> get potSize => $composableBuilder(
     column: $table.potSize,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get potMaterial => $composableBuilder(
+    column: $table.potMaterial,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -15893,6 +15956,11 @@ class $$PlantsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get potMaterial => $composableBuilder(
+    column: $table.potMaterial,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get notes => $composableBuilder(
     column: $table.notes,
     builder: (column) => ColumnOrderings(column),
@@ -16008,6 +16076,11 @@ class $$PlantsTableAnnotationComposer
   GeneratedColumn<double> get potSize =>
       $composableBuilder(column: $table.potSize, builder: (column) => column);
 
+  GeneratedColumn<String> get potMaterial => $composableBuilder(
+    column: $table.potMaterial,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get notes =>
       $composableBuilder(column: $table.notes, builder: (column) => column);
 
@@ -16080,6 +16153,7 @@ class $$PlantsTableTableManager
                 Value<String?> source = const Value.absent(),
                 Value<double?> price = const Value.absent(),
                 Value<double?> potSize = const Value.absent(),
+                Value<String?> potMaterial = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 Value<String?> parentPlantId = const Value.absent(),
                 Value<DateTime?> archivedAt = const Value.absent(),
@@ -16109,6 +16183,7 @@ class $$PlantsTableTableManager
                 source: source,
                 price: price,
                 potSize: potSize,
+                potMaterial: potMaterial,
                 notes: notes,
                 parentPlantId: parentPlantId,
                 archivedAt: archivedAt,
@@ -16140,6 +16215,7 @@ class $$PlantsTableTableManager
                 Value<String?> source = const Value.absent(),
                 Value<double?> price = const Value.absent(),
                 Value<double?> potSize = const Value.absent(),
+                Value<String?> potMaterial = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 Value<String?> parentPlantId = const Value.absent(),
                 Value<DateTime?> archivedAt = const Value.absent(),
@@ -16169,6 +16245,7 @@ class $$PlantsTableTableManager
                 source: source,
                 price: price,
                 potSize: potSize,
+                potMaterial: potMaterial,
                 notes: notes,
                 parentPlantId: parentPlantId,
                 archivedAt: archivedAt,

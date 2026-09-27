@@ -2251,5 +2251,16 @@
         "type": "int"
       }
     }
-  }
+  },
+  "potMaterial": "Topfmaterial",
+  "potMaterialTerracotta": "Terrakotta",
+  "potMaterialPlastic": "Kunststoff",
+  "potMaterialGlazed": "Glasierte Keramik",
+  "potMaterialFabric": "Stoff",
+  "potMaterialSelfWatering": "Topf mit Wasserspeicher",
+  "careWateringDose": "Gieß jedes Mal {low} bis {high} {unit}.",
+  "careWateringReservoir": "Füll den Speicher nach, wenn sein Pegel ganz unten ist: Die Erde zieht das Wasser von unten.",
+  "careWateringPotShorter": "Dein Topf verkürzt den Abstand um {percent} %.",
+  "careWateringPotLonger": "Dein Topf verlängert den Abstand um {percent} %.",
+  "careWateringPotHint": "Gib den Topfdurchmesser an, um die Wassermenge zu sehen."
 }
