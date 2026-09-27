@@ -6639,4 +6639,45 @@ class AppLocalizationsDe extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get potMaterial => 'Topfmaterial';
+
+  @override
+  String get potMaterialTerracotta => 'Terrakotta';
+
+  @override
+  String get potMaterialPlastic => 'Kunststoff';
+
+  @override
+  String get potMaterialGlazed => 'Glasierte Keramik';
+
+  @override
+  String get potMaterialFabric => 'Stoff';
+
+  @override
+  String get potMaterialSelfWatering => 'Topf mit Wasserspeicher';
+
+  @override
+  String careWateringDose(String low, String high, String unit) {
+    return 'Gieß jedes Mal $low bis $high $unit.';
+  }
+
+  @override
+  String get careWateringReservoir =>
+      'Füll den Speicher nach, wenn sein Pegel ganz unten ist: Die Erde zieht das Wasser von unten.';
+
+  @override
+  String careWateringPotShorter(int percent) {
+    return 'Dein Topf verkürzt den Abstand um $percent %.';
+  }
+
+  @override
+  String careWateringPotLonger(int percent) {
+    return 'Dein Topf verlängert den Abstand um $percent %.';
+  }
+
+  @override
+  String get careWateringPotHint =>
+      'Gib den Topfdurchmesser an, um die Wassermenge zu sehen.';
 }

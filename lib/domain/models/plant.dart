@@ -1,4 +1,5 @@
 import '../care/care_profile.dart';
+import '../care/pot.dart';
 import '../problems/plant_problem.dart';
 
 enum PlantStatus { active, archived }
@@ -92,6 +93,7 @@ class Plant {
     this.source,
     this.price,
     this.potSize,
+    this.potMaterial,
     this.notes,
     this.parentPlantId,
     this.archivedAt,
@@ -127,7 +129,13 @@ class Plant {
   final DateTime? acquiredAt;
   final String? source;
   final double? price;
+
+  /// Diamètre du pot, dans l'unité de longueur choisie dans le profil :
+  /// centimètres en métrique, pouces sinon. C'est ce que la personne a tapé.
   final double? potSize;
+
+  /// Matière du pot (v15) : elle pèse sur l'arrosage autant que la taille.
+  final PotMaterial? potMaterial;
   final String? notes;
   final String? parentPlantId;
   final DateTime? archivedAt;
@@ -136,6 +144,13 @@ class Plant {
   final DateTime updatedAt;
 
   bool get isArchived => status == PlantStatus.archived;
+
+  /// Le pot, ramené en centimètres pour le calcul de l'arrosage. [metric] dit
+  /// dans quelle unité [potSize] a été saisi.
+  Pot pot({bool metric = true}) => Pot(
+        diameterCm: potSize == null ? null : (metric ? potSize : potSize! * 2.54),
+        material: potMaterial,
+      );
 
   Plant copyWith({
     String? name,
@@ -155,6 +170,7 @@ class Plant {
     String? Function()? source,
     double? Function()? price,
     double? Function()? potSize,
+    PotMaterial? Function()? potMaterial,
     String? Function()? notes,
     String? Function()? parentPlantId,
     DateTime? Function()? archivedAt,
@@ -182,6 +198,7 @@ class Plant {
         source: source != null ? source() : this.source,
         price: price != null ? price() : this.price,
         potSize: potSize != null ? potSize() : this.potSize,
+        potMaterial: potMaterial != null ? potMaterial() : this.potMaterial,
         notes: notes != null ? notes() : this.notes,
         parentPlantId: parentPlantId != null ? parentPlantId() : this.parentPlantId,
         archivedAt: archivedAt != null ? archivedAt() : this.archivedAt,

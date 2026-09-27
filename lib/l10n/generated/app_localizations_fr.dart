@@ -6658,4 +6658,45 @@ class AppLocalizationsFr extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get potMaterial => 'Matière du pot';
+
+  @override
+  String get potMaterialTerracotta => 'Terre cuite';
+
+  @override
+  String get potMaterialPlastic => 'Plastique';
+
+  @override
+  String get potMaterialGlazed => 'Céramique émaillée';
+
+  @override
+  String get potMaterialFabric => 'Tissu';
+
+  @override
+  String get potMaterialSelfWatering => 'Pot à réserve d\'eau';
+
+  @override
+  String careWateringDose(String low, String high, String unit) {
+    return 'Versez $low à $high $unit à chaque arrosage.';
+  }
+
+  @override
+  String get careWateringReservoir =>
+      'Remplissez la réserve quand son niveau est au plus bas : le substrat boit par en dessous.';
+
+  @override
+  String careWateringPotShorter(int percent) {
+    return 'Votre pot raccourcit l\'intervalle de $percent %.';
+  }
+
+  @override
+  String careWateringPotLonger(int percent) {
+    return 'Votre pot allonge l\'intervalle de $percent %.';
+  }
+
+  @override
+  String get careWateringPotHint =>
+      'Indiquez le diamètre du pot pour connaître la quantité d\'eau à verser.';
 }

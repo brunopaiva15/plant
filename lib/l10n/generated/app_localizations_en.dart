@@ -6615,4 +6615,45 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get potMaterial => 'Pot material';
+
+  @override
+  String get potMaterialTerracotta => 'Terracotta';
+
+  @override
+  String get potMaterialPlastic => 'Plastic';
+
+  @override
+  String get potMaterialGlazed => 'Glazed ceramic';
+
+  @override
+  String get potMaterialFabric => 'Fabric';
+
+  @override
+  String get potMaterialSelfWatering => 'Self-watering pot';
+
+  @override
+  String careWateringDose(String low, String high, String unit) {
+    return 'Pour $low to $high $unit each time you water.';
+  }
+
+  @override
+  String get careWateringReservoir =>
+      'Refill the reservoir when its level is at the bottom: the soil draws water from below.';
+
+  @override
+  String careWateringPotShorter(int percent) {
+    return 'Your pot shortens the interval by $percent%.';
+  }
+
+  @override
+  String careWateringPotLonger(int percent) {
+    return 'Your pot lengthens the interval by $percent%.';
+  }
+
+  @override
+  String get careWateringPotHint =>
+      'Enter the pot diameter to see how much water to pour.';
 }

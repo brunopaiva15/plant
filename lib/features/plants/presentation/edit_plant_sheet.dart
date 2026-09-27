@@ -9,6 +9,7 @@ import '../../../core/l10n/l10n.dart';
 import '../../../core/l10n/care_labels.dart';
 import '../../../design_system/design_system.dart';
 import '../../../domain/care/care_profile.dart';
+import '../../../domain/care/pot.dart';
 import '../../../domain/models/models.dart';
 import '../../locations/presentation/location_picker_sheet.dart';
 import '../../problems/presentation/problem_kind_icon.dart';
@@ -43,6 +44,7 @@ class _EditPlantBodyState extends ConsumerState<_EditPlantBody> {
   late Lifespan? _lifespan = widget.plant.lifespan;
   late Hardiness? _hardiness = widget.plant.hardiness;
   late int? _cuttingMonth = widget.plant.cuttingMonth;
+  late PotMaterial? _potMaterial = widget.plant.potMaterial;
   bool _more = false;
   bool _saving = false;
 
@@ -67,6 +69,7 @@ class _EditPlantBodyState extends ConsumerState<_EditPlantBody> {
           source: () => _source.text,
           price: () => parse(_price.text),
           potSize: () => parse(_pot.text),
+          potMaterial: () => _potMaterial,
           notes: () => _notes.text,
           health: _health,
           healthIssue: () => _health == PlantHealth.healthy ? null : _issue,
@@ -88,6 +91,7 @@ class _EditPlantBodyState extends ConsumerState<_EditPlantBody> {
     final locations = ref.watch(locationsProvider).value ?? const <Location>[];
     final location = locations.where((l) => l.id == _locationId).firstOrNull;
     final months = DateFormat.MMM(context.localeTag).dateSymbols.STANDALONESHORTMONTHS;
+    final metric = ref.watch(preferencesProvider.select((p) => p.metricUnits));
     return Padding(
       padding: const EdgeInsets.fromLTRB(Space.md, 0, Space.md, Space.md),
       child: Column(
@@ -238,7 +242,20 @@ class _EditPlantBodyState extends ConsumerState<_EditPlantBody> {
                           ),
                           _Field(label: l10n.source, child: FloraTextField(controller: _source, hint: l10n.sourceHint)),
                           _Field(label: l10n.price, child: FloraTextField(controller: _price, hint: '0', keyboardType: const TextInputType.numberWithOptions(decimal: true), textCapitalization: TextCapitalization.none)),
-                          _Field(label: '${l10n.potSize} (cm)', child: FloraTextField(controller: _pot, hint: '0', keyboardType: const TextInputType.numberWithOptions(decimal: true), textCapitalization: TextCapitalization.none)),
+                          // Le diamètre se tape dans l'unité du profil, comme les mesures ;
+                          // la fiche le relit dans la même unité.
+                          _Field(label: '${l10n.potSize} (${metric ? 'cm' : 'in'})', child: FloraTextField(controller: _pot, hint: '0', keyboardType: const TextInputType.numberWithOptions(decimal: true), textCapitalization: TextCapitalization.none)),
+                          // La matière pèse sur l'arrosage autant que la taille : une terre
+                          // cuite sèche en quelques jours, un pot à réserve en deux semaines.
+                          _Field(
+                            child: FloraChoice<PotMaterial>(
+                              label: l10n.potMaterial,
+                              values: PotMaterial.values,
+                              selected: _potMaterial,
+                              labelOf: l10n.potMaterialName,
+                              onChanged: (v) => setState(() => _potMaterial = v),
+                            ),
+                          ),
                           _Field(label: l10n.notes, child: FloraTextField(controller: _notes, hint: l10n.notesHint, minLines: 2, maxLines: 6)),
                         ],
                       ),
@@ -263,12 +280,18 @@ class _Field extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(Space.md, Space.sm, Space.md, Space.sm),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (label != null) ...[Text(label!, style: context.text.caption), const SizedBox(height: 6)],
-          child,
-        ],
+      // Toute la largeur de la carte : le groupe centre ses lignes, et des
+      // puces moins larges que la carte se retrouvaient au milieu, décalées
+      // des libellés des champs voisins.
+      child: SizedBox(
+        width: double.infinity,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (label != null) ...[Text(label!, style: context.text.caption), const SizedBox(height: 6)],
+            child,
+          ],
+        ),
       ),
     );
   }

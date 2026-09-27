@@ -38,7 +38,7 @@ class FloraDatabase extends _$FloraDatabase {
   FloraDatabase(super.executor);
 
   @override
-  int get schemaVersion => 14;
+  int get schemaVersion => 15;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -113,6 +113,11 @@ class FloraDatabase extends _$FloraDatabase {
             // Une base ramenée à un schéma plus ancien pour un test ne perd
             // pas toujours cette colonne : on ne l'ajoute que si elle manque.
             if (!await _hasColumn('room_scans', 'structure_id')) await m.addColumn(roomScans, roomScans.structureId);
+          }
+          if (from < 15) {
+            // Même précaution qu'en v14 : une base ramenée en arrière garde
+            // parfois la colonne.
+            if (!await _hasColumn('plants', 'pot_material')) await m.addColumn(plants, plants.potMaterial);
           }
           await _createIndexes();
         },

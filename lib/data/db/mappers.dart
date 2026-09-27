@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import '../../domain/care/care_profile.dart';
+import '../../domain/care/pot.dart';
 import '../../domain/models/models.dart';
 import '../../domain/room/room_scan.dart';
 import '../../domain/room/scanned_room.dart';
@@ -29,6 +30,7 @@ extension PlantRowMapper on PlantRow {
         source: source,
         price: price,
         potSize: potSize,
+        potMaterial: PotMaterial.parse(potMaterial),
         notes: notes,
         parentPlantId: parentPlantId,
         archivedAt: archivedAt,

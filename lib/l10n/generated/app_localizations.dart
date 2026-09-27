@@ -11177,6 +11177,72 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'{count, plural, =0{aucune plante sur le plan} =1{une plante sur le plan} other{{count} plantes sur le plan}}'**
   String roomScanPlantsOnPlanCount(int count);
+
+  /// No description provided for @potMaterial.
+  ///
+  /// In fr, this message translates to:
+  /// **'Matière du pot'**
+  String get potMaterial;
+
+  /// No description provided for @potMaterialTerracotta.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terre cuite'**
+  String get potMaterialTerracotta;
+
+  /// No description provided for @potMaterialPlastic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plastique'**
+  String get potMaterialPlastic;
+
+  /// No description provided for @potMaterialGlazed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Céramique émaillée'**
+  String get potMaterialGlazed;
+
+  /// No description provided for @potMaterialFabric.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tissu'**
+  String get potMaterialFabric;
+
+  /// No description provided for @potMaterialSelfWatering.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pot à réserve d\'eau'**
+  String get potMaterialSelfWatering;
+
+  /// No description provided for @careWateringDose.
+  ///
+  /// In fr, this message translates to:
+  /// **'Versez {low} à {high} {unit} à chaque arrosage.'**
+  String careWateringDose(String low, String high, String unit);
+
+  /// No description provided for @careWateringReservoir.
+  ///
+  /// In fr, this message translates to:
+  /// **'Remplissez la réserve quand son niveau est au plus bas : le substrat boit par en dessous.'**
+  String get careWateringReservoir;
+
+  /// No description provided for @careWateringPotShorter.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre pot raccourcit l\'intervalle de {percent} %.'**
+  String careWateringPotShorter(int percent);
+
+  /// No description provided for @careWateringPotLonger.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre pot allonge l\'intervalle de {percent} %.'**
+  String careWateringPotLonger(int percent);
+
+  /// No description provided for @careWateringPotHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Indiquez le diamètre du pot pour connaître la quantité d\'eau à verser.'**
+  String get careWateringPotHint;
 }
 
 class _AppLocalizationsDelegate

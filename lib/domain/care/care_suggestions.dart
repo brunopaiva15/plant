@@ -1,5 +1,6 @@
 import '../models/care_kind.dart';
 import 'care_profile.dart';
+import 'pot.dart';
 
 /// Intervalles conseillés par la fiche d'entretien, pour préremplir une
 /// routine plutôt que de partir d'un chiffre rond arbitraire.
@@ -7,10 +8,10 @@ import 'care_profile.dart';
 /// `null` quand la fiche n'a rien à dire du type demandé (type personnalisé,
 /// ou espèce qu'on ne rempote pas) : l'appelant retombe alors sur son défaut.
 extension CareProfileSuggestions on CareProfile {
-  int? suggestedIntervalDays(String typeKey, {DateTime? now, LightNeed? actualLight, bool south = false}) {
+  int? suggestedIntervalDays(String typeKey, {DateTime? now, LightNeed? actualLight, Pot pot = Pot.unknown, bool south = false}) {
     final month = (now ?? DateTime.now()).month;
     return switch (CareKind.fromKey(typeKey)) {
-      CareKind.watering => wateringDaysFor(month, south: south, actualLight: actualLight),
+      CareKind.watering => wateringDaysFor(month, south: south, actualLight: actualLight, pot: pot),
       CareKind.fertilizing => fertilizingDays,
       // Le rempotage se compte en mois ; le mois vaut 30 jours, ce qui
       // suffit pour une échéance à deux ans près.
