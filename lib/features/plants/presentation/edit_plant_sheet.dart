@@ -280,12 +280,18 @@ class _Field extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(Space.md, Space.sm, Space.md, Space.sm),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (label != null) ...[Text(label!, style: context.text.caption), const SizedBox(height: 6)],
-          child,
-        ],
+      // Toute la largeur de la carte : le groupe centre ses lignes, et des
+      // puces moins larges que la carte se retrouvaient au milieu, décalées
+      // des libellés des champs voisins.
+      child: SizedBox(
+        width: double.infinity,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (label != null) ...[Text(label!, style: context.text.caption), const SizedBox(height: 6)],
+            child,
+          ],
+        ),
       ),
     );
   }
