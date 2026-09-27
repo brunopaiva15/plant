@@ -2173,8 +2173,8 @@ hasard. Référence `iris10-pnd`. ~133 min par époque, ~22 h.
 | entre +0,5 et +1,5 | elles entrent, et le levier des données d'intérieur est proche de sa limite |
 | < +0,5 | le domaine a donné ce qu'il pouvait avec 74 000 photos ; on ne les garde pas |
 
-L'outdoor et le hors-répertoire vont reculer : la part de photos de plein
-air tombe de 91 % à 70 %. Un recul au-delà d'un point est noté, pas
+L'outdoor et le hors-répertoire vont reculer : la part des photos
+Pl@ntNet de plantes en pot passe de 8 % à 30 % de l'époque. Un recul au-delà d'un point est noté, pas
 bloquant : la passe finale rétablit iNaturalist et Pl@ntNet-300K.
 
 ## 20 septies. Les lots difficiles — 27 septembre 2026
