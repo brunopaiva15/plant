@@ -2108,6 +2108,44 @@ nombre, grand en domaine. Pl@ntNet-300K en apportait 30 % et rendait
 L'outdoor ne doit pas reculer de plus d'un point : ces photos ne sont pas
 faites pour lui, mais elles ne doivent pas lui coûter.
 
+### Mesuré — 27 septembre 2026
+
+`iris10-pnd` : corpus v8 et les 73 702 photos de Pl@ntNet, 871 667 images
+par époque, 320 px, recette cosinus. Référence `iris10-320`.
+
+| pnd − 320 | é1 | é2 | é3 | é4 | é5 | é6 | é7 | é8 | é9 | **é10** |
+|---|---|---|---|---|---|---|---|---|---|---|
+| indoor | +3,7 | +2,5 | +1,5 | +1,6 | +3,1 | +2,2 | +2,8 | +1,7 | +1,2 | **+1,5** |
+| outdoor | +2,7 | −0,2 | −1,0 | +1,5 | −0,1 | +0,9 | +0,7 | −0,2 | −0,5 | **−0,9** |
+| hors répertoire | −0,7 | +0,2 | +1,4 | +1,0 | −0,5 | −0,3 | −0,3 | −0,3 | −1,4 | **−0,8** |
+
+| é10 | `iris10-320` | **`iris10-pnd`** | Iris 9 |
+|---|---|---|---|
+| indoor | 0,7382 | **0,7533** | 0,8119 |
+| outdoor | 0,8000 | **0,7915** | 0,7615 |
+| hors répertoire | 0,6340 | **0,6260** | 0,0 |
+
+**Le critère est rempli, au seuil.** +1,5 point en indoor, et l'outdoor
+recule de 0,9, sous la limite d'un point.
+
+- **L'indoor gagne à chaque époque, de +1,2 à +3,7.** C'est la première
+  source de données qui le fait : avec iNaturalist, l'écart changeait de
+  signe d'une époque à l'autre. Le domaine compte, le nombre non : 73 702
+  photos de plantes en pot font plus pour l'indoor que 840 000 photos prises
+  dehors ;
+- **l'outdoor et le hors-répertoire cèdent un peu en seconde moitié**, de
+  0,2 à 1,4 point. C'est la dilution vue au § 20 quater, dans l'autre sens :
+  la part de photos de plein air baisse. Dans la passe finale, iNaturalist et
+  Pl@ntNet-300K la rétabliront ;
+- **l'indoor est à 5,9 points d'Iris 9**, contre 7,4 pour `iris10-320`.
+
+**Ces photos entrent dans la recette**, et, comme le critère l'écrivait,
+plus de photos d'intérieur devient la priorité côté données. La source est
+là : Pl@ntNet a aussi des photos des 363 espèces d'intérieur que le modèle
+connaît déjà, et ce corpus n'en a pris que 10.
+
+**La référence des bras suivants devient `iris10-pnd`.**
+
 ## 21. Ce qui est décidé et ce qui reste ouvert
 
 ### Décidé
