@@ -629,6 +629,19 @@ cd ~/plant/tools/plant_model
 PyTorch suffit. `erreurs-indoor.csv`, écrit à côté des vecteurs, garde une
 ligne par image.
 
+### Iris 9 et Iris 10 ensemble
+
+`arbitre.py` mesure les règles qui combinent les deux modèles, réglées sur
+une moitié du banc et lues sur l'autre (§ 20 undecies de `docs/14`) :
+
+```bash
+cd ~/plant/tools/plant_model
+CUDA_VISIBLE_DEVICES= ~/venv/bin/python3 arbitre.py --embeddings ~/plant-data/iris10-pnd/banc-e10
+```
+
+TensorFlow pour Iris 9, donc `~/venv` ; `CUDA_VISIBLE_DEVICES=` le garde
+sur le processeur quand un entraînement occupe la carte.
+
 ### Des lots difficiles
 
 `--difficiles 0.5` fait la moitié de chaque lot de groupes de voisins dans

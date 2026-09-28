@@ -116,6 +116,20 @@ def restreindre(cles: list[str], vecteurs: np.ndarray,
     return [cles[i] for i in indices], vecteurs[indices]
 
 
+#: Deux identifiants, une plante (§ 20 octies de `docs/14`). La clé retenue
+#: est celle de la fiche soignée de l'app, comme `_acceptedNames` dans
+#: `lib/core/utils/scientific_name.dart`. Iris 9 garde ses deux classes ;
+#: le banc et les références, eux, n'en comptent plus qu'une.
+SYNONYMES = {
+    'heptapleurum-arboricola': 'schefflera-arboricola',
+    'streptocarpus-ionanthus': 'saintpaulia-ionantha',
+}
+
+
+def canonique(cle: str) -> str:
+    return SYNONYMES.get(cle, cle)
+
+
 def sans_suffixe(cle: str) -> str:
     """`monstera-deliciosa#captive` → `monstera-deliciosa`.
 
@@ -124,7 +138,7 @@ def sans_suffixe(cle: str) -> str:
     la retenir comme une classe distincte compterait une bonne réponse
     comme fausse.
     """
-    return cle.split('#', 1)[0]
+    return canonique(cle.split('#', 1)[0])
 
 
 # --------------------------------------------------------------------------
@@ -288,7 +302,7 @@ def lire_banc(chemin: Path, tranche: str) -> list[tuple[str, str]]:
     with open(chemin, newline='', encoding='utf-8') as f:
         for r in csv.DictReader(f):
             if r['tranche'] == tranche and r['verite']:
-                lignes.append((r['chemin'], r['verite']))
+                lignes.append((r['chemin'], canonique(r['verite'])))
     return lignes
 
 

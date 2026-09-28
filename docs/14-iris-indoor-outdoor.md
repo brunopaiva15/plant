@@ -2311,8 +2311,27 @@ références textuelles presque identiques se départagent à pile ou face :
 0,6 point perdu pour rien. Aucun autre couple de synonymes n'est exposé à la
 fois (vérifié sur les 1 569 classes : même épithète, même famille, genres
 différents — les 30 autres cas sont des homonymes d'épithète). La fusion
-des deux classes est une décision de catalogue, qui touche aussi Iris 9 ;
-elle reste à prendre.
+des deux classes est une décision de catalogue, qui touche aussi Iris 9.
+
+**Décidé le 28 septembre : les deux paires sont fusionnées.** *Schefflera* /
+*Heptapleurum arboricola*, et *Saintpaulia ionantha* / *Streptocarpus
+ionanthus*, deux classes d'Iris 9 aussi, qui reçoivent les mêmes photos de
+Pl@ntNet (§ 20 nonies). Iris 9 garde ses 1 569 sorties ; ce qui change :
+
+- **dans l'application**, `maskedCandidates` additionne les probabilités
+  des classes qui portent le même nom accepté (`acceptedSpeciesName`) : leurs
+  sorties s'excluent, la probabilité de la plante est leur somme. Une plante
+  est du lieu dès qu'un de ses noms l'est. Le candidat rendu porte la fiche
+  soignée à la main, *Schefflera arboricola* et *Saintpaulia ionantha* ;
+  `Streptocarpus ionanthus` rejoint la table des noms acceptés ;
+- **dans les outils**, `voisins.SYNONYMES` ramène les deux paires à une clé,
+  pour les références, les vérités du banc et Iris 9 (`erreurs.py`,
+  `arbitre.py`). `voisins.py --avec-iris`, qui passe par
+  `compare_models.tally`, lit encore Iris 9 sans cette somme.
+
+Les chiffres d'Iris 9 cités jusqu'ici (0,8119 en indoor) sont d'avant la
+fusion ; `arbitre.py` rend le chiffre d'après, sur la même lecture que
+l'application.
 
 D'autres confusions portent sur des noms que le commerce emploie mal :
 *Pelargonium zonale* contre *P.* × *hortorum*, *P. peltatum* contre
@@ -2479,6 +2498,23 @@ de la même espèce.
 compte presque autant de voisines que le corpus v8 (294 contre 307) avec
 trois fois moins d'images : ses photos ressemblent davantage à celles du
 banc indoor. C'est le mécanisme du gain, pas une fuite.
+
+## 20 undecies. Iris 9 et Iris 10 ensemble — l'outil, 28 septembre 2026
+
+`arbitre.py` mesure des règles qu'on pourrait livrer, sur le banc :
+Iris 10 quand il est sûr de lui et Iris 9 sinon, l'inverse, la fusion
+`p9^a · p10^(1−a)` des deux distributions, et Iris 10 restreint au masque
+du lieu comme Iris 9. L'arbitre parfait est donné pour mémoire.
+
+**Le réglage ne se fait pas sur les images qu'il note.** Le banc est coupé
+en deux moitiés fixes ; seuil ou poids est choisi sur l'une et lu sur
+l'autre, puis l'inverse, et c'est la moyenne qui est rendue. Les deux
+paramètres retenus sont affichés : s'ils diffèrent beaucoup, la règle est
+fragile.
+
+Iris 9 y est lu comme dans l'application, masque du lieu et synonymes
+additionnés ; ses sorties sont gardées dans `iris9-<tranche>.npy` à côté des
+vecteurs, pour que la seconde lecture ne refasse pas tourner TensorFlow.
 
 ## 21. Ce qui est décidé et ce qui reste ouvert
 

@@ -206,18 +206,18 @@ def main() -> int:  # pragma: no cover - demande le cache et le banc
 
     iris = None
     if args.avec_iris:
-        from compare_models import load_model, predict
-        modele = load_model(Path(args.iris).expanduser())
+        # Comme dans l'application : masque du lieu, et les classes d'une
+        # même plante additionnées (`arbitre.py`, `maskedCandidates`).
+        from arbitre import fusionner_synonymes, masquer, probas_iris9
         garde = None
         if args.masque:
-            garde = {l.strip() for l in Path(args.masque).expanduser()
-                     .read_text(encoding='utf-8').splitlines() if l.strip()}
-        iris = []
-        for g in communs:
-            p = np.asarray(predict(modele, lignes[g][0]), dtype=np.float64)
-            if garde is not None:
-                p = np.where([lab in garde for lab in modele['labels']], p, 0.0)
-            iris.append(modele['labels'][int(np.argmax(p))])
+            garde = set(Path(args.masque).expanduser().read_text(encoding='utf-8').split())
+        labels, brutes = probas_iris9(Path(args.iris).expanduser(),
+                                      [lignes[g][0] for g in communs],
+                                      source / f'iris9-{args.tranche}.npy')
+        especes9, p9 = fusionner_synonymes(brutes, labels)
+        p9 = masquer(p9, especes9, garde)
+        iris = [especes9[i] for i in p9.argmax(axis=1)]
 
     with open(Path(args.plants).expanduser(), newline='', encoding='utf-8') as f:
         taxo = taxonomie(csv.DictReader(f))
