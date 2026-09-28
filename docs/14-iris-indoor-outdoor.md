@@ -2366,6 +2366,45 @@ centroïdes jouent moins « à domicile » que ceux du corpus v8.
 L'outdoor et le hors-répertoire se lisent aussi : ces centroïdes ne doivent
 pas les faire reculer.
 
+### Mesuré : mélangées, les photos en pot font de moins bons centroïdes
+
+1 107 659 vecteurs, 5 589 références, 29 902 images hors catalogue
+écartées. `iris10-pnd`, é10 :
+
+| top-1 | textes | centroïdes v8 | **v8 + pot, mélangés** |
+|---|---|---|---|
+| indoor, armes égales | 0,7533 | **0,7924** | 0,7551 |
+| indoor, répertoire entier | 0,6859 | **0,7054** | 0,5759 |
+| outdoor, armes égales | 0,7915 | **0,8135** | 0,8115 |
+| hors répertoire | 0,6260 | **0,6980** | 0,6890 |
+
+**Le critère tranche : on garde les centroïdes du corpus v8.** L'indoor perd
+3,7 points à armes égales et 13 sur le répertoire entier ; le top-3, lui,
+ne bouge pas (0,9024 contre 0,9015). La bonne espèce reste parmi les trois
+premières, mais une autre passe devant.
+
+**Les noms ne sont pas en cause.** Sur les 355 espèces trouvées, Pl@ntNet
+rend notre nom ou un synonyme accepté (*Dypsis lutescens* →
+*Chrysalidocarpus lutescens*, *Plectranthus scutellarioides* → *Coleus
+scutellarioides*…). Deux de nos classes reçoivent les mêmes photos,
+*Saintpaulia ionantha* et *Streptocarpus ionanthus*, comme *Schefflera* et
+*Heptapleurum arboricola* au § 20 octies.
+
+**L'explication la plus probable, non vérifiée : la moyenne change de
+nature.** Pour une espèce d'intérieur, Pl@ntNet apporte jusqu'à 1 000 ou
+2 000 photos contre quelques centaines dans le corpus v8, et ce sont
+surtout des gros plans de feuilles (*Begonia rex* : 4 114 feuilles sur
+4 491). Le centroïde cesse de ressembler aux photos du banc, qui viennent
+des mêmes sources que le corpus v8.
+
+**La mesure suivante ne mélange plus.** `bioclip.py centroides --suffixe
+pot` range les centroïdes des seules photos Pl@ntNet sous `espèce#pot`, et
+`voisins.py --references centroide+references-centroides-potseul` lit les
+deux jeux ensemble : une espèce est reconnue par la meilleure de ses deux
+références, comme les `#captive` du § 7. Une photo qui ressemble au banc
+garde le centroïde du corpus v8 ; une photo de plante en pot peut trouver
+le sien.
+
 ## 21. Ce qui est décidé et ce qui reste ouvert
 
 ### Décidé

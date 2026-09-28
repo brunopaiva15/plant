@@ -604,7 +604,7 @@ def cmd_centroides(args) -> int:
     for dataset in datasets:
         for c, e, cap in lire_corpus(dataset, splits):
             if du_catalogue(e):
-                verite[c] = (e, cap)
+                verite[c] = (f'{e}#{args.suffixe}' if args.suffixe else e, cap)
             else:
                 hors += 1
     if hors:
@@ -702,6 +702,10 @@ def main() -> int:
     p.add_argument('--splits', default='train',
                    help='jamais le test : une référence tirée des images de mesure '
                         'rendrait le banc faux')
+    p.add_argument('--suffixe', default='',
+                   help="ranger chaque référence sous `espèce#SUFFIXE` : une seconde vue de "
+                        "l'espèce, que voisins.py compare à la première en gardant la "
+                        'meilleure, au lieu de les mélanger (§ 20 nonies de docs/14)')
     p.add_argument('--min-images', type=int, default=5)
     p.add_argument('--captive-a-part', action='store_true',
                    help='un second centroïde par espèce sur les seules photos en pot')

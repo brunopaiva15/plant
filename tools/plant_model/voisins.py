@@ -71,7 +71,16 @@ FICHIERS = {'texte': 'references-textes', 'centroide': 'references-centroides'}
 # --------------------------------------------------------------------------
 
 def charger_references(cache: Path, nom: str) -> tuple[list[str], np.ndarray]:
-    """Les clés et la matrice unitaire d'un jeu de références."""
+    """Les clés et la matrice unitaire d'un jeu de références.
+
+    `a+b` réunit deux jeux : une espèce qui a une référence dans chacun est
+    reconnue par la meilleure des deux (`classer`), sans que l'une dilue
+    l'autre comme le ferait une moyenne.
+    """
+    if '+' in nom:
+        parts = [charger_references(cache, n) for n in nom.split('+') if n]
+        return ([c for cles, _ in parts for c in cles],
+                np.concatenate([v for _, v in parts]))
     # Un nom inconnu est un fichier du cache : `references-centroides-pot`
     # se compare aux centroïdes d'avant sans les écraser.
     base = cache / FICHIERS.get(nom, nom)

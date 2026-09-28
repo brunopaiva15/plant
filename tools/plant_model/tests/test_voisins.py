@@ -237,3 +237,23 @@ def test_un_autre_fichier_de_references_se_lit_par_son_nom(tmp_path):
         w.writerows([['a', 10], ['b', 12]])
     cles, v = charger_references(tmp_path, 'references-centroides-pot')
     assert cles == ['a', 'b'] and v.shape == (2, 2)
+
+
+def test_deux_jeux_de_references_se_reunissent(tmp_path):
+    """`centroide+pot` : la vue « pot » s'ajoute à la première sans la
+    diluer ; `classer` garde la meilleure des deux par espèce."""
+    import csv
+    import numpy as np
+    from voisins import charger_references, classer
+    for nom, cles, v in (('a', ['x', 'y'], [[1, 0], [0, 1]]),
+                         ('b', ['x#pot'], [[0.6, 0.8]])):
+        np.save(tmp_path / f'{nom}.npy', np.array(v, dtype=np.float16))
+        with open(tmp_path / f'{nom}.csv', 'w', newline='') as f:
+            w = csv.writer(f)
+            w.writerow(['internal_id'])
+            w.writerows([[c] for c in cles])
+    cles, v = charger_references(tmp_path, 'a+b')
+    assert cles == ['x', 'y', 'x#pot'] and v.shape == (3, 2)
+    especes, scores = classer(np.array([[0.6, 0.8]], dtype=np.float32), v, cles)
+    # la requête est plus proche de y (0,8) que de x (0,6), mais x#pot la vise
+    assert especes == ['x', 'y'] and especes[int(np.argmax(scores[0]))] == 'x'
