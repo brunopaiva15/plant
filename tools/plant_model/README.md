@@ -609,6 +609,26 @@ Ce qu'on y cherche, dans l'ordre : le **top-1 sur le répertoire entier** — la
 seule lecture qui décrive le produit — puis la **largeur du cône**, qui doit
 s'approcher des 0,2806 du teacher et non descendre en dessous.
 
+### Où sont les erreurs
+
+`voisins.py` rend un chiffre ; `erreurs.py` dit d'où il vient, sur la même
+lecture (textes à armes égales). Pour chaque image : le student, le teacher
+et, avec `--avec-iris`, Iris 9 masqué comme dans l'application. Il sépare ce
+que la distillation a perdu (le teacher réussit, le student non) de ce
+qu'elle ne peut pas rattraper (le teacher rate aussi), dit à quelle distance
+tombent les erreurs (genre, famille, ailleurs), et liste les espèces et les
+paires qui coûtent le plus.
+
+```bash
+cd ~/plant/tools/plant_model
+~/venv/bin/python3 erreurs.py --embeddings ~/plant-data/iris10-pnd/banc-e10 \
+  --avec-iris --masque ../plant_dataset/masque_indoor.txt
+```
+
+`--avec-iris` demande TensorFlow, donc le venv `~/venv` ; sans lui, le venv
+PyTorch suffit. `erreurs-indoor.csv`, écrit à côté des vecteurs, garde une
+ligne par image.
+
 ### Des lots difficiles
 
 `--difficiles 0.5` fait la moitié de chaque lot de groupes de voisins dans
