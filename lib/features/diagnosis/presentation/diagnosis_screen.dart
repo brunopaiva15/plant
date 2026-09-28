@@ -143,6 +143,9 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
   /// mène, et le repère de ce que l'invite annonce.
   final _symptomsKey = GlobalKey();
 
+  /// Le cadre du viseur : une photo prise s'en détache.
+  final _frameKey = GlobalKey();
+
   /// Pour poser le curseur dans le champ quand c'est lui qui manque.
   final _symptomsFocus = FocusNode();
 
@@ -190,10 +193,10 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
   bool get _full => _photos.length >= DiagnosisLimits.maxImages;
 
   /// Déclenche depuis le viseur de la page ; sans viseur, l'appareil du
-  /// système prend le relais.
-  Future<void> _capture() async {
+  /// système prend le relais, et la photo sort de [from].
+  Future<void> _capture({PhotoOrigin? from}) async {
     if (_picking || _full) return;
-    if (!_camera.isReady) return _addPhoto(PhotoSource.camera);
+    if (!_camera.isReady) return _addPhoto(PhotoSource.camera, from: from);
     setState(() => _picking = true);
     final shot = await _camera.capture();
     if (shot == null) {
@@ -203,7 +206,11 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
     }
     try {
       final stored = await ref.read(photoStorageProvider).importFile(shot);
-      if (mounted) _accept(stored);
+      if (mounted) {
+        // La photo se détache du viseur et se rétracte dans sa case.
+        _expectLanding(stored, PhotoOrigin.of(_frameKey.currentContext, radius: Radii.xlAll, showsPhoto: true));
+        _accept(stored);
+      }
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'diagnosis.capture');
       if (mounted) ref.read(toastProvider.notifier).show(photoErrorToast(context.l10n, e));
@@ -216,17 +223,15 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
     }
   }
 
-  /// L'appareil photo ou la galerie du système.
-  Future<void> _addPhoto(PhotoSource source, {bool thenAnalyze = false}) async {
+  /// L'appareil photo ou la galerie du système. [from] : ce qu'on a touché
+  /// pour les ouvrir, d'où la photo sortira.
+  Future<void> _addPhoto(PhotoSource source, {bool thenAnalyze = false, PhotoOrigin? from}) async {
     if (_picking || _full) return;
     setState(() => _picking = true);
     try {
       final stored = await ref.read(photoStorageProvider).pick(source);
       if (stored != null && mounted) {
-        // Choisie dans la galerie, la photo reste devant quand le sélecteur
-        // se referme, puis file dans sa case.
-        final full = _storage.absolutePathNow(stored.filePath);
-        if (source == PhotoSource.gallery && full != null) PhotoLanding.expectFile(stored.thumbPath, File(full));
+        _expectLanding(stored, from);
         _accept(stored, thenAnalyze: thenAnalyze);
       }
     } catch (e, st) {
@@ -235,6 +240,12 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
     } finally {
       if (mounted) setState(() => _picking = false);
     }
+  }
+
+  /// La photo qui arrive rejoint sa case en partant de [from].
+  void _expectLanding(StoredPhoto stored, PhotoOrigin? from) {
+    final full = _storage.absolutePathNow(stored.filePath);
+    if (full != null) PhotoLanding.expectFile(stored.thumbPath, File(full), from: from);
   }
 
   void _accept(StoredPhoto stored, {bool thenAnalyze = false}) {
@@ -674,33 +685,41 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _Viewfinder(
+                frameKey: _frameKey,
                 camera: _camera,
                 full: _full,
                 busy: _picking,
                 onShoot: _capture,
-                onPick: () => _addPhoto(PhotoSource.gallery),
-                onSystemCamera: () => _addPhoto(PhotoSource.camera),
+                onPick: (from) => _addPhoto(PhotoSource.gallery, from: from),
+                onSystemCamera: () => _addPhoto(
+                  PhotoSource.camera,
+                  from: PhotoOrigin.of(_frameKey.currentContext, radius: Radii.xlAll),
+                ),
               ),
               // Sans viseur (refus, appareil sans caméra, ordinateur), le
               // cadre n'a pas de commandes à porter : les deux gestes
               // s'écrivent sous lui, comme à la création d'une plante.
               if (!_camera.hasViewfinder && !_full) ...[
                 const SizedBox(height: Space.sm),
-                FloraButton(
-                  label: l10n.takePhoto,
-                  icon: CupertinoIcons.camera_fill,
-                  style: FloraButtonStyle.secondary,
-                  expand: true,
-                  loading: _picking,
-                  onPressed: _capture,
+                Builder(
+                  builder: (button) => FloraButton(
+                    label: l10n.takePhoto,
+                    icon: CupertinoIcons.camera_fill,
+                    style: FloraButtonStyle.secondary,
+                    expand: true,
+                    loading: _picking,
+                    onPressed: () => _capture(from: PhotoOrigin.of(button)),
+                  ),
                 ),
                 const SizedBox(height: Space.xs),
-                FloraButton(
-                  label: l10n.choosePhoto,
-                  icon: CupertinoIcons.photo,
-                  style: FloraButtonStyle.ghost,
-                  expand: true,
-                  onPressed: _picking ? null : () => _addPhoto(PhotoSource.gallery),
+                Builder(
+                  builder: (button) => FloraButton(
+                    label: l10n.choosePhoto,
+                    icon: CupertinoIcons.photo,
+                    style: FloraButtonStyle.ghost,
+                    expand: true,
+                    onPressed: _picking ? null : () => _addPhoto(PhotoSource.gallery, from: PhotoOrigin.of(button)),
+                  ),
                 ),
               ],
             ],
@@ -931,6 +950,7 @@ class _MoreBelow extends StatelessWidget {
 /// boutons de la page qui prennent le relais.
 class _Viewfinder extends StatelessWidget {
   const _Viewfinder({
+    required this.frameKey,
     required this.camera,
     required this.full,
     required this.busy,
@@ -939,13 +959,17 @@ class _Viewfinder extends StatelessWidget {
     required this.onSystemCamera,
   });
 
+  /// Posée sur le cadre : une photo prise s'en détache.
+  final GlobalKey frameKey;
   final InlineCameraController camera;
 
   /// Trois photos déjà prises : le cadre reste, il ne déclenche plus.
   final bool full;
   final bool busy;
   final VoidCallback onShoot;
-  final VoidCallback onPick;
+
+  /// Le bouton de la galerie, d'où sortira la photo choisie.
+  final ValueChanged<PhotoOrigin?> onPick;
   final VoidCallback onSystemCamera;
 
   @override
@@ -967,7 +991,7 @@ class _Viewfinder extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  CaptureFrame(camera: camera, controls: !full),
+                  KeyedSubtree(key: frameKey, child: CaptureFrame(camera: camera, controls: !full)),
                   if (live && !full)
                     Positioned(
                       left: 0,
@@ -986,12 +1010,14 @@ class _Viewfinder extends StatelessWidget {
                             ),
                             Transform.translate(
                               offset: const Offset(-Shutter.asideOffset, 0),
-                              child: FloraIconButton(
-                                icon: CupertinoIcons.photo,
-                                semanticLabel: l10n.choosePhoto,
-                                background: OnMedia.tile,
-                                color: OnMedia.ink,
-                                onPressed: busy ? null : onPick,
+                              child: Builder(
+                                builder: (button) => FloraIconButton(
+                                  icon: CupertinoIcons.photo,
+                                  semanticLabel: l10n.choosePhoto,
+                                  background: OnMedia.tile,
+                                  color: OnMedia.ink,
+                                  onPressed: busy ? null : () => onPick(PhotoOrigin.of(button)),
+                                ),
                               ),
                             ),
                           ],

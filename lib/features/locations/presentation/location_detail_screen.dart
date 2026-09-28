@@ -163,10 +163,10 @@ Future<void> _photoMenu(BuildContext context, WidgetRef ref, Location location) 
       final picked = await storage.pick(source);
       if (picked == null) return;
       stored = picked;
-      // Choisie dans la galerie, la photo reste devant quand le sélecteur se
-      // referme, puis se pose en tête de l'emplacement.
+      // Le choix s'est fait depuis un menu, qui n'est plus à l'écran : la
+      // photo se pose sur place, en tête de l'emplacement.
       final full = storage.absolutePathNow(stored.filePath);
-      if (source == PhotoSource.gallery && full != null) PhotoLanding.expectFile(stored.thumbPath, File(full));
+      if (full != null) PhotoLanding.expectFile(stored.thumbPath, File(full));
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'location.photo');
       ref.read(toastProvider.notifier).show(photoErrorToast(l10n, e));

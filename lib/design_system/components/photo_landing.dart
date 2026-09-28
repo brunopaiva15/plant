@@ -1,42 +1,45 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:flutter/physics.dart';
 import 'package:flutter/widgets.dart';
 
 import '../tokens/motion.dart';
 import '../tokens/radius.dart';
-import '../tokens/spacing.dart';
 
-/// Une photo choisie dans la galerie qui rejoint sa place.
+/// Une photo qui devient sa vignette, à la manière de l'application ChatGPT.
 ///
-/// Avant, la photo apparaissait d'un coup à sa place, ou en fondu : le
-/// sélecteur du système se refermait sur un écran où quelque chose avait
-/// changé, sans qu'on voie quoi. La photo qu'on venait de toucher avait
-/// disparu avec lui.
+/// Chez ChatGPT, rien n'apparaît : tout se transforme. Le menu « + » devient
+/// la carte de l'appareil photo ; la photo prise se rétracte en vignette
+/// dans la barre de saisie ; la vignette file jusqu'à la bulle du message.
+/// Chaque fois, **l'élément part de l'endroit exact où il était à l'écran**,
+/// sans fondu, sans temps d'arrêt, en un cinquième de seconde environ, et ses
+/// coins prennent en route l'arrondi de l'arrivée.
 ///
-/// Ici, elle reste devant quand le sélecteur se referme : en grand, au centre
-/// de l'écran, dans ses proportions. Puis elle file se ranger — la case d'une
-/// bande de vignettes, le cadre du viseur, l'aperçu d'une étape — portée par
-/// un ressort, et ses coins prennent en route l'arrondi de l'arrivée. C'est
-/// **un seul objet** qui se déplace, jamais deux images qui se croisent en
-/// fondu : l'œil suit la photo jusqu'à l'endroit où la retrouver.
+/// Ici, la photo part de ce que la personne a touché :
+///
+/// - le viseur, pour une photo prise : elle s'en détache à sa taille et se
+///   rétracte jusqu'à sa place — c'est le geste de la vidéo ;
+/// - le bouton qui a ouvert la galerie : la photo en sort, bouton rond ou
+///   bouton pilule, et grandit jusqu'à sa place en perdant la forme du
+///   bouton.
 ///
 /// Deux endroits du code, comme un [Hero] :
 ///
-/// - qui reçoit la photo l'annonce, avec [PhotoLanding.expect] : son
-///   étiquette et l'image à faire voler. L'image est le fichier entier, pas
-///   la vignette — au départ elle occupe presque tout l'écran ;
+/// - qui reçoit la photo l'annonce avec [PhotoLanding.expectFile] : son
+///   étiquette, le fichier, et d'où elle part ([PhotoOrigin.of], relevé au
+///   moment du toucher — le sélecteur du système couvre ensuite l'écran) ;
 /// - l'endroit où elle s'affiche porte un [PhotoLanding] de même [tag]. À sa
 ///   première construction, ou quand son étiquette change, il réclame
 ///   l'annonce, se cache, et fait venir l'image jusqu'à lui.
 ///
-/// Une annonce que personne ne réclame expire au bout de [patience] : une
-/// photo déjà rangée ne s'envole pas plus tard, le jour où son widget se
-/// reconstruit. La destination est suivie à chaque image : si elle bouge
-/// pendant le vol — une page qui glisse, une bande qui apparaît —, la photo
-/// la rattrape. Hors de l'écran, sans image qui se décode, ou avec *réduire
-/// les animations*, pas de vol : la photo est simplement à sa place.
+/// Sans point de départ (une photo choisie depuis un menu), elle se pose sur
+/// place en grandissant un peu. Une annonce que personne ne réclame expire au
+/// bout de [patience]. La destination est suivie à chaque image : si elle
+/// bouge pendant le vol — une page qui glisse, une bande qui apparaît —, la
+/// photo la rattrape. Hors de l'écran, ou avec *réduire les animations*, pas
+/// de vol : la photo est simplement à sa place.
 class PhotoLanding extends StatefulWidget {
   const PhotoLanding({super.key, required this.tag, required this.child, this.radius = Radii.mediumAll});
 
@@ -53,28 +56,34 @@ class PhotoLanding extends StatefulWidget {
   static const Duration patience = Duration(seconds: 2);
 
   /// Le temps qu'on laisse à l'image pour se décoder avant de partir sans
-  /// elle. Au-delà, elle vole avec les proportions de l'arrivée.
+  /// elle : une photo qui se détache du viseur doit être là dès la première
+  /// image, sinon on verrait le viseur, puis la photo surgir en route.
   static const Duration decodeWait = Duration(milliseconds: 250);
 
-  /// La photo en grand, au départ.
-  static const BorderRadius departureRadius = Radii.largeAll;
+  /// Sans point de départ, la photo se pose sur place à partir de cette
+  /// taille.
+  static const double settleScale = 0.86;
 
-  /// La photo se pose au départ en grandissant de ce rapport à un.
-  static const double appearScale = 0.94;
+  /// La part du trajet pendant laquelle une photo sortie d'un bouton se
+  /// dessine : le bouton ne montrait pas la photo, elle ne peut pas y être
+  /// tout entière à la première image.
+  static const double revealShare = 0.2;
 
   static final Map<Object, _Arrival> _expected = {};
 
-  /// Annonce qu'une photo arrive, sous l'étiquette [tag], et commence à
-  /// décoder [image] : quand sa destination se construira, elle sera prête.
-  static void expect(Object tag, ImageProvider image) {
+  /// Annonce qu'une photo arrive sous l'étiquette [tag], partie de [from],
+  /// et commence à décoder [image] : quand sa destination se construira,
+  /// elle sera prête.
+  static void expect(Object tag, ImageProvider image, {PhotoOrigin? from}) {
     _forget();
     _expected.remove(tag)?.release();
-    _expected[tag] = _Arrival(image);
+    _expected[tag] = _Arrival(image, from);
   }
 
   /// [expect] pour une photo sur l'appareil, décodée à la largeur d'un
   /// écran : le fichier entier ferait attendre le départ pour rien.
-  static void expectFile(Object tag, File file) => expect(tag, ResizeImage(FileImage(file), width: 1200, allowUpscaling: false));
+  static void expectFile(Object tag, File file, {PhotoOrigin? from}) =>
+      expect(tag, ResizeImage(FileImage(file), width: 1200, allowUpscaling: false), from: from);
 
   /// L'annonce faite pour [tag], si elle attend encore. Une annonce ne se
   /// réclame qu'une fois.
@@ -109,14 +118,48 @@ class PhotoLanding extends StatefulWidget {
   State<PhotoLanding> createState() => _PhotoLandingState();
 }
 
-/// Une photo annoncée : son image, qui se décode déjà, et sa taille dès
-/// qu'on la connaît.
+/// D'où part une photo : le rectangle à l'écran de ce qu'on a touché, et ses
+/// coins.
+@immutable
+class PhotoOrigin {
+  const PhotoOrigin(this.rect, {this.radius = BorderRadius.zero, this.showsPhoto = false});
+
+  /// En coordonnées globales.
+  final Rect rect;
+  final BorderRadius radius;
+
+  /// Le départ montrait déjà la photo — le viseur au déclenchement : elle
+  /// s'en détache telle quelle, sans se dessiner.
+  final bool showsPhoto;
+
+  /// Le départ que dessine [context] : un bouton, un cadre. Les coins par
+  /// défaut sont ceux d'une pilule ou d'un rond, ramenés à la
+  /// demi-hauteur — un rayon plus grand ne changerait rien au dessin, mais
+  /// fausserait le passage à l'arrondi de l'arrivée.
+  static PhotoOrigin? of(BuildContext? context, {BorderRadius radius = Radii.fullAll, bool showsPhoto = false}) {
+    final box = context?.findRenderObject();
+    if (box is! RenderBox || !box.attached || !box.hasSize) return null;
+    final rect = MatrixUtils.transformRect(box.getTransformTo(null), Offset.zero & box.size);
+    final cap = rect.shortestSide / 2;
+    return PhotoOrigin(
+      rect,
+      radius: BorderRadius.only(
+        topLeft: Radius.circular(math.min(radius.topLeft.x, cap)),
+        topRight: Radius.circular(math.min(radius.topRight.x, cap)),
+        bottomLeft: Radius.circular(math.min(radius.bottomLeft.x, cap)),
+        bottomRight: Radius.circular(math.min(radius.bottomRight.x, cap)),
+      ),
+      showsPhoto: showsPhoto,
+    );
+  }
+}
+
+/// Une photo annoncée : son image, qui se décode déjà, et d'où elle part.
 class _Arrival {
-  _Arrival(this.image) : at = DateTime.now() {
+  _Arrival(this.image, this.from) : at = DateTime.now() {
     _stream = image.resolve(ImageConfiguration.empty);
     _listener = ImageStreamListener(
       (info, _) {
-        size ??= Size(info.image.width.toDouble(), info.image.height.toDouble());
         info.dispose();
         if (!_ready.isCompleted) _ready.complete();
       },
@@ -129,21 +172,18 @@ class _Arrival {
   }
 
   final ImageProvider image;
+  final PhotoOrigin? from;
   final DateTime at;
   late final ImageStream _stream;
   late final ImageStreamListener _listener;
   final _ready = Completer<void>();
-
-  /// Largeur et hauteur de l'image, une fois décodée.
-  Size? size;
 
   Future<void> get ready => _ready.future;
 
   void release() => _stream.removeListener(_listener);
 }
 
-class _PhotoLandingState extends State<PhotoLanding> with TickerProviderStateMixin {
-  late final AnimationController _appear = AnimationController(vsync: this, duration: Motion.micro);
+class _PhotoLandingState extends State<PhotoLanding> with SingleTickerProviderStateMixin {
   late final AnimationController _travel = AnimationController.unbounded(vsync: this);
 
   /// La photo attendue : tant qu'elle est là, [PhotoLanding.child] est caché.
@@ -197,31 +237,38 @@ class _PhotoLandingState extends State<PhotoLanding> with TickerProviderStateMix
     if (overlay == null || bounds is! RenderBox || !bounds.hasSize) return _land();
     _overlayBox = bounds;
     final to = _target();
-    if (to == null) return _land();
-    final screen = Offset.zero & bounds.size;
     // Une destination hors de l'écran : la photo n'irait nulle part où l'œil
     // puisse la suivre.
-    if (!screen.overlaps(to)) return _land();
-    final from = _departure(screen, MediaQuery.paddingOf(overlay.context), to, arrival.size);
+    if (to == null || !(Offset.zero & bounds.size).overlaps(to)) return _land();
+    final origin = arrival.from;
+    final Rect from;
+    final BorderRadius fromRadius;
+    final bool reveal;
+    if (origin == null) {
+      from = Rect.fromCenter(center: to.center, width: to.width * PhotoLanding.settleScale, height: to.height * PhotoLanding.settleScale);
+      fromRadius = widget.radius;
+      reveal = true;
+    } else {
+      from = origin.rect.shift(-bounds.localToGlobal(Offset.zero));
+      fromRadius = origin.radius;
+      reveal = !origin.showsPhoto;
+    }
     _entry = OverlayEntry(
       builder: (_) => IgnorePointer(
         child: _Flight(
-          appear: _appear,
           travel: _travel,
           image: arrival.image,
           from: from,
           to: () => _target() ?? _lastTarget ?? to,
-          fromRadius: PhotoLanding.departureRadius,
+          fromRadius: fromRadius,
           toRadius: widget.radius,
+          reveal: reveal,
         ),
       ),
     );
     overlay.insert(_entry!);
-    _appear.forward().whenCompleteOrCancel(() {
-      if (_gone) return;
-      _travel.animateWith(SpringSimulation(Springs.glide, 0, 1, 0)).whenCompleteOrCancel(() {
-        if (!_gone) _land();
-      });
+    _travel.animateWith(SpringSimulation(Springs.morph, 0, 1, 0)).whenCompleteOrCancel(() {
+      if (!_gone) _land();
     });
   }
 
@@ -232,15 +279,6 @@ class _PhotoLandingState extends State<PhotoLanding> with TickerProviderStateMix
     final box = context.findRenderObject();
     if (box is! RenderBox || !box.attached || !box.hasSize) return null;
     return _lastTarget = MatrixUtils.transformRect(box.getTransformTo(overlay), Offset.zero & box.size);
-  }
-
-  /// La photo en grand : ses proportions à elle, au centre de l'écran, dans
-  /// les marges de la page.
-  static Rect _departure(Rect screen, EdgeInsets padding, Rect to, Size? size) {
-    final area = EdgeInsets.fromLTRB(Space.page, padding.top + Space.huge, Space.page, padding.bottom + Space.huge).deflateRect(screen);
-    final aspect = size != null && size.height > 0 ? size.width / size.height : to.width / to.height;
-    final fitted = applyBoxFit(BoxFit.contain, Size(aspect, 1), area.size).destination;
-    return Alignment.center.inscribe(fitted, area);
   }
 
   /// L'arrivée : le vol s'efface, la photo à sa place apparaît.
@@ -261,7 +299,6 @@ class _PhotoLandingState extends State<PhotoLanding> with TickerProviderStateMix
     _entry?.dispose();
     _entry = null;
     _arrival?.release();
-    _appear.dispose();
     _travel.dispose();
     super.dispose();
   }
@@ -274,20 +311,19 @@ class _PhotoLandingState extends State<PhotoLanding> with TickerProviderStateMix
   }
 }
 
-/// La photo pendant le vol : elle se pose au départ en s'éclaircissant, puis
-/// suit le ressort jusqu'à sa place.
+/// La photo pendant le vol : un seul rectangle qui passe du départ à
+/// l'arrivée, l'image recadrée dedans à chaque image.
 class _Flight extends StatelessWidget {
   const _Flight({
-    required this.appear,
     required this.travel,
     required this.image,
     required this.from,
     required this.to,
     required this.fromRadius,
     required this.toRadius,
+    required this.reveal,
   });
 
-  final Animation<double> appear;
   final Animation<double> travel;
   final ImageProvider image;
   final Rect from;
@@ -295,26 +331,26 @@ class _Flight extends StatelessWidget {
   final BorderRadius fromRadius;
   final BorderRadius toRadius;
 
+  /// La photo se dessine en début de trajet : le départ ne la montrait pas.
+  final bool reveal;
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: Listenable.merge([appear, travel]),
+      animation: travel,
       builder: (context, photo) {
         final t = travel.value;
-        final a = Motion.easeOut.transform(appear.value);
-        // Le ressort dépasse un peu sa cible : la position et la taille le
+        // Le ressort dépasse à peine sa cible : la position et la taille le
         // suivent, les coins non — un rayon qui s'inverse n'a pas de sens.
         final radius = BorderRadius.lerp(fromRadius, toRadius, t.clamp(0.0, 1.0))!;
+        final opacity = reveal ? (t / PhotoLanding.revealShare).clamp(0.0, 1.0) : 1.0;
         return Stack(
           children: [
             Positioned.fromRect(
               rect: Rect.lerp(from, to(), t)!,
               child: Opacity(
-                opacity: a,
-                child: Transform.scale(
-                  scale: PhotoLanding.appearScale + (1 - PhotoLanding.appearScale) * a,
-                  child: ClipRRect(borderRadius: radius, child: photo),
-                ),
+                opacity: opacity,
+                child: ClipRRect(borderRadius: radius, child: photo),
               ),
             ),
           ],

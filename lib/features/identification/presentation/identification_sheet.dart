@@ -266,13 +266,13 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
 
   /// Une photo de plus, et on recommence. C'est gratuit, hors ligne et
   /// instantané, là où la recherche en ligne se prend sur un quota mensuel.
-  Future<void> _addPhoto(PhotoSource source) async {
+  Future<void> _addPhoto(PhotoSource source, {PhotoOrigin? from}) async {
     if (_picking) return;
     setState(() => _picking = true);
     try {
       final stored = await ref.read(photoStorageProvider).pick(source);
       if (stored == null) return;
-      await _accept(stored, fromGallery: source == PhotoSource.gallery);
+      await _accept(stored, from: from);
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'identification.addPhoto');
       if (mounted) ref.read(toastProvider.notifier).show(photoErrorToast(context.l10n, e));
@@ -282,11 +282,11 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
   }
 
   /// Range une photo de plus dans la bande et relance l'identification.
-  /// Choisie dans la galerie, elle file jusqu'à sa place dans la bande.
-  Future<void> _accept(StoredPhoto stored, {bool fromGallery = false}) async {
+  /// Elle sort du bouton touché ([from]) et file jusqu'à sa place.
+  Future<void> _accept(StoredPhoto stored, {PhotoOrigin? from}) async {
     final path = await ref.read(photoStorageProvider).absolutePath(stored.filePath);
     if (!mounted) return;
-    if (fromGallery) PhotoLanding.expectFile(path, File(path));
+    PhotoLanding.expectFile(path, File(path), from: from);
     setState(() {
       _shots.add(_Shot(path, stored: stored));
       _future = _identify();
@@ -314,14 +314,15 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
     if (stored != null) await storage.deleteFiles(stored.filePath, stored.thumbPath);
   }
 
-  void _chooseSource() {
+  /// [from] : le bouton qui a ouvert le choix, d'où la photo sortira.
+  void _chooseSource(PhotoOrigin? from) {
     final l10n = context.l10n;
     showAdaptiveActionSheet(
       context,
       cancelLabel: l10n.cancel,
       actions: [
-        SheetAction(label: l10n.camera, icon: CupertinoIcons.camera, onPressed: () => _addPhoto(PhotoSource.camera)),
-        SheetAction(label: l10n.gallery, icon: CupertinoIcons.photo, onPressed: () => _addPhoto(PhotoSource.gallery)),
+        SheetAction(label: l10n.camera, icon: CupertinoIcons.camera, onPressed: () => _addPhoto(PhotoSource.camera, from: from)),
+        SheetAction(label: l10n.gallery, icon: CupertinoIcons.photo, onPressed: () => _addPhoto(PhotoSource.gallery, from: from)),
       ],
     );
   }
@@ -371,11 +372,13 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
           const SizedBox(height: Space.sm),
           Text(l10n.identifyAnotherPhotoHint, style: context.text.caption),
           const SizedBox(height: Space.xs),
-          FloraButton(
-            label: l10n.identifyAnotherPhoto,
-            icon: CupertinoIcons.camera,
-            style: FloraButtonStyle.secondary,
-            onPressed: _chooseSource,
+          Builder(
+            builder: (button) => FloraButton(
+              label: l10n.identifyAnotherPhoto,
+              icon: CupertinoIcons.camera,
+              style: FloraButtonStyle.secondary,
+              onPressed: () => _chooseSource(PhotoOrigin.of(button)),
+            ),
           ),
         ],
         _PhotoSourceNote(candidates: results),

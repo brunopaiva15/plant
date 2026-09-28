@@ -40,6 +40,11 @@ abstract final class Springs {
   /// Ce qui se déplace d'un point à un autre — la bulle de la barre
   /// d'onglets : glisse vite, se pose presque sans rebondir (0,81).
   static const SpringDescription glide = SpringDescription(mass: 1, stiffness: 260, damping: 26);
+
+  /// Une pièce qui en devient une autre — la photo qui se rétracte en
+  /// vignette : vive, arrivée aux neuf dixièmes en 150 ms, posée avec un
+  /// dépassement à peine visible (0,80). Le rythme de l'application ChatGPT.
+  static const SpringDescription morph = SpringDescription(mass: 1, stiffness: 400, damping: 32);
 }
 
 /// Un contrôleur sans bornes mené par un ressort.
