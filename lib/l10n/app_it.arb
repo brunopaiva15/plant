@@ -2262,5 +2262,15 @@
   "careWateringReservoir": "Riempi la riserva quando il livello è al minimo: il terriccio assorbe l'acqua dal basso.",
   "careWateringPotShorter": "Il tuo vaso accorcia l'intervallo del {percent}%.",
   "careWateringPotLonger": "Il tuo vaso allunga l'intervallo del {percent}%.",
-  "careWateringPotHint": "Indica il diametro del vaso per sapere quanta acqua versare."
+  "careWateringPotHint": "Indica il diametro del vaso per sapere quanta acqua versare.",
+  "whatsNewTitle": "Novità",
+  "whatsNewPotTitle": "Annaffiatura secondo il vaso",
+  "whatsNewPotBody": "Indica diametro e materiale del vaso: l'intervallo si adatta e la scheda di cura dice quanta acqua versare.",
+  "whatsNewCameraTitle": "Flash e zoom nel mirino",
+  "whatsNewCameraBody": "Accendi il flash nell'angolo della cornice, e allarga due dita sull'immagine per zoomare.",
+  "whatsNewSpeciesTitle": "La specie più probabile",
+  "whatsNewSpeciesBody": "Quando aggiungi una pianta, l'app sceglie la specie più probabile. Tocca un altro nome per cambiarla.",
+  "whatsNewDiagnosisTitle": "Il tempo di analisi",
+  "whatsNewDiagnosisBody": "Durante una diagnosi, lo schermo mostra il tempo rimanente. L'analisi finisce anche prima.",
+  "whatsNewWateringIntro": "Questa versione fa entrare il vaso nel calcolo dell'annaffiatura. Cambiano anche il mirino, l'aggiunta di una pianta e la diagnosi."
 }

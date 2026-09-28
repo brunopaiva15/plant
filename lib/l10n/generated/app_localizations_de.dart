@@ -6680,4 +6680,39 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get careWateringPotHint =>
       'Gib den Topfdurchmesser an, um die Wassermenge zu sehen.';
+
+  @override
+  String get whatsNewTitle => 'Neuigkeiten';
+
+  @override
+  String get whatsNewPotTitle => 'Gießen nach Topf';
+
+  @override
+  String get whatsNewPotBody =>
+      'Gib Durchmesser und Material des Topfs an: Der Abstand passt sich an, und die Pflegehinweise zeigen, wie viel Wasser du gießt.';
+
+  @override
+  String get whatsNewCameraTitle => 'Blitz und Zoom im Sucher';
+
+  @override
+  String get whatsNewCameraBody =>
+      'Schalte den Blitz in der Ecke des Rahmens ein, und zieh das Bild mit zwei Fingern auf, um zu zoomen.';
+
+  @override
+  String get whatsNewSpeciesTitle => 'Die wahrscheinlichste Art';
+
+  @override
+  String get whatsNewSpeciesBody =>
+      'Beim Hinzufügen einer Pflanze übernimmt die App die wahrscheinlichste Art. Tippe auf einen anderen Namen, um sie zu ändern.';
+
+  @override
+  String get whatsNewDiagnosisTitle => 'Die Analysedauer';
+
+  @override
+  String get whatsNewDiagnosisBody =>
+      'Während einer Diagnose zeigt der Bildschirm die verbleibende Zeit. Die Analyse ist auch schneller fertig.';
+
+  @override
+  String get whatsNewWateringIntro =>
+      'Diese Version bezieht den Topf in die Gießberechnung ein. Auch Sucher, das Hinzufügen einer Pflanze und die Diagnose ändern sich.';
 }

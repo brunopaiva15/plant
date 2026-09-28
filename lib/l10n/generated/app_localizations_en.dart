@@ -6656,4 +6656,39 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get careWateringPotHint =>
       'Enter the pot diameter to see how much water to pour.';
+
+  @override
+  String get whatsNewTitle => 'What\'s new';
+
+  @override
+  String get whatsNewPotTitle => 'Watering by pot';
+
+  @override
+  String get whatsNewPotBody =>
+      'Enter the pot\'s diameter and material: the interval adjusts, and the care guide shows how much water to pour.';
+
+  @override
+  String get whatsNewCameraTitle => 'Flash and zoom in the viewfinder';
+
+  @override
+  String get whatsNewCameraBody =>
+      'Turn on the flash in the corner of the frame, and spread two fingers on the image to zoom.';
+
+  @override
+  String get whatsNewSpeciesTitle => 'The most likely species';
+
+  @override
+  String get whatsNewSpeciesBody =>
+      'When you add a plant, the app keeps the most likely species. Tap another name to change it.';
+
+  @override
+  String get whatsNewDiagnosisTitle => 'Analysis time';
+
+  @override
+  String get whatsNewDiagnosisBody =>
+      'During a diagnosis, the screen shows the time left. The analysis also finishes faster.';
+
+  @override
+  String get whatsNewWateringIntro =>
+      'This version brings the pot into the watering calculation. The viewfinder, adding a plant and the diagnosis change too.';
 }
