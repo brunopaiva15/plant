@@ -272,7 +272,7 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
     try {
       final stored = await ref.read(photoStorageProvider).pick(source);
       if (stored == null) return;
-      await _accept(stored);
+      await _accept(stored, fromGallery: source == PhotoSource.gallery);
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'identification.addPhoto');
       if (mounted) ref.read(toastProvider.notifier).show(photoErrorToast(context.l10n, e));
@@ -282,9 +282,11 @@ class _IdentificationBodyState extends ConsumerState<_IdentificationBody> {
   }
 
   /// Range une photo de plus dans la bande et relance l'identification.
-  Future<void> _accept(StoredPhoto stored) async {
+  /// Choisie dans la galerie, elle file jusqu'à sa place dans la bande.
+  Future<void> _accept(StoredPhoto stored, {bool fromGallery = false}) async {
     final path = await ref.read(photoStorageProvider).absolutePath(stored.filePath);
     if (!mounted) return;
+    if (fromGallery) PhotoLanding.expectFile(path, File(path));
     setState(() {
       _shots.add(_Shot(path, stored: stored));
       _future = _identify();
