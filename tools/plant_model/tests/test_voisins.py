@@ -257,3 +257,15 @@ def test_deux_jeux_de_references_se_reunissent(tmp_path):
     especes, scores = classer(np.array([[0.6, 0.8]], dtype=np.float32), v, cles)
     # la requête est plus proche de y (0,8) que de x (0,6), mais x#pot la vise
     assert especes == ['x', 'y'] and especes[int(np.argmax(scores[0]))] == 'x'
+
+
+def test_restreindre_garde_les_vues_dune_espece_exposee():
+    """Le 28 septembre, `monstera-deliciosa#pot` était écartée de la lecture
+    à armes égales parce que la clé entière n'est pas une classe d'Iris :
+    le chiffre était celui des seuls centroïdes du corpus v8, sans le dire."""
+    import numpy as np
+    from voisins import restreindre
+    cles = ['monstera-deliciosa', 'monstera-deliciosa#pot', 'ficus-lyrata#captive', 'autre']
+    c, v = restreindre(cles, np.eye(4), {'monstera-deliciosa', 'ficus-lyrata'})
+    assert c == ['monstera-deliciosa', 'monstera-deliciosa#pot', 'ficus-lyrata#captive']
+    assert v.shape == (3, 4)

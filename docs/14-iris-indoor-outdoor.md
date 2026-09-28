@@ -2405,6 +2405,21 @@ références, comme les `#captive` du § 7. Une photo qui ressemble au banc
 garde le centroïde du corpus v8 ; une photo de plante en pot peut trouver
 le sien.
 
+**Premier essai, faussé à armes égales.** La lecture à armes égales rendait
+0,7924 et 0,9015 au dix-millième, comme sans les centroïdes « pot » : un
+chiffre identique après l'ajout de 373 références n'est pas un résultat,
+c'est un filtre. `restreindre()` comparait la clé entière à la liste d'Iris,
+et `monstera-deliciosa#pot` n'y est pas : toutes les vues suffixées étaient
+écartées sans bruit. Corrigé : la restriction se fait par l'espèce. Le
+répertoire entier, qui ne passe pas par ce filtre, montrait déjà l'effet :
+indoor 0,7054 → **0,7169**, top-3 0,8492 → **0,8669** ; outdoor inchangé,
+hors répertoire −0,15.
+
+Le même filtre s'appliquait aux `#captive` de `--captive-a-part`. Si les
+centroïdes du cache en portent (`references-centroides.json`,
+`captive_a_part`), les lectures « centroïdes à armes égales » d'avant le
+28 septembre les ignoraient.
+
 ## 21. Ce qui est décidé et ce qui reste ouvert
 
 ### Décidé

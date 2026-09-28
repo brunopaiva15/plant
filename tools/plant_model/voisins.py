@@ -109,7 +109,10 @@ def restreindre(cles: list[str], vecteurs: np.ndarray,
     """
     if garder is None:
         return cles, vecteurs
-    indices = [i for i, c in enumerate(cles) if c in garder]
+    # Par l'espèce, pas par la clé : `monstera-deliciosa#pot` ou `#captive`
+    # est une vue d'une espèce exposée, et la comparer telle quelle à la
+    # liste d'Iris l'écartait sans bruit.
+    indices = [i for i, c in enumerate(cles) if sans_suffixe(c) in garder]
     return [cles[i] for i in indices], vecteurs[indices]
 
 
