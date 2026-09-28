@@ -2256,6 +2256,69 @@ un point d'outdoor et un point et demi de hors-répertoire. Tant que l'indoor
 est l'écart qui bloque face à Iris 9, c'est l'indoor qui tranche.
 
 
+## 20 octies. Où sont les points qui manquent — 28 septembre 2026
+
+`erreurs.py` sur `iris10-pnd`, é10, indoor, textes à armes égales, avec
+Iris 9 sous son masque de lieu. 1 127 images.
+
+| top-1 | student | teacher | Iris 9 |
+|---|---|---|---|
+| indoor | 0,7533 | 0,8119 | 0,8119 |
+
+| student / teacher | images | |
+|---|---|---|
+| juste / juste | 812 | |
+| faux / juste | 103 | perdu par la distillation |
+| juste / faux | 37 | le student fait mieux que le teacher |
+| faux / faux | 175 | hors de portée de la distillation |
+
+| Iris 10 / Iris 9 | images | |
+|---|---|---|
+| juste / juste | 775 | |
+| faux / juste | **140** | l'écart à combler |
+| juste / faux | **74** | ce qu'Iris 10 apporte |
+| faux / faux | 138 | |
+
+**L'écart à Iris 9 est exactement l'écart au teacher.** Le teacher lu par
+ses textes vaut 0,8119, comme Iris 9 (§ porte C). Le student perd 103 images
+que le teacher réussit et en gagne 37 qu'il rate : 66 images nettes, 5,9
+points, tout l'écart. Une distillation parfaite rendrait donc l'égalité avec
+Iris 9 sur cette lecture, pas plus.
+
+**Pour dépasser Iris 9 en indoor, il faut sortir des textes.** Deux voies,
+qui ne demandent pas d'entraîner :
+
+- **les centroïdes** : lu par eux, le teacher vaut 0,8456 en indoor, 3,4
+  points au-dessus d'Iris 9 (§ porte C). Les centroïdes actuels sont faits
+  du corpus v8 ; les 339 596 photos de plantes en pot de Pl@ntNet, déjà
+  encodées par le teacher, peuvent en faire de meilleurs, et d'une autre
+  source que le banc ;
+- **l'arbitrage avec Iris 9** : 74 images qu'Iris 10 réussit seul, 140
+  qu'Iris 9 réussit seul. Un arbitreur parfait atteindrait 989 images sur
+  1 127, 0,8775. Un vrai en sera loin, mais les deux modèles ne se trompent
+  pas sur les mêmes images.
+
+**La distance des erreurs** : 23 % dans le même genre, 35 % dans la même
+famille, 42 % dans une autre famille. Parmi les 140 qu'Iris 9 réussit seul :
+35 de genre, 61 de famille, 44 ailleurs ; le teacher en réussit 69.
+
+**Une erreur qui n'en est pas une.** La première confusion, 7 images,
+*Schefflera arboricola* → *Heptapleurum arboricola*, est la même plante :
+*Heptapleurum arboricola* est le nom accepté, *Schefflera arboricola* son
+synonyme. Les deux sont des classes d'Iris 9 et de `plants.csv`, avec deux
+clés GBIF différentes, ce qui a échappé à la déduplication par clé. Des
+références textuelles presque identiques se départagent à pile ou face :
+0,6 point perdu pour rien. Aucun autre couple de synonymes n'est exposé à la
+fois (vérifié sur les 1 569 classes : même épithète, même famille, genres
+différents — les 30 autres cas sont des homonymes d'épithète). La fusion
+des deux classes est une décision de catalogue, qui touche aussi Iris 9 ;
+elle reste à prendre.
+
+D'autres confusions portent sur des noms que le commerce emploie mal :
+*Pelargonium zonale* contre *P.* × *hortorum*, *P. peltatum* contre
+*P.* × *hybridum*, *Dracaena marginata* contre *D. reflexa*. Ce sont de
+vraies erreurs pour le banc, mais l'étiquette elle-même y est discutable.
+
 ## 21. Ce qui est décidé et ce qui reste ouvert
 
 ### Décidé
