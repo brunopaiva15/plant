@@ -2217,6 +2217,45 @@ Une variable : les lots. Même corpus, même taille, même recette que
 
 L'outdoor et le hors-répertoire ne doivent pas reculer de plus d'un point.
 
+### Mesuré — 28 septembre 2026
+
+`iris10-dur` : `--difficiles 0.5`, 1 024 grappes, groupes de 4. Tout le
+reste comme `iris10-pnd`.
+
+| dur − pnd | é1 | é2 | é3 | é4 | é5 | é6 | é7 | é8 | é9 | **é10** |
+|---|---|---|---|---|---|---|---|---|---|---|
+| indoor | +2,5 | +1,0 | −0,6 | −1,2 | −1,7 | −0,7 | −1,7 | −0,7 | −0,8 | **−1,1** |
+| outdoor | +1,3 | +4,8 | +1,1 | −0,4 | +1,2 | +0,2 | +0,4 | +1,3 | +0,5 | **+1,1** |
+| hors répertoire | +3,6 | +5,0 | +1,4 | +1,9 | +2,2 | +1,1 | +1,4 | +1,9 | +2,9 | **+1,4** |
+
+| é10 | `iris10-pnd` | `iris10-dur` | Iris 9 |
+|---|---|---|---|
+| indoor | **0,7533** | 0,7427 | 0,8119 |
+| outdoor | 0,7915 | **0,8025** | 0,7615 |
+| hors répertoire | 0,6260 | **0,6395** | 0,0 |
+
+**Le critère n'est pas rempli : les lots difficiles n'entrent pas dans la
+recette.** L'indoor, qu'ils visaient, perd à huit époques sur dix, un point
+à é10.
+
+**Ils ne sont pas sans effet pour autant, et dans l'autre sens.** Le
+hors-répertoire gagne à chaque époque, de +1,1 à +5,0, et l'outdoor à neuf
+sur dix. C'est la lecture sur 5 813 références, où il faut départager des
+voisins que le répertoire d'Iris 9 ne contient pas : exactement ce que les
+lots difficiles entraînent.
+
+Deux explications possibles pour l'indoor, **aucune vérifiée** :
+
+- les grappes suivent la masse du corpus, qui est d'extérieur : des voisins
+  d'intérieur se retrouvent rarement dans le même groupe ;
+- la moitié tirée au hasard ne compte plus que 32 images. L'indoor profitait
+  peut-être de 63 négatifs variés plus que de 31 voisins.
+
+La question reste ouverte pour la version finale : un point d'indoor contre
+un point d'outdoor et un point et demi de hors-répertoire. Tant que l'indoor
+est l'écart qui bloque face à Iris 9, c'est l'indoor qui tranche.
+
+
 ## 21. Ce qui est décidé et ce qui reste ouvert
 
 ### Décidé
