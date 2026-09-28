@@ -2453,6 +2453,33 @@ espèces sans photo. Le critère écrit plus haut plaçait ce résultat entre
 Les chiffres des centroïdes du teacher (0,8456 en indoor, § porte C) ont été
 lus avant ce correctif ; ils sont à relire avec lui.
 
+## 20 decies. Des jumeaux du banc dans les corpus Pl@ntNet ? Non — 28 septembre 2026
+
+`iris10-int` gagnait +12 points d'indoor sur `iris10-pnd` dès é1, +6 à é6
+(textes). Assez pour soupçonner une fuite : les photos ajoutées sont des
+mêmes espèces et du même genre que le banc indoor, et l'empreinte
+perceptuelle laisse passer une photo recadrée ou retouchée.
+
+`fuite.py` cherche, pour chacune des 1 127 images indoor du banc, la photo
+la plus proche d'un corpus dans l'espace du teacher. Le corpus v8, séparé du
+banc par observation, sert d'étalon :
+
+| corpus | images | ≥ 0,90 | ≥ 0,95 | ≥ 0,97 | ≥ 0,99 | la plus proche |
+|---|---|---|---|---|---|---|
+| corpus v8 (étalon) | 797 965 | 307 | 29 | 2 | 0 | 0,9773 |
+| `plantnet-interieur` | 265 894 | 294 | 18 | **0** | **0** | 0,9686 |
+| `plantnet-direct` | 73 702 | 36 | 0 | 0 | 0 | 0,9466 |
+
+**Pas de fuite.** Aucune image du banc n'a de voisine au-dessus de 0,97 dans
+les corpus Pl@ntNet, là où le corpus v8 propre en a deux ; rien au-dessus
+de 0,99 nulle part. Les paires les plus proches sont des photos différentes
+de la même espèce.
+
+**Mais une confirmation du domaine.** Au-dessus de 0,90, `plantnet-interieur`
+compte presque autant de voisines que le corpus v8 (294 contre 307) avec
+trois fois moins d'images : ses photos ressemblent davantage à celles du
+banc indoor. C'est le mécanisme du gain, pas une fuite.
+
 ## 21. Ce qui est décidé et ce qui reste ouvert
 
 ### Décidé
