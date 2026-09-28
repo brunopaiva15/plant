@@ -72,7 +72,9 @@ FICHIERS = {'texte': 'references-textes', 'centroide': 'references-centroides'}
 
 def charger_references(cache: Path, nom: str) -> tuple[list[str], np.ndarray]:
     """Les clés et la matrice unitaire d'un jeu de références."""
-    base = cache / FICHIERS[nom]
+    # Un nom inconnu est un fichier du cache : `references-centroides-pot`
+    # se compare aux centroïdes d'avant sans les écraser.
+    base = cache / FICHIERS.get(nom, nom)
     if not base.with_suffix('.npy').exists():
         raise SystemExit(f"{base}.npy absent — lancer `bioclip.py {nom_commande(nom)}` d'abord")
     vecteurs = np.load(base.with_suffix('.npy')).astype(np.float32)

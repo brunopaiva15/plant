@@ -222,3 +222,18 @@ def test_recaler_rend_des_vecteurs_unitaires():
     cible = np.zeros(16, dtype=np.float32)
     cible[0] = 1.0
     assert np.allclose(np.linalg.norm(recaler(v, cible), axis=1), 1.0, atol=1e-5)
+
+
+def test_un_autre_fichier_de_references_se_lit_par_son_nom(tmp_path):
+    """Les centroïdes faits d'autres photos se comparent aux premiers sans
+    les écraser."""
+    import csv
+    import numpy as np
+    from voisins import charger_references
+    np.save(tmp_path / 'references-centroides-pot.npy', np.eye(2, dtype=np.float16))
+    with open(tmp_path / 'references-centroides-pot.csv', 'w', newline='') as f:
+        w = csv.writer(f)
+        w.writerow(['internal_id', 'images'])
+        w.writerows([['a', 10], ['b', 12]])
+    cles, v = charger_references(tmp_path, 'references-centroides-pot')
+    assert cles == ['a', 'b'] and v.shape == (2, 2)

@@ -2319,6 +2319,53 @@ D'autres confusions portent sur des noms que le commerce emploie mal :
 *P.* × *hybridum*, *Dracaena marginata* contre *D. reflexa*. Ce sont de
 vraies erreurs pour le banc, mais l'étiquette elle-même y est discutable.
 
+## 20 nonies. Les centroïdes, et ceux des plantes en pot — 28 septembre 2026
+
+La même analyse que le § 20 octies, lue par les centroïdes (corpus v8,
+images d'entraînement) au lieu des textes. `iris10-pnd`, é10, indoor à
+armes égales :
+
+| Iris 10 / Iris 9 | textes | **centroïdes** |
+|---|---|---|
+| juste / juste | 775 | **814** |
+| faux / juste | 140 | **101** |
+| juste / faux | 74 | **79** |
+| faux / faux | 138 | 133 |
+| **top-1 Iris 10** | 0,7533 | **0,7924** |
+| top-1 Iris 9 | 0,8119 | 0,8119 |
+
+**Lu par les centroïdes, Iris 10 gagne 3,9 points et n'est plus qu'à 2
+d'Iris 9**, sans rien réentraîner. Le teacher y vaut 0,8456 : il reste de
+la marge au-dessus d'Iris 9. Un arbitreur parfait entre les deux modèles
+atteindrait 994 images sur 1 127, 0,8820.
+
+**Les centroïdes des plantes en pot.** Ceux-ci sont faits des seules images
+du corpus v8, pour l'essentiel prises dehors. Les 339 596 photos Pl@ntNet de
+plantes en pot sont déjà encodées par le teacher, et `plantnet-interieur`
+range chacune sous son identifiant du catalogue. `bioclip.py centroides`
+prend désormais plusieurs `--dataset`, écarte les clés hors catalogue
+(`pnd:`, `pn:`, `inat:`), et écrit sous un autre nom (`--nom`) pour
+comparer sans écraser :
+
+```bash
+python3 bioclip.py centroides --dataset ~/plant-data/dataset-v8-indoor \
+  --dataset ~/plant-data/plantnet-direct --dataset ~/plant-data/plantnet-interieur \
+  --cache ~/plant-data/bioclip --nom references-centroides-pot
+```
+
+Sans GPU, quelques minutes. Les photos Pl@ntNet ne viennent pas des mêmes
+sources que le banc, et les trois gardes les en ont séparées : ces
+centroïdes jouent moins « à domicile » que ceux du corpus v8.
+
+| indoor, centroïdes à armes égales | décision |
+|---|---|
+| au-dessus d'Iris 9 (0,8119) | les centroïdes des plantes en pot deviennent la lecture d'Iris 10 en indoor |
+| entre 0,7924 et 0,8119 | ils remplacent ceux du corpus v8, et l'arbitrage avec Iris 9 devient la piste suivante |
+| sous 0,7924 | on garde ceux du corpus v8 |
+
+L'outdoor et le hors-répertoire se lisent aussi : ces centroïdes ne doivent
+pas les faire reculer.
+
 ## 21. Ce qui est décidé et ce qui reste ouvert
 
 ### Décidé

@@ -302,3 +302,15 @@ def test_un_seul_fil_marche_aussi():
 
 def test_aucun_lot_ne_bloque_pas():
     assert list(flux_de_lots([], lambda x: x, fils=4)) == []
+
+
+def test_les_cles_hors_catalogue_ne_font_pas_de_centroide():
+    """`pnd:`, `pn:`, `inat:` : des espèces qu'aucune vérité du banc ne peut
+    désigner. En faire des références ajouterait des concurrents, jamais une
+    bonne réponse."""
+    from bioclip import du_catalogue
+    assert du_catalogue('monstera-deliciosa')
+    assert not du_catalogue('pnd:Goeppertia_lietzei')
+    assert not du_catalogue('inat:51798')
+    assert not du_catalogue('pn:1355868')
+    assert not du_catalogue('')

@@ -169,7 +169,9 @@ def main() -> int:  # pragma: no cover - demande le cache et le banc
     ap.add_argument('--tranche', default='indoor')
     ap.add_argument('--iris', default='../../assets/model')
     ap.add_argument('--plants', default='../plant_dataset/plants.csv')
-    ap.add_argument('--references', default='texte', choices=['texte', 'centroide'])
+    ap.add_argument('--references', default='texte',
+                    help='texte, centroide, ou le nom d\'un fichier de références du cache '
+                         '(ex. references-centroides-pot)')
     ap.add_argument('--combien', type=int, default=20)
     ap.add_argument('--avec-iris', action='store_true',
                     help='faire aussi tourner Iris 9 sur les mêmes images (demande TensorFlow)')

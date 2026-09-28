@@ -581,15 +581,34 @@ def cmd_textes(args) -> int:  # pragma: no cover - demande PyTorch
     return 0
 
 
+def du_catalogue(cle: str) -> bool:
+    """Une clé de notre catalogue, et non `pn:`, `inat:` ou `pnd:`.
+
+    Les corpus de distillation rangent les espèces hors catalogue sous une
+    clé préfixée. En faire une référence ajouterait au répertoire une espèce
+    qu'aucune vérité du banc ne peut désigner : un concurrent de plus, jamais
+    une bonne réponse.
+    """
+    return bool(cle) and ':' not in cle
+
+
 def cmd_centroides(args) -> int:
-    dataset = Path(args.dataset).expanduser()
+    datasets = [Path(d).expanduser() for d in (args.dataset or ['~/plant-data/dataset-v8-indoor'])]
     cache = Path(args.cache).expanduser()
     sig = lire_signature(cache)
     if sig is None:
         raise SystemExit(f"{cache} n'a pas de signature : lancer `cache` d'abord")
 
     splits = tuple(s.strip() for s in args.splits.split(',') if s.strip())
-    verite = {c: (e, cap) for c, e, cap in lire_corpus(dataset, splits)}
+    verite, hors = {}, 0
+    for dataset in datasets:
+        for c, e, cap in lire_corpus(dataset, splits):
+            if du_catalogue(e):
+                verite[c] = (e, cap)
+            else:
+                hors += 1
+    if hors:
+        print(f'{hors} images hors catalogue écartées des centroïdes')
     index = lire_index(cache)
     if not index:
         raise SystemExit(f'{cache} ne contient aucun vecteur')
@@ -622,9 +641,10 @@ def cmd_centroides(args) -> int:
 
     cles, tableau, nombres = centroides(sommes, comptes, args.min_images)
     ecarte = len(sommes) - len(cles)
-    ecrire_references(cache, 'references-centroides', cles, tableau,
+    ecrire_references(cache, args.nom, cles, tableau,
                       {'images': nombres},
                       {'teacher': sig['teacher'], 'signature': sig['empreinte'],
+                       'datasets': [str(d) for d in datasets],
                        'splits': list(splits), 'min_images': args.min_images,
                        'captive_a_part': bool(args.captive_a_part)})
     if ecarte:
@@ -672,7 +692,12 @@ def main() -> int:
     t.set_defaults(fonction=cmd_textes)
 
     p = sous.add_parser('centroides', help='une référence par espèce, depuis ses photos')
-    p.add_argument('--dataset', default='~/plant-data/dataset-v8-indoor')
+    p.add_argument('--dataset', action='append', default=[],
+                   help='répétable : les photos de plusieurs corpus se somment par espèce. '
+                        'Défaut : ~/plant-data/dataset-v8-indoor')
+    p.add_argument('--nom', default='references-centroides',
+                   help="le fichier de références écrit dans le cache ; un autre nom garde "
+                        "les centroïdes d'avant pour comparer (§ 20 nonies de docs/14)")
     p.add_argument('--cache', default='~/plant-data/bioclip')
     p.add_argument('--splits', default='train',
                    help='jamais le test : une référence tirée des images de mesure '
