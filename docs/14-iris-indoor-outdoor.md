@@ -2420,6 +2420,39 @@ centroïdes du cache en portent (`references-centroides.json`,
 `captive_a_part`), les lectures « centroïdes à armes égales » d'avant le
 28 septembre les ignoraient.
 
+### Mesuré, corrigé — 28 septembre 2026
+
+Le cache en porte : `"captive_a_part": true`. Toutes les lectures
+« centroïdes à armes égales » d'avant ce correctif ignoraient donc les
+références `#captive`. Relues, `iris10-pnd`, é10 :
+
+| top-1, armes égales | centroïdes v8, avant | centroïdes v8, **corrigé** | **v8 + pot à part** | Iris 9 |
+|---|---|---|---|---|
+| indoor | 0,7924 | 0,7995 | **0,8083** | 0,8119 |
+| outdoor | 0,8135 | 0,8205 | 0,8175 | 0,7615 |
+
+| top-3 | v8, corrigé | v8 + pot à part |
+|---|---|---|
+| indoor | 0,9113 | **0,9228** |
+| outdoor | 0,9145 | 0,9125 |
+
+- **Le correctif vaut 0,7 point en indoor et en outdoor**, sur les seuls
+  centroïdes du corpus v8 : les vues `#captive` servaient, on ne les lisait
+  pas ;
+- **les centroïdes « pot » à part ajoutent 0,9 point en indoor** et 1,2 en
+  top-3. L'outdoor cède 0,3, le hors-répertoire 0,15 : du bruit ;
+- **l'indoor est à 0,4 point d'Iris 9**, 4 images sur 1 127, dans le bruit
+  du banc. L'outdoor le dépasse de 5,6, et le hors-répertoire vaut 0,70
+  contre 0.
+
+**Décision : la lecture d'Iris 10 est celle des centroïdes, v8 avec leurs
+vues `#captive`, plus les vues `#pot`.** Les textes restent la lecture des
+espèces sans photo. Le critère écrit plus haut plaçait ce résultat entre
+0,7924 et 0,8119 : l'arbitrage avec Iris 9 devient la piste suivante.
+
+Les chiffres des centroïdes du teacher (0,8456 en indoor, § porte C) ont été
+lus avant ce correctif ; ils sont à relire avec lui.
+
 ## 21. Ce qui est décidé et ce qui reste ouvert
 
 ### Décidé
