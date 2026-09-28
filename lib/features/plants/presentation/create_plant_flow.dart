@@ -234,7 +234,10 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
       final raw = await storage.pickSource(source);
       if (raw == null || !mounted) return;
 
-      // Le fichier source devient l'aperçu avant toute compression.
+      // Le fichier source devient l'aperçu avant toute compression. Choisi
+      // dans la galerie, il reste devant quand le sélecteur se referme, puis
+      // se pose dans le cadre.
+      if (source == PhotoSource.gallery) PhotoLanding.expectFile(raw.path, raw);
       _showRawPreview(raw, owned: source == PhotoSource.camera);
 
       final stored = await storage.importFile(raw);
@@ -541,7 +544,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     try {
       final stored = await ref.read(photoStorageProvider).pick(source);
       if (stored == null) return;
-      await _acceptIdentificationPhoto(stored);
+      await _acceptIdentificationPhoto(stored, fromGallery: source == PhotoSource.gallery);
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'createPlant.identifyMore');
       if (mounted) ref.read(toastProvider.notifier).show(photoErrorToast(context.l10n, e));
@@ -566,11 +569,13 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     await storage.deleteFiles(stored.filePath, stored.thumbPath);
   }
 
-  /// Range une photo d'identification de plus et relance le moteur.
-  Future<void> _acceptIdentificationPhoto(StoredPhoto stored) async {
+  /// Range une photo d'identification de plus et relance le moteur. Choisie
+  /// dans la galerie, elle file jusqu'à sa place dans la bande.
+  Future<void> _acceptIdentificationPhoto(StoredPhoto stored, {bool fromGallery = false}) async {
     if (_identificationPaths.length >= maxIdentificationPhotos) return;
     final path = await ref.read(photoStorageProvider).absolutePath(stored.filePath);
     if (!mounted) return;
+    if (fromGallery) PhotoLanding.expectFile(path, File(path));
     setState(() {
       _identificationExtras.add(stored);
       _identificationPaths.add(path);
@@ -841,48 +846,54 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
       final identifier = ref.watch(plantIdentifierProvider);
       final scanning = identifier.isConfigured &&
           (!_primaryIdentificationDone || !_primaryScanMinimumElapsed);
-      content = Stack(
-        fit: StackFit.expand,
-        children: [
-          AnimatedSwitcher(
-            duration: Motion.of(context, const Duration(milliseconds: 280)),
-            reverseDuration: Motion.of(context, const Duration(milliseconds: 240)),
-            switchInCurve: Curves.easeOutCubic,
-            switchOutCurve: Curves.easeInCubic,
-            layoutBuilder: (current, previous) =>
-                Stack(fit: StackFit.expand, children: [...previous, ?current]),
-            transitionBuilder: (child, animation) {
-              final scale = Tween<double>(begin: 0.992, end: 1).animate(
-                CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
-              );
-              return FadeTransition(
-                opacity: animation,
-                child: ScaleTransition(scale: scale, child: child),
-              );
-            },
-            child: scanning
-                ? ProcessingField(
-                    key: const ValueKey('iris-processing'),
-                    height: null,
-                    child: image,
-                    foregroundAlignment: Alignment.topRight,
-                    foreground: const Padding(
-                      padding: EdgeInsets.only(top: Space.xs, right: Space.sm),
-                      child: BreathingIrisMark(size: 48),
+      // L'analyse et les plantes repérées attendent que la photo soit
+      // posée : elles se dessinent sur elle, pas sur le cadre vide.
+      content = PhotoLanding(
+        tag: raw?.path,
+        radius: Radii.xlAll,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            AnimatedSwitcher(
+              duration: Motion.of(context, const Duration(milliseconds: 280)),
+              reverseDuration: Motion.of(context, const Duration(milliseconds: 240)),
+              switchInCurve: Curves.easeOutCubic,
+              switchOutCurve: Curves.easeInCubic,
+              layoutBuilder: (current, previous) =>
+                  Stack(fit: StackFit.expand, children: [...previous, ?current]),
+              transitionBuilder: (child, animation) {
+                final scale = Tween<double>(begin: 0.992, end: 1).animate(
+                  CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+                );
+                return FadeTransition(
+                  opacity: animation,
+                  child: ScaleTransition(scale: scale, child: child),
+                );
+              },
+              child: scanning
+                  ? ProcessingField(
+                      key: const ValueKey('iris-processing'),
+                      height: null,
+                      child: image,
+                      foregroundAlignment: Alignment.topRight,
+                      foreground: const Padding(
+                        padding: EdgeInsets.only(top: Space.xs, right: Space.sm),
+                        child: BreathingIrisMark(size: 48),
+                      ),
+                    )
+                  : KeyedSubtree(
+                      key: const ValueKey('iris-photo'),
+                      child: image,
                     ),
-                  )
-                : KeyedSubtree(
-                    key: const ValueKey('iris-photo'),
-                    child: image,
-                  ),
-          ),
-          if (_primaryPreviewCandidates.isNotEmpty)
-            _DetectedPlantsOverlay(
-              candidates: _primaryPreviewCandidates,
-              onPick: _pickPreviewCandidate,
-              selected: _chosen?.scientificName,
             ),
-        ],
+            if (_primaryPreviewCandidates.isNotEmpty)
+              _DetectedPlantsOverlay(
+                candidates: _primaryPreviewCandidates,
+                onPick: _pickPreviewCandidate,
+                selected: _chosen?.scientificName,
+              ),
+          ],
+        ),
       );
     } else if (live) {
       content = Stack(

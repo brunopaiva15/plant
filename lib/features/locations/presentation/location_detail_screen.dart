@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -80,9 +82,13 @@ class LocationDetailScreen extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (location.thumbPath != null) ...[
-            ClipRRect(
-              borderRadius: Radii.largeAll,
-              child: AspectRatio(aspectRatio: 16 / 9, child: PlantImage(relativePath: location.thumbPath, placeholderEmoji: location.icon)),
+            PhotoLanding(
+              tag: location.thumbPath,
+              radius: Radii.largeAll,
+              child: ClipRRect(
+                borderRadius: Radii.largeAll,
+                child: AspectRatio(aspectRatio: 16 / 9, child: PlantImage(relativePath: location.thumbPath, placeholderEmoji: location.icon)),
+              ),
             ),
             const SizedBox(height: Space.md),
           ],
@@ -153,9 +159,14 @@ Future<void> _photoMenu(BuildContext context, WidgetRef ref, Location location) 
   Future<void> pick(PhotoSource source) async {
     final StoredPhoto stored;
     try {
-      final picked = await ref.read(photoStorageProvider).pick(source);
+      final storage = ref.read(photoStorageProvider);
+      final picked = await storage.pick(source);
       if (picked == null) return;
       stored = picked;
+      // Choisie dans la galerie, la photo reste devant quand le sélecteur se
+      // referme, puis se pose en tête de l'emplacement.
+      final full = storage.absolutePathNow(stored.filePath);
+      if (source == PhotoSource.gallery && full != null) PhotoLanding.expectFile(stored.thumbPath, File(full));
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'location.photo');
       ref.read(toastProvider.notifier).show(photoErrorToast(l10n, e));

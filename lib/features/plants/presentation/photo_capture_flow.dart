@@ -1,3 +1,4 @@
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -110,8 +111,13 @@ class _PhotoCaptureFlowState extends ConsumerState<PhotoCaptureFlow> {
     if (_picking) return;
     setState(() => _picking = true);
     try {
-      final stored = await ref.read(photoStorageProvider).pick(source);
+      final storage = ref.read(photoStorageProvider);
+      final stored = await storage.pick(source);
       if (stored == null || !mounted) return;
+      // Choisie dans la galerie, la photo reste devant quand le sélecteur se
+      // referme, puis rejoint l'aperçu de l'étape suivante.
+      final full = storage.absolutePathNow(stored.filePath);
+      if (source == PhotoSource.gallery && full != null) PhotoLanding.expectFile(stored.thumbPath, File(full));
       _accept(stored);
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'photoFlow.pick');
@@ -443,27 +449,31 @@ class PhotoReviewStep extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ClipRRect(
-            borderRadius: Radii.xlAll,
-            child: AspectRatio(
-              aspectRatio: 4 / 3,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  PlantImage(relativePath: thumbPath, cacheWidth: 900),
-                  Positioned(
-                    left: Space.sm,
-                    bottom: Space.sm,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: Space.xs, vertical: 3),
-                      decoration: BoxDecoration(color: c.ink.withValues(alpha: 0.55), borderRadius: Radii.fullAll),
-                      child: Text(
-                        Dates.relativeDay(context, takenAt ?? DateTime.now()),
-                        style: context.text.caption.copyWith(color: Colors.white),
+          PhotoLanding(
+            tag: thumbPath,
+            radius: Radii.xlAll,
+            child: ClipRRect(
+              borderRadius: Radii.xlAll,
+              child: AspectRatio(
+                aspectRatio: 4 / 3,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    PlantImage(relativePath: thumbPath, cacheWidth: 900),
+                    Positioned(
+                      left: Space.sm,
+                      bottom: Space.sm,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: Space.xs, vertical: 3),
+                        decoration: BoxDecoration(color: c.ink.withValues(alpha: 0.55), borderRadius: Radii.fullAll),
+                        child: Text(
+                          Dates.relativeDay(context, takenAt ?? DateTime.now()),
+                          style: context.text.caption.copyWith(color: Colors.white),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

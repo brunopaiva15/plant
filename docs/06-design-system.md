@@ -316,6 +316,30 @@ la courbe et non dans un minuteur : un `Timer` en attente survivrait au widget.
 Avec une clé stable, une carte déjà posée ne rejoue rien quand la liste se
 réordonne. L'écran Aujourd'hui s'en sert pour ses soins du jour.
 
+### Une photo qui rejoint sa place (`PhotoLanding`)
+Inspiré de l'application ChatGPT. Quand le sélecteur de la galerie se referme,
+la photo choisie reste devant : en grand, au centre, dans ses proportions.
+Puis elle file à sa place avec `Springs.glide`, et ses coins prennent en route
+l'arrondi de l'arrivée. C'est un seul objet qui se déplace, jamais deux images
+croisées en fondu. La place reste cachée tant que la photo vole.
+
+Le fonctionnement ressemble à celui d'un `Hero`. Le code qui reçoit la photo
+l'annonce avec `PhotoLanding.expectFile(tag, fichier)`. L'endroit qui
+l'affiche porte un `PhotoLanding` de même `tag`. Une annonce ne sert qu'une
+fois et expire au bout de 2 s. La photo ne vole pas si sa place est hors de
+l'écran, ni avec *réduire les animations*. Elle vole partout où l'on choisit
+une photo dans la galerie :
+
+- la case du diagnostic ;
+- le cadre de la création d'une plante ;
+- la bande des photos d'identification ;
+- l'aperçu de l'étape « nommer » ;
+- la photo d'un emplacement.
+
+La photo demandée par le compte rendu de diagnostic est une exception : elle
+relance l'analyse tout de suite et n'a pas de place où se poser.
+`test/design_system/photo_landing_test.dart` vérifie ce comportement.
+
 `test/design_system/spring_motion_test.dart` verrouille les trois : les deux
 axes qui ne cèdent pas pareil, le retour qui passe au-dessus de la taille au
 repos, la bulle qui glisse, et le fait que rien de tout cela ne joue avec

@@ -252,6 +252,31 @@ void main() {
     expect(photoFiles(), hasLength(2));
   });
 
+  testWidgets('choisie dans la galerie, la photo reste devant puis se pose dans le cadre', (tester) async {
+    await pumpFlow(tester);
+    await tester.tap(find.widgetWithText(FloraButton, 'Choisir une photo'));
+    await tester.pump();
+    await tester.pump();
+
+    // Le cadre attend la photo : l'aperçu y est déjà, mais caché, sans quoi
+    // deux photos seraient à l'écran le temps du vol.
+    final landing = find.byType(PhotoLanding);
+    expect(landing, findsOneWidget);
+    double frameOpacity() => tester.widget<Opacity>(find.descendant(of: landing, matching: find.byType(Opacity)).first).opacity;
+    expect(frameOpacity(), 0);
+
+    // La photo en vol : le fichier choisi, décodé à la largeur d'un écran.
+    final flight = find.byWidgetPredicate((w) => w is Image && w.image is ResizeImage);
+    await tester.pump(PhotoLanding.decodeWait);
+    await tester.pump();
+    expect(flight, findsOneWidget);
+    expect(tester.getRect(flight).center.dx, closeTo(tester.getRect(landing).center.dx, 1));
+
+    await tester.pumpAndSettle();
+    expect(flight, findsNothing);
+    expect(frameOpacity(), 1);
+  });
+
   testWidgets('la première photo suffit et « Reprendre » la supprime', (tester) async {
     await pumpFlow(tester);
     await tester.tap(find.widgetWithText(FloraButton, 'Choisir une photo'));

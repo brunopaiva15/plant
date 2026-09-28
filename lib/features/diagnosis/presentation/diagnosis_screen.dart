@@ -222,7 +222,13 @@ class _DiagnosisScreenState extends ConsumerState<DiagnosisScreen> {
     setState(() => _picking = true);
     try {
       final stored = await ref.read(photoStorageProvider).pick(source);
-      if (stored != null && mounted) _accept(stored, thenAnalyze: thenAnalyze);
+      if (stored != null && mounted) {
+        // Choisie dans la galerie, la photo reste devant quand le sélecteur
+        // se referme, puis file dans sa case.
+        final full = _storage.absolutePathNow(stored.filePath);
+        if (source == PhotoSource.gallery && full != null) PhotoLanding.expectFile(stored.thumbPath, File(full));
+        _accept(stored, thenAnalyze: thenAnalyze);
+      }
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'diagnosis.pick');
       if (mounted) ref.read(toastProvider.notifier).show(photoErrorToast(context.l10n, e));
@@ -1071,9 +1077,12 @@ class _Shot extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        ClipRRect(
-          borderRadius: Radii.mediumAll,
-          child: PlantImage(relativePath: photo.thumbPath, cacheWidth: 300),
+        PhotoLanding(
+          tag: photo.thumbPath,
+          child: ClipRRect(
+            borderRadius: Radii.mediumAll,
+            child: PlantImage(relativePath: photo.thumbPath, cacheWidth: 300),
+          ),
         ),
         Positioned(
           top: 2,
