@@ -194,6 +194,25 @@ elle déménage d'un hôte à l'autre au changement d'onglet — contenance UIKi
 ordinaire, `addChild` et `didMove`, pas un tour de passe-passe. Quatre moteurs
 auraient coûté quatre démarrages et auraient retiré les onglets à go_router.
 
+**Flutter paraît avec la coquille, pas avec l'onglet.** Pour Flutter,
+`viewDidDisappear` n'est pas un détail : il détruit sa surface de rendu et le
+met en pause, et `viewWillAppear` la refait. Laissé à UIKit, chaque
+déménagement lui valait les deux, et un changement d'onglet ou des onglets
+refaits en pleine marche — la fin de l'introduction, une langue qui change —
+mêlent deux transitions : la disparition de l'ancien hôte pouvait arriver
+**après** l'apparition dans le nouveau. Flutter restait à l'écran sans
+surface. Dart tournait toujours — il changeait de page et publiait les boutons
+de la barre —, mais l'écran gardait sa dernière image, et plus rien ne
+semblait répondre jusqu'au prochain passage en arrière-plan : un Profil figé
+sous l'onglet « Aujourd'hui » choisi, coiffé des boutons d'« Aujourd'hui ».
+
+Les hôtes ne transmettent donc plus l'apparition
+(`shouldAutomaticallyForwardAppearanceMethods`), et c'est le contrôleur
+d'onglets qui la dit à Flutter : il ne disparaît que lorsqu'une page d'UIKit
+le couvre pour de bon, comme le relevé d'une pièce, et ses transitions à lui
+sont équilibrées. Une langue qui change, enfin, renomme les onglets au lieu de
+les refaire : Flutter ne déménage plus pour un libellé.
+
 Les onglets sont déclarés avec des **SF Symbols** et non les icônes Cupertino
 d'Auxine : c'est UIKit qui les dessine, et il ne connaît que les siens. Les
 libellés viennent des ARB comme partout ailleurs.
