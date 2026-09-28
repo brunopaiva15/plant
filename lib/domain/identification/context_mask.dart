@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math' as math;
 
+import '../../core/utils/scientific_name.dart';
 import 'identification_context.dart';
 import 'plant_identifier.dart';
 
@@ -84,19 +85,41 @@ List<IdentificationCandidate> maskedCandidates(
 }) {
   final n = math.min(labels.length, scores.length);
   final all = [for (var i = 0; i < n; i++) i];
+
+  // **Deux classes, une plante.** Le modèle a appris *Schefflera arboricola*
+  // et *Heptapleurum arboricola* comme deux classes, alors que ce sont deux
+  // noms de la même plante (§ 20 octies de `docs/14`). Leurs probabilités
+  // s'excluent l'une l'autre, donc la probabilité de la plante est leur
+  // **somme** : rendues séparément, elles se partagent le score, chacune
+  // peut tomber sous le seuil, et l'écran propose deux fois la même plante.
+  // La clé de regroupement est le nom sous lequel l'app connaît la plante.
+  final keyOf = [for (var i = 0; i < n; i++) acceptedSpeciesName(nameOf(labels[i]))];
+
   List<IdentificationCandidate> best(List<int> indices, double mass, {required bool inContext}) {
-    final candidates = <IdentificationCandidate>[];
+    final sums = <String, double>{};
+    final chosen = <String, int>{};
     for (final i in indices) {
-      final global = scores[i];
+      final key = keyOf[i];
+      sums[key] = (sums[key] ?? 0) + scores[i];
+      // L'identifiant rendu est celui dont le nom *est* le nom retenu : la
+      // fiche soignée, pas le synonyme.
+      final current = chosen[key];
+      if (current == null || (nameOf(labels[i]) == key && nameOf(labels[current]) != key)) {
+        chosen[key] = i;
+      }
+    }
+    final candidates = <IdentificationCandidate>[];
+    for (final e in sums.entries) {
+      final global = e.value;
       final score = global / mass;
       if (score < minimumCandidateScore) continue;
       candidates.add(IdentificationCandidate(
-        scientificName: nameOf(labels[i]),
+        scientificName: e.key,
         score: score.clamp(0.0, 1.0),
         globalScore: global.clamp(0.0, 1.0),
         inContext: inContext,
         source: IdentificationSource.local,
-        internalId: labels[i],
+        internalId: labels[chosen[e.key]!],
       ));
     }
     candidates.sort((a, b) => b.score.compareTo(a.score));
@@ -105,9 +128,14 @@ List<IdentificationCandidate> maskedCandidates(
 
   if (mask == null || mask.isEmpty) return best(all, 1, inContext: true);
 
+  // Une plante est du lieu dès qu'un de ses noms l'est : sans quoi une moitié
+  // de son score resterait « ailleurs » et l'autre compterait seule.
+  final keysInside = {for (final i in mask) if (i < n) keyOf[i]};
+  final expanded = {for (final i in all) if (mask.contains(i) || keysInside.contains(keyOf[i])) i};
+
   var mass = 0.0;
-  for (final i in mask) {
-    if (i < n) mass += scores[i];
+  for (final i in expanded) {
+    mass += scores[i];
   }
   // Diviser par une masse nulle fabriquerait des certitudes à partir de bruit.
   // Ce garde-fou n'est que numérique : jusqu'où la masse du lieu peut
@@ -118,7 +146,7 @@ List<IdentificationCandidate> maskedCandidates(
   final inside = <int>[];
   final outside = <int>[];
   for (final i in all) {
-    (mask.contains(i) ? inside : outside).add(i);
+    (expanded.contains(i) ? inside : outside).add(i);
   }
   return [
     ...best(inside, mass, inContext: true),

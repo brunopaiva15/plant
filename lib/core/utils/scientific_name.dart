@@ -129,6 +129,12 @@ const _acceptedNames = {
   'Anemonoides nemorosa': 'Anemone nemorosa',
   'Heptapleurum arboricola': 'Schefflera arboricola',
   'Vriesea splendens': 'Lutheria splendens',
+  // Deux classes du modèle pour la violette africaine : le nom accepté est
+  // *Streptocarpus ionanthus*, mais la fiche soignée à la main est sous
+  // *Saintpaulia ionantha*. Sans cette ligne, le modèle partage son score
+  // entre les deux et l'écran propose deux fois la même plante (§ 20 octies
+  // de `docs/14`).
+  'Streptocarpus ionanthus': 'Saintpaulia ionantha',
   // Le modèle a perdu le signe d'hybride en route ; le catalogue le garde.
   'Sedum rubrotinctum': 'Sedum × rubrotinctum',
 };
