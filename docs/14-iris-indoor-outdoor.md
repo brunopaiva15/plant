@@ -2712,6 +2712,36 @@ bloquants.
 `fp16` (§ ci-dessus), même vitesse, 12 Mo au lieu de 23. Un téléphone plus
 ancien reste à mesurer : le rapport de six avec Iris 9 devrait tenir.
 
+## 20 quaterdecies. L'étape 12 : quand affirmer — 29 septembre 2026
+
+**Décidé le 29 septembre : l'application fusionnera Iris 9 et Iris 10**
+(`p9^0,5 · p10^0,5`, § 20 duodecies). La fusion est la meilleure lecture
+partout, et elle coûte ~8 ms par photo sur un iPhone 16 Pro (§ 20
+terdecies), pas une seconde.
+
+**Ce que l'application fait d'un score** (`FallbackPolicy`) : elle affirme
+le premier candidat à 0,70 avec 0,25 d'avance sur le deuxième, propose la
+liste au-dessus de 0,25, se tait sous 0,10, et dehors le modèle local
+n'affirme jamais. Ces seuils ont été réglés pour Iris 7 à 9 ; la politique
+le dit elle-même, un seuil ne se transporte pas d'un modèle à l'autre.
+
+**`seuils.py`** rend, pour Iris 9 tel que l'application le lit, Iris 10
+masqué et la fusion (une distribution renormalisée, que la politique peut
+lire telle quelle) :
+
+- la courbe autonomie / justesse des réponses affirmées, en indoor et en
+  outdoor ;
+- **l'affirmation à tort** sur les 2 000 photos `ood_plante`, des plantes
+  qu'aucun des deux modèles ne nomme, lues sous le masque d'intérieur :
+  toute affirmation y est une erreur, et c'est celle qui coûte le plus ;
+- **le seuil recommandé** : le plus bas qui égale Iris 9 d'aujourd'hui
+  (0,70) sur les deux fronts à la fois, choisi sur une moitié du banc et lu
+  sur l'autre.
+
+La question « dehors, affirmer ou non » se relit sur la colonne outdoor :
+Iris 9 n'y avait pas le droit parce qu'il affirmait à tort des plantes de
+jardin ; la fusion y vaut 0,84 au top-1.
+
 ## 21. Ce qui est décidé et ce qui reste ouvert
 
 ### Décidé

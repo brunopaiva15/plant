@@ -682,6 +682,16 @@ CUDA_VISIBLE_DEVICES= ~/venv/bin/python3 arbitre.py --embeddings ~/plant-data/ir
 TensorFlow pour Iris 9, donc `~/venv` ; `CUDA_VISIBLE_DEVICES=` le garde
 sur le processeur quand un entraînement occupe la carte.
 
+### Quand affirmer (étape 12)
+
+`seuils.py` rend la courbe autonomie / justesse d'Iris 9, d'Iris 10 et de
+leur fusion, l'affirmation à tort hors répertoire, et le seuil qui égale
+Iris 9 d'aujourd'hui sur les deux (§ 20 quaterdecies de `docs/14`) :
+
+```bash
+CUDA_VISIBLE_DEVICES= ~/venv/bin/python3 seuils.py --embeddings ~/plant-data/iris10-int/banc-e10
+```
+
 ### Des lots difficiles
 
 `--difficiles 0.5` fait la moitié de chaque lot de groupes de voisins dans
