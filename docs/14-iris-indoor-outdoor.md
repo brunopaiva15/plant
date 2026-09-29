@@ -2818,9 +2818,9 @@ reste dehors sous ce qu'Iris 9 fait en intérieur (0,416). Elle y passe, de
 justesse (0,408) — mais Iris 9 y passait aussi, largement (0,334), et il a
 été interdit d'affirmer dehors. L'interdiction ne venait donc pas d'un taux
 plus haut dehors qu'en intérieur. Elle vient de ce qu'on y rencontre :
-dans un jardin, une plante sur deux ou plus est hors du répertoire, contre
-une minorité dans un appartement. À taux égal par plante inconnue, dehors
-produit bien plus d'affirmations fausses par scan.
+un jardin compte bien plus d'espèces hors répertoire qu'un appartement (la
+part exacte n'est pas mesurée). À taux égal par plante inconnue, dehors
+produit donc plus d'affirmations fausses par scan.
 
 **Et à seuil égal, la fusion affirme dehors plus de plantes inconnues
 qu'Iris 9** : 0,408 contre 0,334. Le masque d'extérieur est plus large que
