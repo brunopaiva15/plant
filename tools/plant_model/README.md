@@ -685,8 +685,10 @@ sur le processeur quand un entraînement occupe la carte.
 ### Quand affirmer (étape 12)
 
 `seuils.py` rend la courbe autonomie / justesse d'Iris 9, d'Iris 10 et de
-leur fusion, l'affirmation à tort hors répertoire, et le seuil qui égale
-Iris 9 d'aujourd'hui sur les deux (§ 20 quaterdecies de `docs/14`) :
+leur fusion, l'affirmation à tort hors répertoire (sous le masque
+d'intérieur, puis d'extérieur), et le seuil qui égale Iris 9 d'aujourd'hui
+sur les deux (§ 20 quaterdecies de `docs/14`). Retenu pour la fusion :
+0,85, marge 0,25.
 
 ```bash
 CUDA_VISIBLE_DEVICES= ~/venv/bin/python3 seuils.py --embeddings ~/plant-data/iris10-int/banc-e10

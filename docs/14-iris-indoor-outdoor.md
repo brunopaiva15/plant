@@ -2738,9 +2738,76 @@ lire telle quelle) :
   (0,70) sur les deux fronts à la fois, choisi sur une moitié du banc et lu
   sur l'autre.
 
-La question « dehors, affirmer ou non » se relit sur la colonne outdoor :
-Iris 9 n'y avait pas le droit parce qu'il affirmait à tort des plantes de
-jardin ; la fusion y vaut 0,84 au top-1.
+### Les courbes (iris10-int, é10, banc du 29 septembre)
+
+Marge minimale 0,25 partout. Autonomie / justesse des réponses affirmées ;
+à tort : part des 2 000 photos `ood_plante` affirmées, sous le masque
+d'intérieur.
+
+| seuil | Iris 9 indoor | Iris 9 outdoor | à tort | fusion indoor | fusion outdoor | à tort |
+|---|---|---|---|---|---|---|
+| 0,70 | **0,787 / 0,918** | **0,672 / 0,925** | **0,416** | 0,910 / 0,925 | 0,879 / 0,911 | 0,527 |
+| 0,75 | 0,757 / 0,927 | 0,640 / 0,937 | 0,360 | 0,902 / 0,929 | 0,853 / 0,922 | 0,478 |
+| 0,80 | 0,732 / 0,932 | 0,605 / 0,947 | 0,313 | 0,887 / 0,936 | 0,831 / 0,931 | 0,422 |
+| 0,85 | 0,698 / 0,944 | 0,565 / 0,957 | 0,264 | **0,866 / 0,943** | **0,807 / 0,941** | **0,370** |
+| 0,90 | 0,658 / 0,953 | 0,515 / 0,966 | 0,209 | 0,843 / 0,951 | 0,774 / 0,955 | 0,308 |
+| 0,95 | 0,574 / 0,966 | 0,442 / 0,982 | 0,147 | 0,790 / 0,966 | 0,720 / 0,965 | 0,233 |
+
+En gras : Iris 9 tel que l'application le lit aujourd'hui, et le réglage
+retenu pour la fusion.
+
+**La fusion est plus confiante qu'Iris 9 à score égal** : à 0,70 elle
+affirme 91 % des photos, mais elle affirme aussi 53 % des plantes hors
+répertoire, contre 42 %. Garder 0,70 aurait été recopier un seuil d'un
+modèle à l'autre, précisément ce que la politique interdit.
+
+**Iris 10 seul** est plus confiant encore (à tort 0,675 à 0,70) : il lui
+faut 0,95 pour égaler Iris 9, et il y rend 79 à 85 % d'autonomie — moins
+que la fusion à 0,85, avec une justesse comparable. Une raison de plus pour
+la fusion.
+
+### Le seuil recommandé, validé en croisé
+
+Réglé sur une moitié du banc, lu sur l'autre (moitiés fixes, graine
+20260928), contre Iris 9 à 0,70 lu sur la même moitié :
+
+| choisi sur la moitié A | lu sur la moitié B : autonomie | justesse | à tort |
+|---|---|---|---|
+| 0,80 | 0,887 (Iris 9 0,793) | 0,946 (0,926) | **0,453 (0,434)** |
+| 0,85 | 0,870 (Iris 9 0,782) | 0,935 (0,909) | 0,341 (0,399) |
+
+0,80 passe sur une moitié et **dépasse Iris 9 en affirmation à tort sur
+l'autre** : il est à la limite. 0,85 fait mieux qu'Iris 9 sur les deux
+fronts, sur les deux moitiés.
+
+**Décidé : la fusion affirme à 0,85, marge 0,25.** Sur le banc entier,
+contre l'application d'aujourd'hui :
+
+- autonomie indoor **0,866 contre 0,787** (+8 points) ;
+- justesse des réponses affirmées **0,943 contre 0,918** (+2,5 points) ;
+- affirmation à tort hors répertoire **0,370 contre 0,416** (−4,6 points).
+
+Plus de réponses, plus justes, et moins de plantes inconnues affirmées. Le
+seuil de proposition (0,25) et le plancher (0,10) ne sont pas touchés : ils
+décident de ce qu'on montre, pas de ce qu'on affirme.
+
+Ce seuil est réglé sur iris10-int. Il se relit sur iris10-final avant
+livraison (même commande, même banc) ; il ne bouge que si la courbe bouge.
+
+### Dehors : affirmer ou non
+
+Aujourd'hui le modèle local n'affirme jamais dehors (`localMayAffirm`) :
+Iris 9 affirmait des plantes de jardin hors catalogue, sûr de lui (§ 12.7
+de `docs/09`). Sur la colonne outdoor, la fusion à 0,85 rend 0,807
+d'autonomie et **0,941 de justesse** — plus juste qu'Iris 9 en intérieur,
+où il a le droit d'affirmer.
+
+Mais la justesse outdoor ne mesure pas la panne qui a motivé
+l'interdiction : elle ne contient que des plantes du répertoire. Cette
+panne-là, c'est l'affirmation à tort **sous le masque d'extérieur**, que
+`seuils.py` rend désormais en seconde colonne. La décision attend ce
+chiffre : si la fusion à 0,85 y reste sous ce qu'Iris 9 fait en intérieur
+(0,416), le modèle local peut affirmer dehors ; sinon l'interdiction reste.
 
 ## 21. Ce qui est décidé et ce qui reste ouvert
 

@@ -18,9 +18,11 @@ l'application le lit, Iris 10 et leur fusion :
 - **la courbe** : pour chaque seuil, la part des photos affirmées
   (l'autonomie) et la part de ces réponses qui sont justes ;
 - **l'affirmation à tort** sur `ood_plante` : des plantes qu'aucun des deux
-  modèles ne peut nommer, lues avec le masque d'intérieur. Toute
-  affirmation y est une erreur — celle qui coûte le plus, parce qu'elle
-  s'affiche sûre d'elle (§ 12.7 de `docs/09`).
+  modèles ne peut nommer, lues avec le masque d'intérieur, puis avec celui
+  d'extérieur. Toute affirmation y est une erreur — celle qui coûte le
+  plus, parce qu'elle s'affiche sûre d'elle (§ 12.7 de `docs/09`). La
+  lecture d'extérieur est celle qui décide si le modèle local peut
+  affirmer dehors : c'est cette erreur-là qui le lui a interdit.
 
 **Le seuil recommandé** est le plus bas qui fait au moins aussi bien
 qu'Iris 9 aujourd'hui (0,70 et 0,25) sur les deux fronts : justesse des
@@ -168,18 +170,21 @@ def main() -> int:  # pragma: no cover - demande le cache, le banc et TensorFlow
     indoor = lire_tranche('indoor', args, cles, vecteurs, source, dossier_iris, interieur)
     outdoor = lire_tranche('outdoor', args, cles, vecteurs, source, dossier_iris, exterieur)
     ood = lire_tranche('ood_plante', args, cles, vecteurs, source, dossier_iris, interieur)
+    ood_dehors = lire_tranche('ood_plante', args, cles, vecteurs, source, dossier_iris, exterieur)
 
-    print(f'\nmarge minimale {MARGE} ; indoor et ood_plante sous le masque d\'intérieur, '
-          f'outdoor sous celui d\'extérieur\n')
+    print(f'\nmarge minimale {MARGE} ; indoor sous le masque d\'intérieur, outdoor sous celui '
+          f'd\'extérieur ; ood_plante sous les deux\n')
     for nom in ('Iris 9', 'Iris 10', 'fusion'):
-        print(f'— {nom} —   seuil : autonomie / justesse indoor ; outdoor ; affirmées à tort hors répertoire')
+        print(f'— {nom} —   seuil : autonomie / justesse indoor ; outdoor ; '
+              f'affirmées à tort hors répertoire (intérieur / extérieur)')
         ci = courbe(indoor[nom]['justes'], indoor[nom]['s1'], indoor[nom]['marge'])
         co = courbe(outdoor[nom]['justes'], outdoor[nom]['s1'], outdoor[nom]['marge'])
         for a, b in zip(ci, co):
             t = a_tort(ood[nom]['s1'], ood[nom]['marge'], a['seuil'])
+            td = a_tort(ood_dehors[nom]['s1'], ood_dehors[nom]['marge'], a['seuil'])
             j = lambda c: f"{c['justesse']:.3f}" if c['justesse'] is not None else '  —  '
             print(f"   {a['seuil']:.2f} : {a['autonomie']:.3f} / {j(a)} ; "
-                  f"{b['autonomie']:.3f} / {j(b)} ; {t:.3f}"
+                  f"{b['autonomie']:.3f} / {j(b)} ; {t:.3f} / {td:.3f}"
                   + ('   ← l\'application aujourd\'hui' if nom == 'Iris 9' and a['seuil'] == SEUIL_APP else ''))
         print()
 
