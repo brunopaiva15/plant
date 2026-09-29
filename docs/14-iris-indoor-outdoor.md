@@ -2805,9 +2805,33 @@ où il a le droit d'affirmer.
 Mais la justesse outdoor ne mesure pas la panne qui a motivé
 l'interdiction : elle ne contient que des plantes du répertoire. Cette
 panne-là, c'est l'affirmation à tort **sous le masque d'extérieur**, que
-`seuils.py` rend désormais en seconde colonne. La décision attend ce
-chiffre : si la fusion à 0,85 y reste sous ce qu'Iris 9 fait en intérieur
-(0,416), le modèle local peut affirmer dehors ; sinon l'interdiction reste.
+`seuils.py` rend désormais en seconde colonne.
+
+| | Iris 9 à 0,70 | fusion à 0,85 | fusion à 0,90 | fusion à 0,95 |
+|---|---|---|---|---|
+| à tort, masque d'intérieur | 0,416 | 0,370 | 0,308 | 0,233 |
+| à tort, masque d'extérieur | **0,334** | **0,408** | 0,353 | 0,271 |
+| autonomie / justesse outdoor | 0,672 / 0,925 | 0,807 / 0,941 | 0,774 / 0,955 | 0,720 / 0,965 |
+
+**Le critère posé d'abord ne tranchait rien.** Il demandait que la fusion
+reste dehors sous ce qu'Iris 9 fait en intérieur (0,416). Elle y passe, de
+justesse (0,408) — mais Iris 9 y passait aussi, largement (0,334), et il a
+été interdit d'affirmer dehors. L'interdiction ne venait donc pas d'un taux
+plus haut dehors qu'en intérieur. Elle vient de ce qu'on y rencontre :
+dans un jardin, une plante sur deux ou plus est hors du répertoire, contre
+une minorité dans un appartement. À taux égal par plante inconnue, dehors
+produit bien plus d'affirmations fausses par scan.
+
+**Et à seuil égal, la fusion affirme dehors plus de plantes inconnues
+qu'Iris 9** : 0,408 contre 0,334. Le masque d'extérieur est plus large que
+celui d'intérieur, et la fusion, plus confiante, y trouve plus souvent un
+voisin. Pour revenir au niveau d'Iris 9, il lui faut 0,90 ou plus.
+
+**Décidé : le modèle local n'affirme toujours pas dehors.** La fusion y
+gagne quand même : la liste proposée est meilleure (top-1 0,84 contre
+0,76, § 20 duodecies), et Pl@ntNet reste le repli. La question se rouvrira
+avec un chiffre qui manque — la part de plantes hors répertoire dans de
+vrais scans d'extérieur —, pas avec un seuil de plus.
 
 ## 21. Ce qui est décidé et ce qui reste ouvert
 
