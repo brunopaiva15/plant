@@ -657,6 +657,18 @@ cd ~/plant/tools/plant_model
 installé avec `litert-torch` : la voie ne dépend pas de TensorFlow, que la
 0.9 n'utilise plus.
 
+**L'iPhone lit TensorFlow Lite 2.12.** `exporter.py` remet les poids en
+ligne après la compression ; sans cela, `fp16` et `int8w` ne se
+chargeraient pas dans l'application (§ 20 terdecies de `docs/14`).
+
+**La vitesse sur le téléphone** se mesure depuis le Mac, iPhone branché,
+les fichiers copiés dans `assets/model/` :
+
+```bash
+flutter drive --profile --driver=test_driver/integration_test.dart \
+  --target=integration_test/iris10_vitesse_test.dart -d <iPhone>
+```
+
 ### Iris 9 et Iris 10 ensemble
 
 `arbitre.py` mesure les règles qui combinent les deux modèles, réglées sur

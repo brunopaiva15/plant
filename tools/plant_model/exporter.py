@@ -167,6 +167,27 @@ def compresser(fp32: Path, fmt: str, dest: Path) -> None:  # pragma: no cover
     else:
         q.load_quantization_recipe(getattr(recipe, reglage['recette'])())
     q.quantize(enable_progress_report=False).export_model(str(dest), overwrite=True)
+    en_ligne(dest)
+
+
+def en_ligne(fichier: Path) -> int:  # pragma: no cover - demande ai_edge_litert
+    """Remet les poids **dans** le flatbuffer, et rend combien en étaient
+    sortis.
+
+    `ai_edge_quantizer` range les poids après la structure du fichier et ne
+    garde dans celle-ci que leur position (`Buffer.offset`) — une facilité de
+    LiteRT récent. L'application embarque TensorFlow Lite **2.12** (le pod de
+    `tflite_flutter`), qui ne sait pas les y chercher : « Input tensor 92
+    lacks data », mesuré le 29 septembre 2026. Relus puis réécrits en ligne,
+    les mêmes poids se chargent sous 2.12 et rendent le même vecteur
+    (cosinus 1,0), pour la même taille.
+    """
+    from ai_edge_litert.tools import flatbuffer_utils as fu
+    octets = bytearray(fichier.read_bytes())
+    externes = sum(1 for b in fu.convert_bytearray_to_object(octets).buffers if b.offset)
+    if externes:
+        fichier.write_bytes(fu.convert_object_to_bytearray(fu.read_model_from_bytearray(octets)))
+    return externes
 
 
 def convertir(args) -> int:  # pragma: no cover - demande torch et litert-torch

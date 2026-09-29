@@ -2639,6 +2639,39 @@ centroïdes v8 + pot. Référence : `iris10-int` en PyTorch, 0,8385 en indoor,
 **Décision provisoire : `fp16`, 23 Mo.** Elle tombe si `int8w` tient à 0,2
 point : 12 Mo pour le même top-1.
 
+| format | taille | cosinus (moyen / minimal) | indoor | outdoor |
+|---|---|---|---|---|
+| `int8w` (poids int8, calculs float) | 12 Mo | 0,99667 / 0,95025 | 0,8438 | 0,8040 |
+
+**`int8w` tient la règle** : +0,35 point en indoor et −0,2 en outdoor face
+au `fp16`, dans le bruit du banc, pour moitié moins de poids. Ce n'est plus
+une copie exacte (cosinus minimal 0,95 contre 0,9999) : le banc ne voit pas
+la différence, une photo à la limite entre deux espèces pourrait la voir.
+Le choix entre les deux attend la mesure de vitesse.
+
+### Ce que l'iPhone sait lire
+
+L'application embarque **TensorFlow Lite 2.12** (le pod de
+`tflite_flutter` 0.12.1), de 2023. Le `fp32` sorti du convertisseur de 2026
+s'y charge ; les `fp16` et `int8w` tirés par `ai_edge_quantizer`, non :
+« Input tensor 92 lacks data ». Le quantificateur range les poids après la
+structure du fichier, et n'y laisse que leur position (`Buffer.offset`),
+ce que 2.12 ne sait pas suivre. `exporter.py` les remet désormais en ligne
+après la compression : même taille, même vecteur (cosinus 1,0 entre le
+fichier d'origine sous LiteRT 2.2 et le fichier réécrit sous TFLite 2.12),
+et les trois formats se chargent sous 2.12 — vérifié avec l'interpréteur
+2.12 lui-même.
+
+### La vitesse, sur un iPhone 16 Pro
+
+`integration_test/iris10_vitesse_test.dart` charge Iris 9 et les deux
+Iris 10 dans la vraie application, sur le téléphone, et chronomètre
+`invoke()` : cinq tours de chauffe, trente mesurés, médiane et 9ᵉ décile,
+plus le temps de chargement. Quatre réglages : le processeur à 2 fils (celui
+de l'app), à 4 fils, Metal, Core ML. Les fichiers Iris 10 se déposent le
+temps de la mesure dans `assets/model/`, que `.gitignore` tient hors du
+dépôt.
+
 ## 21. Ce qui est décidé et ce qui reste ouvert
 
 ### Décidé
