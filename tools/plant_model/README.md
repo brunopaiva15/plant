@@ -637,22 +637,25 @@ format qu'`tflite_flutter` charge déjà pour Iris 9, en trois précisions :
 `voisins.py` dise ce que la conversion coûte.
 
 **Un venv à part, sur le processeur.** `litert-torch` impose sa version de
-torch et installe TensorFlow : dans `venv-torch`, il abîmerait
-l'entraînement. Versions vérifiées le 29 septembre 2026 :
+torch : dans `venv-torch`, il abîmerait l'entraînement. Vérifié le 29
+septembre 2026 sous Python 3.14 (Ubuntu 26.04) : `litert-torch` 0.9.4,
+torch 2.13, sans version épinglée — les épingles de la 0.8 n'existent pas
+pour Python 3.14. torch d'abord, depuis l'index « cpu » : sans lui, pip
+télécharge les deux gigaoctets de la version CUDA pour rien.
 
 ```bash
 python3 -m venv ~/venv-export
-~/venv-export/bin/pip install "torch==2.9.1" "torchvision==0.24.1" \
-  --index-url https://download.pytorch.org/whl/cpu
-~/venv-export/bin/pip install litert-torch timm "torchao==0.14.1"
+~/venv-export/bin/pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+~/venv-export/bin/pip install litert-torch timm
 
 cd ~/plant/tools/plant_model
 ~/venv-export/bin/python exporter.py convertir --sortie ~/plant-data/iris10-int
 ~/venv-export/bin/python exporter.py verifier --sortie ~/plant-data/iris10-int
 ```
 
-`torchao` doit rester en 0.14 : la 0.18, que `litert-torch` tire par
-défaut, demande un torch que `litert-torch` refuse.
+`fp16` et `int8` sont tirés du fichier `fp32` par `ai_edge_quantizer`,
+installé avec `litert-torch` : la voie ne dépend pas de TensorFlow, que la
+0.9 n'utilise plus.
 
 ### Iris 9 et Iris 10 ensemble
 

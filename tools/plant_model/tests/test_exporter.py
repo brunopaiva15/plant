@@ -1,21 +1,15 @@
 """L'export au format du téléphone, sans torch ni LiteRT.
 
 Ce qui est testé ici est ce qui ferait livrer un fichier faux sans le dire :
-une option de format ignorée (le float16 qui sort en int8), une recette
+un format sans réglage, une recette
 d'entrée qui ne dit pas ce que le modèle attend, un banc encodé que
 `voisins.py` ne saurait pas relire.
 """
 import json
-from types import SimpleNamespace
-
 import numpy as np
 import pytest
 
-from exporter import cosinus_par_ligne, ecrire_banc, metadonnees, options_du_format, recette
-
-TF = SimpleNamespace(lite=SimpleNamespace(Optimize=SimpleNamespace(DEFAULT='defaut')),
-                     float16='f16')
-
+from exporter import cosinus_par_ligne, ecrire_banc, metadonnees, recette, reglage_du_format
 
 def test_la_recette_vient_du_point_de_controle(tmp_path):
     (tmp_path / 'etat.json').write_text(json.dumps(
@@ -28,19 +22,15 @@ def test_un_etat_ancien_a_tourne_a_224(tmp_path):
     assert recette(tmp_path)['entree'] == 224
 
 
-def test_le_float16_passe_par_un_dictionnaire_imbrique():
-    """À plat, `target_spec.supported_types` est ignoré sans erreur et le
-    fichier sort quantifié en int8 : 12 Mo au lieu de 23."""
-    o = options_du_format('fp16', TF)
-    assert o == {'optimizations': ['defaut'], 'target_spec': {'supported_types': ['f16']}}
-    assert 'target_spec.supported_types' not in o
-
-
-def test_fp32_sans_option_et_int8_sans_type():
-    assert options_du_format('fp32', TF) == {}
-    assert options_du_format('int8', TF) == {'optimizations': ['defaut']}
+def test_chaque_format_a_son_reglage():
+    """Le fp32 est le fichier du convertisseur ; les deux autres en sont
+    tirés par le quantificateur, qui lit un .tflite de n'importe quelle
+    version de litert-torch."""
+    assert reglage_du_format('fp32') is None
+    assert reglage_du_format('fp16') == {'poids_seuls': 16, 'algorithme': 'float_casting'}
+    assert reglage_du_format('int8') == {'recette': 'dynamic_wi8_afp32'}
     with pytest.raises(ValueError):
-        options_du_format('fp8', TF)
+        reglage_du_format('fp8')
 
 
 def test_les_metadonnees_disent_ce_que_le_modele_attend(tmp_path):

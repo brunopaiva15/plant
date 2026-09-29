@@ -30,8 +30,9 @@ chaque fichier, sur le processeur, et l'écrit comme un point de contrôle :
 n'importe quelle époque. Le cosinus avec les vecteurs de l'entraînement dit
 si la conversion est fidèle ; le top-1 dit si ça compte.
 
-Demande `torch`, `timm` et `litert-torch` (voir le README : un venv à part,
-sur le processeur, pour ne pas toucher à celui de l'entraînement).
+Demande `torch`, `timm`, `litert-torch` et `ai-edge-quantizer` (voir le
+README : un venv à part, sur le processeur, pour ne pas toucher à celui de
+l'entraînement).
 """
 from __future__ import annotations
 
@@ -59,24 +60,27 @@ def recette(sortie: Path) -> dict:
             'epoque': int(etat.get('epoque', 0))}
 
 
-def options_du_format(fmt: str, tf=None) -> dict:
-    """Les options du convertisseur pour un format.
+def reglage_du_format(fmt: str) -> dict | None:
+    """Comment `ai_edge_quantizer` tire ce format du fichier `fp32`, ou None
+    pour le `fp32` lui-même.
 
-    Le dictionnaire est **imbriqué** : `litert-torch` descend dans
-    `target_spec` avant de poser `supported_types`. Écrit à plat
-    (`'target_spec.supported_types'`), l'option est ignorée sans erreur et
-    `Optimize.DEFAULT` seul rend un fichier quantifié en int8 — mesuré le
-    29 septembre, 12 Mo au lieu des 23 attendus.
+    Le passage par le quantificateur, et non par les options du
+    convertisseur, est voulu : `litert-torch` 0.9, le seul installable sous
+    Python 3.14, ne passe plus par TensorFlow, et les options `tf.lite` de la
+    0.8 n'y existent plus. Le quantificateur, lui, lit un `.tflite` quelle que
+    soit la version qui l'a écrit.
+
+    - `fp16` : les poids en demi-précision (`FLOAT_CASTING` sur 16 bits), les
+      calculs en float32 ;
+    - `int8` : la recette dynamique, poids int8 par canal, activations
+      quantifiées à la volée.
     """
     if fmt == 'fp32':
-        return {}
-    if tf is None:
-        import tensorflow as tf
+        return None
     if fmt == 'fp16':
-        return {'optimizations': [tf.lite.Optimize.DEFAULT],
-                'target_spec': {'supported_types': [tf.float16]}}
+        return {'poids_seuls': 16, 'algorithme': 'float_casting'}
     if fmt == 'int8':
-        return {'optimizations': [tf.lite.Optimize.DEFAULT]}
+        return {'recette': 'dynamic_wi8_afp32'}
     raise ValueError(f'format inconnu : {fmt}')
 
 
@@ -144,6 +148,21 @@ def modele_livrable(sortie: Path, r: dict):  # pragma: no cover - demande torch
     return Livrable(reparameterize_model(modele)).eval()
 
 
+def compresser(fp32: Path, fmt: str, dest: Path) -> None:  # pragma: no cover
+    """Le fichier `fp32` compressé en `fmt` par `ai_edge_quantizer`."""
+    from ai_edge_quantizer import quantizer, recipe
+    from ai_edge_quantizer.algorithm_manager import AlgorithmName
+    reglage = reglage_du_format(fmt)
+    q = quantizer.Quantizer(str(fp32))
+    if 'poids_seuls' in reglage:
+        q.add_weight_only_config(regex='.*', operation_name='*',
+                                 num_bits=reglage['poids_seuls'],
+                                 algorithm_key=AlgorithmName.FLOAT_CASTING)
+    else:
+        q.load_quantization_recipe(getattr(recipe, reglage['recette'])())
+    q.quantize(enable_progress_report=False).export_model(str(dest), overwrite=True)
+
+
 def convertir(args) -> int:  # pragma: no cover - demande torch et litert-torch
     import torch
     import litert_torch
@@ -156,10 +175,12 @@ def convertir(args) -> int:  # pragma: no cover - demande torch et litert-torch
     with torch.no_grad():
         attendu = modele(exemple).numpy()
     print(f"{r['student']}, époque {r['epoque']}, entrée {r['entree']} px")
+    fp32 = dest / 'iris10-fp32.tflite'
+    litert_torch.convert(modele, (exemple,)).export(str(fp32))
     for fmt in args.formats.split(','):
         fichier = dest / f'iris10-{fmt}.tflite'
-        litert_torch.convert(modele, (exemple,),
-                             _ai_edge_converter_flags=options_du_format(fmt)).export(str(fichier))
+        if fmt != 'fp32':
+            compresser(fp32, fmt, fichier)
         rendu = executer(fichier, exemple.numpy())
         meta = metadonnees(r, fmt, fichier)
         (dest / f'iris10-{fmt}.json').write_text(json.dumps(meta, indent=2, ensure_ascii=False) + '\n')

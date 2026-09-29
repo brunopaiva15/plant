@@ -2595,9 +2595,15 @@ suit le même chemin, un `.tflite` converti directement de PyTorch par
 3,0 GMAC par image à 320 px. Pour comparaison, Iris 9 (MobileNetV3-Large,
 320 px) pèse 9,0 Mo. La latence sur téléphone reste à mesurer.
 
-**Un piège évité.** Les options du convertisseur sont un dictionnaire
-imbriqué : écrite à plat, `target_spec.supported_types` est ignorée sans
-erreur, et le fichier « float16 » sort quantifié en int8.
+**Deux pièges évités.** Sous `litert-torch` 0.8, les options du
+convertisseur étaient un dictionnaire imbriqué : écrite à plat,
+`target_spec.supported_types` était ignorée sans erreur, et le fichier
+« float16 » sortait quantifié en int8. Puis la 0.8 s'est révélée
+introuvable sous Python 3.14, celui d'Ubuntu 26.04 ; la 0.9, qui s'y
+installe, ne passe plus par TensorFlow. Les formats compressés sont donc
+tirés du fichier `fp32` par `ai_edge_quantizer` (float16 : `FLOAT_CASTING`
+sur 16 bits ; int8 : recette dynamique), une voie qui ne dépend d'aucune
+des deux. Vérifié sous Python 3.14 : mêmes tailles, mêmes cosinus.
 
 **Ce qui décide du format** : `exporter.py verifier` encode le banc avec
 chaque fichier, et `voisins.py` le relit comme une époque. On livre le plus
