@@ -629,6 +629,31 @@ cd ~/plant/tools/plant_model
 PyTorch suffit. `erreurs-indoor.csv`, écrit à côté des vecteurs, garde une
 ligne par image.
 
+### Le format du téléphone (étape 14)
+
+`exporter.py` convertit un point de contrôle en `.tflite` (LiteRT), le
+format qu'`tflite_flutter` charge déjà pour Iris 9, en trois précisions :
+`fp32`, `fp16`, `int8`. Puis il encode le banc avec chaque fichier, pour que
+`voisins.py` dise ce que la conversion coûte.
+
+**Un venv à part, sur le processeur.** `litert-torch` impose sa version de
+torch et installe TensorFlow : dans `venv-torch`, il abîmerait
+l'entraînement. Versions vérifiées le 29 septembre 2026 :
+
+```bash
+python3 -m venv ~/venv-export
+~/venv-export/bin/pip install "torch==2.9.1" "torchvision==0.24.1" \
+  --index-url https://download.pytorch.org/whl/cpu
+~/venv-export/bin/pip install litert-torch timm "torchao==0.14.1"
+
+cd ~/plant/tools/plant_model
+~/venv-export/bin/python exporter.py convertir --sortie ~/plant-data/iris10-int
+~/venv-export/bin/python exporter.py verifier --sortie ~/plant-data/iris10-int
+```
+
+`torchao` doit rester en 0.14 : la 0.18, que `litert-torch` tire par
+défaut, demande un torch que `litert-torch` refuse.
+
 ### Iris 9 et Iris 10 ensemble
 
 `arbitre.py` mesure les règles qui combinent les deux modèles, réglées sur

@@ -371,7 +371,7 @@ def largeur_de_sortie(dorsal, entree: int = 224) -> int:  # pragma: no cover - d
         dorsal.train(entrainait)
 
 
-def construire(nom: str, dim: int = DIM):  # pragma: no cover - demande timm
+def construire(nom: str, dim: int = DIM, pretrained: bool = True):  # pragma: no cover - demande timm
     """Le dorsal `timm` et son projecteur vers l'espace du teacher.
 
     Le projecteur est linéaire et sans biais : il change de repère, il
@@ -384,7 +384,9 @@ def construire(nom: str, dim: int = DIM):  # pragma: no cover - demande timm
         import torch.nn as nn
     except ImportError as e:
         raise SystemExit(f'{e}. pip install timm') from e
-    dorsal = timm.create_model(nom, pretrained=True, num_classes=0)
+    # Sans les poids ImageNet pour l'export : ceux du point de contrôle les
+    # remplacent, et les télécharger ne servirait à rien.
+    dorsal = timm.create_model(nom, pretrained=pretrained, num_classes=0)
     largeur = largeur_de_sortie(dorsal)
     if largeur != getattr(dorsal, 'num_features', largeur):
         print(f'{nom} : sortie {largeur} et non {dorsal.num_features} '

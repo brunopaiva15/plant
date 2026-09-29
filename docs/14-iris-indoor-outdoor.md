@@ -2569,6 +2569,44 @@ Iris 9 (~1 s à 320 px sur un téléphone récent) et Iris 10. C'est une
 décision produit : Iris 10 masqué seul (0,8607 / 0,8090) ou les deux
 fusionnés (0,8704 / 0,8395).
 
+## 20 terdecies. L'étape 14 : le format du téléphone — 29 septembre 2026
+
+**Le chemin.** L'application charge Iris 9 par `tflite_flutter` ; Iris 10
+suit le même chemin, un `.tflite` converti directement de PyTorch par
+`litert-torch`, sans détour par ONNX. `exporter.py` :
+
+1. recharge le point de contrôle, **reparamètre** FastViT (ses branches
+   d'entraînement fondues en une convolution : même sortie au cosinus 1,0,
+   moins de calcul) ;
+2. prend l'entrée en `[1, 320, 320, 3]`, valeurs 0-1, carré central
+   réduit en bicubique — la recette de l'entraînement — et rend un vecteur
+   unitaire de 1 024 ;
+3. écrit trois précisions et leurs métadonnées (`iris10-<format>.json` :
+   entrée, prétraitement, taille, empreinte).
+
+**Vérifié ici sur des poids aléatoires**, faute du vrai point de contrôle :
+
+| format | taille | cosinus avec PyTorch |
+|---|---|---|
+| `fp32` | 46,3 Mo | 1,000000 |
+| `fp16` | 23,2 Mo | 1,000000 |
+| `int8` (poids) | 12,0 Mo | 0,99993 |
+
+3,0 GMAC par image à 320 px. Pour comparaison, Iris 9 (MobileNetV3-Large,
+320 px) pèse 9,0 Mo. La latence sur téléphone reste à mesurer.
+
+**Un piège évité.** Les options du convertisseur sont un dictionnaire
+imbriqué : écrite à plat, `target_spec.supported_types` est ignorée sans
+erreur, et le fichier « float16 » sort quantifié en int8.
+
+**Ce qui décide du format** : `exporter.py verifier` encode le banc avec
+chaque fichier, et `voisins.py` le relit comme une époque. On livre le plus
+petit dont le top-1, lu par les centroïdes v8 + pot, reste à 0,2 point du
+`fp32` en indoor comme en outdoor — sous le bruit du banc.
+
+Les références aussi se livrent : 5 962 centroïdes et 5 813 textes de 1 024
+dimensions, ~12 Mo chacun en float16.
+
 ## 21. Ce qui est décidé et ce qui reste ouvert
 
 ### Décidé
