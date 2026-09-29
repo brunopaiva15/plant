@@ -2516,6 +2516,59 @@ Iris 9 y est lu comme dans l'application, masque du lieu et synonymes
 additionnés ; ses sorties sont gardées dans `iris9-<tranche>.npy` à côté des
 vecteurs, pour que la seconde lecture ne refasse pas tourner TensorFlow.
 
+## 20 duodecies. `iris10-int` : Iris 10 passe devant Iris 9 en indoor — 29 septembre 2026
+
+Le bras du § 20 sexies (« La suite côté données ») : corpus v8,
+`plantnet-direct` et `plantnet-interieur`, 1 137 561 images par époque,
+320 px, lots au hasard. Référence `iris10-pnd`. Aucune fuite (§ 20 decies).
+
+| é10 | `iris10-pnd` | **`iris10-int`** | écart | Iris 9 |
+|---|---|---|---|---|
+| indoor, textes, armes égales | 0,7533 | **0,8075** | **+5,4** | 0,8119 |
+| indoor, centroïdes v8 + pot | 0,8083 | **0,8385** | **+3,0** | 0,8119 |
+| outdoor, textes | 0,7915 | 0,7995 | +0,8 | 0,7615 |
+| outdoor, centroïdes v8 + pot | 0,8175 | 0,8065 | −1,1 | 0,7615 |
+| hors répertoire, centroïdes | 0,6965 | 0,7065 | +1,0 | 0,0 |
+
+**Le critère est rempli, largement : ces photos entrent dans la recette.**
++5,4 points d'indoor en textes, là où il en fallait 1,5. L'outdoor lu par
+les centroïdes cède 1,1 point, la dilution annoncée, pas bloquante.
+
+**Pour la première fois, Iris 10 seul dépasse Iris 9 en indoor** : 0,8385
+contre 0,8119, +2,7 points, 30 images sur 1 127. L'outdoor le dépasse de
+4,5 points, et le hors-répertoire vaut 0,71 contre 0.
+
+### Avec Iris 9 — `arbitre.py`
+
+Iris 9 lu comme dans l'application, synonymes additionnés : 0,8119 en
+indoor (inchangé), 0,7620 en outdoor (+0,05). Règles en validation croisée,
+réglées sur une moitié du banc et lues sur l'autre :
+
+| top-1 | indoor | outdoor |
+|---|---|---|
+| Iris 9 | 0,8119 | 0,7620 |
+| Iris 10 | 0,8385 | 0,8065 |
+| **Iris 10 masqué comme Iris 9** | **0,8607** | 0,8090 |
+| Iris 10 s'il est sûr, sinon Iris 9 | 0,8491 | 0,8145 |
+| Iris 10 masqué s'il est sûr, sinon Iris 9 | 0,8633 | 0,8155 |
+| Iris 9 s'il est sûr, sinon Iris 10 | 0,8465 | 0,8205 |
+| **fusion `p9^a · p10^(1−a)`** | **0,8704** | **0,8395** |
+| arbitre parfait (inatteignable) | 0,8988 | 0,8755 |
+
+- **Le masque du lieu vaut 2,2 points à Iris 10 en indoor**, pour rien : il
+  est déjà là pour Iris 9 dans l'application ;
+- **la fusion des deux modèles est la meilleure règle partout** : +5,9
+  points sur Iris 9 en indoor, +7,8 en outdoor, et +3,3 sur Iris 10 seul en
+  outdoor. Son poids est stable d'une moitié à l'autre (0,5 / 0,5 en
+  indoor, 0,5 / 0,75 en outdoor) : ce n'est pas un réglage de hasard ;
+- **les seuils, eux, sont instables** (0,85 / 0,65, 0,95 / 0,75) : ces
+  règles-là dépendent trop des images qui les règlent.
+
+**Ce que la fusion coûte** : les deux modèles tournent sur chaque photo,
+Iris 9 (~1 s à 320 px sur un téléphone récent) et Iris 10. C'est une
+décision produit : Iris 10 masqué seul (0,8607 / 0,8090) ou les deux
+fusionnés (0,8704 / 0,8395).
+
 ## 21. Ce qui est décidé et ce qui reste ouvert
 
 ### Décidé
