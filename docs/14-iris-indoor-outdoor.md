@@ -2564,10 +2564,14 @@ réglées sur une moitié du banc et lues sur l'autre :
 - **les seuils, eux, sont instables** (0,85 / 0,65, 0,95 / 0,75) : ces
   règles-là dépendent trop des images qui les règlent.
 
-**Ce que la fusion coûte** : les deux modèles tournent sur chaque photo,
-Iris 9 (~1 s à 320 px sur un téléphone récent) et Iris 10. C'est une
-décision produit : Iris 10 masqué seul (0,8607 / 0,8090) ou les deux
-fusionnés (0,8704 / 0,8395).
+**Ce que la fusion coûte** : les deux modèles tournent sur chaque photo.
+Mesuré sur un iPhone 16 Pro (§ 20 terdecies) : **~8 ms de plus**, le temps
+d'Iris 9 sur le processeur, pour ~50 ms d'Iris 10. L'estimation d'« une
+seconde » écrite ici d'abord venait d'un commentaire de
+`tflite_plant_model.dart` sur un téléphone ancien ; elle était fausse d'un
+facteur cent pour un téléphone récent. La fusion coûte donc surtout les 9 Mo
+d'Iris 9, déjà dans l'app. C'est une décision produit : Iris 10 masqué seul
+(0,8607 / 0,8090) ou les deux fusionnés (0,8704 / 0,8395).
 
 ## 20 terdecies. L'étape 14 : le format du téléphone — 29 septembre 2026
 
@@ -2671,6 +2675,42 @@ plus le temps de chargement. Quatre réglages : le processeur à 2 fils (celui
 de l'app), à 4 fils, Metal, Core ML. Les fichiers Iris 10 se déposent le
 temps de la mesure dans `assets/model/`, que `.gitignore` tient hors du
 dépôt.
+
+**Mesuré le 29 septembre, iPhone 16 Pro, `flutter drive --profile`**
+(`invoke()` seul ; médiane et 9ᵉ décile sur trente appels) :
+
+| modèle | réglage | chargement | médiane | 9ᵉ décile |
+|---|---|---|---|---|
+| Iris 9 | CPU 2 fils (app) | 60 ms | 8,1 ms | 8,4 ms |
+| Iris 9 | CPU 4 fils | 25 ms | 8,6 ms | 9,9 ms |
+| Iris 9 | Metal | 726 ms | 2,9 ms | 2,9 ms |
+| Iris 10 `fp16` | CPU 2 fils | 105 ms | 53,5 ms | 54,4 ms |
+| Iris 10 `fp16` | **CPU 4 fils** | 63 ms | **47,4 ms** | 51,2 ms |
+| Iris 10 `fp16` | Metal | 161 ms | 80,5 ms | 81,0 ms |
+| Iris 10 `int8w` | CPU 2 fils | 141 ms | 57,0 ms | 57,2 ms |
+| Iris 10 `int8w` | **CPU 4 fils** | 119 ms | **46,9 ms** | 47,5 ms |
+| Iris 10 `int8w` | Core ML | 640 ms | 84,7 ms | 85,4 ms |
+
+Core ML refuse Iris 9 et Iris 10 `fp16`, Metal refuse `int8w` : notés, pas
+bloquants.
+
+- **~50 ms par photo sur le processeur** : six fois Iris 9, mais sous le
+  seuil où une attente se voit. Le décodage et le recadrage de la photo,
+  communs aux deux modèles, pèsent autant ;
+- **les accélérateurs ne servent pas Iris 10**, ils le ralentissent. Le
+  TensorFlow Lite 2.12 de l'application ne délègue au GPU que 9 à 66
+  opérations sur 245 : GELU et GATHER_ND n'y existent pas, SLICE et
+  TRANSPOSE sortent du convertisseur de 2026 dans des versions (5 et 4)
+  que 2.12 ne connaît pas (2 au plus). Le va-et-vient entre GPU et
+  processeur coûte plus qu'il ne rapporte. Un runtime plus récent, ou un
+  export qui évite ces opérations, serait la piste si la vitesse devenait
+  un problème ; à 50 ms, elle ne l'est pas ;
+- **`fp16` et `int8w` vont aussi vite** : `int8w` recalcule ses poids en
+  float au chargement, puis calcule comme `fp16`.
+
+**Décision : `int8w`, sur le processeur à 4 fils.** Même top-1 au banc que
+`fp16` (§ ci-dessus), même vitesse, 12 Mo au lieu de 23. Un téléphone plus
+ancien reste à mesurer : le rapport de six avec Iris 9 devrait tenir.
 
 ## 21. Ce qui est décidé et ce qui reste ouvert
 
