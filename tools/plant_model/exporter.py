@@ -44,7 +44,7 @@ from pathlib import Path
 
 import numpy as np
 
-FORMATS = ('fp32', 'fp16', 'int8')
+FORMATS = ('fp32', 'fp16', 'int8', 'int8w')
 
 
 # --------------------------------------------------------------------------
@@ -73,7 +73,11 @@ def reglage_du_format(fmt: str) -> dict | None:
     - `fp16` : les poids en demi-précision (`FLOAT_CASTING` sur 16 bits), les
       calculs en float32 ;
     - `int8` : la recette dynamique, poids int8 par canal, activations
-      quantifiées à la volée.
+      quantifiées à la volée. **Mesuré sur `iris10-int` le 29 septembre :
+      inutilisable** — cosinus moyen 0,931, minimal 0,262, −8 points
+      d'indoor, −11 d'outdoor ;
+    - `int8w` : poids int8 seulement, calculs en float32. Même taille que
+      `int8`, sans la quantification des activations qui le ruine.
     """
     if fmt == 'fp32':
         return None
@@ -81,6 +85,8 @@ def reglage_du_format(fmt: str) -> dict | None:
         return {'poids_seuls': 16, 'algorithme': 'float_casting'}
     if fmt == 'int8':
         return {'recette': 'dynamic_wi8_afp32'}
+    if fmt == 'int8w':
+        return {'recette': 'weight_only_wi8_afp32'}
     raise ValueError(f'format inconnu : {fmt}')
 
 

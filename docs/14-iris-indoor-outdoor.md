@@ -2613,6 +2613,32 @@ petit dont le top-1, lu par les centroïdes v8 + pot, reste à 0,2 point du
 Les références aussi se livrent : les centroïdes (v8 et pot) et 5 813 textes de 1 024
 dimensions, de l'ordre de 12 Mo par jeu en float16.
 
+### Mesuré sur `iris10-int` — 29 septembre 2026
+
+Le banc entier encodé par chaque fichier, sur le processeur, lu par les
+centroïdes v8 + pot. Référence : `iris10-int` en PyTorch, 0,8385 en indoor,
+0,8065 en outdoor.
+
+| format | taille | cosinus avec l'entraînement (moyen / minimal) | indoor | outdoor |
+|---|---|---|---|---|
+| `fp32` | 46 Mo | 1,00000 / 0,99994 | 0,8394 | 0,8060 |
+| **`fp16`** | **23 Mo** | **1,00000 / 0,99994** | **0,8403** | **0,8060** |
+| `int8` dynamique | 12 Mo | 0,93093 / **0,26185** | 0,7587 | 0,6920 |
+
+- **`fp16` ne perd rien** : les écarts à PyTorch sont d'une image ou deux,
+  dans les deux sens ;
+- **l'int8 dynamique est inutilisable** : −8 points d'indoor, −11
+  d'outdoor, et des images dont le vecteur n'a plus rien à voir (cosinus
+  0,26). Sur des poids aléatoires, il donnait 0,99993 : **un essai sur des
+  poids aléatoires ne dit rien de la quantification** — ce sont les poids
+  entraînés, et leurs activations, qui se quantifient mal. La recette
+  dynamique quantifie aussi les activations à la volée ;
+- `int8w`, poids int8 et calculs en float, reste à mesurer : même taille,
+  sans quantifier les activations.
+
+**Décision provisoire : `fp16`, 23 Mo.** Elle tombe si `int8w` tient à 0,2
+point : 12 Mo pour le même top-1.
+
 ## 21. Ce qui est décidé et ce qui reste ouvert
 
 ### Décidé

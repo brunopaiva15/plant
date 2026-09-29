@@ -29,6 +29,7 @@ def test_chaque_format_a_son_reglage():
     assert reglage_du_format('fp32') is None
     assert reglage_du_format('fp16') == {'poids_seuls': 16, 'algorithme': 'float_casting'}
     assert reglage_du_format('int8') == {'recette': 'dynamic_wi8_afp32'}
+    assert reglage_du_format('int8w') == {'recette': 'weight_only_wi8_afp32'}
     with pytest.raises(ValueError):
         reglage_du_format('fp8')
 
