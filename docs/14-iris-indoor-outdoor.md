@@ -2604,8 +2604,8 @@ chaque fichier, et `voisins.py` le relit comme une époque. On livre le plus
 petit dont le top-1, lu par les centroïdes v8 + pot, reste à 0,2 point du
 `fp32` en indoor comme en outdoor — sous le bruit du banc.
 
-Les références aussi se livrent : 5 962 centroïdes et 5 813 textes de 1 024
-dimensions, ~12 Mo chacun en float16.
+Les références aussi se livrent : les centroïdes (v8 et pot) et 5 813 textes de 1 024
+dimensions, de l'ordre de 12 Mo par jeu en float16.
 
 ## 21. Ce qui est décidé et ce qui reste ouvert
 
