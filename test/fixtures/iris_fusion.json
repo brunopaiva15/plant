@@ -1,0 +1,105 @@
+{
+ "labels": [
+  "monstera-deliciosa",
+  "heptapleurum-arboricola",
+  "schefflera-arboricola",
+  "ficus-lyrata",
+  "pilea-peperomioides",
+  "hedera-helix",
+  "acer-palmatum"
+ ],
+ "meta": {
+  "version": "10",
+  "input_size": 320,
+  "dim": 8,
+  "temperature": 10.0,
+  "fusion": {
+   "poids_iris9": 0.5,
+   "plancher": 1e-06
+  },
+  "accept_threshold": 0.85,
+  "min_margin": 0.25,
+  "controle": {
+   "vecteur": [
+    0.1,
+    -0.2
+   ]
+  },
+  "especes": [
+   "monstera-deliciosa",
+   "schefflera-arboricola",
+   "pilea-peperomioides",
+   "hedera-helix",
+   "acer-palmatum"
+  ],
+  "lignes": [
+   0,
+   0,
+   1,
+   1,
+   2,
+   2,
+   3,
+   4,
+   4
+  ],
+  "iris9": [
+   0,
+   1,
+   1,
+   -1,
+   2,
+   3,
+   4
+  ],
+  "synonymes": {
+   "heptapleurum-arboricola": "schefflera-arboricola",
+   "streptocarpus-ionanthus": "saintpaulia-ionantha"
+  }
+ },
+ "references": "iKmnNNOzESvYN0uxMC8LOhY6T7elr1g1MbJgMJUxoZ7mOBMuMDcfNTE4fbE6LRcoeDcrtUi4LTAzJTk3DTZGMTE5PC1iOBC0XjDPsNI0aLTeMXQ2jTlxLBU2DrBErD62jzbsNDwyU7lCtQcyTzUqK9G3k7Zgr5GfozerN9Y0jzGIM7c1fLLMMFk2+7TVtdg4",
+ "embedding": [
+  0.34649163484573364,
+  0.27142658829689026,
+  0.13904491066932678,
+  -0.1406019628047943,
+  0.8012628555297852,
+  -0.2125869244337082,
+  -0.24337804317474365,
+  0.14394614100456238
+ ],
+ "iris9": [
+  0.5473642783291253,
+  0.023790577296250108,
+  0.3015286658786314,
+  0.0014460773762596175,
+  0.015277485431008066,
+  0.10630728922171483,
+  0.004285626467010557
+ ],
+ "iris10": [
+  0.08160199970006943,
+  0.4240719974040985,
+  0.0994100421667099,
+  0.00029752624686807394,
+  0.3946184515953064
+ ],
+ "fusion": [
+  0.31615019354526364,
+  0.5556221006521667,
+  0.05829695831103889,
+  0.00841296197497091,
+  0.06151778551655988
+ ],
+ "masque": [
+  0,
+  1,
+  3,
+  4
+ ],
+ "fusion_masquee": {
+  "monstera-deliciosa": 0.33992034540504457,
+  "schefflera-arboricola": 0.5973972059884692,
+  "pilea-peperomioides": 0.06268008879872691
+ }
+}

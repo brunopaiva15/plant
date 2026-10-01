@@ -249,3 +249,687 @@ celle du § 6.7 de `docs/09`, porte sur les versions et non sur les seuils :
 fait remonter le seuil à 0,70 pour l'Iris 7 — il y rendait l'autonomie qu'avait
 la v6 à 0,60 (47 %) avec 85,9 % de précision au lieu de 82,8 %. L'Iris 8 l'a
 gardé tel quel et rend davantage des deux côtés (§ 6.7 bis de `docs/09`).
+
+## Iris 10 : le banc, puis le teacher
+
+Ces deux outils ne servent pas le classifieur : ils préparent Iris Core
+(`docs/14-iris-indoor-outdoor.md`, § 20 pour l'ordre, § 20 bis pour le
+détail). Aucun ne demande d'architecture nouvelle ; ils demandent du calcul
+et une discipline.
+
+### Le jeu de mesure, figé une fois pour toutes
+
+```bash
+python3 benchmark.py --dataset ~/plant-data/dataset-v8-indoor --out benchmark.csv
+```
+
+Cinq tranches — `indoor`, `outdoor`, `multi`, `ood_plante`, `ood_autre` —,
+graine 20260919, échantillonnage **par groupe** pour qu'une observation à
+plusieurs photos parte entière dans une tranche. Le manifeste ne se
+régénère pas pour arranger un modèle : c'est ce qui a manqué pendant huit
+versions, où chaque entraînement produisait son propre test et où « gagner
+trois points » pouvait n'être qu'un test plus facile.
+
+### Le teacher, passé une fois sur le corpus
+
+BioCLIP 2.5 définit l'espace d'Iris Core. Il tourne **une fois**, et ses
+vecteurs servent ensuite toutes les distillations sans jamais le rappeler.
+
+**Un venv à part.** `tensorflow[and-cuda]` et PyTorch embarquent chacun
+leurs CUDA et cuDNN ; les mettre ensemble rejoue en plus gros l'accident de
+`tensorflow-cpu` installé à côté de la version GPU.
+
+```bash
+python3 -m venv ~/venv-torch && source ~/venv-torch/bin/activate
+pip install -r requirements-bioclip.txt
+```
+
+**Et l'interpréteur en chemin absolu dès qu'on passe par `tmux`**, qui ouvre
+un shell neuf n'héritant d'aucun venv. Le `source` dans `.bashrc` que
+conseille `docs/11` ne marche plus à deux environnements : il déposerait
+`bioclip.py` dans le venv TensorFlow, où il meurt sur `No module named
+'torch'`. Les lignes ci-dessous sont donc écrites en chemin absolu.
+
+Puis, dans l'ordre :
+
+```bash
+# 1. ce que la passe coûtera, avant de la lancer
+~/venv-torch/bin/python3 bioclip.py mesure --dataset ~/plant-data/dataset-echantillon
+
+# 2. le corpus — 7,5 h, donc dans un tmux (reprenable : relancer la même
+#    ligne continue)
+tmux new -s bioclip
+~/venv-torch/bin/python3 -u ~/plant/tools/plant_model/bioclip.py cache \
+  --dataset ~/plant-data/dataset-v8-indoor \
+  --cache ~/plant-data/bioclip \
+  2>&1 | tee ~/plant-data/bioclip-cache.log
+
+# 3. les références d'espèces, dans le même espace — quelques minutes
+~/venv-torch/bin/python3 bioclip.py textes --cache ~/plant-data/bioclip
+~/venv-torch/bin/python3 bioclip.py centroides \
+  --dataset ~/plant-data/dataset-v8-indoor --cache ~/plant-data/bioclip
+```
+
+Sous WSL, régler la mise en veille de Windows sur « jamais » avant de partir :
+une VM suspendue en pleine passe ne rend pas toujours son contexte CUDA au
+réveil. Le cache étant incrémental, ça se rattrape — mais autant ne pas avoir
+à le rattraper.
+
+`mesure` d'abord, et ce n'est pas une politesse : un ViT-H/14 n'a pas le
+débit d'un MobileNet, le chiffre ne se devine pas depuis les 831 img/s de
+`train.py`, et une passe qui dépasse la nuit se découpe en parts **avant**
+d'être lancée. La commande chronomètre cent images — premier lot jeté, il
+paie les noyaux CUDA — extrapole au corpus, et affiche la VRAM réservée :
+c'est elle qui décide du `--batch`, comme à l'entraînement en 320 px.
+
+| option | pourquoi |
+|---|---|
+| `--batch 32` | 8 Go de VRAM face à un ViT-H/14 ; c'est une décision, pas un accident |
+| `--fils 6` | fils de décodage ; en série la carte n'était occupée que 53 % du temps |
+| `--part i --parts n` | deux machines ou deux nuits ; les parts sont entrelacées, pas contiguës, parce que `splits.csv` est rangé par espèce |
+| `--fragment 8192` | vecteurs par fichier `.npy` : 16 Mo, une coupure ne perd jamais plus que ça |
+| `--splits train` | pour `centroides` : une référence tirée des images de test rendrait le banc faux |
+
+**La clé du cache porte le prétraitement.** Le dossier reçoit un
+`signature.json` — teacher, dimension, taille d'entrée, normalisation — et
+une passe d'une autre signature refuse d'écrire dedans. Un cache mélangé ne
+se voit pas à l'usage : il rend des vecteurs, simplement ils ne décrivent
+pas tous le même espace. C'est le seul défaut de cette étape qui ne se
+rattrape pas par une relecture.
+
+Les vecteurs sont rangés **normalisés**, en `float16` : la perte cosinus de
+l'étape 5 et le k-plus-proches-voisins de l'étape 6 ne lisent que la
+direction. 1 024 dimensions à deux octets font 2 Ko par image, soit 1,6 Gio
+pour les 794 000 images d'entraînement et 2,0 Gio pour tout le corpus.
+
+Et les deux commandes de références relisent la signature du cache au lieu
+d'en refaire une : des vecteurs d'espèces d'une version du teacher et des
+vecteurs de photos d'une autre ne vivent pas dans le même espace.
+
+## Un second avis vaut-il ses mégaoctets ?
+
+```bash
+CUDA_VISIBLE_DEVICES= python3 plantnet_avis.py --banc benchmark.csv \
+  --iris ../../assets/model --plantnet ~/plant-data/plantnet.tflite
+```
+
+`CUDA_VISIBLE_DEVICES=` parce que tout se calcule ici sur processeur, mais
+que `prepare()` passe par des ops TensorFlow : voyant une carte, TensorFlow
+les y place et réserve la mémoire qu'il trouve. Lancée à côté d'un
+`bioclip.py cache`, la mesure ferait tomber la passe plutôt que l'inverse.
+
+Embarquer `litert-community/PlantNet-300K-ResNet18-LiteRT` à côté d'Iris
+coûterait **47 Mo** dans une application qui en porte 9,0. Ce script dit ce
+que ça achèterait, avant de le demander à qui que ce soit.
+
+Il rend deux chiffres qui ne se remplacent pas :
+
+- **la couverture**, sans une seule inférence — parmi les espèces qu'Iris ne
+  nomme pas, celles que PlantNet nomme. C'est la seule chose qu'un second
+  avis puisse *ajouter* ;
+- **la justesse à armes égales** — les deux modèles sur les **mêmes images**
+  du banc, restreints aux espèces que les deux connaissent, en deux lectures
+  (sorties masquées et sorties entières) comme au § 6.7 bis de `docs/09`.
+
+Ce qu'on sait déjà sans inférer : **123 espèces communes** sur les 1 569
+d'Iris 9, **43 sur les 363** du masque intérieur, et **899 espèces** que
+PlantNet nomme et pas Iris. Sur les neuf espèces qu'Iris a ratées dans les
+retours d'utilisateurs, PlantNet en connaît **une**.
+
+**Les deux chaînes de prétraitement ne sont pas la même**, et c'est le piège
+de ce script : une image mal préparée ne fait pas planter un modèle, elle lui
+fait rendre des réponses fausses (§ 6.2).
+
+| | Iris 9 | PlantNet-300K |
+|---|---|---|
+| entrée | 320 px, NHWC | 224 px, **NCHW** |
+| valeurs | `uint8` 0-255, normalisation dans le graphe | `float32`, normalisation **ImageNet** ici |
+| sortie | probabilités | **logits** — softmax ici |
+
+Le carré central puis la réduction restent communs : `prepare()` sert aux
+deux, à des tailles différentes.
+
+Les étiquettes viennent du `plantnet300K_species_id_2_name.json` que
+`plantnet300k.py` télécharge déjà, et l'ordre des classes est celui des
+identifiants d'espèce **triés comme des chaînes** (`ImageFolder`). Trier en
+numérique décalerait tout sans rien signaler. Enfin, 1 081 sorties ne font
+que **1 022 binômes** : les probabilités des doublons sont additionnées, pas
+maximisées.
+
+La chaîne a été vérifiée de bout en bout sur l'image de la carte du modèle —
+*Calendula officinalis* à 0,95, avec *Calendula stellata* en quatrième. Un
+décalage d'étiquettes aurait rendu une espèce au hasard, pas une grappe de
+genre.
+
+## La porte C : l'espace contre le softmax
+
+```bash
+python3 voisins.py --banc benchmark.csv --cache ~/plant-data/bioclip \
+  --iris ../../assets/model
+```
+
+La plus fondamentale des cinq portes du § 19 de `docs/14` : **nommer par la
+référence la plus proche vaut-il mieux qu'une couche de sortie apprise ?**
+Tant que ce n'est pas mesuré, la distillation des étapes 5 et 6 est un pari.
+
+Elle ne coûte presque rien, et c'est tout l'intérêt. Les images du banc sont
+des images de test, donc `bioclip.py cache` les a déjà encodées : le teacher
+n'a rien à recalculer, et classer une photo devient un produit scalaire.
+Quelques secondes de numpy, sans carte graphique.
+
+Deux lectures, comme au § 6.7 bis :
+
+- **à armes égales** — références restreintes aux classes qu'Iris expose.
+  « L'espace fait-il aussi bien que la tête apprise ? », et il part avec un
+  handicap : il n'a jamais vu nos étiquettes ;
+- **répertoire entier** — une référence par espèce du catalogue, ~5 800 au
+  lieu de 1 569. C'est ce que la tranche `ood_plante` interroge, là où Iris
+  est à zéro par construction.
+
+Le compte rendu affiche toujours combien d'images sont **nommables** par le
+jeu de références utilisé : un top-1 sans son dénominateur ne dit pas si le
+modèle s'est trompé ou n'avait aucune chance.
+
+**Aucun seuil n'est cité.** Un cosinus n'est pas une probabilité, et le 0,70
+d'Iris a été réglé sur ses sorties (§ 3.1). Top-1 et top-3 se comparent sans
+calibration ; l'autonomie est rendue sous `--temperature`, comme une courbe à
+lire, jamais comme un chiffre à publier.
+
+Trois pièges tenus par des tests : deux références d'une même espèce ne font
+qu'une classe (sinon `monstera-deliciosa#captive` compterait une bonne
+réponse comme fausse), elles sont prises **au mieux** et non additionnées
+— additionner favoriserait l'espèce qui a le plus de vues —, et une image
+absente du cache est écartée avec son compte, jamais comptée fausse.
+
+### Le terrain adverse
+
+```bash
+python3 plantnet_avis.py --terrain plantnet --combien 2000 \
+  --iris ../../assets/model --plantnet ~/plant-data/plantnet.tflite
+```
+
+Mesurer sur notre banc penche en notre faveur : il est bâti sur notre corpus
+GBIF/iNaturalist, donc ses photos ressemblent à celles qui ont entraîné Iris.
+La mesure symétrique fait jouer les deux modèles sur le **jeu de test de
+PlantNet-300K**, où c'est lui qui est à domicile — 18 396 images des 123
+espèces communes, dont **93 % de gros plans** de fleur ou de feuille, ce
+qu'Iris n'a jamais appris.
+
+Rien à télécharger : l'archive Zenodo fait 29,5 Gio, mais un zip se lit par
+plages et le chemin d'une image se déduit de ses métadonnées
+(`plantnet_300K/images/{split}/{species_id}/{clé}.jpg`). Seules les images
+tirées sont cherchées. Passer `--archive` sur un zip local si on l'a
+téléchargé : c'est alors instantané.
+
+**Le split de test de PlantNet, jamais son entraînement** — le faire jouer
+sur des images qu'il a apprises ne dirait rien. Et le filtre de licence est
+celui de la collecte (§ 4.1) : il ne change presque rien ici, mais une mesure
+qui s'autoriserait des images inutilisables mentirait sur ce qui est
+reproductible.
+
+Les lectures sont **résistantes** : deux mille requêtes par plage d'affilée,
+il y en a toujours une qui casse. La lecture est retentée, l'archive rouverte
+en dernier recours, et une image qui résiste est **sautée avec son compte** —
+un top-1 calculé sur moins d'images qu'annoncé serait un mensonge tranquille.
+
+## Le plancher : ce qu'un student garde de l'espace
+
+```bash
+pip install onnxruntime
+curl -L -o ~/plant-data/flora_student_fp32.onnx \
+  "https://huggingface.co/crazedcodernate/bioclip-2.5-mobile-fastvit/resolve/main/flora_student_fp32.onnx"
+
+python3 student.py --banc benchmark.csv --cache ~/plant-data/student
+python3 voisins.py --banc benchmark.csv --cache ~/plant-data/bioclip \
+  --embeddings ~/plant-data/student --iris ../../assets/model --avec-iris \
+  --masque indoor=../plant_dataset/masque_indoor.txt \
+  --masque outdoor=../plant_dataset/masque_outdoor.txt
+```
+
+La porte C est franchie avec le **teacher** — 630 M de paramètres, 1,3 Go.
+C'est le plafond. `student.py` mesure ce qu'un student de 11,6 M en garde,
+donc le plancher, et il le fait sur un student **déjà distillé par un tiers**
+avant qu'on en entraîne un : une heure contre des jours.
+
+**Il écrit un cache au format de `bioclip.py`**, si bien que `voisins.py
+--embeddings` lit les vecteurs du student là où il lisait ceux du teacher,
+**contre les mêmes références**. Rien d'autre ne change, donc rien d'autre
+ne peut expliquer un écart. C'est aussi le montage livré : le téléphone
+encode, les références restent pré-calculées hors app (§ 7 de `docs/14`).
+
+**Son prétraitement n'est pas celui du ResNet18 de PlantNet**, et les
+confondre rendrait faux sans planter :
+
+| | ce student |
+|---|---|
+| entrée | `[1, 3, 224, 224]` NCHW, `float32`, **valeurs 0-1** |
+| normalisation | **repliée dans le graphe** — ne pas l'appliquer |
+| sortie | `[1, 1024]`, **déjà unitaire** (vérifié : norme 1,0000) |
+
+Le **recadrage est une variable**, donc `--recadrage` la sépare : `carre`
+recadre au carré central comme le teacher, `etire` déforme comme
+l'implémentation de référence de la carte. Elle appartient à la signature du
+cache — deux recadrages sous la même clé donneraient des vecteurs
+incomparables.
+
+> **Une mise en garde, sur une seule image.** Sur la photo de la carte du
+> ResNet18 — un *Calendula officinalis* que celui-ci nommait à 0,95 — ce
+> student répond *Zinnia grandiflora*, alors que *Calendula officinalis* est
+> bien dans sa propre table de 4 271 taxons. Le voisinage reste cohérent (des
+> Astéracées jaunes) et `carre` s'en tire mieux qu'`etire`, mais une image ne
+> fait pas une mesure. C'est le banc qui tranche.
+
+## L'étape 5 : notre student
+
+```bash
+source ~/venv-torch/bin/activate && pip install timm
+python3 distiller.py mesure --dataset ~/plant-data/dataset-v8-indoor \
+  --cache ~/plant-data/bioclip
+```
+
+Le teacher est passé une fois, la porte C est franchie, et le student public
+a montré ce qu'il ne faut pas faire. Reste un petit réseau qui apprend à
+rendre les vecteurs déjà cachés.
+
+**Trois choix que le § 19 bis de `docs/14` impose**, et qui ne se discutent
+plus :
+
+1. **un terme contrastif dès la baseline.** Une perte cosinus seule se
+   minimise en rapprochant tout le monde d'une direction moyenne : c'est le
+   cône refermé du student public (0,4179 contre 0,2889 chez son teacher), et
+   c'est ce qui détruit la recherche. `--contrastive 0` reproduit la recette
+   publique, pour mesurer l'écart plutôt que le supposer ;
+2. **le critère d'arrêt est `voisins.py`, pas la perte.** À 0,80 d'accord un
+   écart isotrope ne coûte que 3 % du top-1, l'écart réel en coûtait 61 % ;
+3. **le cône se surveille pendant l'entraînement.** Il descend avec la perte
+   quand tout va bien ; s'il se referme, le student ne saura rien retrouver,
+   et la courbe de perte ne le dira pas.
+
+**Le dorsal de départ est `fastvit_sa12`** — exactement celui du modèle
+public. S'il fait mieux que ses 0,3132, c'est notre recette qui l'explique et
+rien d'autre. MobileNetV4 Hybrid vient après, à recette figée : une variable
+à la fois (§ 12 de `docs/09`).
+
+Le mélange est **global**, pas par tampon : `splits.csv` est trié par espèce,
+et un lot monospécifique donnerait à la contrastive des négatifs de la même
+plante — elle apprendrait à séparer ce qu'il faut rapprocher. C'est le défaut
+du § 6.2, avec une conséquence nouvelle.
+
+### La passe complète
+
+Le balayage du § 19 ter de `docs/14` a tranché le poids : **0,2**. La passe
+qui en découle tient dans une commande, et dans un `tmux` parce qu'elle dure
+la nuit :
+
+```bash
+tmux new -s iris10-complet
+cd ~/plant/tools/plant_model
+~/venv-torch/bin/python3 -u distiller.py entrainer \
+  --dataset ~/plant-data/dataset-v8-indoor --cache ~/plant-data/bioclip \
+  --sortie ~/plant-data/iris10-complet --epoques 10 --demi --contrastive 0.2 \
+  2>&1 | tee -a ~/plant-data/iris10-complet.log
+```
+
+**Le `cd` fait partie de la commande.** `--banc` est relatif au répertoire
+courant ; lancé d'ailleurs, le banc est introuvable et aucune époque n'écrit
+son point de contrôle — huit heures pour un fichier de poids et rien à en
+dire. Le script le crie désormais au démarrage plutôt que de le taire.
+
+797 965 images, 273 img/s en précision mixte : **49 minutes par époque, huit
+heures en tout**. `--demi` n'est pas un raccourci de confort — sans lui le
+débit tombe à 134 img/s et la passe double.
+
+**Suivre sans attendre la fin.** Trois lectures, de la moins chère à la plus
+parlante :
+
+```bash
+# 1. où en est la passe
+tail -n 3 ~/plant-data/iris10-complet.log
+
+# 2. quelles époques ont déjà écrit leur banc
+ls -d ~/plant-data/iris10-complet/banc-e*
+
+# 3. ce que vaut l'époque N — la seule mesure qui décide
+cd ~/plant/tools/plant_model
+~/venv-torch/bin/python3 voisins.py --banc benchmark.csv \
+  --cache ~/plant-data/bioclip --embeddings ~/plant-data/iris10-complet/banc-e3
+
+# le même, à armes égales — 1 569 références au lieu de 5 813
+~/venv-torch/bin/python3 voisins.py --banc benchmark.csv \
+  --cache ~/plant-data/bioclip --embeddings ~/plant-data/iris10-complet/banc-e3 \
+  --masque indoor=../plant_dataset/masque_indoor.txt \
+  --masque outdoor=../plant_dataset/masque_outdoor.txt
+```
+
+La troisième se lit **sans toucher au GPU** : le banc est déjà encodé, elle ne
+fait que comparer des vecteurs. Elle tourne donc pendant l'entraînement, dans
+un second terminal, sans lui coûter une image par seconde.
+
+Ce qu'on y cherche, dans l'ordre : le **top-1 sur le répertoire entier** — la
+seule lecture qui décrive le produit — puis la **largeur du cône**, qui doit
+s'approcher des 0,2806 du teacher et non descendre en dessous.
+
+### Où sont les erreurs
+
+`voisins.py` rend un chiffre ; `erreurs.py` dit d'où il vient, sur la même
+lecture (textes à armes égales). Pour chaque image : le student, le teacher
+et, avec `--avec-iris`, Iris 9 masqué comme dans l'application. Il sépare ce
+que la distillation a perdu (le teacher réussit, le student non) de ce
+qu'elle ne peut pas rattraper (le teacher rate aussi), dit à quelle distance
+tombent les erreurs (genre, famille, ailleurs), et liste les espèces et les
+paires qui coûtent le plus.
+
+```bash
+cd ~/plant/tools/plant_model
+~/venv/bin/python3 erreurs.py --embeddings ~/plant-data/iris10-pnd/banc-e10 \
+  --avec-iris --masque ../plant_dataset/masque_indoor.txt
+```
+
+`--avec-iris` demande TensorFlow, donc le venv `~/venv` ; sans lui, le venv
+PyTorch suffit. `erreurs-indoor.csv`, écrit à côté des vecteurs, garde une
+ligne par image.
+
+### Le format du téléphone (étape 14)
+
+`exporter.py` convertit un point de contrôle en `.tflite` (LiteRT), le
+format qu'`tflite_flutter` charge déjà pour Iris 9, en trois précisions :
+`fp32`, `fp16`, `int8`. Puis il encode le banc avec chaque fichier, pour que
+`voisins.py` dise ce que la conversion coûte.
+
+**Un venv à part, sur le processeur.** `litert-torch` impose sa version de
+torch : dans `venv-torch`, il abîmerait l'entraînement. Vérifié le 29
+septembre 2026 sous Python 3.14 (Ubuntu 26.04) : `litert-torch` 0.9.4,
+torch 2.13, sans version épinglée — les épingles de la 0.8 n'existent pas
+pour Python 3.14. torch d'abord, depuis l'index « cpu » : sans lui, pip
+télécharge les deux gigaoctets de la version CUDA pour rien.
+
+```bash
+python3 -m venv ~/venv-export
+~/venv-export/bin/pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+~/venv-export/bin/pip install litert-torch timm
+
+cd ~/plant/tools/plant_model
+~/venv-export/bin/python exporter.py convertir --sortie ~/plant-data/iris10-int
+~/venv-export/bin/python exporter.py verifier --sortie ~/plant-data/iris10-int
+```
+
+`fp16` et `int8` sont tirés du fichier `fp32` par `ai_edge_quantizer`,
+installé avec `litert-torch` : la voie ne dépend pas de TensorFlow, que la
+0.9 n'utilise plus.
+
+**L'iPhone lit TensorFlow Lite 2.12.** `exporter.py` remet les poids en
+ligne après la compression ; sans cela, `fp16` et `int8w` ne se
+chargeraient pas dans l'application (§ 20 terdecies de `docs/14`).
+
+**La vitesse sur le téléphone** se mesure depuis le Mac, iPhone branché,
+les fichiers copiés dans `assets/model/` :
+
+```bash
+flutter drive --profile --driver=test_driver/integration_test.dart \
+  --target=integration_test/iris10_vitesse_test.dart -d <iPhone>
+```
+
+### Iris 9 et Iris 10 ensemble
+
+`arbitre.py` mesure les règles qui combinent les deux modèles, réglées sur
+une moitié du banc et lues sur l'autre (§ 20 undecies de `docs/14`) :
+
+```bash
+cd ~/plant/tools/plant_model
+CUDA_VISIBLE_DEVICES= ~/venv/bin/python3 arbitre.py --embeddings ~/plant-data/iris10-pnd/banc-e10
+```
+
+TensorFlow pour Iris 9, donc `~/venv` ; `CUDA_VISIBLE_DEVICES=` le garde
+sur le processeur quand un entraînement occupe la carte.
+
+### Livrer à l'application (étape 15)
+
+`exporter.py livrer` copie le `fp16` d'une passe dans `assets/model/iris10.tflite`,
+écrit les références alignées sur les sorties d'Iris 9
+(`iris10-references.bin`, demi-flottants) et `iris10.json` — espèces,
+synonymes, température, poids de la fusion, seuil, et le vecteur de
+contrôle que l'application vérifie au chargement (§ 20 sexdecies de
+`docs/14`) :
+
+```bash
+~/venv-export/bin/python exporter.py livrer --sortie ~/plant-data/iris10-final --cache ~/plant-data/bioclip
+```
+
+### Quand affirmer (étape 12)
+
+`seuils.py` rend la courbe autonomie / justesse d'Iris 9, d'Iris 10 et de
+leur fusion, l'affirmation à tort hors répertoire (sous le masque
+d'intérieur, puis d'extérieur), et le seuil qui égale Iris 9 d'aujourd'hui
+sur les deux (§ 20 quaterdecies de `docs/14`). Retenu pour la fusion :
+0,85, marge 0,25.
+
+```bash
+CUDA_VISIBLE_DEVICES= ~/venv/bin/python3 seuils.py --embeddings ~/plant-data/iris10-int/banc-e10
+```
+
+### Des lots difficiles
+
+`--difficiles 0.5` fait la moitié de chaque lot de groupes de voisins dans
+l'espace du teacher (§ 20 septies de `docs/14`) : 1 024 grappes
+(`--grappes`), groupes de 4 images (`--groupe`). Les grappes sont calculées
+au démarrage, en une minute environ, et gardées dans le dossier de sortie.
+Une reprise avec une autre part est refusée.
+
+### Une autre taille d'entrée
+
+`--entree` fixe le côté des images que voit le student : 224 par défaut,
+comme toutes les passes jusqu'au 25 septembre. Le bras à 320 px est décrit
+au § 20 quinquies de `docs/14`. On mesure d'abord, parce que le calcul
+double et que la VRAM ne se devine pas :
+
+```bash
+cd ~/plant/tools/plant_model
+~/venv-torch/bin/python3 distiller.py mesure --dataset ~/plant-data/dataset-v8-indoor \
+  --cache ~/plant-data/bioclip --demi --contrastive 0.2 --entree 320
+```
+
+La taille est écrite dans `etat.json` et dans la signature du banc de chaque
+époque. Une reprise à une autre taille est refusée.
+
+## Pl@ntNet-300K comme corpus de distillation
+
+```bash
+python3 plantnet_corpus.py --sortie ~/plant-data/plantnet-300k
+```
+
+**Sans GPU** — il peut tourner pendant une distillation. Il tire le split
+`train` de Pl@ntNet-300K, réduit les images à 320 px et écrit un `splits.csv`
+au format de `tools/plant_dataset`, que `bioclip.py` et `distiller.py` lisent
+sans une ligne de changement.
+
+**Télécharger l'archive d'abord.** La lecture à distance était l'idée de
+départ — rien à stocker, chaque image coûte une requête par plage — et
+**Zenodo la refuse** : chaque fil doit ouvrir sa propre archive, `RemoteZip`
+n'étant pas réentrant, et chaque ouverture relit trente mégaoctets de
+répertoire central. Huit d'un coup, puis 243 000 requêtes : `429 TOO MANY
+REQUESTS` avant la première image. Le script le diagnostique et donne les
+deux commandes plutôt qu'une trace.
+
+```bash
+until curl -L -C - --retry 20 --retry-delay 5 --retry-all-errors \
+  -o ~/plant-data/plantnet_300K.zip \
+  'https://zenodo.org/api/records/5645731/files/plantnet_300K.zip/content'
+do sleep 10; done
+
+python3 plantnet_corpus.py --sortie ~/plant-data/plantnet-300k \
+  --archive ~/plant-data/plantnet_300K.zip
+```
+
+**La boucle n'est pas une précaution, c'est la règle.** Zenodo ferme la
+connexion en cours de route — `SSL_read: unexpected eof while reading` — et
+un téléchargement d'une heure et quart ne passe pas d'un bloc. `-C -` reprend
+à l'octet où l'on s'est arrêté, `--retry-all-errors` couvre les coupures que
+curl voit, et le `until` couvre celles qu'il abandonne. Relancer la boucle
+après coup ne coûte rien : si le fichier est complet, curl le dit et sort.
+
+29,5 Gio à ~6 Mo/s, donc **une heure et quart**. Ensuite tout est local : les
+huit fils lisent le fichier sans limite de débit. Dans les deux cas la passe
+est **reprenable** — relancer la même commande ne retire que les
+manquantes, et l'écriture passe par un fichier renommé, donc un fichier
+présent est un fichier entier.
+
+**Il n'y a pas d'étiquette à aligner.** Le student apprend à reproduire le
+vecteur du teacher, pas à nommer : les 1 081 classes de Pl@ntNet ne
+rencontrent jamais nos 1 569. La colonne `internal_plant_id` n'est remplie
+que pour ranger — notre identifiant quand l'espèce est au catalogue,
+`pn:<id>` sinon, comme dans `plantnet_avis.py`.
+
+**Le split `test` est refusé.** Il sert de second terrain de mesure (§ 5 de
+`docs/14`), le seul qui ne vienne pas de notre propre monde ; l'entraîner
+dessus le rendrait muet sans qu'un chiffre le dise.
+
+Ensuite, GPU libre :
+
+```bash
+# 1. le teacher encode le nouveau corpus dans le même cache
+python3 bioclip.py cache --dataset ~/plant-data/plantnet-300k \
+  --cache ~/plant-data/bioclip --batch 64
+
+# 2. la distillation lit les deux corpus — `--dataset` est répétable
+python3 -u distiller.py entrainer \
+  --dataset ~/plant-data/dataset-v8-indoor --dataset ~/plant-data/plantnet-300k \
+  --cache ~/plant-data/bioclip --sortie ~/plant-data/iris10-plantnet \
+  --epoques 10 --demi --contrastive 0.2
+```
+
+Le cache est incrémental et porte la même signature : le second `cache` ajoute
+ses fragments à côté des premiers, sans les relire. Et `corpus()` écarte les
+chemins en double — deux jeux qui se recouvriraient allongeraient l'époque
+pour rien.
+
+**Pas pendant la passe en cours.** Une variable à la fois (§ 13.6 de
+`docs/09`) : ajouter le corpus au milieu rendrait l'écart inattribuable.
+
+## Suivre ce qui tourne
+
+```bash
+python3 suivi.py              # une fois
+python3 suivi.py --boucle 30  # se rafraîchit, Ctrl-C pour sortir
+```
+
+**Sans option, il suit tout ce qui tourne et rien de ce qui a fini.** Un
+sujet en cours est un journal de `~/plant-data/*.log` écrit depuis moins d'un
+quart d'heure ; sa nature — distillation, cache du teacher, corpus Pl@ntNet,
+corpus iNaturalist — se lit dans ses lignes, pas dans son nom. Une passe
+lancée apparaît dès sa première ligne, une passe finie disparaît un quart
+d'heure après sa dernière. `--passe NOM` suit une passe nommée comme avant.
+
+**Et chaque point de contrôle est évalué tout seul.** Dès qu'un `banc-eN`
+est complet, le tableau lance `voisins.py` dessus en arrière-plan — un à la
+fois, pour ne pas voler le processeur au décodage de la distillation — et
+range la sortie dans `banc-eN/voisins.txt`. Il affiche ensuite le top-1 de
+chaque époque, à côté de la passe de référence **à la même époque** :
+
+```
+  top-1, textes      indoor          outdoor         hors rép.      (écart à iris10-cosinus)
+  é1    0.6000 (+2.0)    0.5800 (−1.3)    0.4500 (+0.4)
+  é2    en cours
+  Iris 9       0.8119           0.7615           0.0000
+```
+
+La référence est `iris10-cosinus` (`--reference` pour une autre), dont les
+points de contrôle sont évalués de la même façon. Un échec s'affiche avec sa
+raison et n'est pas relancé ; supprimer `banc-eN/voisins.echec` le relance.
+`--sans-evaluation` pour ne rien lancer.
+
+```
+DISTILLATION
+  époque 2/10   ███████████████············· 54.5 %   267 img/s
+  perte 0.4078   accord 0.6941   cône 0.3015  (teacher 0.2806)
+  reste époque 23 min   passe 7 h 01
+  cône sur 400 relevés : 0.3210 → 0.3015  (s'étale)
+  points de contrôle : e1, e2
+  → python3 voisins.py --banc benchmark.csv --cache ~/plant-data/bioclip …
+
+ARCHIVE PL@NTNET (téléchargement)
+  ████························ 14.9 %   4.40/29.49 Gio
+  6.2 Mo/s   reste 1 h 09
+
+CORPUS PL@NTNET
+  ████························ 14.2 %   34600/243567   33.0 img/s
+  12 sautées   reste 1 h 45
+```
+
+Le panneau de l'archive disparaît de lui-même une fois le corpus construit.
+Sa vitesse se mesure **entre deux rafraîchissements**, pas depuis le début :
+un téléchargement repris après coupure a passé des minutes à zéro, et une
+moyenne depuis le lancement annoncerait des heures de trop.
+
+**Il ne lit que des fichiers déjà écrits** — pas de GPU, pas de réseau, pas
+de modèle chargé. Il tourne donc en boucle sans rien coûter aux deux passes
+qu'il regarde.
+
+Deux points de lecture valent mieux qu'un : le **cône** est donné avec sa
+tendance, parce que c'est son sens qui est le signal d'alarme du § 19 bis de
+`docs/14`. Un cône qui se referme pendant que la perte descend annonce un
+student qui ne saura rien retrouver, et la courbe de perte ne le dira pas.
+
+**Le chiffre qui décide n'y est pas.** Il est dans `voisins.py --embeddings`,
+sur un `banc-eN` ; le tableau se contente de signaler ceux qui existent et
+d'écrire la commande à copier.
+
+## Les plantes d'iNaturalist comme corpus
+
+```bash
+source ~/venv-torch/bin/activate && pip install pyarrow requests
+cd ~/plant/tools/plant_model
+python3 -u inat_corpus.py --fragments 2   # essai : la part de plantes, le débit
+python3 -u inat_corpus.py                 # le tout, reprenable
+```
+
+**Sans GPU.** Il lit `philipp-zettl/inaturalist-enriched` (595 fichiers
+Parquet, 197 Go) un fichier à la fois : téléchargement reprenable, tri,
+réduction à 320 px, suppression. On ne garde que les plantes retenues —
+~720 000 images et ~24 Go d'après le premier fragment. Relancer la même
+commande reprend au fichier suivant ; `fragments-faits.txt` dit où on en est,
+`bilan.json` combien chaque fichier a donné et pourquoi le reste est écarté.
+
+**Il refuse de tourner sans le manifeste et sans le banc.** Ce sont eux qui
+l'empêchent de faire entrer une photo du banc — ou sa photo sœur, prise
+pendant la même observation — dans l'entraînement. Trois gardes : `photo_id`,
+empreinte perceptuelle, observation (§ 20 quater de `docs/14`). Le manifeste
+attendu par défaut est `~/plant-data/dataset-v8-indoor/manifest.jsonl` ;
+`--manifeste` pour un autre chemin.
+
+`HF_TOKEN` dans l'environnement, s'il est défini, relève la limite de débit de
+Hugging Face.
+
+## Les plantes en pot de Pl@ntNet comme corpus
+
+```bash
+cd ~/plant/tools/plant_model && source ~/venv-torch/bin/activate
+python3 -u plantnet_direct_corpus.py --especes 2   # essai sur deux espèces
+python3 -u plantnet_direct_corpus.py               # le tout, reprenable
+```
+
+**Sans GPU.** Les 186 espèces de `disponibilite_plantnet.csv` qui ont des
+photos libres, tous verdicts confondus — le student ne lit aucun nom —, au
+plus 2 000 photos par espèce, la plante entière d'abord : ~74 000 images.
+Chaque image est téléchargée en original, vérifiée, réduite à 320 px. Relancer
+la même commande reprend aux espèces manquantes ; `especes-faites.txt` dit où
+on en est, `bilan.json` ce que chaque espèce a donné et pourquoi le reste est
+écarté. `attributions.csv` porte la mention que Pl@ntNet demande pour chaque
+image gardée.
+
+**L'accès est autorisé par écrit par Pl@ntNet** (§ 15 de `docs/09`). Quatre
+téléchargements en parallèle par défaut (`--fils`) : c'est un service public.
+
+**Il refuse de tourner sans le manifeste et sans le banc.** Trois gardes,
+comme pour iNaturalist : l'identifiant d'image (GBIF relaie Pl@ntNet), la
+photo sœur d'une même observation, l'empreinte perceptuelle (§ 20 sexies de
+`docs/14`).
+
+Pour les espèces d'intérieur que le modèle connaît déjà, `--masque` prend
+les classes d'un masque au lieu du tableau, dans un dossier à part :
+
+```bash
+python3 -u plantnet_direct_corpus.py --masque ../plant_dataset/masque_indoor.txt \
+  --max-par-espece 1000 --sortie ~/plant-data/plantnet-interieur \
+  --corpus ~/plant-data/plantnet-300k --corpus ~/plant-data/plantnet-direct
+```
+

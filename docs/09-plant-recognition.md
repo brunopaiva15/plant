@@ -4554,8 +4554,10 @@ avec attribution livrée.
 Dans l'ordre, et rien avant le premier point :
 
 1. **L'autorisation écrite de Pl@ntNet.** Sans elle, rien ne se collecte
-   par cette API.
-2. **Un connecteur `fetchers/plantnet.py`**, désactivé par défaut
+   par cette API. *Reçue le 25 septembre 2026.* Sa réponse écrite est à
+   garder avec les attributions : c'est elle qui fonde l'accès.
+2. **Un connecteur `fetchers/plantnet.py`** — *écrit le 25 septembre 2026*,
+   désactivé par défaut
    (`--plantnet`), sur le modèle de `wikimedia.py` : les images de l'espèce,
    la plante entière d'abord (`habit`, comme au § 12.8), la licence vérifiée
    image par image par `licenses.py`, l'identifiant d'image dans
@@ -4573,3 +4575,10 @@ Dans l'ordre, et rien avant le premier point :
    plantes hors catalogue (§ 12.7). Ajouter des classes propres doit faire
    baisser le second ; ajouter des classes bruitées ferait monter les deux
    erreurs à la fois.
+
+Pour la distillation d'Iris 10, les points 3 à 5 ne s'appliquent pas : le
+student apprend à reproduire le vecteur du teacher et ne lit aucun nom.
+`tools/plant_model/plantnet_direct_corpus.py` prend donc les photos des 186
+espèces qui en ont, quel que soit leur verdict, sans ligne dans
+`plants.csv` (§ 20 sexies de `docs/14`).
+

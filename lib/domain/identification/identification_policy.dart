@@ -60,6 +60,19 @@ class FallbackPolicy {
         contextMargin: contextMargin,
       );
 
+  /// La même règle, au seuil d'affirmation mesuré pour un autre modèle
+  /// (`LocalPlantModel.acceptThreshold`). Rien d'autre ne change : la marge,
+  /// la proposition et le plancher décident de ce qu'on montre, pas de ce
+  /// qu'on affirme.
+  FallbackPolicy withAcceptThreshold(double threshold) => FallbackPolicy(
+        acceptThreshold: threshold,
+        plausibleThreshold: plausibleThreshold,
+        minMargin: minMargin,
+        floor: floor,
+        localMayAffirm: localMayAffirm,
+        contextMargin: contextMargin,
+      );
+
   /// Score minimal du premier candidat pour l'accepter sans discuter.
   ///
   /// **Un seuil ne se transporte pas d'un modèle à l'autre.** Il valait 0,70
@@ -69,6 +82,16 @@ class FallbackPolicy {
   /// à arbitrer (§ 6.7 bis de docs/09). Ce que le couple (seuil, marge) rend
   /// sur le modèle livré n'est pas recopié ici : `assets/model/model.json`
   /// le porte, pour chaque couple, et c'est lui qui fait foi.
+  ///
+  /// **0,85 pour la fusion d'Iris 9 et d'Iris 10.** Elle est plus confiante
+  /// qu'Iris 9 à score égal : à 0,70 elle affirmerait 53 % des plantes hors
+  /// répertoire, contre 42 %. À 0,85, réglé sur une moitié du banc et lu sur
+  /// l'autre, elle affirme 86,6 % des photos d'intérieur contre 78,7 %, juste
+  /// à 94,3 % contre 91,8 %, et affirme moins de plantes inconnues (37 %
+  /// contre 41,6 %) — § 20 quaterdecies de `docs/14`. Ce seuil voyage avec
+  /// le modèle (`assets/model/iris10.json`), pas avec cette classe : la
+  /// valeur par défaut reste celle d'Iris 9 seul, sur laquelle l'application
+  /// retombe si Iris 10 ne se charge pas.
   ///
   /// Le recalage d'Iris 7, mesuré sur les photos de plantes cultivées dans
   /// le calcul exact que fait la cascade (`tools/plant_model/multi_photo.py`,

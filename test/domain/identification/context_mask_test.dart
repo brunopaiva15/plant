@@ -111,6 +111,42 @@ void main() {
       expect(outside.first.globalScore, closeTo(0.2, 1e-9));
     });
 
+    test('deux classes de la même plante font un seul candidat, à la somme des deux', () {
+      // Schefflera et Heptapleurum arboricola : deux noms, une plante, deux
+      // sorties du modèle (§ 20 octies de docs/14). Séparées, 0,30 et 0,25
+      // passaient derrière le ficus à 0,40 ; ensemble, 0,55 le devancent.
+      const labels = ['schefflera-arboricola', 'ficus-benjamina', 'heptapleurum-arboricola', 'monstera-deliciosa'];
+      String name(String id) => id == 'schefflera-arboricola'
+          ? 'Schefflera arboricola'
+          : id == 'heptapleurum-arboricola'
+              ? 'Heptapleurum arboricola'
+              : id == 'ficus-benjamina'
+                  ? 'Ficus benjamina'
+                  : 'Monstera deliciosa';
+      final out = maskedCandidates([0.30, 0.40, 0.25, 0.05], labels, nameOf: name);
+      expect(out.map((c) => c.scientificName), ['Schefflera arboricola', 'Ficus benjamina', 'Monstera deliciosa']);
+      expect(out.first.score, closeTo(0.55, 1e-9));
+      // L'identifiant rendu est celui de la fiche soignée, pas du synonyme.
+      expect(out.first.internalId, 'schefflera-arboricola');
+    });
+
+    test('une plante est du lieu dès qu\'un de ses noms l\'est', () {
+      // Heptapleurum n'est que dans le masque d'extérieur : sa part du score
+      // rejoint Schefflera dans le lieu au lieu de rester « ailleurs ».
+      const labels = ['schefflera-arboricola', 'ficus-benjamina', 'heptapleurum-arboricola', 'monstera-deliciosa'];
+      String name(String id) => {
+            'schefflera-arboricola': 'Schefflera arboricola',
+            'heptapleurum-arboricola': 'Heptapleurum arboricola',
+            'ficus-benjamina': 'Ficus benjamina',
+          }[id] ??
+          'Monstera deliciosa';
+      final out = maskedCandidates([0.30, 0.40, 0.25, 0.05], labels, nameOf: name, mask: {0, 1});
+      final inside = out.where((c) => c.inContext).toList();
+      expect(inside.map((c) => c.scientificName), ['Schefflera arboricola', 'Ficus benjamina']);
+      expect(inside.first.score, closeTo(0.55 / 0.95, 1e-9));
+      expect(out.where((c) => !c.inContext).map((c) => c.scientificName), ['Monstera deliciosa']);
+    });
+
     test('un lieu qui n\'explique rien est abandonné plutôt que divisé par zéro', () {
       final out = maskedCandidates([0.0, 0.6, 0.0, 0.4], labels, nameOf: nameOf, mask: {0, 2});
       expect(out.every((c) => c.inContext), isTrue);
@@ -275,6 +311,9 @@ class _RecordingLocal implements LocalPlantModel {
   String? get loadError => null;
   @override
   Set<IdentificationContext> get contexts => const {IdentificationContext.indoor, IdentificationContext.outdoor};
+
+  @override
+  double? get acceptThreshold => null;
   @override
   Future<bool> warmUp() async => true;
   @override

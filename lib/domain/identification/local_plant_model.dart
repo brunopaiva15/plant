@@ -34,6 +34,17 @@ abstract class LocalPlantModel {
   /// la réserve tombe d'elle-même, sans qu'une constante soit à changer.
   Set<IdentificationContext> get contexts;
 
+  /// Le seuil d'affirmation mesuré pour **ce** modèle, ou `null` pour garder
+  /// celui de la politique.
+  ///
+  /// Un seuil ne se transporte pas d'un modèle à l'autre : la fusion d'Iris 9
+  /// et d'Iris 10 est plus confiante qu'Iris 9 seul à score égal, et elle
+  /// affirme à 0,85 là où Iris 9 affirmait à 0,70 (§ 20 quaterdecies de
+  /// `docs/14`). Le modèle porte donc son seuil, et la cascade le lit
+  /// (`CascadeIdentifier.policy`) : un modèle qui retombe sur Iris 9 seul
+  /// retombe du même coup sur le seuil d'Iris 9.
+  double? get acceptThreshold;
+
   /// Classe une image. Les noms rendus sont les noms canoniques des classes
   /// (voir `tools/plant_dataset/plants.csv`), scores entre 0 et 1, somme ≤ 1.
   ///
@@ -72,6 +83,9 @@ class NoLocalModel implements LocalPlantModel {
 
   @override
   Set<IdentificationContext> get contexts => const {};
+
+  @override
+  double? get acceptThreshold => null;
 
   @override
   Future<List<IdentificationCandidate>> classify(File image,

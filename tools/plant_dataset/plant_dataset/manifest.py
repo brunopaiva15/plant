@@ -23,7 +23,7 @@ STATUS_REVIEW = 'review'
 class ImageRecord:
     species: str
     internal_plant_id: str
-    source: str                 # gbif | inaturalist | wikimedia | plantnet300k
+    source: str                 # gbif | inaturalist | wikimedia | plantnet300k | plantnet
     source_id: str              # identifiant chez la source (occurrence#media)
     original_url: str           # la page d'où vient l'image
     image_url: str              # le fichier téléchargé

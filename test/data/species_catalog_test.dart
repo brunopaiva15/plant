@@ -256,6 +256,11 @@ void main() {
     expect(SpeciesCatalog.find('Hesperocyparis macrocarpa'), isNull);
     expect(SpeciesCatalog.findAccepted('Hesperocyparis macrocarpa')?.category, SpeciesCategory.tree);
     expect(SpeciesCatalog.findAccepted('Heptapleurum arboricola')?.scientificName, 'Schefflera arboricola');
+    // La violette africaine : deux classes du modèle, une fiche soignée. Le
+    // candidat du modèle prend ce nom (`maskedCandidates`) ; l'entrée
+    // « Streptocarpus ionanthus » du catalogue propre à Iris reste
+    // trouvable telle quelle par la recherche.
+    expect(acceptedSpeciesName('Streptocarpus ionanthus'), 'Saintpaulia ionantha');
     // Le nom déjà accepté et la casse passent sans s'abîmer.
     expect(SpeciesCatalog.findAccepted('cupressus macrocarpa')?.scientificName, 'Cupressus macrocarpa');
   });

@@ -34,6 +34,7 @@ import requests
 
 from plant_dataset.fetchers.gbif import GbifClient
 from plant_dataset.fetchers.inaturalist import InatClient
+from plant_dataset.fetchers.plantnet import PlantnetClient
 from plant_dataset.fetchers.wikimedia import CommonsClient
 from plant_dataset.images import ImageRejected, download, prepare, store
 from plant_dataset.licenses import GBIF_LICENSE_CODES, GBIF_LICENSE_CODES_WITH_SA, parse_license
@@ -192,7 +193,8 @@ def relocate(manifest: Manifest, out: Path) -> None:
 
 def collect_one(i: int, plant: PlantEntry, client: GbifClient, inat, http: requests.Session, manifest: Manifest,
                 out: Path, species_cache: dict, inat_cache: dict, species_path: Path, inat_path: Path,
-                license_codes: list[str], args, t0: float, total: int, commons=None) -> None:
+                license_codes: list[str], args, t0: float, total: int, commons=None,
+                plantnet=None) -> None:
     """Collecte une espèce, de la résolution du nom aux images.
 
     Quatre passes, dans cet ordre :
@@ -286,6 +288,16 @@ def collect_one(i: int, plant: PlantEntry, client: GbifClient, inat, http: reque
                                              allow_share_alike=args.allow_sa), target)
         sources.append(f'commons {added}')
 
+    if plantnet is not None and res['kept'] < target:
+        # Pl@ntNet en dernier aussi, et seulement sur demande : l'accès est
+        # autorisé par écrit (§ 15.5 de docs/09), et ses étiquettes sont
+        # celles des utilisateurs (§ 15.4). Les espèces « à écarter » de
+        # disponibilite_plantnet.csv ne se collectent pas ici.
+        added = run(plantnet.image_candidates(plant.scientific_name, max_files=args.max_candidates,
+                                              allow_share_alike=args.allow_sa,
+                                              voix_min=args.plantnet_voix), target)
+        sources.append(f'plantnet {added}')
+
     log(f'[{i}/{total}] {plant.scientific_name}: {res["kept"]} gardées (+{res["new"]}, {" + ".join(sources)}), '
         f'{res["rejected"]} rejetées sur {res["tried"]} essayées, {time.time() - t0:.0f} s')
 
@@ -310,6 +322,15 @@ def main() -> int:
                     help='compléter par Wikimedia Commons : des plantes cultivées, photographiées chez des gens')
     ap.add_argument('--commons-pause', type=float, default=1.0,
                     help='pause entre requêtes Commons, en secondes ; en dessous de 1 s l\'API répond 429')
+    ap.add_argument('--plantnet', action='store_true',
+                    help="compléter par Pl@ntNet : des plantes en pot, étiquetées par les "
+                         "utilisateurs. Accès autorisé par écrit (§ 15 de docs/09) ; sans "
+                         "--allow-sa il ne reste presque rien, 99,5 %% des images sont en CC BY-SA")
+    ap.add_argument('--plantnet-pause', type=float, default=1.0,
+                    help='pause entre requêtes à l\'API Pl@ntNet, en secondes')
+    ap.add_argument('--plantnet-voix', type=int, default=0,
+                    help='voix concordantes exigées par observation (0 : les votes ne sont pas '
+                         'lus) ; 2 écarte les observations à une voix jamais revues (§ 15.4)')
     ap.add_argument('--inat-pause', type=float, default=1.0, help='pause entre requêtes iNaturalist, en secondes')
     ap.add_argument('--gbif-pause', type=float, default=0.25, help='pause entre requêtes GBIF, en secondes ; à augmenter quand plusieurs collectes tournent en parallèle')
     ap.add_argument('--captive-file', help='espèces (une par ligne) pour lesquelles réserver une part de plantes cultivées')
@@ -346,13 +367,16 @@ def main() -> int:
         client = GbifClient(pause=args.gbif_pause)
         inat = None if args.no_inaturalist else InatClient(pause=args.inat_pause)
         commons = CommonsClient(pause=args.commons_pause) if args.wikimedia else None
+        plantnet = (PlantnetClient(pause=args.plantnet_pause, cache=out / 'plantnet_observations.json')
+                    if args.plantnet else None)
         http = requests.Session()
         http.headers['User-Agent'] = client.session.headers['User-Agent']
         for i, plant in enumerate(plants, 1):
             t0 = time.time()
             try:
                 collect_one(i, plant, client, inat, http, manifest, out, species_cache, inat_cache,
-                            species_path, inat_path, license_codes, args, t0, len(plants), commons)
+                            species_path, inat_path, license_codes, args, t0, len(plants), commons,
+                            plantnet)
             except KeyboardInterrupt:
                 raise
             except Exception as e:

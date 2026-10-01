@@ -128,6 +128,9 @@ Puis vérifier à la main :
 | `--gbif-pause` / `--inat-pause` | 0,25 / 1 | cadence des requêtes, en secondes ; à augmenter quand plusieurs collectes tournent |
 | `--wikimedia` | non | compléter par Wikimedia Commons (voir ci-dessous) |
 | `--commons-pause` | 1 | cadence Commons ; en dessous d'une seconde l'API répond 429 |
+| `--plantnet` | non | compléter par Pl@ntNet en direct : des plantes en pot, étiquetées par les utilisateurs. Accès autorisé par écrit (§ 15 de `docs/09`) ; à utiliser avec `--allow-sa`, 99,5 % des images sont en CC BY-SA |
+| `--plantnet-voix N` | 0 | voix concordantes exigées par observation ; 2 écarte les observations à une voix jamais revues (§ 15.4). Les votes sont mis en cache dans `plantnet_observations.json` |
+| `--plantnet-pause` | 1 | cadence de l'API Pl@ntNet, en secondes |
 
 L'outil est relançable : ce qui figure déjà dans `manifest.jsonl` n'est pas
 retéléchargé, et les identifiants de source (`gbif`, `<clé d'occurrence>#<n>`)

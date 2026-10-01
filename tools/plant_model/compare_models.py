@@ -91,8 +91,19 @@ def prepare(path: str, load_size: int, input_size: int) -> np.ndarray:
     """Le carré central réduit à `load_size`, puis recadré à `input_size` —
     exactement la recette écrite dans `model.json` et appliquée par
     l'application."""
+    return prepare_octets(_tf().io.read_file(path), load_size, input_size)
+
+
+def prepare_octets(contenu, load_size: int, input_size: int) -> np.ndarray:
+    """La même recette, sur une image déjà en mémoire.
+
+    Séparée du chemin parce qu'une image peut venir d'ailleurs qu'un fichier :
+    `plantnet_avis.py --terrain plantnet` les lit dans une archive distante,
+    sans rien écrire sur le disque. La recette, elle, ne doit pas changer d'un
+    appelant à l'autre — c'est tout l'objet du § 6.2.
+    """
     tf = _tf()
-    image = tf.io.decode_jpeg(tf.io.read_file(path), channels=3)
+    image = tf.io.decode_jpeg(contenu, channels=3)
     side = tf.reduce_min(tf.shape(image)[:2])
     image = tf.image.resize_with_crop_or_pad(image, side, side)
     image = tf.image.resize(image, [load_size, load_size])

@@ -78,6 +78,30 @@ traîne dans l'environnement (`pip uninstall tensorflow-cpu`). Ne pas
 continuer avant que cette ligne réponde — `train.py` le redira au démarrage,
 mais autant le savoir tout de suite.
 
+### Le teacher d'Iris 10 a son propre environnement
+
+`tools/plant_model/bioclip.py` tourne sous PyTorch, et PyTorch embarque ses
+CUDA et cuDNN comme `tensorflow[and-cuda]` embarque les siens. Les deux dans
+un même venv est l'accident du paragraphe précédent en plus gros : ça
+s'installe sans erreur, ça tourne, et c'est la pile lente qui gagne.
+
+```bash
+python3 -m venv ~/venv-torch && source ~/venv-torch/bin/activate
+pip install -r ~/plant/tools/plant_model/requirements-bioclip.txt
+python3 -c "import torch; print(torch.cuda.is_available())"
+```
+
+Deux venvs, deux `source`, et on ne lance jamais `train.py` depuis
+`~/venv-torch` ni `bioclip.py` depuis `~/venv`.
+
+> **Et la parade du § *tmux* de [`docs/11`](11-entrainer-sur-une-vm.md) est
+> devenue un piège.** Elle propose `echo 'source ~/venv/bin/activate' >>
+> ~/.bashrc`, parce qu'un shell neuf n'hérite pas du venv activé à côté. Avec
+> deux venvs, cette ligne dépose dans celui de TensorFlow un `bioclip.py` qui
+> meurt aussitôt sur `No module named 'torch'`. **L'interpréteur en chemin
+> absolu est la seule parade qui tienne à deux environnements** :
+> `~/venv-torch/bin/python3 bioclip.py …`, `~/venv/bin/python3 train.py …`.
+
 ## 2 bis. Ce que la machine rend, mesuré
 
 Avant de déplacer des dizaines de gigaoctets vers une machine, il faut savoir
@@ -109,6 +133,48 @@ minutes par époque ; l'écart est de un pour cent.
 que 840, parce qu'elle calcule deux fois plus par image alors que le décodage
 coûte la même chose — il dépend de la taille **stockée**, pas de l'entrée du
 réseau. Monter à 320 rééquilibre la machine au lieu de l'étrangler.
+
+### Et ce que rend le teacher d'Iris 10, sur la même carte
+
+`bioclip.py mesure`, le 21 septembre 2026, sur l'échantillon :
+
+| | images/s | corpus | |
+|---|---|---|---|
+| MobileNetV3Large, 320 px, lot 64 | 831 | — | la passe d'entraînement |
+| BioCLIP ViT-H/14, décodage en série | 36,6 | 7,5 h | le premier jet |
+| **BioCLIP ViT-H/14, `--fils 6`** | **79,9** | **3,4 h** | **2,2×** |
+
+Lot 32, `float16`, **3,74 Gio de VRAM sur les 8** — la moitié de la carte
+reste libre.
+
+Dix fois plus lent que l'entraînement, et ce n'est pas un problème : le
+teacher tourne **une fois**, là où l'entraînement repasse trente époques.
+Trois heures et demie pour BioCLIP contre huit heures pour une passe d'Iris
+9 — le cache coûte moins qu'un entraînement, une seule fois, et aucune
+distillation ne le rappellera ensuite.
+
+#### La moitié de la passe était du décodage, et ça ne se devinait pas
+
+Le premier jet décodait un lot, l'envoyait à la carte, décodait le suivant.
+`nvidia-smi` pendant la passe : **53 %** d'utilisation en moyenne sur huit
+échantillons. La carte attendait le processeur à peu près la moitié du
+temps.
+
+Deux estimations successives se sont trompées, dans les deux sens, et c'est
+l'intérêt de les avoir écrites :
+
+- **23 %**, prévu avant la passe, en partant des 1 260 images/s de décodage
+  JPEG mesurés plus haut. Faux : ce chiffre-là mesure un décodage nu, quand
+  le teacher décode **et** redimensionne en bicubique vers 224 px, ce qui
+  coûte bien davantage ;
+- **69 images/s**, prévu depuis les 53 % d'utilisation. Faux aussi, mais par
+  défaut : on a obtenu 79,9. L'utilisation vue par `nvidia-smi` est une
+  moyenne grossière qui compte mal les creux courts.
+
+> **Un débit ne se déduit pas d'un autre débit.** Les deux estimations
+> partaient d'un chiffre mesuré et juste, et toutes deux étaient fausses de
+> près du double. Trente secondes de `mesure` ont tranché ce que deux
+> raisonnements n'avaient pas su approcher.
 
 ### Déplacer le jeu : une archive, jamais un million de fichiers
 
@@ -154,6 +220,30 @@ attendrait le disque toute la journée.
   aux valeurs par défaut — 224 px, dropout 0,3, soixante couches — faute
   d'avoir passé les trois options de la recette. Elle plafonnait douze points
   sous la vraie (§ 13.6 de `docs/09`).
+- **Un redémarrage brutal de Windows peut laisser le disque d'Ubuntu en
+  lecture seule.** Le 24 septembre, après un redémarrage imprévu, toute
+  écriture échouait sur `Read-only file system` ; `dmesg` disait
+  `bad block bitmap checksum` puis `Remounting filesystem read-only`, 1,7 s
+  après chaque démarrage. `wsl --shutdown` ne répare rien : le disque repart,
+  puis rebascule dès qu'on touche la zone abîmée. Ce qui répare, depuis
+  Windows, parce qu'on ne vérifie pas un disque depuis le système qui tourne
+  dessus :
+
+  ```powershell
+  wsl --shutdown
+  $disque = Join-Path ((Get-ChildItem HKCU:\Software\Microsoft\Windows\CurrentVersion\Lxss | ForEach-Object { Get-ItemProperty $_.PSPath } | Where-Object DistributionName -eq 'Ubuntu').BasePath) 'ext4.vhdx'
+  wsl --install -d Debian             # une seule fois : l'outil de réparation
+  wsl --mount $disque --vhd --bare    # PowerShell administrateur
+  wsl -d Debian                       # puis : lsblk, le disque 1 T sans point de montage
+  ```
+
+  Dans Debian, `sudo e2fsck -fn /dev/sdX` d'abord — il ne modifie rien et dit
+  si des fichiers sont touchés (passes 1 à 4) ou seulement les tables de
+  blocs libres (passe 5, le cas du 24) — puis `sudo e2fsck -fy /dev/sdX`.
+  Enfin `wsl --unmount $disque`, `wsl --shutdown`, et vérifier que
+  `wsl -l -v` met toujours Ubuntu par défaut. Les passes finies avant la
+  coupure étaient intactes : le passage en lecture seule est ce qui les a
+  protégées.
 
 ## 3. Reconstruire le jeu d'images (~2 h)
 
