@@ -2833,6 +2833,65 @@ gagne quand même : la liste proposée est meilleure (top-1 0,84 contre
 avec un chiffre qui manque — la part de plantes hors répertoire dans de
 vrais scans d'extérieur —, pas avec un seuil de plus.
 
+## 20 quindecies. `iris10-final` : la passe livrée — 1ᵉʳ octobre 2026
+
+La recette d'`iris10-int`, plus `plantnet-300k` et `inat-plantes` : 10
+époques, 320 px, cosinus + InfoNCE 0,2, calendrier cosinus. La règle posée
+avant : on la garde si l'indoor ne cède pas plus d'1 point face à
+`iris10-int`.
+
+| é10, centroïdes v8 + pot | `iris10-int` | **`iris10-final`** | écart |
+|---|---|---|---|
+| indoor, armes égales | 0,8385 | **0,8429** | +0,4 |
+| outdoor, armes égales | 0,8065 | **0,8290** | **+2,3** |
+| hors répertoire, répertoire entier | 0,7065 | 0,7025 | −0,4 |
+| Iris 10 masqué, indoor | 0,8607 | 0,8598 | −0,1 |
+| Iris 10 masqué, outdoor | 0,8090 | 0,8310 | +2,2 |
+| **fusion, indoor** | 0,8704 | **0,8651** | −0,5 |
+| **fusion, outdoor** | 0,8395 | **0,8570** | **+1,8** |
+
+**`iris10-final` est retenu.** L'indoor tient (−0,5 sur la fusion, dans la
+règle et dans le bruit du banc : 6 images sur 1 127), l'outdoor gagne
+presque 2 points : c'est ce que les photos de nature devaient apporter. La
+fusion reste la meilleure règle, et son réglage ne bouge pas (poids 0,5,
+choisi sur les deux moitiés, dedans comme dehors).
+
+### Les seuils tiennent
+
+| fusion à 0,85 | `iris10-int` | `iris10-final` | Iris 9 à 0,70 |
+|---|---|---|---|
+| autonomie / justesse indoor | 0,866 / 0,943 | 0,864 / 0,946 | 0,787 / 0,918 |
+| autonomie / justesse outdoor | 0,807 / 0,941 | 0,815 / 0,946 | 0,672 / 0,925 |
+| à tort, masque d'intérieur | 0,370 | 0,367 | 0,416 |
+| à tort, masque d'extérieur | 0,408 | 0,395 | 0,334 |
+
+La validation croisée refait le même choix : 0,80 sur une moitié, qui
+dépasse encore Iris 9 en affirmation à tort sur l'autre (0,455 contre
+0,434), 0,85 sur l'autre, meilleur partout. **0,85, marge 0,25, confirmé.**
+Dehors, la fusion affirme toujours plus de plantes inconnues qu'Iris 9
+(0,395 contre 0,334) : **l'interdiction d'affirmer dehors reste.**
+
+### `int8w` ne tient plus la règle
+
+| `iris10-final` | cosinus (moyen / minimal) | indoor | outdoor |
+|---|---|---|---|
+| entraînement (PyTorch) | — | 0,8429 | 0,8290 |
+| `int8w`, 12,2 Mo | 0,99716 / **0,82140** | 0,8376 | 0,8250 |
+
+La règle du § 20 terdecies : `int8w` remplace `fp16` s'il tient à 0,2
+point. Sur `iris10-int` il tenait (+0,35 / −0,2) ; sur `iris10-final` il
+cède **0,5 point en indoor et 0,4 en outdoor**, et son pire cosinus tombe
+de 0,95 à 0,82 — une photo dont l'embedding n'est plus celui qu'a appris
+le modèle. Les poids d'`iris10-final` se quantifient moins bien : une
+mesure, pas une règle générale.
+
+Avant de livrer, deux mesures sur **le fichier qui part dans
+l'application**, et non sur les poids d'entraînement : la lecture du
+`fp16` d'`iris10-final`, et `arbitre.py` puis `seuils.py` sur les deux
+exports. Le format livré sera le `fp16` (23 Mo), sauf si la fusion lue
+sur l'`int8w` reste à 0,2 point de celle du `fp16` : à vitesse égale
+(§ 20 terdecies), seule la taille les sépare.
+
 ## 21. Ce qui est décidé et ce qui reste ouvert
 
 ### Décidé
