@@ -6668,18 +6668,16 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter the pot\'s diameter and material: the interval adjusts, and the care guide shows how much water to pour.';
 
   @override
-  String get whatsNewCameraTitle => 'Flash and zoom in the viewfinder';
+  String get whatsNewCameraTitle => 'Smoother photos';
 
   @override
-  String get whatsNewCameraBody =>
-      'Turn on the flash in the corner of the frame, and spread two fingers on the image to zoom.';
+  String get whatsNewCameraBody => 'Taking and adding photos is now smoother.';
 
   @override
-  String get whatsNewSpeciesTitle => 'The most likely species';
+  String get whatsNewSpeciesTitle => 'Interface and stability';
 
   @override
-  String get whatsNewSpeciesBody =>
-      'When you add a plant, the app keeps the most likely species. Tap another name to change it.';
+  String get whatsNewSpeciesBody => 'Several interface and stability issues have been fixed.';
 
   @override
   String get whatsNewDiagnosisTitle => 'Analysis time';
@@ -6689,6 +6687,5 @@ class AppLocalizationsEn extends AppLocalizations {
       'During a diagnosis, the screen shows the time left. The analysis also finishes faster.';
 
   @override
-  String get whatsNewWateringIntro =>
-      'This version brings the pot into the watering calculation. The viewfinder, adding a plant and the diagnosis change too.';
+  String get whatsNewWateringIntro => 'Iris 10, our new state-of-the-art plant recognition model.';
 }
