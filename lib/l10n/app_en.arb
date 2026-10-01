@@ -2273,11 +2273,11 @@
   "whatsNewTitle": "What's new",
   "whatsNewPotTitle": "Watering by pot",
   "whatsNewPotBody": "Enter the pot's diameter and material: the interval adjusts, and the care guide shows how much water to pour.",
-  "whatsNewCameraTitle": "Flash and zoom in the viewfinder",
-  "whatsNewCameraBody": "Turn on the flash in the corner of the frame, and spread two fingers on the image to zoom.",
-  "whatsNewSpeciesTitle": "The most likely species",
-  "whatsNewSpeciesBody": "When you add a plant, the app keeps the most likely species. Tap another name to change it.",
+  "whatsNewCameraTitle": "Smoother photos",
+  "whatsNewCameraBody": "Taking and adding photos is now smoother.",
+  "whatsNewSpeciesTitle": "Interface and stability",
+  "whatsNewSpeciesBody": "Several interface and stability issues have been fixed.",
   "whatsNewDiagnosisTitle": "Analysis time",
   "whatsNewDiagnosisBody": "During a diagnosis, the screen shows the time left. The analysis also finishes faster.",
-  "whatsNewWateringIntro": "This version brings the pot into the watering calculation. The viewfinder, adding a plant and the diagnosis change too."
+  "whatsNewWateringIntro": "Iris 10, our new state-of-the-art plant recognition model."
 }
