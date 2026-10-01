@@ -79,6 +79,19 @@ class TflitePlantModel implements LocalPlantModel {
   @override
   Set<IdentificationContext> get contexts => _masks.keys.toSet();
 
+  /// Iris 9 seul garde le seuil de la politique, réglé pour lui.
+  @override
+  double? get acceptThreshold => null;
+
+  /// Les noms de sortie, dans l'ordre du réseau. Vides avant chargement.
+  List<String> get labels => _labels;
+
+  /// Le masque d'un lieu, en indices de sortie, `null` sans masque.
+  Set<int>? maskFor(IdentificationContext context) => _masks[context];
+
+  /// La recette de cadrage que `model.json` déclare, lue au chargement.
+  ({int size, int load, int source}) get framing => (size: _inputSize, load: _loadSize, source: _sourceSize);
+
   @override
   Future<bool> warmUp() => _loading ??= _load();
 
@@ -148,6 +161,16 @@ class TflitePlantModel implements LocalPlantModel {
         nameOf: scientificNameOf, mask: _masks[context]);
   }
 
+  /// Les sorties brutes du réseau pour une entrée déjà préparée
+  /// ([prepareDecoded]), `null` sans modèle chargé. C'est ce que lit la
+  /// fusion avec Iris 10, qui décode la photo une seule fois pour les deux.
+  Future<List<double>?> scores(Float32List input) async {
+    if (_interpreter == null) return null;
+    final output = [List<double>.filled(_labels.length, 0)];
+    await _run(input, output);
+    return output.first;
+  }
+
   /// Le délai au-delà duquel on cesse d'attendre l'isolat de calcul.
   ///
   /// Une inférence demande environ une seconde à 320 px sur un téléphone
@@ -213,7 +236,6 @@ class TflitePlantModel implements LocalPlantModel {
 
   /// « monstera-deliciosa » → « Monstera deliciosa ». Le nom exact vient
   /// ensuite du catalogue ; ceci n'est qu'un repli lisible.
-  @visibleForTesting
   static String scientificNameOf(String internalId) {
     final words = internalId.split('-');
     if (words.isEmpty) return internalId;
@@ -239,9 +261,16 @@ class TflitePlantModel implements LocalPlantModel {
       _decode(bytes, size, loadSize, sourceSize);
 
   static Float32List? _decode(Uint8List bytes, int size, int loadSize, int sourceSize) {
-    // Un fichier tronqué ou dans un format inattendu n'est pas une panne du
-    // modèle : c'est une photo sans candidat, et la cascade ira au service
-    // distant. Le décodeur lève sur certaines entrées au lieu de rendre null.
+    final oriented = decodeOriented(bytes);
+    return oriented == null ? null : prepareDecoded(oriented, size, loadSize, sourceSize);
+  }
+
+  /// La photo décodée et redressée selon son orientation EXIF, ou `null`.
+  ///
+  /// Un fichier tronqué ou dans un format inattendu n'est pas une panne du
+  /// modèle : c'est une photo sans candidat, et la cascade ira au service
+  /// distant. Le décodeur lève sur certaines entrées au lieu de rendre null.
+  static img.Image? decodeOriented(Uint8List bytes) {
     final img.Image? decoded;
     try {
       decoded = img.decodeImage(bytes);
@@ -249,7 +278,11 @@ class TflitePlantModel implements LocalPlantModel {
       return null;
     }
     if (decoded == null) return null;
-    final oriented = img.bakeOrientation(decoded);
+    return img.bakeOrientation(decoded);
+  }
+
+  /// L'entrée d'Iris 9 pour une photo déjà décodée ([decodeOriented]).
+  static Float32List prepareDecoded(img.Image oriented, int size, int loadSize, int sourceSize) {
     final side = oriented.width < oriented.height ? oriented.width : oriented.height;
     final square = img.copyCrop(oriented,
         x: (oriented.width - side) ~/ 2, y: (oriented.height - side) ~/ 2, width: side, height: side);

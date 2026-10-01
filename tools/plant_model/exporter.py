@@ -4,6 +4,7 @@ rien perdu.
 
     python3 exporter.py convertir --sortie ~/plant-data/iris10-int
     python3 exporter.py verifier  --sortie ~/plant-data/iris10-int
+    python3 exporter.py livrer    --sortie ~/plant-data/iris10-final --cache ~/plant-data/bioclip
 
 **Le format.** L'application charge déjà Iris 9 par `tflite_flutter` : Iris 10
 suit le même chemin, un fichier `.tflite` (LiteRT), converti directement de
@@ -45,6 +46,17 @@ from pathlib import Path
 import numpy as np
 
 FORMATS = ('fp32', 'fp16', 'int8', 'int8w')
+
+# Ce que l'application reçoit (§ 20 quaterdecies et quindecies de `docs/14`) :
+# le fichier `fp16` d'`iris10-final`, lu par les centroïdes v8 et pot, fusionné
+# à parts égales avec Iris 9, et qui affirme à 0,85 avec 0,25 d'avance.
+FORMAT_LIVRE = 'fp16'
+REFERENCES_LIVREES = 'centroide+references-centroides-potseul'
+TEMPERATURE = 100.0          # celle de `voisins.classer`
+POIDS_IRIS9 = 0.5
+PLANCHER = 1e-6              # celui de `seuils.fusion_probas`
+SEUIL_FUSION = 0.85
+MARGE_FUSION = 0.25
 
 
 # --------------------------------------------------------------------------
@@ -123,6 +135,83 @@ def ecrire_banc(dossier: Path, sig: dict, chemins: list[str], vecteurs: np.ndarr
     np.save(dossier / 'emb-0-0000.npy', vecteurs.astype(np.float16))
     with open(dossier / 'index-0.csv', 'w', newline='', encoding='utf-8') as f:
         csv.writer(f).writerows([[c, 'emb-0-0000', i] for i, c in enumerate(chemins)])
+
+
+def paquet_references(cles: list[str], vecteurs: np.ndarray,
+                      labels: list[str]) -> tuple[dict, np.ndarray]:
+    """Les références telles que l'application les lit, alignées sur Iris 9.
+
+    C'est `seuils.lire_tranche` mis à plat, pour qu'un téléphone le refasse
+    sans numpy :
+
+    - `especes` : les espèces de la fusion, dans l'ordre d'Iris 9, synonymes
+      réunis (`canonique`) — celles d'Iris 9 qui ont au moins une référence.
+      C'est `aligner` : une espèce sans référence n'entre pas dans la
+      fusion, et n'y est pas entrée au banc ;
+    - `lignes` : pour chaque ligne de la matrice, l'indice de son espèce.
+      Une espèce a plusieurs vues (`#captive`, `#pot`), `classer` garde la
+      meilleure ;
+    - `iris9` : pour chaque sortie d'Iris 9, l'indice de son espèce, ou −1.
+      Deux sorties d'une même plante pointent la même espèce, et leurs
+      probabilités s'additionnent (`fusionner_synonymes`).
+    """
+    from voisins import SYNONYMES, canonique, sans_suffixe
+    especes9: list[str] = []
+    for lab in labels:
+        e = canonique(lab)
+        if e not in especes9:
+            especes9.append(e)
+    vues = {sans_suffixe(c) for c in cles}
+    especes = [e for e in especes9 if e in vues]
+    rang = {e: i for i, e in enumerate(especes)}
+    gardees = [k for k, c in enumerate(cles) if sans_suffixe(c) in rang]
+    paquet = {
+        'especes': especes,
+        'lignes': [rang[sans_suffixe(cles[k])] for k in gardees],
+        'iris9': [rang.get(canonique(lab), -1) for lab in labels],
+        'synonymes': dict(SYNONYMES),
+        'sans_reference': [e for e in especes9 if e not in rang],
+    }
+    return paquet, np.asarray(vecteurs, dtype=np.float32)[gardees]
+
+
+def motif_de_controle(entree: int) -> np.ndarray:
+    """Une entrée que Dart et Python savent écrire à l'identique, en entiers :
+    l'application y compare son vecteur à celui de l'export, et sait alors
+    si le fichier qu'elle a chargé calcule ce qu'il doit."""
+    i = np.arange(entree * entree * 3, dtype=np.int64)
+    return ((i * 7919 % 1000) / 999.0).astype(np.float32).reshape(1, entree, entree, 3)
+
+
+def meta_livree(r: dict, modele: Path, references: Path, paquet: dict, dim: int,
+                nom_references: str, controle: np.ndarray) -> dict:
+    """`iris10.json` : tout ce que l'application doit savoir pour lire Iris 10
+    et le fusionner avec Iris 9, et les réglages mesurés au banc."""
+    octets = modele.read_bytes()
+    refs = references.read_bytes()
+    return {
+        'version': '10',
+        'student': r['student'],
+        'epoque': r['epoque'],
+        'format': FORMAT_LIVRE,
+        'input_size': r['entree'],
+        'dim': dim,
+        'octets': len(octets),
+        'sha256': hashlib.sha256(octets).hexdigest(),
+        'pretraitement': {'image': 'côté long ramené à 384 (Lanczos)',
+                          'recadrage': 'carré central', 'reduction': 'bicubique',
+                          'valeurs': '0-1', 'ordre': 'NHWC'},
+        'references': {'fichier': references.name, 'jeu': nom_references,
+                       'lignes': len(paquet['lignes']), 'dtype': 'float16',
+                       'octets': len(refs), 'sha256': hashlib.sha256(refs).hexdigest()},
+        'temperature': TEMPERATURE,
+        'fusion': {'poids_iris9': POIDS_IRIS9, 'plancher': PLANCHER},
+        'accept_threshold': SEUIL_FUSION,
+        'min_margin': MARGE_FUSION,
+        'controle': {'motif': '(i * 7919 % 1000) / 999',
+                     'vecteur': [round(float(x), 6) for x in controle.reshape(-1)[:16]]},
+        **{k: paquet[k] for k in ('especes', 'lignes', 'iris9', 'synonymes')},
+    }
 
 
 # --------------------------------------------------------------------------
@@ -264,6 +353,40 @@ def verifier(args) -> int:  # pragma: no cover - demande LiteRT et le banc
     return 0
 
 
+def livrer(args) -> int:  # pragma: no cover - demande LiteRT et le cache
+    """Le fichier livré, ses références et `iris10.json`, dans les assets."""
+    import shutil
+    from voisins import charger_references
+    sortie = Path(args.sortie).expanduser()
+    r = recette(sortie)
+    source = sortie / 'export' / f'iris10-{FORMAT_LIVRE}.tflite'
+    if not source.exists():
+        print(f'{source} absent — lancer `convertir --formats {FORMAT_LIVRE}` d\'abord')
+        return 1
+    dest = Path(args.dest).expanduser()
+    labels = (Path(args.iris).expanduser() / 'labels.txt').read_text(encoding='utf-8').split()
+    cles, vecteurs = charger_references(Path(args.cache).expanduser(), args.references)
+    paquet, matrice = paquet_references(cles, vecteurs, labels)
+
+    modele = dest / 'iris10.tflite'
+    shutil.copyfile(source, modele)
+    references = dest / 'iris10-references.bin'
+    references.write_bytes(matrice.astype('<f2').tobytes())
+    controle = executer(modele, motif_de_controle(r['entree']))
+    meta = meta_livree(r, modele, references, paquet, matrice.shape[1], args.references, controle)
+    (dest / 'iris10.json').write_text(json.dumps(meta, ensure_ascii=False) + '\n', encoding='utf-8')
+
+    print(f"{r['student']}, époque {r['epoque']}, {FORMAT_LIVRE} : {meta['octets'] / 1e6:.1f} Mo")
+    print(f"{len(paquet['especes'])} espèces dans la fusion, {len(paquet['lignes'])} références "
+          f"({meta['references']['octets'] / 1e6:.1f} Mo), sur {len(labels)} sorties d'Iris 9")
+    manque = paquet['sans_reference']
+    if manque:
+        print(f'{len(manque)} espèces d\'Iris 9 sans référence, hors de la fusion : '
+              + ', '.join(manque[:12]) + (' …' if len(manque) > 12 else ''))
+    print(f'→ {modele}\n→ {references}\n→ {dest / "iris10.json"}')
+    return 0
+
+
 def main() -> int:  # pragma: no cover
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -278,6 +401,13 @@ def main() -> int:  # pragma: no cover
     v.add_argument('--banc', default='benchmark.csv')
     v.add_argument('--images', type=int, default=0, help="n'en encoder que N — un essai")
     v.set_defaults(fonction=verifier)
+    li = sous.add_parser('livrer', help="le fichier fp16, ses références et iris10.json dans les assets")
+    li.add_argument('--sortie', required=True)
+    li.add_argument('--cache', default='~/plant-data/bioclip')
+    li.add_argument('--references', default=REFERENCES_LIVREES)
+    li.add_argument('--iris', default='../../assets/model', help='où lire les labels d\'Iris 9')
+    li.add_argument('--dest', default='../../assets/model')
+    li.set_defaults(fonction=livrer)
     args = ap.parse_args()
     return args.fonction(args)
 

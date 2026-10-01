@@ -2920,6 +2920,55 @@ il l'a appris. Le prix : 11 Mo de plus dans l'application, à vitesse égale
 (47 ms sur iPhone 16 Pro, 4 fils). Si la taille devient la contrainte,
 l'`int8w` est le repli mesuré.
 
+## 20 sexdecies. L'étape 15 : Iris 10 dans l'application — 1ᵉʳ octobre 2026
+
+**Ce qui est livré** : `assets/model/iris10.tflite` (le `fp16`
+d'`iris10-final`), `iris10-references.bin` (les centroïdes v8, vues
+`#captive` et `#pot`, en demi-flottants) et `iris10.json`, écrits par
+`exporter.py livrer`. Iris 9 reste livré tel quel : la fusion le lit.
+
+**Ce que fait l'application** (`FusedPlantModel`) pour une photo :
+
+1. un seul décodage, puis deux entrées préparées dans le même isolat —
+   celle d'Iris 9, inchangée, et celle d'Iris 10 ;
+2. Iris 9, puis Iris 10 sur 4 fils, chacun dans son isolat ;
+3. le vecteur d'Iris 10 comparé à chaque référence, le meilleur cosinus
+   par espèce, un softmax à température 100 (`voisins.classer`) ;
+4. les sorties d'Iris 9 regroupées par espèce, synonymes additionnés, et
+   la fusion `p9^0,5 · p10^0,5` renormalisée (`seuils.fusion_probas`) ;
+5. le masque du lieu, appliqué après la fusion par `maskedCandidates` —
+   ce qui revient exactement à fusionner les deux distributions déjà
+   masquées, comme au banc ;
+6. la politique au seuil que porte `iris10.json` : 0,85.
+
+**La préparation de la photo est celle de l'entraînement, au pixel près.**
+Le bicubique de la bibliothèque `image` n'est pas celui de PIL : il
+échantillonne sans adoucir quand il réduit. Le redimensionnement de PIL
+est donc recopié en Dart (`pil_resample.dart`), coefficients et virgule
+fixe compris, et comparé à Pillow 12 : aucun octet de différence. La
+recette suit ce que le modèle a vu — côté long ramené à 384 px en Lanczos
+(le jeu de données), carré central, bicubique à 320 (`student.preparer`).
+Seule entorse : une photo de plus de 768 px est d'abord moyennée par
+blocs, pour que le Lanczos ne lise pas 60 pixels par sortie.
+
+**La fusion est celle du banc**, vérifiée sur un cas écrit par les
+fonctions Python elles-mêmes (synonyme, vues multiples, espèce sans
+référence) : écart ≤ 10⁻⁵, et ≤ 10⁻⁴ une fois le masque appliqué, la
+différence venant du plancher de 10⁻⁶.
+
+**Iris 9 reste le socle.** Iris 10 n'est retenu que si ses trois fichiers
+se lisent, qu'ils décrivent les mêmes sorties qu'Iris 9, et que le réseau
+rend sur un motif fixe le vecteur que l'export a calculé (16 valeurs, à
+0,01 près). Sinon l'application répond avec Iris 9 seul, à 0,70 — celle
+d'avant. Le seuil voyage avec le modèle (`LocalPlantModel.acceptThreshold`),
+pas avec la politique : un modèle qui retombe sur Iris 9 retombe sur son
+seuil.
+
+**Reste à mesurer sur le téléphone** : `integration_test/iris10_test.dart`
+vérifie le contrôle et chronomètre un scan entier, décodage compris, sur
+une photo de l'appareil (1 920 × 1 080) et une de la galerie
+(4 032 × 3 024).
+
 ## 21. Ce qui est décidé et ce qui reste ouvert
 
 ### Décidé

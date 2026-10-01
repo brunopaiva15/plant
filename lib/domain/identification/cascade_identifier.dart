@@ -39,7 +39,7 @@ class CascadeIdentifier implements PlantIdentifier {
   CascadeIdentifier({
     required this.local,
     required this.fallback,
-    this.policy = const FallbackPolicy(),
+    FallbackPolicy policy = const FallbackPolicy(),
     IdentificationMetricsStore? metrics,
     this.fallbackEnabled = true,
     this.monthlyRemoteLimit = 30,
@@ -47,7 +47,8 @@ class CascadeIdentifier implements PlantIdentifier {
     CatalogLookup? lookup,
     DateTime Function()? now,
     this.cacheSize = 24,
-  })  : metricsStore = metrics ?? InMemoryMetricsStore(),
+  })  : _policy = policy,
+        metricsStore = metrics ?? InMemoryMetricsStore(),
         _lookup = lookup ?? ((_, _) => null),
         _now = now ?? DateTime.now;
 
@@ -59,7 +60,18 @@ class CascadeIdentifier implements PlantIdentifier {
   /// ce qu'Iris croyait, et pour quoi il avait pris la plante.
   List<IdentificationCandidate> lastLocal = const [];
   final PlantIdentifier fallback;
-  final FallbackPolicy policy;
+  final FallbackPolicy _policy;
+
+  /// La règle de décision, au seuil du modèle effectivement chargé.
+  ///
+  /// La fusion d'Iris 9 et d'Iris 10 affirme à son propre seuil ; si Iris 10
+  /// ne se charge pas, le modèle n'en annonce plus, et la règle redevient
+  /// celle d'Iris 9. Lue à chaque décision plutôt que fixée à la
+  /// construction : le modèle se charge à la première photo, après.
+  FallbackPolicy get policy {
+    final threshold = local.acceptThreshold;
+    return threshold == null ? _policy : _policy.withAcceptThreshold(threshold);
+  }
   final IdentificationMetricsStore metricsStore;
 
   /// L'utilisateur peut couper le repli distant (réglages) : tout reste

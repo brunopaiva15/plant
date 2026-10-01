@@ -682,6 +682,19 @@ CUDA_VISIBLE_DEVICES= ~/venv/bin/python3 arbitre.py --embeddings ~/plant-data/ir
 TensorFlow pour Iris 9, donc `~/venv` ; `CUDA_VISIBLE_DEVICES=` le garde
 sur le processeur quand un entraînement occupe la carte.
 
+### Livrer à l'application (étape 15)
+
+`exporter.py livrer` copie le `fp16` d'une passe dans `assets/model/iris10.tflite`,
+écrit les références alignées sur les sorties d'Iris 9
+(`iris10-references.bin`, demi-flottants) et `iris10.json` — espèces,
+synonymes, température, poids de la fusion, seuil, et le vecteur de
+contrôle que l'application vérifie au chargement (§ 20 sexdecies de
+`docs/14`) :
+
+```bash
+~/venv-export/bin/python exporter.py livrer --sortie ~/plant-data/iris10-final --cache ~/plant-data/bioclip
+```
+
 ### Quand affirmer (étape 12)
 
 `seuils.py` rend la courbe autonomie / justesse d'Iris 9, d'Iris 10 et de

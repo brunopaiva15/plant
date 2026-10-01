@@ -311,6 +311,9 @@ class _RecordingLocal implements LocalPlantModel {
   String? get loadError => null;
   @override
   Set<IdentificationContext> get contexts => const {IdentificationContext.indoor, IdentificationContext.outdoor};
+
+  @override
+  double? get acceptThreshold => null;
   @override
   Future<bool> warmUp() async => true;
   @override

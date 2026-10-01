@@ -34,6 +34,9 @@ class FakeLocal implements LocalPlantModel {
   Set<IdentificationContext> contexts = const {};
 
   @override
+  double? acceptThreshold;
+
+  @override
   void dispose() {}
 
   int warmUps = 0;
@@ -77,6 +80,8 @@ class FakePerImage implements LocalPlantModel {
   String? get loadError => null;
   @override
   Set<IdentificationContext> get contexts => const {};
+  @override
+  double? get acceptThreshold => null;
   @override
   void dispose() {}
   @override
@@ -221,6 +226,22 @@ void main() {
     expect(m.remote, 0);
     expect(m.remoteCallsSaved, 1);
     expect(m.averageConfidence, closeTo(0.96, 1e-9));
+  });
+
+  test('le seuil d\'affirmation est celui du modèle chargé', () async {
+    // La fusion d'Iris 9 et d'Iris 10 affirme à 0,85 ; Iris 9 seul à 0,70.
+    // Une réponse à 0,80 est affirmée par l'un, seulement proposée par
+    // l'autre — et le modèle qui retombe sur Iris 9 retombe sur son seuil.
+    final answer = [c('Monstera deliciosa', 0.80), c('Monstera adansonii', 0.05)];
+    final local = FakeLocal(answer)..acceptThreshold = 0.85;
+    final cascade = build(local, FakeRemote(remoteAnswer));
+    expect(cascade.policy.acceptThreshold, 0.85);
+    expect(cascade.policy.decide(answer), IdentificationVerdict.plausible);
+    expect(cascade.policy.outdoors().acceptThreshold, 0.85);
+
+    local.acceptThreshold = null;
+    expect(cascade.policy.acceptThreshold, const FallbackPolicy().acceptThreshold);
+    expect(cascade.policy.decide(answer), IdentificationVerdict.accepted);
   });
 
   test('a plausible local list is shown without paying for a remote call', () async {

@@ -58,3 +58,61 @@ def test_le_banc_encode_se_relit_comme_une_epoque(tmp_path):
                 chemins, v)
     gardes, lus = lire_embeddings(tmp_path / 'banc-fp16', chemins)
     assert gardes == [0, 1] and np.allclose(lus, v)
+
+
+# --------------------------------------------------------------------------
+# Ce que l'application reçoit
+# --------------------------------------------------------------------------
+
+from exporter import meta_livree, motif_de_controle, paquet_references
+
+
+def test_les_references_suivent_l_ordre_d_iris9_synonymes_reunis():
+    """Les sorties d'Iris 9 pointent leur espèce, deux noms d'une plante la
+    même ; une espèce sans référence n'entre pas dans la fusion — c'est
+    `aligner`, ce que le banc a mesuré."""
+    labels = ['monstera-deliciosa', 'heptapleurum-arboricola', 'schefflera-arboricola',
+              'ficus-lyrata', 'pilea-peperomioides']
+    cles = ['schefflera-arboricola', 'monstera-deliciosa', 'monstera-deliciosa#pot',
+            'pilea-peperomioides#captive', 'hors-iris9']
+    vecteurs = np.eye(5, 4, dtype=np.float32)
+    paquet, matrice = paquet_references(cles, vecteurs, labels)
+    assert paquet['especes'] == ['monstera-deliciosa', 'schefflera-arboricola', 'pilea-peperomioides']
+    assert paquet['iris9'] == [0, 1, 1, -1, 2]
+    assert paquet['lignes'] == [1, 0, 0, 2]
+    assert paquet['sans_reference'] == ['ficus-lyrata']
+    assert paquet['synonymes']['heptapleurum-arboricola'] == 'schefflera-arboricola'
+    # La ligne hors d'Iris 9 est retirée, les autres gardent leur vecteur.
+    assert matrice.shape == (4, 4)
+    np.testing.assert_array_equal(matrice[0], vecteurs[0])
+    np.testing.assert_array_equal(matrice[3], vecteurs[3])
+
+
+def test_le_motif_de_controle_s_ecrit_en_entiers():
+    m = motif_de_controle(4)
+    assert m.shape == (1, 4, 4, 3) and m.dtype == np.float32
+    plat = m.reshape(-1)
+    assert plat[0] == 0.0
+    assert plat[1] == pytest.approx(7919 % 1000 / 999)
+    assert plat[47] == pytest.approx(47 * 7919 % 1000 / 999)
+
+
+def test_iris10_json_porte_les_reglages_mesures(tmp_path):
+    modele = tmp_path / 'iris10.tflite'
+    modele.write_bytes(b'modele')
+    refs = tmp_path / 'iris10-references.bin'
+    refs.write_bytes(np.zeros((3, 4), dtype='<f2').tobytes())
+    paquet = {'especes': ['a', 'b'], 'lignes': [0, 0, 1], 'iris9': [0, 1, -1],
+              'synonymes': {}, 'sans_reference': ['c']}
+    controle = np.arange(20, dtype=np.float32)[None] / 20
+    m = meta_livree({'student': 'fastvit_sa12', 'entree': 320, 'epoque': 10}, modele, refs,
+                    paquet, 4, 'centroide', controle)
+    assert m['version'] == '10'
+    assert m['input_size'] == 320 and m['dim'] == 4
+    assert m['accept_threshold'] == 0.85 and m['min_margin'] == 0.25
+    assert m['fusion'] == {'poids_iris9': 0.5, 'plancher': 1e-6}
+    assert m['temperature'] == 100.0
+    assert m['references']['lignes'] == 3 and m['references']['octets'] == 24
+    assert len(m['controle']['vecteur']) == 16
+    assert 'sans_reference' not in m
+    json.dumps(m)
