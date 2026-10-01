@@ -2892,6 +2892,34 @@ exports. Le format livré sera le `fp16` (23 Mo), sauf si la fusion lue
 sur l'`int8w` reste à 0,2 point de celle du `fp16` : à vitesse égale
 (§ 20 terdecies), seule la taille les sépare.
 
+### Le format livré : `fp16`
+
+Mesuré sur les fichiers exportés, Iris 9 lu comme dans l'application :
+
+| `iris10-final` | entraînement | **`fp16`, 23,4 Mo** | `int8w`, 12,2 Mo |
+|---|---|---|---|
+| cosinus avec l'entraînement (moyen / minimal) | — | 0,99999 / 0,960 | 0,99716 / 0,821 |
+| Iris 10 seul, indoor / outdoor | 0,8429 / 0,8290 | 0,8429 / 0,8285 | 0,8376 / 0,8250 |
+| fusion, indoor (poids choisis) | 0,8651 (0,5 / 0,75) | 0,8651 (0,5 / 0,75) | 0,8758 (0,5 / 0,5) |
+| fusion, outdoor (poids choisis) | 0,8570 (0,5 / 0,75) | 0,8570 (0,5 / 0,75) | 0,8545 (0,5 / 0,75) |
+| fusion à 0,85 : autonomie / justesse indoor | 0,864 / 0,946 | 0,864 / 0,946 | 0,865 / 0,945 |
+| fusion à 0,85 : à tort intérieur / extérieur | 0,367 / 0,395 | 0,366 / 0,396 | 0,369 / 0,399 |
+
+Le `fp16` est une copie du modèle entraîné : tous les chiffres sont les
+siens. L'`int8w` est indiscernable au point de fonctionnement (0,85), mais
+la fusion en outdoor, où les deux validations croisées ont choisi les mêmes
+poids, cède 0,25 point — au-delà des 0,2 de la règle, d'une image. Le
++1,1 de l'indoor n'est pas un gain : les poids choisis diffèrent
+(0,5 / 0,5 contre 0,5 / 0,75), et c'est ce choix qui bouge la lecture.
+
+**Décidé : `fp16`.** La règle posée avant la mesure n'est pas tenue par
+l'`int8w`, Iris 10 seul y perd 0,5 point en indoor — la lecture dont
+dépendra le répertoire entier, au-delà des 1 569 espèces d'Iris 9 —, et
+son pire cas (cosinus 0,82) est une photo que le modèle ne lit plus comme
+il l'a appris. Le prix : 11 Mo de plus dans l'application, à vitesse égale
+(47 ms sur iPhone 16 Pro, 4 fils). Si la taille devient la contrainte,
+l'`int8w` est le repli mesuré.
+
 ## 21. Ce qui est décidé et ce qui reste ouvert
 
 ### Décidé
