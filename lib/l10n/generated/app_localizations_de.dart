@@ -6692,18 +6692,16 @@ class AppLocalizationsDe extends AppLocalizations {
       'Gib Durchmesser und Material des Topfs an: Der Abstand passt sich an, und die Pflegehinweise zeigen, wie viel Wasser du gießt.';
 
   @override
-  String get whatsNewCameraTitle => 'Blitz und Zoom im Sucher';
+  String get whatsNewCameraTitle => 'Flüssigere Fotos';
 
   @override
-  String get whatsNewCameraBody =>
-      'Schalte den Blitz in der Ecke des Rahmens ein, und zieh das Bild mit zwei Fingern auf, um zu zoomen.';
+  String get whatsNewCameraBody => 'Das Aufnehmen und Hinzufügen von Fotos ist jetzt flüssiger.';
 
   @override
-  String get whatsNewSpeciesTitle => 'Die wahrscheinlichste Art';
+  String get whatsNewSpeciesTitle => 'Benutzeroberfläche und Stabilität';
 
   @override
-  String get whatsNewSpeciesBody =>
-      'Beim Hinzufügen einer Pflanze übernimmt die App die wahrscheinlichste Art. Tippe auf einen anderen Namen, um sie zu ändern.';
+  String get whatsNewSpeciesBody => 'Mehrere Probleme mit der Benutzeroberfläche und Stabilität wurden behoben.';
 
   @override
   String get whatsNewDiagnosisTitle => 'Die Analysedauer';
@@ -6713,6 +6711,5 @@ class AppLocalizationsDe extends AppLocalizations {
       'Während einer Diagnose zeigt der Bildschirm die verbleibende Zeit. Die Analyse ist auch schneller fertig.';
 
   @override
-  String get whatsNewWateringIntro =>
-      'Diese Version bezieht den Topf in die Gießberechnung ein. Auch Sucher, das Hinzufügen einer Pflanze und die Diagnose ändern sich.';
+  String get whatsNewWateringIntro => 'Iris 10, unser neues hochmodernes Modell zur Pflanzenerkennung.';
 }
