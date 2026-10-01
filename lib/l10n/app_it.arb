@@ -2266,11 +2266,11 @@
   "whatsNewTitle": "Novità",
   "whatsNewPotTitle": "Annaffiatura secondo il vaso",
   "whatsNewPotBody": "Indica diametro e materiale del vaso: l'intervallo si adatta e la scheda di cura dice quanta acqua versare.",
-  "whatsNewCameraTitle": "Flash e zoom nel mirino",
-  "whatsNewCameraBody": "Accendi il flash nell'angolo della cornice, e allarga due dita sull'immagine per zoomare.",
-  "whatsNewSpeciesTitle": "La specie più probabile",
-  "whatsNewSpeciesBody": "Quando aggiungi una pianta, l'app sceglie la specie più probabile. Tocca un altro nome per cambiarla.",
+  "whatsNewCameraTitle": "Foto più fluide",
+  "whatsNewCameraBody": "Scattare e aggiungere foto è ora più fluido.",
+  "whatsNewSpeciesTitle": "Interfaccia e stabilità",
+  "whatsNewSpeciesBody": "Sono stati risolti diversi problemi di interfaccia e stabilità.",
   "whatsNewDiagnosisTitle": "Il tempo di analisi",
   "whatsNewDiagnosisBody": "Durante una diagnosi, lo schermo mostra il tempo rimanente. L'analisi finisce anche prima.",
-  "whatsNewWateringIntro": "Questa versione fa entrare il vaso nel calcolo dell'annaffiatura. Cambiano anche il mirino, l'aggiunta di una pianta e la diagnosi."
+  "whatsNewWateringIntro": "Iris 10, il nostro nuovo modello all’avanguardia per il riconoscimento delle piante."
 }

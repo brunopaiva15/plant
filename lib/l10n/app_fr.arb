@@ -3371,11 +3371,11 @@
   "whatsNewTitle": "Nouveautés",
   "whatsNewPotTitle": "L'arrosage selon le pot",
   "whatsNewPotBody": "Indiquez le diamètre et la matière du pot : l'intervalle s'ajuste, et la fiche d'entretien dit combien d'eau verser.",
-  "whatsNewCameraTitle": "Flash et zoom dans le viseur",
-  "whatsNewCameraBody": "Allumez le flash dans le coin du cadre, et écartez deux doigts sur l'image pour zoomer.",
-  "whatsNewSpeciesTitle": "L'espèce la plus probable",
-  "whatsNewSpeciesBody": "À l'ajout d'une plante, l'application retient l'espèce la plus probable. Touchez un autre nom pour la changer.",
+  "whatsNewCameraTitle": "Photos plus fluides",
+  "whatsNewCameraBody": "La prise de photos et l’ajout d’images sont plus fluides.",
+  "whatsNewSpeciesTitle": "Interface et stabilité",
+  "whatsNewSpeciesBody": "Plusieurs problèmes d’interface et de stabilité ont été corrigés.",
   "whatsNewDiagnosisTitle": "Le temps d'analyse",
   "whatsNewDiagnosisBody": "Pendant un diagnostic, l'écran indique le temps restant. L'analyse aboutit aussi plus vite.",
-  "whatsNewWateringIntro": "Cette version fait entrer le pot dans le calcul de l'arrosage. Le viseur, l'ajout d'une plante et le diagnostic changent aussi."
+  "whatsNewWateringIntro": "Iris 10, notre nouveau modèle de reconnaissance de plantes à la pointe de la technologie."
 }

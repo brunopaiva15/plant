@@ -2266,11 +2266,11 @@
   "whatsNewTitle": "Neuigkeiten",
   "whatsNewPotTitle": "Gießen nach Topf",
   "whatsNewPotBody": "Gib Durchmesser und Material des Topfs an: Der Abstand passt sich an, und die Pflegehinweise zeigen, wie viel Wasser du gießt.",
-  "whatsNewCameraTitle": "Blitz und Zoom im Sucher",
-  "whatsNewCameraBody": "Schalte den Blitz in der Ecke des Rahmens ein, und zieh das Bild mit zwei Fingern auf, um zu zoomen.",
-  "whatsNewSpeciesTitle": "Die wahrscheinlichste Art",
-  "whatsNewSpeciesBody": "Beim Hinzufügen einer Pflanze übernimmt die App die wahrscheinlichste Art. Tippe auf einen anderen Namen, um sie zu ändern.",
+  "whatsNewCameraTitle": "Flüssigere Fotos",
+  "whatsNewCameraBody": "Das Aufnehmen und Hinzufügen von Fotos ist jetzt flüssiger.",
+  "whatsNewSpeciesTitle": "Benutzeroberfläche und Stabilität",
+  "whatsNewSpeciesBody": "Mehrere Probleme mit der Benutzeroberfläche und Stabilität wurden behoben.",
   "whatsNewDiagnosisTitle": "Die Analysedauer",
   "whatsNewDiagnosisBody": "Während einer Diagnose zeigt der Bildschirm die verbleibende Zeit. Die Analyse ist auch schneller fertig.",
-  "whatsNewWateringIntro": "Diese Version bezieht den Topf in die Gießberechnung ein. Auch Sucher, das Hinzufügen einer Pflanze und die Diagnose ändern sich."
+  "whatsNewWateringIntro": "Iris 10, unser neues hochmodernes Modell zur Pflanzenerkennung."
 }

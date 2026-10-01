@@ -127,7 +127,7 @@ class ReleaseNote {
 /// L'identifiant de la dernière nouveauté livrée. Le banc d'essai de
 /// l'application s'en sert pour la marquer vue : elle s'ouvrirait sinon
 /// par-dessus chaque écran que les tests parcourent.
-const latestReleaseNoteId = 'watering-pot-1';
+const latestReleaseNoteId = 'iris-10-1';
 
 /// Les nouveautés livrées, de la plus ancienne à la plus récente.
 ///
@@ -141,13 +141,10 @@ List<ReleaseNote> releaseNotes(AppLocalizations l10n) => [
       ReleaseNote(
         id: latestReleaseNoteId,
         eyebrow: l10n.appName,
-        title: l10n.whatsNewTitle,
+        title: 'Iris 10',
         body: l10n.whatsNewWateringIntro,
-        accent: ReleaseAccent.water,
-        mark: ReleaseMark.icon,
-        // L'étincelle et non la goutte : les satellites de la médaille
-        // reprennent déjà la goutte du premier point fort.
-        icon: CupertinoIcons.sparkles,
+        accent: ReleaseAccent.sage,
+        mark: ReleaseMark.iris,
         highlights: [
           ReleaseHighlight(
             icon: CupertinoIcons.drop,
@@ -156,7 +153,7 @@ List<ReleaseNote> releaseNotes(AppLocalizations l10n) => [
             body: l10n.whatsNewPotBody,
           ),
           ReleaseHighlight(
-            icon: CupertinoIcons.bolt_fill,
+            icon: CupertinoIcons.camera_fill,
             accent: ReleaseAccent.sun,
             title: l10n.whatsNewCameraTitle,
             body: l10n.whatsNewCameraBody,
@@ -166,12 +163,6 @@ List<ReleaseNote> releaseNotes(AppLocalizations l10n) => [
             accent: ReleaseAccent.sage,
             title: l10n.whatsNewSpeciesTitle,
             body: l10n.whatsNewSpeciesBody,
-          ),
-          ReleaseHighlight(
-            icon: CupertinoIcons.timer,
-            accent: ReleaseAccent.rose,
-            title: l10n.whatsNewDiagnosisTitle,
-            body: l10n.whatsNewDiagnosisBody,
           ),
         ],
       ),

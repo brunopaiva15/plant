@@ -6705,18 +6705,16 @@ class AppLocalizationsIt extends AppLocalizations {
       'Indica diametro e materiale del vaso: l\'intervallo si adatta e la scheda di cura dice quanta acqua versare.';
 
   @override
-  String get whatsNewCameraTitle => 'Flash e zoom nel mirino';
+  String get whatsNewCameraTitle => 'Foto più fluide';
 
   @override
-  String get whatsNewCameraBody =>
-      'Accendi il flash nell\'angolo della cornice, e allarga due dita sull\'immagine per zoomare.';
+  String get whatsNewCameraBody => 'Scattare e aggiungere foto è ora più fluido.';
 
   @override
-  String get whatsNewSpeciesTitle => 'La specie più probabile';
+  String get whatsNewSpeciesTitle => 'Interfaccia e stabilità';
 
   @override
-  String get whatsNewSpeciesBody =>
-      'Quando aggiungi una pianta, l\'app sceglie la specie più probabile. Tocca un altro nome per cambiarla.';
+  String get whatsNewSpeciesBody => 'Sono stati risolti diversi problemi di interfaccia e stabilità.';
 
   @override
   String get whatsNewDiagnosisTitle => 'Il tempo di analisi';
@@ -6726,6 +6724,5 @@ class AppLocalizationsIt extends AppLocalizations {
       'Durante una diagnosi, lo schermo mostra il tempo rimanente. L\'analisi finisce anche prima.';
 
   @override
-  String get whatsNewWateringIntro =>
-      'Questa versione fa entrare il vaso nel calcolo dell\'annaffiatura. Cambiano anche il mirino, l\'aggiunta di una pianta e la diagnosi.';
+  String get whatsNewWateringIntro => 'Iris 10, il nostro nuovo modello all’avanguardia per il riconoscimento delle piante.';
 }

@@ -71,7 +71,7 @@ Future<void> _pumpWindow(WidgetTester tester, {double scale = 1}) async {
 /// La version que porterait le binaire. Elle n'est plus une constante du
 /// code — `AppVersion` la lit sur l'application installée — donc le test
 /// donne la sienne.
-const _version = '1.0.0';
+const _version = '1.0.3';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -114,6 +114,17 @@ void main() {
       expect(await whatsNew.take(_notes), isNull);
     });
 
+    test("la fiche 1.0.3 remplace l'ancienne fiche de nouveautés", () async {
+      final prefs = await _prefs({
+        'onboarding_done': true,
+        'last_run_version': '1.0.2',
+        'seen_release_notes': <String>['watering-pot-1'],
+      });
+      final note = _note(latestReleaseNoteId);
+      expect((await WhatsNew(prefs, _version).take([note]))?.id, 'iris-10-1');
+      expect(prefs.seenReleaseNotes, {'watering-pot-1', 'iris-10-1'});
+    });
+
     test("deux versions sautées n'empilent pas deux fenêtres", () async {
       final prefs = await _prefs({'onboarding_done': true, 'last_run_version': '0.9.0'});
       // 'b' et 'c' sont tous deux inédits : c'est le plus récent qui s'ouvre.
@@ -149,7 +160,7 @@ void main() {
       await tester.pumpWidget(_app(const Scaffold(key: Key('host'), body: SizedBox.expand())));
       final l10n = AppLocalizations.of(tester.element(find.byKey(const Key('host'))));
       final ids = [for (final note in releaseNotes(l10n)) note.id];
-      expect(ids.first, 'watering-pot-1');
+      expect(ids.first, 'iris-10-1');
       expect(ids.last, latestReleaseNoteId);
       expect(ids.toSet(), hasLength(ids.length));
       // Dépensés avant la publication, sur les appareils de la bêta.
@@ -158,15 +169,14 @@ void main() {
   });
 
   group('la fenêtre', () {
-    testWidgets('montre les quatre points forts de la dernière livraison', (tester) async {
+    testWidgets('montre Iris 10 et les trois points forts de la 1.0.3', (tester) async {
       await _pumpWindow(tester);
       expect(find.text('AUXINE'), findsOneWidget);
-      expect(find.text('Nouveautés'), findsOneWidget);
+      expect(find.text('Iris 10'), findsOneWidget);
       expect(find.text("L'arrosage selon le pot"), findsOneWidget);
-      expect(find.text('Flash et zoom dans le viseur'), findsOneWidget);
-      expect(find.text("L'espèce la plus probable"), findsOneWidget);
-      expect(find.text("Le temps d'analyse"), findsOneWidget);
-      expect(find.byType(IrisMark), findsNothing);
+      expect(find.text('Photos plus fluides'), findsOneWidget);
+      expect(find.text('Interface et stabilité'), findsOneWidget);
+      expect(find.byType(IrisMark), findsOneWidget);
     });
 
     testWidgets('le bouton la referme', (tester) async {
