@@ -2964,6 +2964,14 @@ d'avant. Le seuil voyage avec le modèle (`LocalPlantModel.acceptThreshold`),
 pas avec la politique : un modèle qui retombe sur Iris 9 retombe sur son
 seuil.
 
+**Livré le 1ᵉʳ octobre** : 23,4 Mo de modèle, 2 404 références (4,9 Mo)
+pour 1 567 espèces — les 1 569 sorties d'Iris 9, les deux paires de
+synonymes réunies ; aucune espèce d'Iris 9 sans référence. Le fichier
+commité rend le vecteur de contrôle à 5 × 10⁻⁷ près sous LiteRT, et
+`test/data/iris10_assets_test.dart` refuse une livraison dont les fichiers
+ne concordent plus avec les labels d'Iris 9 — ce qui éteindrait Iris 10
+sans bruit sur tous les téléphones.
+
 **Reste à mesurer sur le téléphone** : `integration_test/iris10_test.dart`
 vérifie le contrôle et chronomètre un scan entier, décodage compris, sur
 une photo de l'appareil (1 920 × 1 080) et une de la galerie
