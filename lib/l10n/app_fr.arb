@@ -3329,5 +3329,53 @@
         "type": "int"
       }
     }
-  }
+  },
+  "potMaterial": "Matière du pot",
+  "potMaterialTerracotta": "Terre cuite",
+  "potMaterialPlastic": "Plastique",
+  "potMaterialGlazed": "Céramique émaillée",
+  "potMaterialFabric": "Tissu",
+  "potMaterialSelfWatering": "Pot à réserve d'eau",
+  "careWateringDose": "Versez {low} à {high} {unit} à chaque arrosage.",
+  "@careWateringDose": {
+    "placeholders": {
+      "low": {
+        "type": "String"
+      },
+      "high": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "careWateringReservoir": "Remplissez la réserve quand son niveau est au plus bas : le substrat boit par en dessous.",
+  "careWateringPotShorter": "Votre pot raccourcit l'intervalle de {percent} %.",
+  "@careWateringPotShorter": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "careWateringPotLonger": "Votre pot allonge l'intervalle de {percent} %.",
+  "@careWateringPotLonger": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "careWateringPotHint": "Indiquez le diamètre du pot pour connaître la quantité d'eau à verser.",
+  "whatsNewTitle": "Nouveautés",
+  "whatsNewPotTitle": "L'arrosage selon le pot",
+  "whatsNewPotBody": "Indiquez le diamètre et la matière du pot : l'intervalle s'ajuste, et la fiche d'entretien dit combien d'eau verser.",
+  "whatsNewCameraTitle": "Flash et zoom dans le viseur",
+  "whatsNewCameraBody": "Allumez le flash dans le coin du cadre, et écartez deux doigts sur l'image pour zoomer.",
+  "whatsNewSpeciesTitle": "L'espèce la plus probable",
+  "whatsNewSpeciesBody": "À l'ajout d'une plante, l'application retient l'espèce la plus probable. Touchez un autre nom pour la changer.",
+  "whatsNewDiagnosisTitle": "Le temps d'analyse",
+  "whatsNewDiagnosisBody": "Pendant un diagnostic, l'écran indique le temps restant. L'analyse aboutit aussi plus vite.",
+  "whatsNewWateringIntro": "Cette version fait entrer le pot dans le calcul de l'arrosage. Le viseur, l'ajout d'une plante et le diagnostic changent aussi."
 }

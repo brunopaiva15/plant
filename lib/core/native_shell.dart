@@ -263,10 +263,14 @@ abstract final class NativeShell {
   /// haut paraissaient sur l'écran de lancement dès que la coquille se
   /// déclarait. Voiler, et non effacer : la page garde leur place, et ne
   /// saute pas quand elles reviennent.
-  static void setLaunching(bool value) {
+  ///
+  /// [fade] : le fondu des barres quand elles reviennent. L'application
+  /// paraît en fondu dans la fenêtre ; des barres qui tomberaient d'un coup
+  /// par-dessus se verraient arriver après elle.
+  static void setLaunching(bool value, {Duration fade = Duration.zero}) {
     if (_ouverture == value) return;
     _ouverture = value;
-    _appliquerChrome();
+    _appliquerChrome(fade: value ? Duration.zero : fade);
   }
 
   /// Combien de pages couvrent la coquille, pour qui a besoin de le savoir.
@@ -298,7 +302,10 @@ abstract final class NativeShell {
   ///
   /// Un canal de méthode livre dans l'ordre où on lui confie : il suffit donc
   /// de lui confier les deux à la suite, sans rien attendre entre.
-  static void _appliquerChrome() {
+  ///
+  /// [fade] n'entre pas dans l'empreinte : c'est la manière de rendre les
+  /// barres, pas leur état.
+  static void _appliquerChrome({Duration fade = Duration.zero}) {
     if (!isSupported) return;
     final charge = {
       'bar': _coquilleDeclaree && (_profondeur == 0 || _barreDemandee),
@@ -317,7 +324,7 @@ abstract final class NativeShell {
       _dernieresActions = null;
       unawaited(_invoke('setActions', const {'title': '', 'leading': [], 'actions': [], 'tone': 'plain'}));
     }
-    unawaited(_invoke('setChrome', charge));
+    unawaited(_invoke('setChrome', {...charge, if (fade > Duration.zero) 'fade': fade.inMilliseconds}));
   }
 
   static Future<void> _invoke(String methode, Object? arguments) async {

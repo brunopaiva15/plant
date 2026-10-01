@@ -1,3 +1,4 @@
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -61,6 +62,9 @@ class _PhotoCaptureFlowState extends ConsumerState<PhotoCaptureFlow> {
   final _page = PageController();
   final _camera = InlineCameraController();
   final _label = TextEditingController();
+
+  /// Le cadre du viseur : une photo prise s'en détache.
+  final _frameKey = GlobalKey();
   int _step = 0;
   StoredPhoto? _stored;
   bool _picking = false;
@@ -105,14 +109,15 @@ class _PhotoCaptureFlowState extends ConsumerState<PhotoCaptureFlow> {
     _page.animateToPage(step, duration: Motion.of(context, Motion.emphasis), curve: Motion.emphasized);
   }
 
-  /// L'appareil photo ou la galerie du système.
-  Future<void> _pick(PhotoSource source) async {
+  /// L'appareil photo ou la galerie du système. [from] : le bouton touché,
+  /// d'où la photo sortira.
+  Future<void> _pick(PhotoSource source, {PhotoOrigin? from}) async {
     if (_picking) return;
     setState(() => _picking = true);
     try {
       final stored = await ref.read(photoStorageProvider).pick(source);
       if (stored == null || !mounted) return;
-      _accept(stored);
+      _accept(stored, from: from);
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'photoFlow.pick');
       if (mounted) ref.read(toastProvider.notifier).show(photoErrorToast(context.l10n, e));
@@ -121,10 +126,11 @@ class _PhotoCaptureFlowState extends ConsumerState<PhotoCaptureFlow> {
     }
   }
 
-  /// Déclenche depuis le viseur intégré ; sans lui, l'appareil du système.
-  Future<void> _capture() async {
+  /// Déclenche depuis le viseur intégré ; sans lui, l'appareil du système,
+  /// et la photo sort de [from].
+  Future<void> _capture({PhotoOrigin? from}) async {
     if (_picking) return;
-    if (!_camera.isReady) return _pick(PhotoSource.camera);
+    if (!_camera.isReady) return _pick(PhotoSource.camera, from: from);
     setState(() => _picking = true);
     final shot = await _camera.capture();
     if (shot == null) {
@@ -134,7 +140,8 @@ class _PhotoCaptureFlowState extends ConsumerState<PhotoCaptureFlow> {
     }
     try {
       final stored = await ref.read(photoStorageProvider).importFile(shot);
-      if (mounted) _accept(stored);
+      // La photo se détache du viseur et se rétracte dans l'aperçu.
+      if (mounted) _accept(stored, from: PhotoOrigin.of(_frameKey.currentContext, radius: Radii.xlAll, showsPhoto: true));
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'photoFlow.capture');
       if (mounted) ref.read(toastProvider.notifier).show(photoErrorToast(context.l10n, e));
@@ -147,7 +154,10 @@ class _PhotoCaptureFlowState extends ConsumerState<PhotoCaptureFlow> {
     }
   }
 
-  void _accept(StoredPhoto stored) {
+  void _accept(StoredPhoto stored, {PhotoOrigin? from}) {
+    // L'aperçu de l'étape suivante l'attend : la photo y file depuis [from].
+    final full = ref.read(photoStorageProvider).absolutePathNow(stored.filePath);
+    if (full != null) PhotoLanding.expectFile(stored.thumbPath, File(full), from: from);
     final old = _stored;
     setState(() => _stored = stored);
     if (old != null) ref.read(photoStorageProvider).deleteFiles(old.filePath, old.thumbPath);
@@ -259,6 +269,7 @@ class _PhotoCaptureFlowState extends ConsumerState<PhotoCaptureFlow> {
                     scale: 0.98,
                     semanticLabel: l10n.takePhoto,
                     child: CaptureFrame(
+                      key: _frameKey,
                       camera: _camera,
                       ghost: ghostAvailable && _ghost ? previous : null,
                     ),
@@ -283,9 +294,19 @@ class _PhotoCaptureFlowState extends ConsumerState<PhotoCaptureFlow> {
             ],
           ),
           actions: [
-            FloraButton(label: l10n.takePhoto, icon: CupertinoIcons.camera_fill, expand: true, loading: _picking, onPressed: _capture),
+            Builder(
+              builder: (button) => FloraButton(label: l10n.takePhoto, icon: CupertinoIcons.camera_fill, expand: true, loading: _picking, onPressed: () => _capture(from: PhotoOrigin.of(button))),
+            ),
             const SizedBox(height: Space.xs),
-            FloraButton(label: l10n.choosePhoto, icon: CupertinoIcons.photo, style: FloraButtonStyle.secondary, expand: true, onPressed: _picking ? null : () => _pick(PhotoSource.gallery)),
+            Builder(
+              builder: (button) => FloraButton(
+                label: l10n.choosePhoto,
+                icon: CupertinoIcons.photo,
+                style: FloraButtonStyle.secondary,
+                expand: true,
+                onPressed: _picking ? null : () => _pick(PhotoSource.gallery, from: PhotoOrigin.of(button)),
+              ),
+            ),
             const SizedBox(height: Space.xs),
             FloraButton(label: l10n.addPhotoByUrl, style: FloraButtonStyle.ghost, expand: true, onPressed: _picking ? null : _fromUrl),
           ],
@@ -443,27 +464,31 @@ class PhotoReviewStep extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ClipRRect(
-            borderRadius: Radii.xlAll,
-            child: AspectRatio(
-              aspectRatio: 4 / 3,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  PlantImage(relativePath: thumbPath, cacheWidth: 900),
-                  Positioned(
-                    left: Space.sm,
-                    bottom: Space.sm,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: Space.xs, vertical: 3),
-                      decoration: BoxDecoration(color: c.ink.withValues(alpha: 0.55), borderRadius: Radii.fullAll),
-                      child: Text(
-                        Dates.relativeDay(context, takenAt ?? DateTime.now()),
-                        style: context.text.caption.copyWith(color: Colors.white),
+          PhotoLanding(
+            tag: thumbPath,
+            radius: Radii.xlAll,
+            child: ClipRRect(
+              borderRadius: Radii.xlAll,
+              child: AspectRatio(
+                aspectRatio: 4 / 3,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    PlantImage(relativePath: thumbPath, cacheWidth: 900),
+                    Positioned(
+                      left: Space.sm,
+                      bottom: Space.sm,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: Space.xs, vertical: 3),
+                        decoration: BoxDecoration(color: c.ink.withValues(alpha: 0.55), borderRadius: Radii.fullAll),
+                        child: Text(
+                          Dates.relativeDay(context, takenAt ?? DateTime.now()),
+                          style: context.text.caption.copyWith(color: Colors.white),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

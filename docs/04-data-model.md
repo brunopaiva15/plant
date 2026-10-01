@@ -11,7 +11,7 @@ locations        id, garden_id, parent_id?, name, icon, photo_id?, light?, orien
 species          id, scientific_name, common_name?, care_defaults(json), source?, created_at
 plants           id, garden_id, name, species_id?, species_name?, location_id?, primary_photo_id?,
                  status(active|archived), health(healthy|watch|sick), is_favorite,
-                 acquired_at?, source?, price?, pot_size?, notes?, parent_plant_id?,
+                 acquired_at?, source?, price?, pot_size?, pot_material?, notes?, parent_plant_id?,
                  archived_at?, archive_reason?, created_at, updated_at, deleted_at
 plant_photos     id, plant_id, user_id?, file_path, thumb_path, width, height, taken_at, created_at, deleted_at
 action_types     id, garden_id?, key(watering|fertilizing|…|custom), label?, emoji, is_builtin, sort_order

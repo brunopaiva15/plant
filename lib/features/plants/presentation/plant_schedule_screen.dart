@@ -11,6 +11,7 @@ import '../../../domain/care/care_engine.dart';
 import '../../../domain/care/care_guide.dart';
 import '../../../domain/care/care_profile.dart';
 import '../../../domain/care/care_suggestions.dart';
+import '../../../domain/care/pot.dart';
 import '../../../domain/models/models.dart';
 import '../../actions/presentation/action_type_sheet.dart';
 import '../../today/application/reminder_scheduler.dart';
@@ -120,13 +121,17 @@ class PlantScheduleScreen extends ConsumerWidget {
 /// parlante (type personnalisé, espèce inconnue), on retombe sur les
 /// intervalles par défaut de l'application.
 class _Advice {
-  const _Advice({required this.care, this.light, this.south = false});
+  const _Advice({required this.care, this.light, this.pot = Pot.unknown, this.south = false});
 
   /// Fiche retenue, avec sa provenance : « Fiche de l'espèce » et « Fiche du
   /// genre Ficus » ne se valent pas, et l'écran le dit.
   final ResolvedCare care;
 
   final LightNeed? light;
+
+  /// Le pot de la plante : un petit pot ou une terre cuite rapprochent les
+  /// arrosages, un pot à réserve les espace.
+  final Pot pot;
 
   /// Le jardin est dans l'hémisphère sud : l'arrosage conseillé suit ses
   /// saisons, pas celles du calendrier européen.
@@ -142,7 +147,7 @@ class _Advice {
   int? suggestionFor(String typeKey, DateTime now) => care.match == CareMatch.generic ? null : _fromProfile(typeKey, now);
 
   int? _fromProfile(String typeKey, DateTime now) =>
-      care.profile.suggestedIntervalDays(typeKey, now: now, actualLight: light, south: south);
+      care.profile.suggestedIntervalDays(typeKey, now: now, actualLight: light, pot: pot, south: south);
 }
 
 /// Fiche d'entretien de la plante et lumière réelle de son emplacement : de
@@ -153,7 +158,12 @@ _Advice _adviceFor(WidgetRef ref, String plantId) {
   final care = ref.watch(careGuideProvider).resolve(plant?.speciesName, family: speciesFamilyLookup(ref)(plant?.speciesName));
   final location = plant?.locationId == null ? null : (ref.watch(locationsProvider).value ?? const <Location>[]).where((l) => l.id == plant!.locationId).firstOrNull;
   // La lumière dite sur la plante prime sur celle de son emplacement.
-  return _Advice(care: care, light: plant?.light ?? lightNeedFromCode(location?.light), south: ref.watch(southernHemisphereProvider));
+  return _Advice(
+    care: care,
+    light: plant?.light ?? lightNeedFromCode(location?.light),
+    pot: plant?.pot(metric: ref.watch(preferencesProvider.select((p) => p.metricUnits))) ?? Pot.unknown,
+    south: ref.watch(southernHemisphereProvider),
+  );
 }
 
 Future<void> showScheduleEditSheet(BuildContext context, {required CareSchedule schedule}) =>

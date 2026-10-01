@@ -11177,6 +11177,132 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'{count, plural, =0{aucune plante sur le plan} =1{une plante sur le plan} other{{count} plantes sur le plan}}'**
   String roomScanPlantsOnPlanCount(int count);
+
+  /// No description provided for @potMaterial.
+  ///
+  /// In fr, this message translates to:
+  /// **'Matière du pot'**
+  String get potMaterial;
+
+  /// No description provided for @potMaterialTerracotta.
+  ///
+  /// In fr, this message translates to:
+  /// **'Terre cuite'**
+  String get potMaterialTerracotta;
+
+  /// No description provided for @potMaterialPlastic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plastique'**
+  String get potMaterialPlastic;
+
+  /// No description provided for @potMaterialGlazed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Céramique émaillée'**
+  String get potMaterialGlazed;
+
+  /// No description provided for @potMaterialFabric.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tissu'**
+  String get potMaterialFabric;
+
+  /// No description provided for @potMaterialSelfWatering.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pot à réserve d\'eau'**
+  String get potMaterialSelfWatering;
+
+  /// No description provided for @careWateringDose.
+  ///
+  /// In fr, this message translates to:
+  /// **'Versez {low} à {high} {unit} à chaque arrosage.'**
+  String careWateringDose(String low, String high, String unit);
+
+  /// No description provided for @careWateringReservoir.
+  ///
+  /// In fr, this message translates to:
+  /// **'Remplissez la réserve quand son niveau est au plus bas : le substrat boit par en dessous.'**
+  String get careWateringReservoir;
+
+  /// No description provided for @careWateringPotShorter.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre pot raccourcit l\'intervalle de {percent} %.'**
+  String careWateringPotShorter(int percent);
+
+  /// No description provided for @careWateringPotLonger.
+  ///
+  /// In fr, this message translates to:
+  /// **'Votre pot allonge l\'intervalle de {percent} %.'**
+  String careWateringPotLonger(int percent);
+
+  /// No description provided for @careWateringPotHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Indiquez le diamètre du pot pour connaître la quantité d\'eau à verser.'**
+  String get careWateringPotHint;
+
+  /// No description provided for @whatsNewTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Nouveautés'**
+  String get whatsNewTitle;
+
+  /// No description provided for @whatsNewPotTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'arrosage selon le pot'**
+  String get whatsNewPotTitle;
+
+  /// No description provided for @whatsNewPotBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Indiquez le diamètre et la matière du pot : l\'intervalle s\'ajuste, et la fiche d\'entretien dit combien d\'eau verser.'**
+  String get whatsNewPotBody;
+
+  /// No description provided for @whatsNewCameraTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Flash et zoom dans le viseur'**
+  String get whatsNewCameraTitle;
+
+  /// No description provided for @whatsNewCameraBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Allumez le flash dans le coin du cadre, et écartez deux doigts sur l\'image pour zoomer.'**
+  String get whatsNewCameraBody;
+
+  /// No description provided for @whatsNewSpeciesTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'espèce la plus probable'**
+  String get whatsNewSpeciesTitle;
+
+  /// No description provided for @whatsNewSpeciesBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'À l\'ajout d\'une plante, l\'application retient l\'espèce la plus probable. Touchez un autre nom pour la changer.'**
+  String get whatsNewSpeciesBody;
+
+  /// No description provided for @whatsNewDiagnosisTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le temps d\'analyse'**
+  String get whatsNewDiagnosisTitle;
+
+  /// No description provided for @whatsNewDiagnosisBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pendant un diagnostic, l\'écran indique le temps restant. L\'analyse aboutit aussi plus vite.'**
+  String get whatsNewDiagnosisBody;
+
+  /// No description provided for @whatsNewWateringIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cette version fait entrer le pot dans le calcul de l\'arrosage. Le viseur, l\'ajout d\'une plante et le diagnostic changent aussi.'**
+  String get whatsNewWateringIntro;
 }
 
 class _AppLocalizationsDelegate

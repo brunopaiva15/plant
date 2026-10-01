@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:drift/native.dart';
 import 'package:flora/data/db/database.dart';
 import 'package:flora/data/repositories/action_repository_impl.dart';
@@ -7,6 +9,7 @@ import 'package:flora/data/repositories/plant_repository_impl.dart';
 import 'package:flora/data/repositories/tag_repository_impl.dart';
 import 'package:flora/domain/care/care_engine.dart';
 import 'package:flora/domain/care/care_profile.dart';
+import 'package:flora/domain/care/pot.dart';
 import 'package:flora/domain/models/models.dart';
 import 'package:flora/domain/repositories/repositories.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -199,8 +202,12 @@ void main() {
       lifespan: () => Lifespan.perennial,
       hardiness: () => Hardiness.tender,
       cuttingMonth: () => 4,
+      potSize: () => 14,
+      potMaterial: () => PotMaterial.terracotta,
     ));
     var saved = (await plants.getPlant(p.id))!;
+    expect(saved.potSize, 14);
+    expect(saved.potMaterial, PotMaterial.terracotta);
     expect(saved.healthIssue, HealthIssue.pests);
     expect(saved.light, LightNeed.brightIndirect);
     expect(saved.humidity, HumidityNeed.high);
@@ -217,12 +224,39 @@ void main() {
 
   test('une valeur inconnue en base se lit comme non renseignée', () async {
     final p = await plants.create(const NewPlant(name: 'Hoya'));
-    await db.customStatement("UPDATE plants SET health_issue = 'later', light = 'neon', lifespan = 'x', hardiness = 'y'");
+    await db.customStatement("UPDATE plants SET health_issue = 'later', light = 'neon', lifespan = 'x', hardiness = 'y', pot_material = 'bamboo'");
     final saved = (await plants.getPlant(p.id))!;
     expect(saved.healthIssue, isNull);
     expect(saved.light, isNull);
     expect(saved.lifespan, isNull);
     expect(saved.hardiness, isNull);
+    expect(saved.potMaterial, isNull);
+  });
+
+  test('une base d\'avant la v15 se relit après migration, et prend la matière du pot', () async {
+    final dir = await Directory.systemTemp.createTemp('flora_v15');
+    final file = File('${dir.path}/flora.sqlite');
+    addTearDown(() => dir.delete(recursive: true));
+
+    // Une plante écrite puis une base ramenée au schéma v14 : la colonne de
+    // la matière du pot n'existe pas encore.
+    var old = FloraDatabase(NativeDatabase(file));
+    final before = await DriftPlantRepository(old, garden).create(const NewPlant(name: 'Pilea'));
+    await DriftPlantRepository(old, garden).update(before.copyWith(potSize: () => 12));
+    await old.customStatement('ALTER TABLE plants DROP COLUMN pot_material');
+    await old.customStatement('PRAGMA user_version = 14');
+    await old.close();
+
+    final migrated = FloraDatabase(NativeDatabase(file));
+    addTearDown(migrated.close);
+    final repo = DriftPlantRepository(migrated, garden);
+    final after = (await repo.getPlant(before.id))!;
+    expect(after.name, 'Pilea');
+    expect(after.potSize, 12);
+    expect(after.potMaterial, isNull, reason: 'non renseignée, pas une valeur par défaut');
+
+    await repo.update(after.copyWith(potMaterial: () => PotMaterial.selfWatering));
+    expect((await repo.getPlant(before.id))!.potMaterial, PotMaterial.selfWatering);
   });
 
   test('les tris : santé, emplacement, derniers soins, acquisition, modification', () async {

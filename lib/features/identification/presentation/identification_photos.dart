@@ -123,16 +123,20 @@ class _Photo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.colors;
-    final image = ClipRRect(
-      borderRadius: Radii.mediumAll,
-      child: Image.file(
-        File(path),
-        width: size,
-        height: size,
-        fit: BoxFit.cover,
-        cacheWidth: (size * 3).round(),
-        gaplessPlayback: true,
-        errorBuilder: (_, _, _) => SizedBox(width: size, height: size, child: ColoredBox(color: c.surfaceMuted)),
+    // Une photo choisie dans la galerie arrive en volant jusqu'ici.
+    final image = PhotoLanding(
+      tag: path,
+      child: ClipRRect(
+        borderRadius: Radii.mediumAll,
+        child: Image.file(
+          File(path),
+          width: size,
+          height: size,
+          fit: BoxFit.cover,
+          cacheWidth: (size * 3).round(),
+          gaplessPlayback: true,
+          errorBuilder: (_, _, _) => SizedBox(width: size, height: size, child: ColoredBox(color: c.surfaceMuted)),
+        ),
       ),
     );
     if (onRemove == null) return image;

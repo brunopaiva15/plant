@@ -225,8 +225,9 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
 
   /// Ouvre l'appareil photo ou la galerie du système. Le viseur intégré a
   /// pris la place du premier cas courant ; celui-ci reste pour la galerie,
-  /// et pour les appareils qui n'offrent pas d'aperçu.
-  Future<void> _pick(PhotoSource source) async {
+  /// et pour les appareils qui n'offrent pas d'aperçu. [from] : le bouton
+  /// touché, d'où la photo sortira pour remplir le cadre.
+  Future<void> _pick(PhotoSource source, {PhotoOrigin? from}) async {
     if (_picking) return;
     setState(() => _picking = true);
     try {
@@ -234,7 +235,9 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
       final raw = await storage.pickSource(source);
       if (raw == null || !mounted) return;
 
-      // Le fichier source devient l'aperçu avant toute compression.
+      // Le fichier source devient l'aperçu avant toute compression. Il sort
+      // du bouton touché et grandit jusqu'à remplir le cadre.
+      PhotoLanding.expectFile(raw.path, raw, from: from);
       _showRawPreview(raw, owned: source == PhotoSource.camera);
 
       final stored = await storage.importFile(raw);
@@ -252,10 +255,11 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
 
   /// Déclenche depuis le viseur intégré : un seul geste, sans passer par
   /// l'appareil photo du système. Si le viseur n'a pas pu s'ouvrir — refus,
-  /// appareil sans caméra — le bouton retrouve son ancien geste.
-  Future<void> _capture() async {
+  /// appareil sans caméra — le bouton retrouve son ancien geste, et la photo
+  /// sort de [from].
+  Future<void> _capture({PhotoOrigin? from}) async {
     if (_picking) return;
-    if (!_camera.isReady) return _pick(PhotoSource.camera);
+    if (!_camera.isReady) return _pick(PhotoSource.camera, from: from);
     setState(() => _picking = true);
     final shot = await _camera.capture();
     if (shot == null) {
@@ -529,7 +533,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
 
   /// Une photo de plus pour trancher. Gratuite, hors ligne et immédiate, là
   /// où la recherche en ligne se prend sur un quota mensuel.
-  Future<void> _addIdentificationPhoto(PhotoSource source) async {
+  Future<void> _addIdentificationPhoto(PhotoSource source, {PhotoOrigin? from}) async {
     final identifier = ref.read(plantIdentifierProvider);
     if (_picking ||
         !identifier.isConfigured ||
@@ -541,7 +545,7 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     try {
       final stored = await ref.read(photoStorageProvider).pick(source);
       if (stored == null) return;
-      await _acceptIdentificationPhoto(stored);
+      await _acceptIdentificationPhoto(stored, from: from);
     } catch (e, st) {
       ref.read(crashReporterProvider).report(e, st, context: 'createPlant.identifyMore');
       if (mounted) ref.read(toastProvider.notifier).show(photoErrorToast(context.l10n, e));
@@ -566,11 +570,13 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     await storage.deleteFiles(stored.filePath, stored.thumbPath);
   }
 
-  /// Range une photo d'identification de plus et relance le moteur.
-  Future<void> _acceptIdentificationPhoto(StoredPhoto stored) async {
+  /// Range une photo d'identification de plus et relance le moteur. Elle
+  /// sort du bouton touché ([from]) et file jusqu'à sa place dans la bande.
+  Future<void> _acceptIdentificationPhoto(StoredPhoto stored, {PhotoOrigin? from}) async {
     if (_identificationPaths.length >= maxIdentificationPhotos) return;
     final path = await ref.read(photoStorageProvider).absolutePath(stored.filePath);
     if (!mounted) return;
+    PhotoLanding.expectFile(path, File(path), from: from);
     setState(() {
       _identificationExtras.add(stored);
       _identificationPaths.add(path);
@@ -578,14 +584,15 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
     _startIdentification();
   }
 
-  void _chooseIdentificationSource() {
+  /// [from] : le bouton qui a ouvert le choix, d'où la photo sortira.
+  void _chooseIdentificationSource(PhotoOrigin? from) {
     final l10n = context.l10n;
     showAdaptiveActionSheet(
       context,
       cancelLabel: l10n.cancel,
       actions: [
-        SheetAction(label: l10n.camera, icon: CupertinoIcons.camera, onPressed: () => _addIdentificationPhoto(PhotoSource.camera)),
-        SheetAction(label: l10n.gallery, icon: CupertinoIcons.photo, onPressed: () => _addIdentificationPhoto(PhotoSource.gallery)),
+        SheetAction(label: l10n.camera, icon: CupertinoIcons.camera, onPressed: () => _addIdentificationPhoto(PhotoSource.camera, from: from)),
+        SheetAction(label: l10n.gallery, icon: CupertinoIcons.photo, onPressed: () => _addIdentificationPhoto(PhotoSource.gallery, from: from)),
       ],
     );
   }
@@ -792,9 +799,13 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
           actions: switch (_mode) {
             _PhotoMode.aim => [
                 if (!live) ...[
-                  FloraButton(label: l10n.takePhoto, icon: CupertinoIcons.camera_fill, expand: true, loading: _picking, onPressed: _capture),
+                  Builder(
+                    builder: (button) => FloraButton(label: l10n.takePhoto, icon: CupertinoIcons.camera_fill, expand: true, loading: _picking, onPressed: () => _capture(from: PhotoOrigin.of(button))),
+                  ),
                   const SizedBox(height: Space.xs),
-                  FloraButton(label: l10n.choosePhoto, icon: CupertinoIcons.photo, style: FloraButtonStyle.secondary, expand: true, onPressed: _picking ? null : () => _pick(PhotoSource.gallery)),
+                  Builder(
+                    builder: (button) => FloraButton(label: l10n.choosePhoto, icon: CupertinoIcons.photo, style: FloraButtonStyle.secondary, expand: true, onPressed: _picking ? null : () => _pick(PhotoSource.gallery, from: PhotoOrigin.of(button))),
+                  ),
                   const SizedBox(height: Space.xs),
                 ],
                 FloraButton(label: l10n.withoutPhoto, style: FloraButtonStyle.ghost, expand: true, onPressed: () => _go(1)),
@@ -841,48 +852,54 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
       final identifier = ref.watch(plantIdentifierProvider);
       final scanning = identifier.isConfigured &&
           (!_primaryIdentificationDone || !_primaryScanMinimumElapsed);
-      content = Stack(
-        fit: StackFit.expand,
-        children: [
-          AnimatedSwitcher(
-            duration: Motion.of(context, const Duration(milliseconds: 280)),
-            reverseDuration: Motion.of(context, const Duration(milliseconds: 240)),
-            switchInCurve: Curves.easeOutCubic,
-            switchOutCurve: Curves.easeInCubic,
-            layoutBuilder: (current, previous) =>
-                Stack(fit: StackFit.expand, children: [...previous, ?current]),
-            transitionBuilder: (child, animation) {
-              final scale = Tween<double>(begin: 0.992, end: 1).animate(
-                CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
-              );
-              return FadeTransition(
-                opacity: animation,
-                child: ScaleTransition(scale: scale, child: child),
-              );
-            },
-            child: scanning
-                ? ProcessingField(
-                    key: const ValueKey('iris-processing'),
-                    height: null,
-                    child: image,
-                    foregroundAlignment: Alignment.topRight,
-                    foreground: const Padding(
-                      padding: EdgeInsets.only(top: Space.xs, right: Space.sm),
-                      child: BreathingIrisMark(size: 48),
+      // L'analyse et les plantes repérées attendent que la photo soit
+      // posée : elles se dessinent sur elle, pas sur le cadre vide.
+      content = PhotoLanding(
+        tag: raw?.path,
+        radius: Radii.xlAll,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            AnimatedSwitcher(
+              duration: Motion.of(context, const Duration(milliseconds: 280)),
+              reverseDuration: Motion.of(context, const Duration(milliseconds: 240)),
+              switchInCurve: Curves.easeOutCubic,
+              switchOutCurve: Curves.easeInCubic,
+              layoutBuilder: (current, previous) =>
+                  Stack(fit: StackFit.expand, children: [...previous, ?current]),
+              transitionBuilder: (child, animation) {
+                final scale = Tween<double>(begin: 0.992, end: 1).animate(
+                  CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+                );
+                return FadeTransition(
+                  opacity: animation,
+                  child: ScaleTransition(scale: scale, child: child),
+                );
+              },
+              child: scanning
+                  ? ProcessingField(
+                      key: const ValueKey('iris-processing'),
+                      height: null,
+                      child: image,
+                      foregroundAlignment: Alignment.topRight,
+                      foreground: const Padding(
+                        padding: EdgeInsets.only(top: Space.xs, right: Space.sm),
+                        child: BreathingIrisMark(size: 48),
+                      ),
+                    )
+                  : KeyedSubtree(
+                      key: const ValueKey('iris-photo'),
+                      child: image,
                     ),
-                  )
-                : KeyedSubtree(
-                    key: const ValueKey('iris-photo'),
-                    child: image,
-                  ),
-          ),
-          if (_primaryPreviewCandidates.isNotEmpty)
-            _DetectedPlantsOverlay(
-              candidates: _primaryPreviewCandidates,
-              onPick: _pickPreviewCandidate,
-              selected: _chosen?.scientificName,
             ),
-        ],
+            if (_primaryPreviewCandidates.isNotEmpty)
+              _DetectedPlantsOverlay(
+                candidates: _primaryPreviewCandidates,
+                onPick: _pickPreviewCandidate,
+                selected: _chosen?.scientificName,
+              ),
+          ],
+        ),
       );
     } else if (live) {
       content = Stack(
@@ -923,12 +940,14 @@ class _CreatePlantFlowState extends ConsumerState<CreatePlantFlow> {
                       // Demi-déclencheur, l'écart, demi-bouton galerie : douze
                       // points entre les deux, comptés par le composant.
                       offset: const Offset(-Shutter.asideOffset, 0),
-                      child: FloraIconButton(
-                        icon: CupertinoIcons.photo,
-                        semanticLabel: l10n.choosePhoto,
-                        background: OnMedia.tile,
-                        color: OnMedia.ink,
-                        onPressed: _picking ? null : () => _pick(PhotoSource.gallery),
+                      child: Builder(
+                        builder: (button) => FloraIconButton(
+                          icon: CupertinoIcons.photo,
+                          semanticLabel: l10n.choosePhoto,
+                          background: OnMedia.tile,
+                          color: OnMedia.ink,
+                          onPressed: _picking ? null : () => _pick(PhotoSource.gallery, from: PhotoOrigin.of(button)),
+                        ),
                       ),
                     ),
                 ],
@@ -1185,7 +1204,8 @@ class _IdentificationSuggestions extends StatelessWidget {
   final VoidCallback? onSearchOnline;
 
   /// Présent seulement quand Iris hésite et qu'une seconde photo peut aider.
-  final VoidCallback? onAddPhoto;
+  /// Reçoit le bouton touché, d'où la photo sortira.
+  final ValueChanged<PhotoOrigin?>? onAddPhoto;
 
   /// Retirer une photo ajoutée pour identifier. Jamais la première : c'est
   /// la photo de la plante.
@@ -1277,12 +1297,14 @@ class _IdentificationSuggestions extends StatelessWidget {
                 Text(l10n.identifyAnotherPhotoHint,
                     style: context.text.caption),
                 const SizedBox(height: Space.xs),
-                FloraButton(
-                  label: l10n.identifyAnotherPhoto,
-                  icon: CupertinoIcons.camera,
-                  style: FloraButtonStyle.secondary,
-                  size: FloraButtonSize.small,
-                  onPressed: onAddPhoto,
+                Builder(
+                  builder: (button) => FloraButton(
+                    label: l10n.identifyAnotherPhoto,
+                    icon: CupertinoIcons.camera,
+                    style: FloraButtonStyle.secondary,
+                    size: FloraButtonSize.small,
+                    onPressed: () => onAddPhoto!(PhotoOrigin.of(button)),
+                  ),
                 ),
               ],
               if (results.first.source == IdentificationSource.local &&

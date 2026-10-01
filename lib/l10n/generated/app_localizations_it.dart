@@ -6652,4 +6652,80 @@ class AppLocalizationsIt extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get potMaterial => 'Materiale del vaso';
+
+  @override
+  String get potMaterialTerracotta => 'Terracotta';
+
+  @override
+  String get potMaterialPlastic => 'Plastica';
+
+  @override
+  String get potMaterialGlazed => 'Ceramica smaltata';
+
+  @override
+  String get potMaterialFabric => 'Tessuto';
+
+  @override
+  String get potMaterialSelfWatering => 'Vaso con riserva d\'acqua';
+
+  @override
+  String careWateringDose(String low, String high, String unit) {
+    return 'Versa da $low a $high $unit a ogni annaffiatura.';
+  }
+
+  @override
+  String get careWateringReservoir =>
+      'Riempi la riserva quando il livello è al minimo: il terriccio assorbe l\'acqua dal basso.';
+
+  @override
+  String careWateringPotShorter(int percent) {
+    return 'Il tuo vaso accorcia l\'intervallo del $percent%.';
+  }
+
+  @override
+  String careWateringPotLonger(int percent) {
+    return 'Il tuo vaso allunga l\'intervallo del $percent%.';
+  }
+
+  @override
+  String get careWateringPotHint =>
+      'Indica il diametro del vaso per sapere quanta acqua versare.';
+
+  @override
+  String get whatsNewTitle => 'Novità';
+
+  @override
+  String get whatsNewPotTitle => 'Annaffiatura secondo il vaso';
+
+  @override
+  String get whatsNewPotBody =>
+      'Indica diametro e materiale del vaso: l\'intervallo si adatta e la scheda di cura dice quanta acqua versare.';
+
+  @override
+  String get whatsNewCameraTitle => 'Flash e zoom nel mirino';
+
+  @override
+  String get whatsNewCameraBody =>
+      'Accendi il flash nell\'angolo della cornice, e allarga due dita sull\'immagine per zoomare.';
+
+  @override
+  String get whatsNewSpeciesTitle => 'La specie più probabile';
+
+  @override
+  String get whatsNewSpeciesBody =>
+      'Quando aggiungi una pianta, l\'app sceglie la specie più probabile. Tocca un altro nome per cambiarla.';
+
+  @override
+  String get whatsNewDiagnosisTitle => 'Il tempo di analisi';
+
+  @override
+  String get whatsNewDiagnosisBody =>
+      'Durante una diagnosi, lo schermo mostra il tempo rimanente. L\'analisi finisce anche prima.';
+
+  @override
+  String get whatsNewWateringIntro =>
+      'Questa versione fa entrare il vaso nel calcolo dell\'annaffiatura. Cambiano anche il mirino, l\'aggiunta di una pianta e la diagnosi.';
 }

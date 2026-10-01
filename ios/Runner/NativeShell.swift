@@ -33,7 +33,10 @@ import UIKit
 /// autant que d'onglets. Mais il n'y a qu'un moteur, donc qu'une vue Flutter,
 /// et elle déménage d'un hôte à l'autre au changement d'onglet. C'est la
 /// contenance UIKit ordinaire — `addChild`, `didMove` —, pas un tour de passe-
-/// passe : l'hôte sélectionné est le parent, les autres sont vides.
+/// passe : l'hôte sélectionné est le parent, les autres sont vides. Seule
+/// l'apparition sort de l'ordinaire : Flutter la tient du contrôleur
+/// d'onglets, pas de l'hôte qui le porte — voir
+/// `flutterCommenceA(paraitre:anime:)`.
 ///
 /// Toucher un onglet ne change rien tout seul : le natif le dit à Dart, Dart
 /// change de branche go_router, et c'est Flutter qui redessine. L'inverse
@@ -133,7 +136,8 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
       appliquerLaChrome(
         barre: (args["bar"] as? Bool) ?? true,
         onglets: (args["tabs"] as? Bool) ?? true,
-        voile: (args["veil"] as? Bool) ?? false)
+        voile: (args["veil"] as? Bool) ?? false,
+        fondu: TimeInterval((args["fade"] as? Int) ?? 0) / 1000)
       result(true)
     case "setActions":
       guard let args = call.arguments as? [String: Any] else {
@@ -167,7 +171,18 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
   /// encore là — partie, elle ne dit plus ce qu'elle prenait — et dans les
   /// quatre sens, parce qu'une barre rangée dans la bande verticale ne prend
   /// pas la sienne en haut.
-  private func appliquerLaChrome(barre: Bool, onglets ongletsVisibles: Bool, voile: Bool) {
+  ///
+  /// **`fondu`** : une barre qui reparaît le fait en fondu, sur cette durée.
+  /// À la fin de l'ouverture, l'application vient de paraître en fondu dans
+  /// la fenêtre, et des barres tombées d'un coup par-dessus se voyaient
+  /// arriver après elle. Le fondu passe par l'opacité, le temps de
+  /// l'animation seulement : c'est toujours le contrôleur qui montre et qui
+  /// cache.
+  private func appliquerLaChrome(
+    barre: Bool, onglets ongletsVisibles: Bool, voile: Bool, fondu: TimeInterval = 0
+  ) {
+    let barresCachees = navigations.map(\.isNavigationBarHidden)
+    let ongletsCaches = ongletsSontCaches()
     // Sous un voile, la place se reprend chaque fois que la chrome demandée
     // change : au lancement, l'ouverture voile une chrome qui n'a encore
     // jamais paru, et c'est la coquille, arrivée ensuite, qui la demande.
@@ -198,6 +213,31 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
       barreDOnglets.isUserInteractionEnabled = montrerLesOnglets
     }
     flutter?.additionalSafeAreaInsets = margesVoilees
+
+    guard fondu > 0 else { return }
+    var aFondre: [UIView] = []
+    for (navigation, etaitCachee) in zip(navigations, barresCachees)
+    where etaitCachee && !navigation.isNavigationBarHidden {
+      aFondre.append(navigation.navigationBar)
+    }
+    if ongletsCaches, !ongletsSontCaches(), let barreDOnglets = onglets?.tabBar {
+      aFondre.append(barreDOnglets)
+    }
+    guard !aFondre.isEmpty else { return }
+    for vue in aFondre { vue.alpha = 0 }
+    UIView.animate(
+      withDuration: fondu, delay: 0, options: [.curveEaseOut, .allowUserInteraction]
+    ) {
+      for vue in aFondre { vue.alpha = 1 }
+    }
+  }
+
+  /// La barre d'onglets est-elle cachée ? Par le contrôleur depuis iOS 18,
+  /// par la vue en deçà — comme `appliquerLaChrome` la cache.
+  private func ongletsSontCaches() -> Bool {
+    guard let onglets else { return true }
+    if #available(iOS 18.0, *) { return onglets.isTabBarHidden }
+    return onglets.tabBar.isHidden
   }
 
   /// La place que prendra la chrome demandée, qu'elle soit déjà à l'écran ou
@@ -254,8 +294,20 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
   }
 
   /// Refait les hôtes, un par onglet, et redonne sa vue à Flutter.
+  ///
+  /// Autant d'onglets qu'avant — une langue qui change — : on renomme ceux
+  /// qui sont là. Les refaire déménageait Flutter pour rien, et l'hôte neuf
+  /// arrivait sans les boutons de la page ouverte, que Dart ne redit pas
+  /// tant qu'ils n'ont pas changé.
   private func rebatir(titres: [String], symboles: [String]) {
     guard let onglets else { return }
+    if !navigations.isEmpty, navigations.count == titres.count {
+      for (i, navigation) in navigations.enumerated() {
+        navigation.tabBarItem.title = titres[i]
+        navigation.tabBarItem.image = UIImage(systemName: symboles[i])
+      }
+      return
+    }
     let choisi = min(onglets.selectedIndex, max(0, titres.count - 1))
     hotes = titres.indices.map { _ in HostViewController() }
     navigations = titres.indices.map { i in
@@ -488,6 +540,39 @@ final class NativeShell: NSObject, UITabBarControllerDelegate {
     channel?.invokeMethod("onAction", arguments: identifiants[envoyeur.tag])
   }
 
+  // MARK: - Apparition de Flutter
+
+  /// Dit à Flutter que la coquille paraît ou disparaît.
+  ///
+  /// **Flutter suit la coquille, pas l'hôte qui le porte.** Laissé à UIKit,
+  /// chaque déménagement d'un hôte à l'autre lui valait une disparition puis
+  /// une apparition, et chacune compte pour lui : `viewDidDisappear` détruit
+  /// sa surface de rendu et le met en pause, `viewWillAppear` la refait. Un
+  /// changement d'onglet ou des onglets refaits en pleine marche — la fin de
+  /// l'introduction, une langue qui change — mêlent les deux transitions, et
+  /// UIKit peut livrer la disparition de l'ancien hôte **après** l'apparition
+  /// dans le nouveau. Flutter restait alors à l'écran sans surface : Dart
+  /// tournait, changeait de page, publiait les boutons de la barre, et l'écran
+  /// gardait sa dernière image. Rien ne semblait répondre, jusqu'au prochain
+  /// passage en arrière-plan.
+  ///
+  /// Les hôtes ne transmettent donc rien (voir `HostViewController`), et c'est
+  /// le contrôleur d'onglets qui le fait : il ne disparaît que lorsqu'une
+  /// page d'UIKit le couvre pour de bon — le relevé d'une pièce —, et ses
+  /// transitions à lui sont équilibrées.
+  func flutterCommenceA(paraitre: Bool, anime: Bool) {
+    guard let flutter, flutter.parent != nil else { return }
+    flutter.beginAppearanceTransition(paraitre, animated: anime)
+    #if DEBUG
+      print("[auxine:natif] flutter \(paraitre ? "paraît" : "disparaît")")
+    #endif
+  }
+
+  func flutterAFini() {
+    guard let flutter, flutter.parent != nil else { return }
+    flutter.endAppearanceTransition()
+  }
+
   // MARK: - UITabBarControllerDelegate
 
   func tabBarController(_ controller: UITabBarController, didSelect viewController: UIViewController) {
@@ -505,6 +590,28 @@ enum TonDeBarre { case ordinaire, marque }
 /// ne sait rien de la tête verte.
 final class OngletsDAuxine: UITabBarController {
   override var childForStatusBarStyle: UIViewController? { selectedViewController }
+
+  // Flutter paraît et disparaît avec la coquille, jamais avec un onglet :
+  // voir `NativeShell.flutterCommenceA(paraitre:anime:)`.
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    NativeShell.shared.flutterCommenceA(paraitre: true, anime: animated)
+  }
+
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    NativeShell.shared.flutterAFini()
+  }
+
+  override func viewWillDisappear(_ animated: Bool) {
+    super.viewWillDisappear(animated)
+    NativeShell.shared.flutterCommenceA(paraitre: false, anime: animated)
+  }
+
+  override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
+    NativeShell.shared.flutterAFini()
+  }
 }
 
 /// La navigation d'un onglet : l'heure en blanc sur la tête verte, dans la
@@ -579,6 +686,11 @@ final class HostViewController: UIViewController {
   /// La vue de Flutter, quand elle est ici : c'est elle qui dit la couleur de
   /// l'heure d'une page sans barre.
   override var childForStatusBarStyle: UIViewController? { children.first }
+
+  /// Flutter ne suit pas les allées et venues de l'hôte : un onglet quitté
+  /// n'est pas une coquille qui disparaît. C'est le contrôleur d'onglets qui
+  /// les lui dit — voir `NativeShell.flutterCommenceA(paraitre:anime:)`.
+  override var shouldAutomaticallyForwardAppearanceMethods: Bool { false }
 
   override func viewDidLoad() {
     super.viewDidLoad()

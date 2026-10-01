@@ -6615,4 +6615,80 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get potMaterial => 'Pot material';
+
+  @override
+  String get potMaterialTerracotta => 'Terracotta';
+
+  @override
+  String get potMaterialPlastic => 'Plastic';
+
+  @override
+  String get potMaterialGlazed => 'Glazed ceramic';
+
+  @override
+  String get potMaterialFabric => 'Fabric';
+
+  @override
+  String get potMaterialSelfWatering => 'Self-watering pot';
+
+  @override
+  String careWateringDose(String low, String high, String unit) {
+    return 'Pour $low to $high $unit each time you water.';
+  }
+
+  @override
+  String get careWateringReservoir =>
+      'Refill the reservoir when its level is at the bottom: the soil draws water from below.';
+
+  @override
+  String careWateringPotShorter(int percent) {
+    return 'Your pot shortens the interval by $percent%.';
+  }
+
+  @override
+  String careWateringPotLonger(int percent) {
+    return 'Your pot lengthens the interval by $percent%.';
+  }
+
+  @override
+  String get careWateringPotHint =>
+      'Enter the pot diameter to see how much water to pour.';
+
+  @override
+  String get whatsNewTitle => 'What\'s new';
+
+  @override
+  String get whatsNewPotTitle => 'Watering by pot';
+
+  @override
+  String get whatsNewPotBody =>
+      'Enter the pot\'s diameter and material: the interval adjusts, and the care guide shows how much water to pour.';
+
+  @override
+  String get whatsNewCameraTitle => 'Flash and zoom in the viewfinder';
+
+  @override
+  String get whatsNewCameraBody =>
+      'Turn on the flash in the corner of the frame, and spread two fingers on the image to zoom.';
+
+  @override
+  String get whatsNewSpeciesTitle => 'The most likely species';
+
+  @override
+  String get whatsNewSpeciesBody =>
+      'When you add a plant, the app keeps the most likely species. Tap another name to change it.';
+
+  @override
+  String get whatsNewDiagnosisTitle => 'Analysis time';
+
+  @override
+  String get whatsNewDiagnosisBody =>
+      'During a diagnosis, the screen shows the time left. The analysis also finishes faster.';
+
+  @override
+  String get whatsNewWateringIntro =>
+      'This version brings the pot into the watering calculation. The viewfinder, adding a plant and the diagnosis change too.';
 }

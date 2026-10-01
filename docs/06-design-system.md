@@ -262,6 +262,7 @@ d'amortissement, `damping / (2·√(mass · stiffness))`, décide du dépassemen
 | `Springs.press` | 1,00 | l'aller sous le doigt : franc, sans tremblement |
 | `Springs.release` | 0,44 | le retour : dépasse d'un cheveu, comme une pâte qui se détend |
 | `Springs.glide` | 0,81 | ce qui se déplace : la bulle de la barre d'onglets |
+| `Springs.morph` | 0,80 | ce qui en devient une autre, vite : la photo qui se rétracte en vignette |
 
 `AnimationController.springTo` les mène, sur un contrôleur **sans bornes** :
 le dépassement sort de l'intervalle 0–1, et c'est voulu. Avec *réduire les
@@ -315,6 +316,50 @@ liste se déroulerait encore alors que le doigt défile déjà. Le retard vit da
 la courbe et non dans un minuteur : un `Timer` en attente survivrait au widget.
 Avec une clé stable, une carte déjà posée ne rejoue rien quand la liste se
 réordonne. L'écran Aujourd'hui s'en sert pour ses soins du jour.
+
+### Une photo qui devient sa vignette (`PhotoLanding`)
+Le modèle vient de l'application ChatGPT. Dans ChatGPT, rien n'apparaît :
+tout se transforme. Le menu « + » devient la carte de l'appareil photo, la
+photo prise se rétracte en vignette, et la vignette file jusqu'à la bulle du
+message. Chaque élément part de l'endroit exact où il était à l'écran. Il n'y
+a ni fondu ni temps d'arrêt, le mouvement dure environ un cinquième de
+seconde, et les coins prennent en route l'arrondi de l'arrivée.
+
+Chez nous, la photo part de ce que la personne a touché :
+
+- **le viseur**, pour une photo prise : elle s'en détache à sa taille et se
+  rétracte jusqu'à sa place. C'est le geste de la vidéo, sur la case du
+  diagnostic et sur l'aperçu de l'étape « nommer ».
+- **le bouton qui a ouvert la galerie** : la photo sort du bouton, rond ou en
+  pilule, et grandit jusqu'à sa place en perdant la forme du bouton. Elle se
+  dessine dans le premier cinquième du trajet, puisque le bouton ne la
+  montrait pas.
+
+La place reste cachée tant que la photo vole. Le mouvement suit
+`Springs.morph`, et la photo arrive aux neuf dixièmes du trajet en 150 ms.
+
+Le fonctionnement ressemble à celui d'un `Hero`. Le code qui reçoit la photo
+l'annonce avec `PhotoLanding.expectFile(tag, fichier, from: origine)`.
+L'origine se relève avec `PhotoOrigin.of(context)` **au moment du toucher**,
+car le sélecteur du système couvre ensuite l'écran. L'endroit qui affiche la
+photo porte un `PhotoLanding` de même `tag`. Une annonce ne sert qu'une fois
+et expire au bout de 2 s.
+
+Sans origine, par exemple quand la photo d'un emplacement est choisie depuis
+un menu, la photo se pose sur place en grandissant un peu. Elle ne vole pas
+si sa place est hors de l'écran, ni avec *réduire les animations*.
+
+L'animation est branchée sur :
+
+- la case du diagnostic ;
+- le cadre de la création d'une plante ;
+- la bande des photos d'identification ;
+- l'aperçu de l'étape « nommer » ;
+- la photo d'un emplacement.
+
+La photo demandée par le compte rendu de diagnostic est une exception : elle
+relance l'analyse tout de suite et n'a pas de place où se poser.
+`test/design_system/photo_landing_test.dart` vérifie ce comportement.
 
 `test/design_system/spring_motion_test.dart` verrouille les trois : les deux
 axes qui ne cèdent pas pareil, le retour qui passe au-dessus de la taille au
@@ -748,7 +793,7 @@ agent, nombre en toutes lettres, phrase trop longue, registre mêlé. Le chantie
 de réécriture et ses lots sont dans `docs/18-clarte-des-textes.md`.
 
 ## Composants (`design_system/components/`)
-Button · IconButton · PressableScale · ClayBox · ClayLoader · Appear · Card · ActionTile · PlantCard · CareCard · PaperSheet · ActionChip · Pill · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · Slider (natif) · StepDots · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · IrisMark · PhotoGrid · PhotoViewer · QuantityStepper · DatePicker (natif) · PlantPicker · PhotoPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader · ScrollFade
+Button · IconButton · PressableScale · ClayBox · ClayLoader · Appear · Card · ActionTile · PlantCard · CareCard · PaperSheet · ActionChip · Pill · BottomSheet · Toast (Undo) · SearchBar · SegmentedControl · Slider (natif) · StepDots · EmptyState · Avatar · Badge · Tag · ListRow · TimelineRow · IrisMark · PhotoGrid · PhotoViewer · QuantityStepper · DatePicker (natif) · PlantPicker · PhotoPicker · LocationPicker · Skeleton · ErrorState · LargeTitleHeader · SectionHeader · ScrollFade · WhatsNewWindow
 
 ## L'écran du matin (`features/today/`)
 Le grand titre salue : « Bonjour Paul » jusqu'à dix-huit heures, « Bonsoir
@@ -988,7 +1033,10 @@ tranche, ce qui manque se propose après les pistes, jamais à leur place
 (docs/16) : d'abord les une à trois questions que le service a posées — une
 carte ocre, un champ par question, « Reprendre l'analyse » dessous —, et la
 photo de plus quand il n'en a posé aucune. Une seule des deux, et jamais sur
-un compte rendu net. Répondre refait l'analyse entière ; les réponses
+un compte rendu net. La photo de plus se prend dans le même viseur que celui
+du haut de la page, en plein écran (`showQuickCapture`) : flash, zoom au
+pincement, repères de cadrage, la galerie en dessous. L'appareil photo du
+système n'en est plus que le repli, sans viseur intégré. Répondre refait l'analyse entière ; les réponses
 rejoignent ensuite les symptômes et les observations dans le compte rendu
 gardé. Le même corps sert à la réouverture depuis le journal, à ceci près
 que l'incertitude, elle, ne se relit pas : c'est une décision du moment, pas
@@ -997,6 +1045,31 @@ une ligne du compte rendu.
 **La barre du bas ne porte qu'un geste à la fois** : analyser, puis
 enregistrer dans le journal. `test/features/diagnosis_screen_test.dart` tient
 le formulaire.
+
+## La fenêtre des nouveautés (`features/whats_new/`)
+Ce que l'application montre après une installation ou une mise à jour : un bandeau teinté qui
+s'éteint dans le fond de la page, la marque posée au centre sur une médaille
+d'argile qui respire, un titre en Bricolage, trois points forts, et un bouton
+qui reste sous les yeux pendant que la page défile.
+
+- **Présentation native, dessin commun.** `showFloraScrollableFlow` : la sheet
+  empilée d'iOS d'un côté, le dialogue plein écran de Material 3 de l'autre.
+- **Le contenu défile parce qu'il emprunte le `ScrollController` de la sheet.**
+  La sheet d'iOS arme un `VerticalDragGestureRecognizer` par-dessus tout son
+  contenu ; sans ce contrôleur, elle remporte chaque geste vertical et la page
+  reste figée pendant que la sheet descend. Avec lui, la liste défile tant
+  qu'elle n'est pas en haut, et referme la sheet une fois en haut. Un flow à
+  plusieurs pages défilantes ne peut pas s'en servir — d'où `showFloraFlow`,
+  qui reste à côté.
+- **La médaille est `surface`, pas la teinte** du bandeau : la marque d'Iris a
+  ses couleurs figées, garanties lisibles sur les quatre fonds de carte et
+  sur rien d'autre.
+- **L'accent ne porte que des icônes** — pastilles des points forts, lueur du
+  bandeau. Titres et corps restent à l'encre : c'est ce qui autorise l'ocre et
+  le rose, qui ne tiennent que 3:1.
+- **Contenu = données.** Une version est une entrée de `releaseNotes()` et ses
+  clés dans les quatre `.arb`. Aucune image à livrer.
+- Quand elle s'ouvre : voir docs/03, *Après une mise à jour*.
 
 ## Design review (par écran)
 Est-ce beau ? évident ? Peut-on retirer quelque chose ? L'action principale est-elle visible sans scroller ? Trop de texte ? Moins de taps possible ? Cohérent ? Ressemble-t-il à un template ? → si oui, retravailler.
@@ -1125,6 +1198,13 @@ et non effacer, pour que la page garde leur place. Mais au lancement elles
 n'ont encore jamais paru, et leur place ne se mesurait pas : le natif les
 pose donc un instant, transparentes, le temps d'une mise en page, pour la
 mesurer (`mesurerLaChrome`), avant de les cacher.
+
+Elles reviennent **avec l'application, et non après** : dès qu'elle a fini
+de paraître dans la fenêtre (30 % de l'ouverture), en fondu de 250 ms
+(`fade` de `setChrome`). Rendues à la fin seulement, elles tombaient d'un
+coup 600 ms après elle — la courbe passe ce temps-là à poser l'échelle, et
+l'écran semble déjà fini. Sans le zoom, elles reviennent au début du fondu
+du pot.
 
 **L'application garde sa place dans l'arbre** du premier au dernier cadre.
 La première version la sortait de la pile une fois l'ouverture finie, et

@@ -932,12 +932,19 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
     Set<String>? allowedNatural,
     Map<String, String> byName = const {},
   }) {
+    final title = (raw['title'] as String?) ?? '';
     var naturalId = _naturalId(raw['problem'], allowedNatural);
     var problemId = naturalId == null ? _problemId(raw['problem'], allowed) : null;
+    // Le numéro recopié en tête du titre, quand le modèle ne l'a mis que là.
+    final prefix = _codePrefix.firstMatch(title)?.group(1);
+    if (naturalId == null && problemId == null && prefix != null) {
+      naturalId = _naturalId(prefix, allowedNatural);
+      problemId = naturalId == null ? _problemId(prefix, allowed) : null;
+    }
     if (naturalId == null && problemId == null) {
       // Dernier recours : le nom exact d'une entrée soumise, sans son
       // numéro. La forme du numéro dit de quelle base il vient.
-      final trouve = _problemByName(raw['title'], byName);
+      final trouve = _problemByName(titleWithoutCode(title), byName);
       if (trouve != null && trouve.startsWith('N')) {
         naturalId = trouve;
       } else {
@@ -945,7 +952,7 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
       }
     }
     return DiagnosisCause(
-      title: (raw['title'] as String?) ?? '',
+      title: titleWithoutCode(title),
       likelihood: Likelihood.parse(raw['likelihood']),
       explanation: (raw['explanation'] as String?) ?? '',
       actions: ((raw['actions'] as List?) ?? const []).whereType<String>().toList(),
@@ -1010,6 +1017,26 @@ class InfomaniakDiagnoser implements PlantDiagnoser {
   /// une réponse : un N en tête, puis des chiffres. Ce qui suit ne compte
   /// pas — un modèle recopie parfois « N01 Nectar extrafloral » en entier.
   static final RegExp _naturalShape = RegExp(r'^\s*n[\s.:-]*0*(\d{1,2})\b', caseSensitive: false);
+
+  /// Un numéro de la liste soumise en tête d'un titre : « N01 », « n 1 »,
+  /// « 060 », suivi d'un séparateur ou d'une espace. Trois chiffres pile pour
+  /// un problème, un N et un ou deux chiffres pour un phénomène naturel ; un
+  /// titre qui commence par un nombre ordinaire n'en a pas la forme.
+  static final RegExp _codePrefix =
+      RegExp(r'^\s*(n\s*[.:-]?\s*\d{1,2}|\d{3})(?!\d)(?!\s*%)\s*[-–—:.)]*\s*', caseSensitive: false);
+
+  /// Le titre tel qu'il s'affiche, sans le numéro qu'un modèle y recopie.
+  ///
+  /// La liste soumise nomme chaque entrée « N01 Nectar extrafloral » ou
+  /// « 060 Tétranyques », et la consigne demande le numéro dans « problem »,
+  /// le nom dans « title ». Qwen s'y tenait ; Mistral Small recopie l'entrée
+  /// entière dans le titre, et l'écran affichait « N14 Traces de calcaire ».
+  /// Le numéro ne dit rien à la personne : il sert au rattachement, pas à la
+  /// lecture. Un titre qui ne serait qu'un numéro reste tel quel.
+  static String titleWithoutCode(String title) {
+    final cleaned = title.replaceFirst(_codePrefix, '').trim();
+    return cleaned.isEmpty ? title.trim() : cleaned;
+  }
 
   /// Dernier recours : le service a écrit le nom exact d'une piste soumise
   /// sans en donner le numéro.

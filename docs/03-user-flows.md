@@ -211,7 +211,37 @@ Plantes ─[tap 💡]⟶ | Plantes (vide) ─[Trouver une plante]⟶ | Choisir u
   élargit alors hors catalogue, avec le texte libre en plus — appel réseau seulement
   sur ce geste, propositions marquées « à vérifier avant d'acheter ».
 
-## 9. Relever une pièce, puis poser une plante (iPhone et iPad à LiDAR)
+## 9. Après une installation ou une mise à jour (fenêtre des nouveautés)
+1. L'application s'ouvre sur l'onglet du jour ; `WhatsNewGate`, posé autour de
+   la coquille à onglets, interroge la règle une fois, après l'animation
+   d'ouverture (2,2 s) — pas à la première image, où la fenêtre montait sous
+   le pot qui cligne.
+2. La règle (`WhatsNew.take`) ne dit oui qu'une fois l'onboarding fait, et
+   montre la plus récente des nouveautés jamais vues — une seule, même si deux
+   versions ont été sautées. Une installation neuve la voit aussi : c'est la
+   vitrine de la version installée.
+   *Avant la publication*, la règle se taisait sur un appareil sans version
+   enregistrée. Les versions publiées (1.0.0 à 1.0.2) n'en enregistrent
+   aucune : elle aurait rendu muette la mise à jour qui ramène la fenêtre.
+3. Si une page couvre déjà la coquille — un lien, un raccourci de l'icône —
+   rien ne s'ouvre et rien n'est consommé : la fenêtre attend le lancement
+   suivant.
+4. La fenêtre s'ouvre (sheet native iOS / dialogue plein écran Android), se
+   ferme par « Continuer », par la croix, ou — sur iOS, une fois la page
+   revenue en haut — d'un glissement vers le bas. Un lien discret peut mener au
+   réglage concerné, ouvert après fermeture.
+5. Elle est marquée comme vue **avant** d'être affichée : une application tuée
+   en cours de lecture ne la rouvre pas au lancement suivant.
+6. La porte d'entrée manuelle est dans le profil : une ligne « Nouveautés »
+   rouvre la dernière livrée (`WhatsNew.latest`), sans rien consommer.
+
+Ajouter une version = une entrée à la fin de `releaseNotes()` et ses clés dans
+les quatre `.arb`. Un identifiant de nouveauté ne se renomme ni ne se réemploie :
+le renommer rouvre la fenêtre chez tous ceux qui l'avaient fermée, le
+réemployer avale en silence celle qui devait s'ouvrir. Sont déjà dépensés :
+`iris-8`, `beta-feedback-1`, `beta-rooms-1` (bêta), `watering-pot-1`.
+
+## 10. Relever une pièce, puis poser une plante (iPhone et iPad à LiDAR)
 ```
 Jardin ─[tap Salon]⟶ Fiche emplacement ─[tap « Scanner cette pièce »]⟶ une phrase
   (ce qui va se passer, rien ne quitte l'appareil)

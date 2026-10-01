@@ -249,6 +249,7 @@ class DriftPlantRepository implements PlantRepository {
       source: Value(plant.source?.trim().nullIfEmpty),
       price: Value(plant.price),
       potSize: Value(plant.potSize),
+      potMaterial: Value(plant.potMaterial?.name),
       notes: Value(plant.notes?.trim().nullIfEmpty),
       parentPlantId: Value(plant.parentPlantId),
       updatedAt: Value(now),

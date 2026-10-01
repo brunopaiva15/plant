@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../../domain/care/care_guide.dart';
 import '../../domain/care/care_profile.dart';
 import '../../domain/care/leaf_signs.dart';
+import '../../domain/care/pot.dart';
 import '../../domain/care/toxicity.dart';
 import '../../domain/care/water_quality.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -24,6 +25,42 @@ extension CareProfileLabels on AppLocalizations {
     final floor = p.lightTolerance;
     if (floor == null || floor == p.light) return null;
     return careLightFloor(lightName(floor));
+  }
+
+  String potMaterialName(PotMaterial v) => switch (v) {
+        PotMaterial.terracotta => potMaterialTerracotta,
+        PotMaterial.plastic => potMaterialPlastic,
+        PotMaterial.glazed => potMaterialGlazed,
+        PotMaterial.fabric => potMaterialFabric,
+        PotMaterial.selfWatering => potMaterialSelfWatering,
+      };
+
+  /// Ce que le pot fait à l'intervalle, quand il y change quelque chose :
+  /// « Votre pot raccourcit l'intervalle de 20 % ». Sous 5 %, l'arrondi au
+  /// jour l'efface, et la phrase ne dirait rien.
+  String? wateringPotNote(Pot pot) {
+    final percent = ((pot.intervalFactor - 1) * 100).round();
+    if (percent.abs() < 5) return null;
+    return percent < 0 ? careWateringPotShorter(-percent) : careWateringPotLonger(percent);
+  }
+
+  /// L'eau à verser à chaque arrosage, dans l'unité du profil : millilitres,
+  /// litres au-delà d'un litre, onces liquides en impérial. Un pot à réserve
+  /// se remplit par sa réserve ; sans diamètre, rien ne se calcule.
+  String? wateringDoseNote(Pot pot, DryDown rule, {required bool metric}) {
+    if (pot.material == PotMaterial.selfWatering) return careWateringReservoir;
+    final dose = pot.doseMl(rule);
+    if (dose == null) return null;
+    final (low, high) = dose;
+    if (!metric) {
+      const flOz = 29.5735;
+      final l = (low / flOz).round().clamp(1, 9999);
+      final h = (high / flOz).round();
+      return careWateringDose('$l', '${h > l ? h : l + 1}', 'fl oz');
+    }
+    if (high < 1000) return careWateringDose('$low', '$high', 'ml');
+    final liters = NumberFormat('0.##', localeName);
+    return careWateringDose(liters.format(low / 1000), liters.format(high / 1000), 'L');
   }
 
   String humidityName(HumidityNeed v) => switch (v) {

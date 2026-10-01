@@ -17,6 +17,7 @@ export 'list_row.dart';
 export 'native_actions.dart';
 export 'page_scaffold.dart';
 export 'paper.dart';
+export 'photo_landing.dart';
 export 'plant_image.dart';
 export 'pressable.dart';
 export 'rail_actions.dart';
