@@ -11,15 +11,24 @@
 # le rendu, un gain de saturation de 12 % puis un grain gaussien de 1,8 %, à
 # graine fixe.
 #
-# Variables d'environnement, décrites plus bas : YEUX, CLIN, FOND, OBJETS,
-# CADRE, CIBLE_Z, SOL, POT_BAS, RES, AGE, et YEUX_Z, YEUX_X, YEUX_R pour
-# placer les yeux.
+# Variables d'environnement, décrites plus bas : YEUX, CLIN, CLIN_G, FOND,
+# OBJETS, CADRE, CIBLE_Z, SOL, POT_BAS, RES, AGE, CALQUE, ZONE, et YEUX_Z,
+# YEUX_X, YEUX_R pour placer les yeux.
 # ============================================================
 import bpy, bmesh, math, sys, os
 # YEUX=1 pose deux yeux sur le pot
 YEUX=os.environ.get('YEUX')=='1'
 # CLIN : fermeture de l'œil de droite (vu de face), de 0 (ouvert) à 1 (fermé en arc)
 CLIN=float(os.environ.get('CLIN','0'))
+# CLIN_G : la même chose pour l'œil de gauche (un clignement des deux yeux)
+CLIN_G=float(os.environ.get('CLIN_G','0'))
+# CALQUE=pot rend tout sauf la pousse, qui garde son ombre ; CALQUE=pousse ne
+# rend que la pousse, découpée par le pot et la terre devant elle. Les deux
+# se superposent exactement : la pousse peut bouger seule (en-tête animé).
+CALQUE=os.environ.get('CALQUE','')
+# ZONE=x0,y0,x1,y1 : ne rendre que ce rectangle de l'image, en pixels depuis
+# le coin haut gauche ; l'image sortie a la taille du rectangle
+ZONE=os.environ.get('ZONE')
 # FOND=0 rend le fond transparent ; OBJETS=0 ne rend que le fond
 FOND=os.environ.get('FOND','1')=='1'; OBJETS=os.environ.get('OBJETS','1')=='1'
 # CADRE : 1 pour l'icône ; 2/3 élargit le champ pour l'avant-plan adaptatif d'Android
@@ -124,7 +133,7 @@ if YEUX:
         me=bpy.data.meshes.new('oeil');bm=bmesh.new()
         bmesh.ops.create_uvsphere(bm,u_segments=48,v_segments=24,radius=1)
         for f in bm.faces: f.material_index=0; f.smooth=True
-        clin=CLIN if x>0 else 0
+        clin=CLIN if x>0 else CLIN_G
         ys=-math.sqrt(rz*rz-x*x)-0.045
         if clin>=1:
             # fermé : un arc sombre, face à la caméra, aux bouts arrondis
@@ -241,6 +250,17 @@ co.location=(0,-11.5,3.2);d=Vector((0,0,CIBLE_Z))-co.location;co.rotation_euler=
 sc.render.engine='CYCLES';sc.cycles.device='CPU';sc.cycles.samples=SAMPLES;sc.cycles.use_denoising=True
 sc.render.resolution_x=sc.render.resolution_y=RES;sc.view_settings.view_transform='Standard';sc.view_settings.look='None'
 sc.render.film_transparent=not FOND
+if CALQUE:
+    pousse={o for o in sc.objects if o.name.startswith(('tige','feuille'))}
+    pousse|={o for o in sc.objects if o.type=='MESH' and o.name.startswith('Sphere') and (o.location-POINTE).length<1e-4}
+    for o in sc.objects:
+        if o.type not in ('MESH','CURVE'): continue
+        if CALQUE=='pot' and o in pousse: o.visible_camera=False
+        if CALQUE=='pousse' and o not in pousse: o.is_holdout=True
+if ZONE:
+    x0,y0,x1,y1=(int(v) for v in ZONE.split(','))
+    r=sc.render;r.use_border=True;r.use_crop_to_border=True
+    r.border_min_x,r.border_max_x=x0/RES,x1/RES;r.border_min_y,r.border_max_y=1-y1/RES,1-y0/RES
 if SOL:
     bpy.ops.mesh.primitive_plane_add(size=30,location=(0,0,-1.6));bpy.context.object.is_shadow_catcher=True
 if not OBJETS:

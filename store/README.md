@@ -218,3 +218,43 @@ que chaque titre tienne sur deux lignes ; la taille est commune aux sept
 captures et calculée par gabarit. L'ordre des écrans, les teintes et les objets sont dans `SCENES` ;
 les textes de la fiche d'ouverture dans `COVER` ; le verre dépoli est
 `glass()`, l'argile `clay_shape()`.
+
+## L'en-tête animé et la recherche
+
+App Store Connect accepte, en plus des captures, un en-tête de fiche produit
+et une ressource pour les résultats de recherche. `entete.py` les fait :
+le pot de l'icône, seul sur le vert de la marque et ses deux disques pâles,
+qui vit pendant 12 secondes en boucle — la pousse ondule dans une brise,
+le pot cligne des yeux, saute en s'écrasant à l'arrivée, puis fait le clin
+d'œil de l'ouverture de l'app (les mêmes pas de 40 ms, le même écrasement
+que `LaunchSplash`). Aucun texte : les quatre fiches prennent les mêmes
+fichiers.
+
+| Fichier | Emplacement | Format |
+|---|---|---|
+| `header_21x9_3840x1646.mp4` | En-tête | vidéo 21:9, 60 i/s, 12 s, sans son |
+| `header_21x9_3840x1646.png` | En-tête | image fixe 21:9 |
+| `header_16x9_5244x2950.png` | En-tête ou recherche | image fixe 16:9 (Apple n'y prend pas de vidéo) |
+| `search_3x2_3840x2560.mp4` | Recherche | vidéo 3:2 |
+| `search_3x2_1920x1280.mp4` | Recherche | la même, si la première est refusée (3840 × 2560 dépasse le niveau H.264 5.2) |
+
+Chaque emplacement prend une seule ressource, vidéo ou image.
+
+```bash
+pip install pillow numpy scipy
+python3 store/entete.py store/entete                       # avec Blender
+pip install bpy                                            # ou sans Blender
+python3 store/entete.py store/entete --blender "python3 tool/blender_bpy.py"
+```
+
+Blender n'anime rien : 720 images en Cycles prendraient des heures. Il rend
+une fois, au cadrage du lancement et en 2400 px, le pot sans sa pousse
+(`CALQUE=pot`, qui garde l'ombre de la pousse), la pousse seule découpée par
+le pot et la terre (`CALQUE=pousse`) et chaque œil à trois moments de sa
+fermeture (`CLIN`, `CLIN_G`, rendus dans leur seule zone, `ZONE`). Ces
+calques se rangent dans `SORTIE/calques/` (environ 25 min sur quatre cœurs,
+une seule fois) ; `entete.py` les anime ensuite en 2D — la pousse se courbe
+depuis la terre, le pot s'écrase et s'étire sur sa base, les yeux se posent
+comme dans l'ouverture. La chronologie est dans `etat()` et ses constantes
+(`CLIGNEMENTS`, `SAUT`, `CLIN`) ; la place du pot dans le cadre, dans
+`Cadre`.

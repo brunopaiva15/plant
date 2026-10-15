@@ -85,3 +85,6 @@ __pycache__/
 # Caches locaux des outils (wrangler, supabase cli)
 share-proxy/.wrangler/
 supabase/.temp/
+
+# Sortie de store/entete.py (calques Blender et vidéos)
+/store/entete/
