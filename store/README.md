@@ -240,6 +240,13 @@ fichiers.
 
 Chaque emplacement prend une seule ressource, vidéo ou image.
 
+L'App Store recadre fortement ces ressources : sur iPhone, il ne montre que
+le centre de l'en-tête, sous la barre d'état, la Dynamic Island et les
+boutons retour, son et partage. Le pot, saut compris, tient dans la zone
+sûre du gabarit d'Apple (`ZONES_SURES`, mesurée sur sa version Sketch :
+Apple ne publie pas de chiffres) ; seuls le vert et ses disques en
+débordent.
+
 ```bash
 pip install pillow numpy scipy
 python3 store/entete.py store/entete                       # avec Blender
@@ -257,4 +264,4 @@ une seule fois) ; `entete.py` les anime ensuite en 2D — la pousse se courbe
 depuis la terre, le pot s'écrase et s'étire sur sa base, les yeux se posent
 comme dans l'ouverture. La chronologie est dans `etat()` et ses constantes
 (`CLIGNEMENTS`, `SAUT`, `CLIN`) ; la place du pot dans le cadre, dans
-`Cadre`.
+`ZONES_SURES` et `Cadre`.

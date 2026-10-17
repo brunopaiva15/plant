@@ -245,7 +245,7 @@ def saut(t):
         return 0.0, 0.10 * adouci(u / 0.22)
     if u < 0.62:
         v = (u - 0.22) / 0.40
-        haut = 0.13 * 4 * v * (1 - v)
+        haut = SAUT_HAUT * 4 * v * (1 - v)
         etire = -0.07 * math.sin(math.pi * min(v * 1.6, 1)) * (1 - v)
         return haut, etire
     v = (u - 0.62) / 0.88
@@ -297,16 +297,33 @@ def fond(W, H):
     return img
 
 
+# L'App Store recadre fortement ces ressources : sur iPhone, il ne montre que
+# le centre de l'en-tête et pose par-dessus la barre d'état, la Dynamic
+# Island et les boutons retour, son et partage. Le pot tient donc dans la
+# zone sûre du gabarit d'Apple (mesurée sur sa version Sketch, Apple ne
+# publie pas de chiffres) : x, y, largeur, hauteur, pour chaque format.
+ZONES_SURES = {
+    (3840, 1646): (1097, 493, 1646, 661),   # en-tête 21:9
+    (3840, 2560): (836, 765, 2168, 1030),   # recherche 3:2
+    (5244, 2950): (1921, 660, 1402, 962),   # image 16:9, centrée plus haut
+}
+# La hauteur du saut, en fraction de celle du pot et de sa pousse (`saut`).
+SAUT_HAUT = 0.13
+
+
 class Cadre:
     def __init__(self, W, H, perso):
         self.W, self.H, self.p = W, H, perso
         x0, y0, x1, y1 = perso.cadre
-        # Le pot et sa pousse occupent 68 % de la hauteur, centrés, avec de
-        # la place au-dessus pour le saut.
-        self.echelle = float(0.68 * H / (y1 - y0))
-        self.ox = float(W / 2 - perso.base_x * self.echelle)
-        centre = (y0 + y1) / 2
-        self.oy = float(H * 0.53 - centre * self.echelle)
+        k = H / 1646
+        zx, zy, zl, zh = ZONES_SURES.get((W, H), (W / 2 - 823 * k, 493 * k, 1646 * k, 661 * k))
+        # Le pot et sa pousse, saut compris, remplissent la zone sûre ; au
+        # repos, le pot se pose en bas de la zone, le saut monte dans le haut.
+        haut = (y1 - y0) * (1 + SAUT_HAUT)
+        self.echelle = float(0.96 * min(zl / (x1 - x0), zh / haut))
+        self.ox = float(zx + zl / 2 - perso.base_x * self.echelle)
+        bas = zy + zh - (zh - haut * self.echelle) / 2
+        self.oy = float(bas - perso.bas * self.echelle)
         self.fond = fond(W, H)
 
     def image(self, t):
@@ -316,7 +333,7 @@ class Cadre:
         bx, by = p.base_x * k + self.ox, p.bas * k + self.oy
         hauteur_pot = (p.bas - p.haut) * k
         # L'ombre de contact, qui rétrécit et pâlit quand le pot s'élève.
-        lev = e["haut"] / 0.13
+        lev = e["haut"] / SAUT_HAUT
         rx = p.base_l * k * 0.62 * e["sx"] * (1 - 0.35 * lev)
         ry = p.base_l * k * 0.07 * (1 - 0.35 * lev)
         flou = p.base_l * k * 0.05
