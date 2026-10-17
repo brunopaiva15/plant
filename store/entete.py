@@ -303,7 +303,9 @@ def fond(W, H):
 # zone sûre du gabarit d'Apple (mesurée sur sa version Sketch, Apple ne
 # publie pas de chiffres) : x, y, largeur, hauteur, pour chaque format.
 ZONES_SURES = {
-    (3840, 1646): (1097, 493, 1646, 661),   # en-tête 21:9
+    # En-tête 21:9 : la zone d'Apple (1097, 493, 1646, 661), descendue sous
+    # les boutons retour, son et partage de l'iPhone, qui la mordaient.
+    (3840, 1646): (1097, 705, 1646, 600),
     (3840, 2560): (836, 765, 2168, 1030),   # recherche 3:2
     (5244, 2950): (1921, 660, 1402, 962),   # image 16:9, centrée plus haut
 }
